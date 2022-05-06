@@ -35,6 +35,16 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>fonts/Poppins-Bold.ttf</string>
+		<string>fonts/Poppins-Medium.ttf</string>
+		<string>fonts/Poppins-Regular.ttf</string>
+		<string>fonts/Roboto-Bold.ttf</string>
+		<string>fonts/Roboto-Medium.ttf</string>
+		<string>fonts/Roboto-Regular.ttf</string>
+		<string>MaterialCommunityIcons.ttf</string>
+	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UILaunchStoryboardName</key>
