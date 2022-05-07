@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, Dimensions, StatusBar} from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 
-import {colors, fonts} from '~constants/constants';
+import {colors, fonts, layout} from '~constants/constants';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
@@ -32,11 +32,18 @@ const LoginScreen = () => {
           </Text>
 
           <View>
-            <TextInput label="Email" mode="outlined" />
+            <TextInput
+              label="Email"
+              mode="outlined"
+              activeOutlineColor={colors.black}
+              style={layout.textInput}
+            />
             <TextInput
               mode="outlined"
               label="Password"
               secureTextEntry
+              activeOutlineColor={colors.black}
+              style={layout.textInput}
               right={<TextInput.Icon name="eye" />}
             />
 
@@ -51,14 +58,13 @@ const LoginScreen = () => {
 
             <View style={styles.submitBtnWrapper}>
               <Button
+                contentStyle={layout.button}
+                color={colors.black}
                 uppercase
                 mode="contained"
                 onPress={() => dispatch(login('token'))}>
                 Login
               </Button>
-              {/* <LoadingButton onPress={() => {}} isLoading={loading}>
-                <Text maxFontSizeMultiplier={1}>Login</Text>
-              </LoadingButton> */}
             </View>
           </View>
         </View>
@@ -86,10 +92,10 @@ const styles = StyleSheet.create({
   },
 
   formLabel: {
-    fontFamily: fonts.fontRegular,
-    fontSize: 14,
-    color: colors.primaryFontColor,
+    fontFamily: fonts.fontMedium,
+    color: colors.black,
     fontSize: 28,
+    fontWeight: '600',
     textAlign: 'center',
     paddingVertical: '10%',
   },
@@ -104,18 +110,16 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-
     elevation: 5,
   },
 
   forgetPass: {
     fontFamily: fonts.fontRegular,
     fontSize: 14,
-    color: colors.darkGreyColor,
+    color: colors.black,
     textDecorationLine: 'underline',
     textAlign: 'right',
     paddingVertical: 4,
-    marginTop: -12,
   },
 
   submitBtnWrapper: {

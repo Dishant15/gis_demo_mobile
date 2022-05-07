@@ -3,6 +3,7 @@ import {Dimensions, View, Text} from 'react-native';
 
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {screens} from '~constants/constants';
+import Map from '~screens/Map';
 
 const Drawer = createDrawerNavigator();
 
@@ -14,10 +15,7 @@ const DrawerNavigation = () => {
         width: Dimensions.get('screen').width * 0.8,
         maxWidth: 330,
       }}>
-      <Drawer.Screen
-        name={screens.dashboardScreen}
-        component={DashboardScreen}
-      />
+      <Drawer.Screen name={screens.dashboardScreen} component={Map} />
     </Drawer.Navigator>
   );
 };
