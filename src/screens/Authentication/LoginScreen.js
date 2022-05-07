@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, Dimensions, StatusBar} from 'react-native';
 import {TextInput, Button, HelperText} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
@@ -8,10 +8,15 @@ import {useDispatch} from 'react-redux';
 
 import {colors, fonts, layout} from '~constants/constants';
 import authBg from '~assets/img/authBg.png';
+import {useMutation} from 'react-query';
+import {postLogin} from './services';
+import {login} from '~redux/reducers/auth.reducer';
 
 const {width, height} = Dimensions.get('screen');
 
 const LoginScreen = () => {
+  const [showPassword, setShowPassword] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -20,12 +25,32 @@ const LoginScreen = () => {
     formState: {errors},
   } = useForm();
   console.log(
-    '🚀 ~ file: LoginScreen.js ~ line 24 ~ LoginScreen ~ errors',
+    '🚀 ~ file: LoginScreen.js ~ line 25 ~ LoginScreen ~ errors',
     errors,
   );
+  const dispatch = useDispatch();
+
+  // const mutation = useMutation(postLogin, {
+  //   onSuccess: res => {
+  //     console.log(
+  //       '🚀 ~ file: LoginScreen.js ~ line 32 ~ useMutation ~ res',
+  //       res,
+  //     );
+  //   },
+  //   onError: err => {
+  //     console.log(
+  //       '🚀 ~ file: LoginScreen.js ~ line 33 ~ useMutation ~ err',
+  //       err,
+  //     );
+  //   },
+  // });
 
   const onSubmit = data => {
-    console.log('🚀 ~ file: LoginScreen.js ~ line 27 ~ onSubmit ~ data', data);
+    postLogin(data)
+      .then(res => dispatch(login(res.token)))
+      .catch(err =>
+        setError('password', {message: 'Credentials are invalid.'}),
+      );
   };
 
   const emaiError = errors.username?.message;
@@ -52,16 +77,12 @@ const LoginScreen = () => {
             control={control}
             name="username"
             rules={{
-              required: 'Email Field is required.',
-              pattern: {
-                value: /^\S+@\S+$/i,
-                message: 'Email is invalid',
-              },
+              required: 'Username is required.',
             }}
             render={({field: {ref, onChange, onBlur, value}}) => (
               <TextInput
                 ref={ref}
-                label="Email"
+                label="Username"
                 mode="outlined"
                 activeOutlineColor={colors.black}
                 style={layout.textInput}
@@ -70,7 +91,6 @@ const LoginScreen = () => {
                 value={value}
                 error={emaiError}
                 underlineColorAndroid="transparent"
-                keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
                 returnKeyType="next"
@@ -88,14 +108,14 @@ const LoginScreen = () => {
             control={control}
             name="password"
             rules={{
-              required: 'Password Field is required.',
+              required: 'Password is required.',
             }}
             render={({field: {ref, onChange, onBlur, value}}) => (
               <TextInput
                 ref={ref}
                 label="Password"
                 mode="outlined"
-                secureTextEntry
+                secureTextEntry={!showPassword}
                 activeOutlineColor={colors.black}
                 style={layout.textInput}
                 onChangeText={onChange}
@@ -108,6 +128,12 @@ const LoginScreen = () => {
                 autoCorrect={false}
                 returnKeyType="done"
                 onSubmitEditing={handleSubmit(onSubmit)}
+                right={
+                  <TextInput.Icon
+                    name={showPassword ? 'eye-off' : 'eye'}
+                    onPress={() => setShowPassword(!showPassword)}
+                  />
+                }
               />
             )}
           />
