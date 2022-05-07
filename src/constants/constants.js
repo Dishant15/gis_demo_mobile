@@ -6,6 +6,14 @@ export const screens = {
 
   loginScreen: 'loginScreen',
   dashboardScreen: 'dashboardScreen',
+
+  surveyScreen: 'surveyScreen',
+  surveyDetails: 'surveyDetails',
+  surveyForm: 'surveyForm',
+
+  networkScreen: 'networkScreen',
+  clientScreen: 'clientScreen',
+  planningScreen: 'planningScreen',
 };
 
 export const fonts = {

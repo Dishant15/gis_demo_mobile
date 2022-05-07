@@ -7,6 +7,8 @@ import {screens} from '~constants/constants';
 import {useSelector} from 'react-redux';
 import {getIsUserLoggedIn} from '~redux/selectors/auth.selectors';
 import LoginScreen from '~screens/Authentication/LoginScreen';
+import SurveyDetails from '~screens/Survey/SurveyDetails';
+import SurveyForm from '~screens/Survey/SurveyForm';
 
 const Stack = createStackNavigator();
 
@@ -25,11 +27,24 @@ const RootNavigation = () => {
     <>
       <Stack.Navigator>
         {isUserLoggedIn ? (
-          <Stack.Screen
-            name={screens.drawerStack}
-            component={DrawerStack}
-            options={options}
-          />
+          <>
+            <Stack.Screen
+              name={screens.drawerStack}
+              component={DrawerStack}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.surveyDetails}
+              component={SurveyDetails}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.surveyForm}
+              component={SurveyForm}
+              options={options}
+            />
+            {/* same as unit list, details, form, review */}
+          </>
         ) : (
           <Stack.Screen
             name={screens.loginScreen}

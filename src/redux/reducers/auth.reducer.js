@@ -9,7 +9,7 @@ export const AUTH_TYPES = {
 };
 
 const initialState = {
-  token: '',
+  token: 'aaa',
   user: null,
 };
 
