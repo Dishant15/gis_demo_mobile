@@ -1,18 +1,35 @@
 import React from 'react';
 import {View, Text, StyleSheet, Dimensions, StatusBar} from 'react-native';
-import {TextInput, Button} from 'react-native-paper';
-
-import {colors, fonts, layout} from '~constants/constants';
-
+import {TextInput, Button, HelperText} from 'react-native-paper';
+import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
-import authBg from '~assets/img/authBg.png';
 import {useDispatch} from 'react-redux';
-import {login} from '~redux/reducers/auth.reducer';
+
+import {colors, fonts, layout} from '~constants/constants';
+import authBg from '~assets/img/authBg.png';
+
 const {width, height} = Dimensions.get('screen');
 
 const LoginScreen = () => {
-  const dispatch = useDispatch();
+  const {
+    control,
+    handleSubmit,
+    setError,
+    setFocus,
+    formState: {errors},
+  } = useForm();
+  console.log(
+    '🚀 ~ file: LoginScreen.js ~ line 24 ~ LoginScreen ~ errors',
+    errors,
+  );
+
+  const onSubmit = data => {
+    console.log('🚀 ~ file: LoginScreen.js ~ line 27 ~ onSubmit ~ data', data);
+  };
+
+  const emaiError = errors.username?.message;
+  const passwordError = errors.password?.message;
   return (
     <View style={[styles.container]}>
       <StatusBar
@@ -31,41 +48,92 @@ const LoginScreen = () => {
             NETWORK GIS
           </Text>
 
-          <View>
-            <TextInput
-              label="Email"
-              mode="outlined"
-              activeOutlineColor={colors.black}
-              style={layout.textInput}
-            />
-            <TextInput
-              mode="outlined"
-              label="Password"
-              secureTextEntry
-              activeOutlineColor={colors.black}
-              style={layout.textInput}
-              right={<TextInput.Icon name="eye" />}
-            />
+          <Controller
+            control={control}
+            name="username"
+            rules={{
+              required: 'Email Field is required.',
+              pattern: {
+                value: /^\S+@\S+$/i,
+                message: 'Email is invalid',
+              },
+            }}
+            render={({field: {ref, onChange, onBlur, value}}) => (
+              <TextInput
+                ref={ref}
+                label="Email"
+                mode="outlined"
+                activeOutlineColor={colors.black}
+                style={layout.textInput}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                error={emaiError}
+                underlineColorAndroid="transparent"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                returnKeyType="next"
+                blurOnSubmit={false}
+                onSubmitEditing={() => setFocus('password')}
+              />
+            )}
+          />
+          {emaiError ? (
+            <HelperText type="error" visible={emaiError}>
+              {emaiError}
+            </HelperText>
+          ) : null}
+          <Controller
+            control={control}
+            name="password"
+            rules={{
+              required: 'Password Field is required.',
+            }}
+            render={({field: {ref, onChange, onBlur, value}}) => (
+              <TextInput
+                ref={ref}
+                label="Password"
+                mode="outlined"
+                secureTextEntry
+                activeOutlineColor={colors.black}
+                style={layout.textInput}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                error={passwordError}
+                underlineColorAndroid="transparent"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                returnKeyType="done"
+                onSubmitEditing={handleSubmit(onSubmit)}
+              />
+            )}
+          />
+          {passwordError ? (
+            <HelperText type="error" visible={passwordError}>
+              {passwordError}
+            </HelperText>
+          ) : null}
+          <Text
+            style={styles.forgetPass}
+            maxFontSizeMultiplier={1}
+            onPress={() => {}}>
+            Forgot Password
+          </Text>
 
-            <Text
-              style={styles.forgetPass}
-              maxFontSizeMultiplier={1}
-              onPress={() => {}}>
-              Forgot Password
-            </Text>
+          {/* <ErrorBlock error={errors} field="__all__" /> */}
 
-            {/* <ErrorBlock error={errors} field="__all__" /> */}
-
-            <View style={styles.submitBtnWrapper}>
-              <Button
-                contentStyle={layout.button}
-                color={colors.black}
-                uppercase
-                mode="contained"
-                onPress={() => dispatch(login('token'))}>
-                Login
-              </Button>
-            </View>
+          <View style={styles.submitBtnWrapper}>
+            <Button
+              contentStyle={layout.button}
+              color={colors.black}
+              uppercase
+              mode="contained"
+              onPress={handleSubmit(onSubmit)}>
+              Login
+            </Button>
           </View>
         </View>
       </KeyboardAwareScrollView>
