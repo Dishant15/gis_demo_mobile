@@ -35,10 +35,28 @@ export const colors = {
 };
 
 export const layout = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
   button: {
     height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   textInput: {
     marginVertical: 4,
   },
+  center: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
+
+// AHMEDABAD CENTER
+export const INIT_MAP_LOCATION = {
+  longitudeDelta: 0.0462949275970459,
+  latitude: 23.051741843623137,
+  longitude: 72.54943616688251,
+  latitudeDelta: 0.09218772082917326,
+};

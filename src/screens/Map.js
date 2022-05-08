@@ -100,3 +100,130 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
 });
+
+// import React, {Component} from 'react';
+// import {Text, View, StyleSheet, Pressable} from 'react-native';
+// import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
+
+// /**
+//  * tap on map, drow marker and draw line between 2 marker
+//  */
+// export default class Map extends Component {
+//   mapRef = React.createRef();
+//   polygonRef = React.createRef();
+
+//   state = {
+//     coordinates: [
+//       {
+//         longitude: 72.53672149032356,
+//         latitude: 23.064385653591305,
+//       },
+//       {
+//         longitude: 72.56370719522236,
+//         latitude: 23.063402845804365,
+//       },
+//       {
+//         longitude: 72.56125397980213,
+//         latitude: 23.039736790051048,
+//       },
+//       {
+//         longitude: 72.5329228118062,
+//         latitude: 23.046764357112394,
+//       },
+//     ],
+//     markers: [
+//       {
+//         latlng: {
+//           longitude: 72.53672149032356,
+//           latitude: 23.064385653591305,
+//         },
+//       },
+//       {
+//         latlng: {
+//           longitude: 72.56370719522236,
+//           latitude: 23.063402845804365,
+//         },
+//       },
+//       {
+//         latlng: {
+//           longitude: 72.56125397980213,
+//           latitude: 23.039736790051048,
+//         },
+//       },
+//       {
+//         latlng: {
+//           longitude: 72.5329228118062,
+//           latitude: 23.046764357112394,
+//         },
+//       },
+//     ],
+//     region: {
+//       longitudeDelta: 0.0462949275970459,
+//       latitude: 23.051741843623137,
+//       longitude: 72.54943616688251,
+//       latitudeDelta: 0.09218772082917326,
+//     },
+//   };
+
+//   handleBtnClick = () => {
+//     console.log('mapRef', this.mapRef.current);
+//     console.log('polygonRef', this.polygonRef.current);
+//     console.log(
+//       'polygonRef getAirComponent',
+//       this.polygonRef.current.getAirComponent(),
+//     );
+//     console.log(
+//       'polygonRef setNativeProps',
+//       this.polygonRef.current.setNativeProps({
+//         editable: true,
+//       }),
+//     );
+//   };
+//   render = () => {
+//     const {coordinates} = this.state;
+//     return (
+//       <View style={{flex: 1, position: 'relative'}}>
+//         <View style={styles.absBtn}>
+//           <Pressable onPress={this.handleBtnClick}>
+//             <Text>GET DETAILS</Text>
+//           </Pressable>
+//         </View>
+//         <MapView
+//           ref={this.mapRef}
+//           style={styles.map}
+//           initialRegion={{
+//             longitudeDelta: 0.0462949275970459,
+//             latitude: 23.051741843623137,
+//             longitude: 72.54943616688251,
+//             latitudeDelta: 0.09218772082917326,
+//           }}
+//           provider={PROVIDER_GOOGLE}>
+//           {
+//             // loop through markers array & render all markers
+//             this.state.markers.map((marker, i) => (
+//               <Marker coordinate={marker.latlng} key={i} />
+//             ))
+//           }
+//           <Polygon ref={this.polygonRef} coordinates={coordinates} />
+//         </MapView>
+//       </View>
+//     );
+//   };
+// }
+
+// const styles = StyleSheet.create({
+//   map: {
+//     ...StyleSheet.absoluteFillObject,
+//   },
+//   absBtn: {
+//     position: 'absolute',
+//     left: 0,
+//     right: 0,
+//     bottom: 60,
+//     zIndex: 2,
+//     backgroundColor: '#fff',
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     height: 50,
+//   },
+// });
