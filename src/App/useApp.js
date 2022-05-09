@@ -3,6 +3,8 @@ import {QueryClient, QueryClientProvider} from 'react-query';
 
 import appStateReducer from '~redux/reducers/appstate.reducer';
 import authReducer from '~redux/reducers/auth.reducer';
+import surveyDetailsReducer from '~redux/reducers/surveyDetails.reducer';
+import surveyListReducer from '~redux/reducers/surveyList.reducer';
 
 export const useApp = props => {
   ///////////////////////////////////////
@@ -13,6 +15,8 @@ export const useApp = props => {
     reducer: {
       appState: appStateReducer,
       auth: authReducer,
+      surveylist: surveyListReducer,
+      surveyDetails: surveyDetailsReducer,
     },
     devTools: true,
   });

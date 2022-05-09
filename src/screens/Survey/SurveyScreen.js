@@ -2,25 +2,17 @@ import React from 'react';
 import {View, FlatList} from 'react-native';
 import {layout, screens} from '~constants/constants';
 import {Card, Title, Paragraph} from 'react-native-paper';
+import {useSelector} from 'react-redux';
+import {getSurveyList} from '~redux/selectors/surveyList.selectors';
 
-const data = [
-  {
-    title: 'survey #1',
-    address: 'Science City, Thaltej, Ahmedabad, 380060',
-  },
-  {
-    title: 'survey #1',
-    address: 'Makarba, Ahmedabad South, 380051',
-  },
-];
 const SurveyScreen = props => {
   const {navigation, route} = props;
-
+  const surveyList = useSelector(getSurveyList);
   return (
     <View style={layout.container}>
       <FlatList
         contentContainerStyle={{padding: 12}}
-        data={data}
+        data={surveyList}
         renderItem={({item}) => {
           return (
             <Card style={{marginBottom: 12}}>

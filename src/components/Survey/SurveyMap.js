@@ -4,28 +4,46 @@ import {Text, View, StyleSheet} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {FAB, Portal, Provider, Button} from 'react-native-paper';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {connect} from 'react-redux';
 
 import CIRCLE_ICON from '~assets/img/circle_40.png';
 import {INIT_MAP_LOCATION, layout} from '~constants/constants';
+import {
+  updateServeyDetails,
+  updateCoordinates,
+} from '~redux/reducers/surveyDetails.reducer';
+import {getSurveyCoords} from '~redux/selectors/surveyDetails.selectors';
 import {noop} from '~utils/app.utils';
-import {convexHull, Point} from '~utils/map.utils';
 
-const DRAWING_MODE = {
-  MARKER: 'marker',
-  POLYGON: 'polygon',
-};
-
+@connect(store => ({
+  coordinates: getSurveyCoords(store),
+}))
 export default class SurveyMap extends Component {
-  mapRef = React.createRef();
-  state = {
-    drawingMode: null,
-    coordinates: [],
-    finalJson: {},
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      coordinates: props.coordinates,
+      isDrawing: false,
+    };
+
+    this.mapRef = React.createRef();
+  }
+
+  handleButtonPress = () => {
+    const {isDrawing, coordinates} = this.state;
+    if (isDrawing) {
+      dispatch(updateCoordinates(coordinates));
+      if (onSavePress) {
+        onSavePress();
+      }
+    } else {
+      this.setState({isDrawing: true});
+    }
   };
 
   render = () => {
-    const {drawingMode, coordinates} = this.state;
-    const isPolygonDrawing = drawingMode === DRAWING_MODE.POLYGON;
+    const {coordinates, isDrawing} = this.state;
     return (
       <View style={[layout.container, styles.relative]}>
         <MapView
@@ -36,14 +54,19 @@ export default class SurveyMap extends Component {
           onPress={e => {
             if (!e.nativeEvent.coordinate) return;
             const coords = e.nativeEvent.coordinate;
-            this.setState({coordinates: [...this.state.coordinates, coords]});
+            this.setState({
+              coordinates: [...this.state.coordinates, coords],
+              isDrawing: true,
+            });
           }}>
-          {
-            // loop through markers array & render all markers
-            coordinates.map((marker, i) => (
-              <Marker coordinate={marker} key={i} icon={CIRCLE_ICON} />
-            ))
-          }
+          {coordinates.map((marker, i) => (
+            <Marker
+              coordinate={marker}
+              key={i}
+              // icon={CIRCLE_ICON}
+              image={CIRCLE_ICON}
+            />
+          ))}
           {size(coordinates) ? <Polygon coordinates={coordinates} /> : null}
         </MapView>
         <View style={styles.content}>
@@ -51,17 +74,8 @@ export default class SurveyMap extends Component {
             style={[layout.button, styles.drawBtn]}
             icon="pencil"
             mode="contained"
-            onPress={() => {
-              if (isPolygonDrawing) {
-                console.log('data', this.state);
-                this.setState({drawingMode: null});
-              } else {
-                this.setState({
-                  drawingMode: DRAWING_MODE.POLYGON,
-                });
-              }
-            }}>
-            {isPolygonDrawing ? 'Save Polygon' : 'Draw Polygon'}
+            onPress={this.handleButtonPress}>
+            {isDrawing ? 'Save Polygon' : 'Draw Polygon'}
           </Button>
         </View>
       </View>
