@@ -5,8 +5,10 @@ import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {FAB, Portal, Provider, Button} from 'react-native-paper';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
+import CIRCLE_ICON from '~assets/img/circle_40.png';
 import {INIT_MAP_LOCATION, layout} from '~constants/constants';
 import {noop} from '~utils/app.utils';
+import {convexHull, Point} from '~utils/map.utils';
 
 const DRAWING_MODE = {
   MARKER: 'marker',
@@ -22,11 +24,7 @@ export default class SurveyMap extends Component {
   };
 
   render = () => {
-    const {drawingMode, coordinates, markers} = this.state;
-    console.log(
-      '🚀 ~ file: SurveyMap.js ~ line 27 ~ SurveyMap ~ this.state',
-      this.state,
-    );
+    const {drawingMode, coordinates} = this.state;
     const isPolygonDrawing = drawingMode === DRAWING_MODE.POLYGON;
     return (
       <View style={[layout.container, styles.relative]}>
@@ -37,26 +35,16 @@ export default class SurveyMap extends Component {
           provider={PROVIDER_GOOGLE}
           onPress={e => {
             if (!e.nativeEvent.coordinate) return;
-            if (isPolygonDrawing) {
-              this.setState({
-                coordinates: [
-                  ...this.state.coordinates,
-                  {...e.nativeEvent.coordinate},
-                ],
-              });
-            }
+            const coords = e.nativeEvent.coordinate;
+            this.setState({coordinates: [...this.state.coordinates, coords]});
           }}>
-          {isPolygonDrawing ? (
-            <>
-              {
-                // loop through markers array & render all markers
-                coordinates.map((marker, i) => (
-                  <Marker coordinate={marker} key={i} />
-                ))
-              }
-              {size(coordinates) ? <Polygon coordinates={coordinates} /> : null}
-            </>
-          ) : null}
+          {
+            // loop through markers array & render all markers
+            coordinates.map((marker, i) => (
+              <Marker coordinate={marker} key={i} icon={CIRCLE_ICON} />
+            ))
+          }
+          {size(coordinates) ? <Polygon coordinates={coordinates} /> : null}
         </MapView>
         <View style={styles.content}>
           <Button

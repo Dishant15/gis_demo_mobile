@@ -16,11 +16,7 @@ const Drawer = createDrawerNavigator();
 
 const DrawerContent = props => {
   const {navigation} = props;
-  console.log(
-    '🚀 ~ file: drawer.navigation.js ~ line 17 ~ props',
-    props,
-    props.navigation.getState(),
-  );
+
   return (
     <View style={layout.container}>
       <View style={styles.headerContent}>
