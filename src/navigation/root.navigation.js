@@ -1,17 +1,19 @@
 import React, {useEffect} from 'react';
+import {useSelector} from 'react-redux';
 import {createStackNavigator} from '@react-navigation/stack';
 import SplashScreen from 'react-native-splash-screen';
 
 import DrawerStack from '~navigation/drawer.navigation';
-import {screens} from '~constants/constants';
-import {useSelector} from 'react-redux';
-import {getIsUserLoggedIn} from '~redux/selectors/auth.selectors';
+
 import LoginScreen from '~screens/Authentication/LoginScreen';
 import SurveyDetails from '~screens/Survey/SurveyDetails';
 import SurveyForm from '~screens/Survey/SurveyFormScreen';
 import UnitList from '~screens/Survey/UnitList';
 import UnitDetails from '~screens/Survey/UnitDetails';
 import UnitForm from '~screens/Survey/UnitForm';
+
+import {getIsUserLoggedIn} from '~data/selectors/auth.selectors';
+import {screens} from '~constants/constants';
 
 const Stack = createStackNavigator();
 

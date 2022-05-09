@@ -1,13 +1,13 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {useDispatch} from 'react-redux';
 import {Button} from 'react-native-paper';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {colors, fonts, layout} from '~constants/constants';
+import {colors, layout} from '~constants/constants';
 import Input from '~components/Common/Input';
-import {updateSurveyFormData} from '~redux/reducers/surveyDetails.reducer';
+import {updateSurveyFormData} from '~data/reducers/geoSurvey.reducer';
 
 const SurveyForm = props => {
   const {onSaveDetails} = props;

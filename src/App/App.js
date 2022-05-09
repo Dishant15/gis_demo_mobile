@@ -1,13 +1,13 @@
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {Provider} from 'react-redux';
 import {Provider as PaperProvider, DefaultTheme} from 'react-native-paper';
 import {QueryClientProvider, QueryClient} from 'react-query';
+import {NavigationContainer} from '@react-navigation/native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 import RootNavigation from '~navigation/root.navigation';
 import {colors} from '~constants/constants';
-import {store} from '~utils/store';
+import store from '~data/store';
 
 const theme = {
   ...DefaultTheme,

@@ -1,13 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
 
-export const AUTH_TYPES = {
-  LOGIN: 'login',
-  SIGNUP: 'signup',
-  FORGOTPASSWORD: 'forgotpassword',
-  RESETPASSWORD: 'resetpassword',
-  OTP_FORM: 'OTP_FORM',
-};
-
 const initialState = {
   token: 'aaa',
   user: null,

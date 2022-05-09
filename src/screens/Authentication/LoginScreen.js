@@ -10,7 +10,7 @@ import {colors, fonts, layout} from '~constants/constants';
 import authBg from '~assets/img/authBg.png';
 import {useMutation} from 'react-query';
 import {postLogin} from './services';
-import {login} from '~redux/reducers/auth.reducer';
+import {login} from '~data/reducers/auth.reducer';
 import Input from '~components/Common/Input';
 
 const {width, height} = Dimensions.get('screen');

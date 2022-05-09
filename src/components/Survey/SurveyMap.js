@@ -1,22 +1,18 @@
-import {size} from 'lodash';
 import React, {Component, useState} from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {connect} from 'react-redux';
+import {View, StyleSheet} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {FAB, Portal, Provider, Button} from 'react-native-paper';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {connect} from 'react-redux';
+import {size} from 'lodash';
 
 import CIRCLE_ICON from '~assets/img/circle_40.png';
 import {INIT_MAP_LOCATION, layout} from '~constants/constants';
-import {
-  updateServeyDetails,
-  updateCoordinates,
-} from '~redux/reducers/surveyDetails.reducer';
-import {getSurveyCoords} from '~redux/selectors/surveyDetails.selectors';
+import {updateCoordinates} from '~data/reducers/geoSurvey.reducer';
+import {getGeoSurveyCoords} from '~data/selectors/geoSurvey.selectors';
 import {noop} from '~utils/app.utils';
 
 @connect(store => ({
-  coordinates: getSurveyCoords(store),
+  coordinates: getGeoSurveyCoords(store),
 }))
 export default class SurveyMap extends Component {
   constructor(props) {
