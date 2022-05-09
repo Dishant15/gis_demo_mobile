@@ -8,7 +8,7 @@ import {useSelector} from 'react-redux';
 import {getIsUserLoggedIn} from '~redux/selectors/auth.selectors';
 import LoginScreen from '~screens/Authentication/LoginScreen';
 import SurveyDetails from '~screens/Survey/SurveyDetails';
-import SurveyForm from '~screens/Survey/SurveyForm';
+import SurveyForm from '~screens/Survey/SurveyFormScreen';
 
 const Stack = createStackNavigator();
 

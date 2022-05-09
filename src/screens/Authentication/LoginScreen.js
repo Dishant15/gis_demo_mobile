@@ -11,6 +11,7 @@ import authBg from '~assets/img/authBg.png';
 import {useMutation} from 'react-query';
 import {postLogin} from './services';
 import {login} from '~redux/reducers/auth.reducer';
+import Input from '~components/Common/Input';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -80,7 +81,7 @@ const LoginScreen = () => {
               required: 'Username is required.',
             }}
             render={({field: {ref, onChange, onBlur, value}}) => (
-              <TextInput
+              <Input
                 ref={ref}
                 label="Username"
                 mode="outlined"
@@ -99,11 +100,11 @@ const LoginScreen = () => {
               />
             )}
           />
-          {emaiError ? (
+          {/* {emaiError ? (
             <HelperText type="error" visible={emaiError}>
               {emaiError}
             </HelperText>
-          ) : null}
+          ) : null} */}
           <Controller
             control={control}
             name="password"
@@ -111,7 +112,7 @@ const LoginScreen = () => {
               required: 'Password is required.',
             }}
             render={({field: {ref, onChange, onBlur, value}}) => (
-              <TextInput
+              <Input
                 ref={ref}
                 label="Password"
                 mode="outlined"
@@ -137,11 +138,11 @@ const LoginScreen = () => {
               />
             )}
           />
-          {passwordError ? (
+          {/* {passwordError ? (
             <HelperText type="error" visible={passwordError}>
               {passwordError}
             </HelperText>
-          ) : null}
+          ) : null} */}
           <Text
             style={styles.forgetPass}
             maxFontSizeMultiplier={1}
