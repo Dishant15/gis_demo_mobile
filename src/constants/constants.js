@@ -11,6 +11,10 @@ export const screens = {
   surveyDetails: 'surveyDetails',
   surveyForm: 'surveyForm',
 
+  unitList: 'unitList',
+  unitDetails: 'unitDetails',
+  unitForm: 'unitForm',
+
   networkScreen: 'networkScreen',
   clientScreen: 'clientScreen',
   planningScreen: 'planningScreen',

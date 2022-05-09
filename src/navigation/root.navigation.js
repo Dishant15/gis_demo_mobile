@@ -9,6 +9,9 @@ import {getIsUserLoggedIn} from '~redux/selectors/auth.selectors';
 import LoginScreen from '~screens/Authentication/LoginScreen';
 import SurveyDetails from '~screens/Survey/SurveyDetails';
 import SurveyForm from '~screens/Survey/SurveyFormScreen';
+import UnitList from '~screens/Survey/UnitList';
+import UnitDetails from '~screens/Survey/UnitDetails';
+import UnitForm from '~screens/Survey/UnitForm';
 
 const Stack = createStackNavigator();
 
@@ -41,6 +44,21 @@ const RootNavigation = () => {
             <Stack.Screen
               name={screens.surveyForm}
               component={SurveyForm}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.unitList}
+              component={UnitList}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.unitDetails}
+              component={UnitDetails}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.unitForm}
+              component={UnitForm}
               options={options}
             />
             {/* same as unit list, details, form, review */}

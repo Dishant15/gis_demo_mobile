@@ -32,6 +32,7 @@ export default class SurveyMap extends Component {
 
   handleButtonPress = () => {
     const {isDrawing, coordinates} = this.state;
+    const {dispatch, onSavePress} = this.props;
     if (isDrawing) {
       dispatch(updateCoordinates(coordinates));
       if (onSavePress) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import {View} from 'react-native';
-import {layout, screens} from '~constants/constants';
 import {Headline, Button} from 'react-native-paper';
+import {layout, screens} from '~constants/constants';
 
 const DashboardScreen = ({navigation}) => {
   return (
@@ -9,8 +9,8 @@ const DashboardScreen = ({navigation}) => {
       <Headline>Welcome</Headline>
       <Headline>to</Headline>
       <Headline>Network GIS</Headline>
-      <Button onPress={() => navigation.navigate(screens.surveyDetails)}>
-        Go to map
+      <Button onPress={() => navigation.navigate(screens.surveyForm)}>
+        Go to Form
       </Button>
     </View>
   );
