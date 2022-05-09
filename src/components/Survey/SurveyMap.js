@@ -43,6 +43,14 @@ export default class SurveyMap extends Component {
     }
   };
 
+  handleMarkerDrag = index => data => {
+    console.log(
+      '🚀 ~ file: SurveyMap.js ~ line 47 ~ SurveyMap ~ data',
+      index,
+      data,
+    );
+  };
+
   render = () => {
     const {coordinates, isDrawing} = this.state;
     return (
@@ -66,6 +74,11 @@ export default class SurveyMap extends Component {
               key={i}
               // icon={CIRCLE_ICON}
               image={CIRCLE_ICON}
+              tappable
+              draggable
+              onPress={() => console.log('marker click')}
+              onDragEnd={this.handleMarkerDrag(i)}
+              stopPropagation
             />
           ))}
           {size(coordinates) ? <Polygon coordinates={coordinates} /> : null}
