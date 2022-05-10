@@ -12,7 +12,7 @@ export const screens = {
   surveyForm: 'surveyForm',
 
   unitList: 'unitList',
-  unitDetails: 'unitDetails',
+  unitMap: 'unitMap',
   unitForm: 'unitForm',
 
   networkScreen: 'networkScreen',

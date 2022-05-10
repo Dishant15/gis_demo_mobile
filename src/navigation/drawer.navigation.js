@@ -20,8 +20,6 @@ const DrawerContent = props => {
   return (
     <View style={layout.container}>
       <View style={styles.headerContent}>
-        <Headline>Welcome</Headline>
-        <Headline>To</Headline>
         <Headline>Network GIS</Headline>
       </View>
       <Divider />
@@ -139,10 +137,11 @@ const DrawerNavigation = () => {
 
 const styles = StyleSheet.create({
   headerContent: {
-    paddingTop: 60,
-    paddingBottom: 40,
+    paddingTop: 20,
+    paddingBottom: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.05)',
   },
 });
 

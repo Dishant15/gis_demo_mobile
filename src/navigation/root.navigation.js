@@ -9,7 +9,7 @@ import LoginScreen from '~screens/Authentication/LoginScreen';
 import SurveyDetails from '~screens/Survey/SurveyDetails';
 import SurveyForm from '~screens/Survey/SurveyFormScreen';
 import UnitList from '~screens/Survey/UnitList';
-import UnitDetails from '~screens/Survey/UnitDetails';
+import UnitMap from '~screens/Survey/UnitMap';
 import UnitForm from '~screens/Survey/UnitForm';
 
 import {getIsUserLoggedIn} from '~data/selectors/auth.selectors';
@@ -55,8 +55,8 @@ const RootNavigation = () => {
               options={options}
             />
             <Stack.Screen
-              name={screens.unitDetails}
-              component={UnitDetails}
+              name={screens.unitMap}
+              component={UnitMap}
               options={options}
             />
             <Stack.Screen

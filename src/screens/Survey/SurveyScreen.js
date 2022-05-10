@@ -19,7 +19,7 @@ const SurveyScreen = props => {
   return (
     <View style={layout.container}>
       <FlatList
-        contentContainerStyle={{padding: 12}}
+        contentContainerStyle={{padding: 12, paddingBottom: 40}}
         data={surveyList}
         renderItem={({item}) => {
           return (
@@ -31,10 +31,8 @@ const SurveyScreen = props => {
             </Card>
           );
         }}
-        ListFooterComponent={
-          <Card
-            style={{marginBottom: 40}}
-            onPress={() => navigation.navigate(screens.surveyDetails)}>
+        ListHeaderComponent={
+          <Card onPress={() => navigation.navigate(screens.surveyDetails)}>
             <Card.Content>
               <Title style={{textAlign: 'center'}}>+ Add Survey</Title>
             </Card.Content>

@@ -27,7 +27,9 @@ const SurveyForm = props => {
     }
   };
   return (
-    <KeyboardAwareScrollView contentContainerStyle={styles.scrollWrapper}>
+    <KeyboardAwareScrollView
+      keyboardShouldPersistTaps="always"
+      contentContainerStyle={styles.scrollWrapper}>
       <Controller
         control={control}
         name="name"

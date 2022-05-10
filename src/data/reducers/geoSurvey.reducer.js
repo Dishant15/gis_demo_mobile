@@ -30,6 +30,7 @@ const initialState = {
   },
   // list of units data
   units: [],
+  selectedUnit: null,
 };
 
 const geoSurveyReducer = createSlice({
@@ -43,7 +44,13 @@ const geoSurveyReducer = createSlice({
       state.formData = payload;
     },
     addUnit: state => {
-      state.units = [...state.units, {...defaultUnitData}];
+      const newUnit = [...state.units, {...defaultUnitData}];
+      state.units = newUnit;
+      state.selectedUnit = newUnit.length - 1;
+    },
+    // payload : unit index
+    selectUnit: (state, {payload}) => {
+      state.selectedUnit = payload;
     },
     // payload : { unitIndex, coordinates }
     updateUnitCoordinates: (state, {payload}) => {
@@ -59,6 +66,6 @@ const geoSurveyReducer = createSlice({
   },
 });
 
-export const {updateCoordinates, updateSurveyFormData} =
+export const {updateCoordinates, updateSurveyFormData, addUnit, selectUnit} =
   geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;
