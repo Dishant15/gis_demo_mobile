@@ -3,6 +3,8 @@ import {View, FlatList} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Card, Title, Paragraph} from 'react-native-paper';
 
+import BackHeader from '~components/Header/BackHeader';
+
 import {getGeoSurveyUnitList} from '~data/selectors/geoSurvey.selectors';
 import {layout, screens} from '~constants/constants';
 import {addUnit, selectUnit} from '~data/reducers/geoSurvey.reducer';
@@ -27,6 +29,7 @@ const UnitList = props => {
 
   return (
     <View style={layout.container}>
+      <BackHeader title="Survey units" onGoBack={navigation.goBack} />
       <FlatList
         contentContainerStyle={{padding: 12, paddingBottom: 40}}
         data={units}

@@ -1,27 +1,39 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Button} from 'react-native-paper';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {colors, layout} from '~constants/constants';
 import Input from '~components/Common/Input';
 import {updateSurveyFormData} from '~data/reducers/geoSurvey.reducer';
+import {getGeoSurveyFormData} from '~data/selectors/geoSurvey.selectors';
 
 const SurveyForm = props => {
   const {onSaveDetails} = props;
+  const formData = useSelector(getGeoSurveyFormData);
+
   const {
     control,
     handleSubmit,
     setError,
     setFocus,
     formState: {errors},
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      name: formData.name,
+      address: formData.address,
+      area: formData.area,
+      city: formData.city,
+      state: formData.state,
+      pincode: formData.pincode,
+    },
+  });
   const dispatch = useDispatch();
 
   const onSubmit = data => {
-    dispatch(updateSurveyFormData(data));
+    dispatch(updateSurveyFormData({...data, tags: []}));
     if (onSaveDetails) {
       onSaveDetails();
     }

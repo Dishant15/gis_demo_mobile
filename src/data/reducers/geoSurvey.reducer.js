@@ -41,7 +41,7 @@ const geoSurveyReducer = createSlice({
       state.coordinates = payload;
     },
     updateSurveyFormData: (state, {payload}) => {
-      state.formData = payload;
+      state.boundaryData = payload;
     },
     addUnit: state => {
       const newUnit = [...state.units, {...defaultUnitData}];
