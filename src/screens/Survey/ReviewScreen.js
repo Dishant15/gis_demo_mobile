@@ -1,12 +1,12 @@
-import React, {useMemo, useRef} from 'react';
+import React, {useMemo, useRef, useCallback} from 'react';
 import {View, Dimensions, StyleSheet, ScrollView} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {size, get} from 'lodash';
 import {Card, Button, Paragraph, Subheading} from 'react-native-paper';
 
 import BackHeader from '~components/Header/BackHeader';
-import {layout, screens} from '~constants/constants';
+import {layout, screens, colors} from '~constants/constants';
 import {
   getGeoSurveyCoords,
   getGeoSurveyUnitList,
@@ -21,6 +21,7 @@ const ReviewScreen = ({navigation}) => {
   const coordinates = useSelector(getGeoSurveyCoords);
   const formData = useSelector(getGeoSurveyFormData);
   const unitList = useSelector(getGeoSurveyUnitList);
+  const dispatch = useDispatch();
 
   const unitMarkerList = useMemo(() => {
     const newList = [];
@@ -31,6 +32,37 @@ const ReviewScreen = ({navigation}) => {
     }
     return newList;
   }, [unitList]);
+
+  const handleDiscart = () => {
+    // reset and delete
+    navigation.navigate(screens.surveyScreen);
+  };
+
+  const handleSubmit = () => {
+    console.log('final data', coordinates, formData, unitList);
+  };
+
+  const navigateToSurveyMap = useCallback(() => {
+    navigation.navigate(screens.surveyDetails);
+  }, []);
+
+  const navigateToSurveyForm = useCallback(() => {
+    navigation.navigate(screens.surveyForm);
+  }, []);
+
+  const navigateToUnitMap = useCallback(
+    () => () => {
+      navigation.navigate(screens.unitMap);
+    },
+    [],
+  );
+
+  const navigateToUnitForm = useCallback(
+    () => () => {
+      navigation.navigate(screens.unitForm);
+    },
+    [],
+  );
 
   return (
     <View style={layout.container}>
@@ -86,8 +118,12 @@ const ReviewScreen = ({navigation}) => {
               </Paragraph>
             </Card.Content>
             <Card.Actions>
-              <Button color="blue">Edit Boundary</Button>
-              <Button color="blue">Edit Details</Button>
+              <Button color="blue" onPress={navigateToSurveyMap}>
+                Edit Boundary
+              </Button>
+              <Button color="blue" onPress={navigateToSurveyForm}>
+                Edit Details
+              </Button>
             </Card.Actions>
           </Card>
           {size(unitList) ? (
@@ -107,14 +143,38 @@ const ReviewScreen = ({navigation}) => {
                       </Paragraph>
                     </Card.Content>
                     <Card.Actions>
-                      <Button color="blue">Edit Location</Button>
-                      <Button color="blue">Edit Details</Button>
+                      <Button color="blue" onPress={navigateToUnitMap(index)}>
+                        Edit Location
+                      </Button>
+                      <Button color="blue" onPress={navigateToUnitForm(index)}>
+                        Edit Details
+                      </Button>
                     </Card.Actions>
                   </Card>
                 );
               })}
             </>
           ) : null}
+          <View style={styles.buttonWrapper}>
+            <Button
+              style={styles.discardBtn}
+              contentStyle={layout.button}
+              color={colors.black}
+              uppercase
+              mode="outlined"
+              onPress={handleDiscart}>
+              Discard
+            </Button>
+            <Button
+              style={styles.submitBtn}
+              contentStyle={layout.button}
+              color={colors.black}
+              uppercase
+              mode="contained"
+              onPress={handleSubmit}>
+              Submit
+            </Button>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -129,6 +189,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingVertical: 6,
     paddingHorizontal: 4,
+  },
+  buttonWrapper: {
+    paddingTop: 18,
+    paddingBottom: 36,
+    flexDirection: 'row',
+  },
+  discardBtn: {
+    flex: 1,
+    marginRight: 6,
+  },
+  submitBtn: {
+    flex: 2,
+    marginLeft: 6,
   },
 });
 
