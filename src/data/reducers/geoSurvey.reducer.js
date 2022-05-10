@@ -66,6 +66,11 @@ const geoSurveyReducer = createSlice({
   },
 });
 
-export const {updateCoordinates, updateSurveyFormData, addUnit, selectUnit} =
-  geoSurveyReducer.actions;
+export const {
+  updateCoordinates,
+  updateSurveyFormData,
+  addUnit,
+  selectUnit,
+  updateUnitCoordinates,
+} = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;

@@ -55,6 +55,9 @@ export const layout = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  relative: {
+    position: 'relative',
+  },
 });
 
 // AHMEDABAD CENTER
