@@ -63,6 +63,9 @@ const geoSurveyReducer = createSlice({
         ...payload.data,
       };
     },
+    resetSurveyData: () => {
+      return initialState;
+    },
   },
 });
 
@@ -73,5 +76,6 @@ export const {
   selectUnit,
   updateUnitCoordinates,
   updateUnitData,
+  resetSurveyData,
 } = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;

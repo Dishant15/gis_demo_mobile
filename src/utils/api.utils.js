@@ -1,22 +1,22 @@
-import axios from "axios";
-import { isNil, map, keys, join } from "lodash";
+import axios from 'axios';
+import {isNil, map, keys, join} from 'lodash';
 // import store from '../store';
 
 export function convertObjectToQueryParams(object) {
   if (!isNil(object)) {
-    const paramArray = map(keys(object), (key) => {
-      return encodeURIComponent(key) + "=" + encodeURIComponent(object[key]);
+    const paramArray = map(keys(object), key => {
+      return encodeURIComponent(key) + '=' + encodeURIComponent(object[key]);
     });
-    return "?" + join(paramArray, "&");
+    return '?' + join(paramArray, '&');
   } else {
-    return "";
+    return '';
   }
 }
 
 export const apiRequestConfig = {
   timeout: 20000,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
   withCredentials: true,
 };
@@ -25,7 +25,7 @@ const axiosInstance = axios.create();
 
 axiosInstance.interceptors.request.use(function (config) {
   // const token = store.getState().auth.token;
-  const token = "";
+  const token = '';
   // if (config.headers) config.headers.Authorization = token;
 
   return config;
@@ -40,13 +40,18 @@ class Api {
   }
 
   static post(url, body, queryParams, config = {}) {
+    console.log(
+      '🚀 ~ file: api.utils.js ~ line 43 ~ Api ~ post ~ url, body',
+      url,
+      body,
+    );
     return axiosInstance.post(
       url + convertObjectToQueryParams(queryParams),
       body,
       {
         ...apiRequestConfig,
         ...config,
-      }
+      },
     );
   }
 
@@ -57,7 +62,7 @@ class Api {
       {
         ...apiRequestConfig,
         ...config,
-      }
+      },
     );
   }
 
@@ -68,7 +73,7 @@ class Api {
       {
         ...apiRequestConfig,
         ...config,
-      }
+      },
     );
   }
 

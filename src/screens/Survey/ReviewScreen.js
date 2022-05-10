@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useCallback} from 'react';
+import React, {useMemo, useRef, useCallback, useState} from 'react';
 import {View, Dimensions, StyleSheet, ScrollView} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {useDispatch, useSelector} from 'react-redux';
@@ -13,6 +13,9 @@ import {
   getGeoSurveyFormData,
 } from '~data/selectors/geoSurvey.selectors';
 import {getInitialRegion} from '~utils/app.utils';
+import Api from '~utils/api.utils';
+import {apiAddSurvey} from '~constants/url.constants';
+import {resetSurveyData} from '~data/reducers/geoSurvey.reducer';
 
 const {width, height} = Dimensions.get('window');
 
@@ -22,6 +25,8 @@ const ReviewScreen = ({navigation}) => {
   const formData = useSelector(getGeoSurveyFormData);
   const unitList = useSelector(getGeoSurveyUnitList);
   const dispatch = useDispatch();
+
+  const [loading, setLoading] = useState(false);
 
   const unitMarkerList = useMemo(() => {
     const newList = [];
@@ -35,11 +40,28 @@ const ReviewScreen = ({navigation}) => {
 
   const handleDiscart = () => {
     // reset and delete
+    dispatch(resetSurveyData());
     navigation.navigate(screens.surveyScreen);
   };
 
   const handleSubmit = () => {
     console.log('final data', coordinates, formData, unitList);
+    setLoading(true);
+    Api.post(apiAddSurvey(), {
+      coordinates,
+      boundaryData: formData,
+      unitList,
+    })
+      .then(res => {
+        console.log('res', res);
+        setLoading(false);
+        dispatch(resetSurveyData());
+        navigation.navigate(screens.surveyScreen);
+      })
+      .catch(err => {
+        console.log('err', err.response);
+        setLoading(false);
+      });
   };
 
   const navigateToSurveyMap = useCallback(() => {
@@ -170,6 +192,7 @@ const ReviewScreen = ({navigation}) => {
               contentStyle={layout.button}
               color={colors.black}
               uppercase
+              loading={loading}
               mode="contained"
               onPress={handleSubmit}>
               Submit
