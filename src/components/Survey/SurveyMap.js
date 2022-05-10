@@ -1,24 +1,33 @@
 import React, {Component, useState} from 'react';
 import {connect} from 'react-redux';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Dimensions} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {FAB, Portal, Provider, Button} from 'react-native-paper';
 import {size} from 'lodash';
 
 import CIRCLE_ICON from '~assets/img/circle_40.png';
-import {INIT_MAP_LOCATION, layout} from '~constants/constants';
+import {layout} from '~constants/constants';
 import {updateCoordinates} from '~data/reducers/geoSurvey.reducer';
 import {getGeoSurveyCoords} from '~data/selectors/geoSurvey.selectors';
-import {noop} from '~utils/app.utils';
+import {getInitialRegion, noop} from '~utils/app.utils';
 
+const {width, height} = Dimensions.get('window');
 @connect(store => ({
   coordinates: getGeoSurveyCoords(store),
 }))
 export default class SurveyMap extends Component {
+  /**
+   * can draw / edit polygon using coordinates
+   * Parent:
+   *    SurveyDetails
+   * Render:
+   *    Map
+   */
   constructor(props) {
     super(props);
 
     this.state = {
+      region: getInitialRegion(width, height, 0.01203651641793968),
       coordinates: props.coordinates,
       isDrawing: false,
     };
@@ -28,6 +37,7 @@ export default class SurveyMap extends Component {
 
   handleButtonPress = () => {
     const {isDrawing, coordinates} = this.state;
+
     const {dispatch, onSavePress} = this.props;
     if (isDrawing) {
       dispatch(updateCoordinates(coordinates));
@@ -39,23 +49,24 @@ export default class SurveyMap extends Component {
     }
   };
 
-  handleMarkerDrag = index => data => {
-    console.log(
-      '🚀 ~ file: SurveyMap.js ~ line 47 ~ SurveyMap ~ data',
-      index,
-      data,
-    );
+  handleMarkerDrag = index => e => {
+    let newCoords = [...this.state.coordinates];
+    newCoords.splice(index, 1, e.nativeEvent.coordinate);
+
+    this.setState({coordinates: newCoords});
   };
 
   render = () => {
-    const {coordinates, isDrawing} = this.state;
+    const {coordinates, isDrawing, region} = this.state;
+
     return (
       <View style={[layout.container, styles.relative]}>
         <MapView
           ref={this.mapRef}
           style={styles.map}
-          initialRegion={INIT_MAP_LOCATION}
+          initialRegion={region}
           provider={PROVIDER_GOOGLE}
+          // onRegionChangeComplete={data => console.log(data)}
           onPress={e => {
             if (!e.nativeEvent.coordinate) return;
             const coords = e.nativeEvent.coordinate;
@@ -72,9 +83,10 @@ export default class SurveyMap extends Component {
               image={CIRCLE_ICON}
               tappable
               draggable
-              onPress={() => console.log('marker click')}
               onDragEnd={this.handleMarkerDrag(i)}
               stopPropagation
+              flat
+              tracksInfoWindowChanges={false}
             />
           ))}
           {size(coordinates) ? <Polygon coordinates={coordinates} /> : null}
