@@ -14,6 +14,7 @@ export const screens = {
   unitList: 'unitList',
   unitMap: 'unitMap',
   unitForm: 'unitForm',
+  reviewScreen: 'reviewScreen',
 
   networkScreen: 'networkScreen',
   clientScreen: 'clientScreen',

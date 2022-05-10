@@ -1,10 +1,237 @@
-import {View, Text} from 'react-native';
-import React from 'react';
+import React, {useRef, useState, useCallback} from 'react';
+import {View, StyleSheet, Dimensions, Keyboard} from 'react-native';
+import {Button} from 'react-native-paper';
+import {useForm, Controller} from 'react-hook-form';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {useDispatch, useSelector} from 'react-redux';
 
-export default function UnitForm() {
+import BackHeader from '~components/Header/BackHeader';
+import Input from '~components/Common/Input';
+
+import {layout, screens, colors} from '~constants/constants';
+import {
+  getGeoSurveyCoords,
+  getGeoSurveySelectedUnitData,
+  getGeoSurveySelectedUnitIndex,
+} from '~data/selectors/geoSurvey.selectors';
+import {addUnit, updateUnitData} from '~data/reducers/geoSurvey.reducer';
+
+const {width, height} = Dimensions.get('window');
+
+const UnitForm = ({navigation}) => {
+  const unitData = useSelector(getGeoSurveySelectedUnitData);
+  const unitIndex = useSelector(getGeoSurveySelectedUnitIndex);
+  const dispatch = useDispatch();
+
+  const {
+    control,
+    handleSubmit,
+    setError,
+    setFocus,
+    formState: {errors},
+  } = useForm();
+
+  const onSubmit = data => {
+    dispatch(
+      updateUnitData({
+        unitIndex,
+        data,
+      }),
+    );
+    console.log('🚀 ~ file: UnitForm.js ~ line 34 ~ UnitForm ~ data', data);
+  };
+
+  const handleAnotherUnit = data => {
+    dispatch(
+      updateUnitData({
+        unitIndex,
+        data,
+      }),
+    );
+    dispatch(addUnit());
+    navigation.navigate(screens.unitMap);
+  };
+
+  const handleReview = data => {
+    dispatch(
+      updateUnitData({
+        unitIndex,
+        data,
+      }),
+    );
+    navigation.navigate(screens.reviewScreen);
+  };
+
   return (
-    <View>
-      <Text>UnitForm</Text>
+    <View style={layout.container}>
+      <BackHeader title="Add unit details" onGoBack={navigation.goBack} />
+      <View style={layout.container}>
+        <KeyboardAwareScrollView
+          keyboardShouldPersistTaps="always"
+          contentContainerStyle={styles.scrollWrapper}>
+          <Controller
+            control={control}
+            name="name"
+            rules={{
+              required: 'Name is required.',
+            }}
+            render={({field: {ref, onChange, onBlur, value}}) => (
+              <Input
+                ref={ref}
+                label="Name"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                error={false}
+                underlineColorAndroid="transparent"
+                autoCapitalize="none"
+                autoCorrect={false}
+                returnKeyType="next"
+                blurOnSubmit={false}
+                onSubmitEditing={() => setFocus('category')}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="category"
+            rules={{
+              required: 'Category is required.',
+            }}
+            render={({field: {ref, onChange, onBlur, value}}) => (
+              <Input
+                ref={ref}
+                label="Category"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                error={false}
+                underlineColorAndroid="transparent"
+                autoCapitalize="none"
+                autoCorrect={false}
+                returnKeyType="next"
+                blurOnSubmit={false}
+                onSubmitEditing={() => setFocus('floors')}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="floors"
+            rules={{
+              required: 'Floors is required.',
+            }}
+            render={({field: {ref, onChange, onBlur, value}}) => (
+              <Input
+                ref={ref}
+                label="Floors"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                error={false}
+                underlineColorAndroid="transparent"
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="number-pad"
+                returnKeyType="next"
+                blurOnSubmit={false}
+                onSubmitEditing={() => setFocus('house_per_floor')}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="house_per_floor"
+            rules={{
+              required: 'House per floor is required.',
+            }}
+            render={({field: {ref, onChange, onBlur, value}}) => (
+              <Input
+                ref={ref}
+                label="House per floor"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                error={false}
+                underlineColorAndroid="transparent"
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="number-pad"
+                returnKeyType="next"
+                blurOnSubmit={false}
+                onSubmitEditing={() => setFocus('total_home_pass')}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="total_home_pass"
+            rules={{
+              required: 'Total home pass is required.',
+            }}
+            render={({field: {ref, onChange, onBlur, value}}) => (
+              <Input
+                ref={ref}
+                label="Total home pass"
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                error={false}
+                underlineColorAndroid="transparent"
+                autoCapitalize="none"
+                autoCorrect={false}
+                returnKeyType="done"
+                keyboardType="number-pad"
+                onSubmitEditing={() => {
+                  Keyboard.dismiss();
+                }}
+              />
+            )}
+          />
+          <View style={styles.buttonWrapper}>
+            <Button
+              style={styles.addBtn}
+              contentStyle={layout.button}
+              color={colors.black}
+              uppercase
+              mode="outlined"
+              onPress={handleSubmit(handleAnotherUnit)}>
+              Add another unit
+            </Button>
+            <Button
+              style={styles.reviewBtn}
+              contentStyle={layout.button}
+              color={colors.black}
+              uppercase
+              mode="contained"
+              onPress={handleSubmit(handleReview)}>
+              Review
+            </Button>
+          </View>
+        </KeyboardAwareScrollView>
+      </View>
     </View>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  scrollWrapper: {
+    padding: 12,
+  },
+  buttonWrapper: {
+    paddingTop: 18,
+    paddingBottom: 36,
+    flexDirection: 'row',
+  },
+  addBtn: {
+    flex: 2,
+    marginRight: 6,
+  },
+  reviewBtn: {
+    flex: 1,
+    marginLeft: 6,
+  },
+});
+
+export default UnitForm;

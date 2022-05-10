@@ -68,6 +68,16 @@ export default class SurveyMap extends Component {
           provider={PROVIDER_GOOGLE}
           // onRegionChangeComplete={data => console.log(data)}
           onPress={e => {
+            console.log('onPress', e.nativeEvent.coordinate);
+            if (!e.nativeEvent.coordinate) return;
+            const coords = e.nativeEvent.coordinate;
+            this.setState({
+              coordinates: [...this.state.coordinates, coords],
+              isDrawing: true,
+            });
+          }}
+          onPoiClick={e => {
+            console.log('onPoiClick', e.nativeEvent.coordinate);
             if (!e.nativeEvent.coordinate) return;
             const coords = e.nativeEvent.coordinate;
             this.setState({

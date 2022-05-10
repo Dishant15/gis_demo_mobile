@@ -15,6 +15,7 @@ import UnitForm from '~screens/Survey/UnitForm';
 import {getIsUserLoggedIn} from '~data/selectors/auth.selectors';
 import {screens} from '~constants/constants';
 import MarkerTypes from '~screens/Demo';
+import ReviewScreen from '~screens/Survey/ReviewScreen';
 
 const Stack = createStackNavigator();
 
@@ -62,6 +63,11 @@ const RootNavigation = () => {
             <Stack.Screen
               name={screens.unitForm}
               component={UnitForm}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.reviewScreen}
+              component={ReviewScreen}
               options={options}
             />
             <Stack.Screen

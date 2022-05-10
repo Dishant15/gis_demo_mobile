@@ -72,5 +72,6 @@ export const {
   addUnit,
   selectUnit,
   updateUnitCoordinates,
+  updateUnitData,
 } = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;
