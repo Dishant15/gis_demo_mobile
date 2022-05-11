@@ -84,7 +84,13 @@ export default class SurveyMap extends Component {
         <MapView
           ref={this.mapRef}
           style={styles.map}
-          initialRegion={region}
+          initialRegion={{
+            longitudeDelta: 0.06032254546880722,
+            latitudeDelta: 0.10201336785146964,
+            longitude: 72.56051184609532,
+            latitude: 23.024334044995985,
+          }}
+          loadingEnabled
           onLayout={() => {
             this.mapRef.current.animateToRegion(
               {

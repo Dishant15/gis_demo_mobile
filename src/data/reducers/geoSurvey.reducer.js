@@ -31,6 +31,7 @@ const initialState = {
   // list of units data
   units: [],
   selectedUnit: null,
+  isReview: false,
 };
 
 const geoSurveyReducer = createSlice({
@@ -63,6 +64,9 @@ const geoSurveyReducer = createSlice({
         ...payload.data,
       };
     },
+    setReview: (state, {payload}) => {
+      state.isReview = true;
+    },
     resetSurveyData: () => {
       return initialState;
     },
@@ -77,5 +81,6 @@ export const {
   updateUnitCoordinates,
   updateUnitData,
   resetSurveyData,
+  setReview,
 } = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;

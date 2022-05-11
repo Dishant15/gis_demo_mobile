@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useCallback, useState} from 'react';
+import React, {useMemo, useRef, useCallback, useState, useEffect} from 'react';
 import {View, Dimensions, StyleSheet, ScrollView} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {useDispatch, useSelector} from 'react-redux';
@@ -15,7 +15,7 @@ import {
 import {getInitialRegion} from '~utils/app.utils';
 import Api from '~utils/api.utils';
 import {apiAddSurvey} from '~constants/url.constants';
-import {resetSurveyData} from '~data/reducers/geoSurvey.reducer';
+import {resetSurveyData, setReview} from '~data/reducers/geoSurvey.reducer';
 
 const {width, height} = Dimensions.get('window');
 
@@ -27,6 +27,10 @@ const ReviewScreen = ({navigation}) => {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    dispatch(setReview());
+  }, []);
 
   const unitMarkerList = useMemo(() => {
     const newList = [];

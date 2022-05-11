@@ -13,3 +13,5 @@ export const getGeoSurveySelectedUnitData = createSelector(
   [getGeoSurveyUnitList, getGeoSurveySelectedUnitIndex],
   (units, index) => units[index],
 );
+
+export const getIsReviewed = store => store.geoSurvey.isReview;
