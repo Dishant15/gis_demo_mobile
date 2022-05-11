@@ -4,7 +4,7 @@ import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {FAB, Portal, Provider, Button} from 'react-native-paper';
 import {size} from 'lodash';
 
-import {layout, screens} from '~constants/constants';
+import {colors, layout, screens} from '~constants/constants';
 import BackHeader from '~components/Header/BackHeader';
 import SurveyMap from '~components/Survey/SurveyMap';
 import {useDispatch, useSelector} from 'react-redux';
@@ -16,6 +16,9 @@ import {updateCoordinates} from '~data/reducers/geoSurvey.reducer';
 import {getInitialRegion, noop} from '~utils/app.utils';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import FastImage from 'react-native-fast-image';
+import CIRCLE_ICON from '~assets/img/circle_40.png';
+import CustomMarker from '~components/Common/CustomMarker';
 
 const {width, height} = Dimensions.get('window');
 
@@ -86,6 +89,7 @@ const SurveyDetails = ({navigation}) => {
       <BackHeader title="Draw on Map" onGoBack={handleCustomBack} />
       <View style={[layout.container, layout.relative]}>
         <MapView
+          scrollEnabled={false}
           ref={mapRef}
           style={styles.map}
           initialRegion={{
@@ -96,26 +100,28 @@ const SurveyDetails = ({navigation}) => {
           }}
           loadingEnabled
           onLayout={() => {
-            mapRef.current.animateToRegion(
-              {
-                longitudeDelta: 0.06032254546880722,
-                latitudeDelta: 0.0005546677,
+            mapRef.current.setCamera({
+              center: {
                 longitude: 72.56051184609532,
                 latitude: 23.024334044995985,
               },
-              1000,
-            );
+              pitch: 0,
+              heading: 0,
+              // Only when using Google Maps.
+              zoom: 16,
+            });
           }}
           provider={PROVIDER_GOOGLE}
-          // onRegionChangeComplete={data => console.log(data)}
           onPress={handleMapClick}
           onPoiClick={handleMapPoiClick}>
           {coordinates.map((marker, i) => (
-            <Marker
+            <CustomMarker
               coordinate={marker}
+              anchor={{
+                x: 0.5,
+                y: 0.5,
+              }}
               key={i}
-              icon={require('../../assets/img/circle_40.png')}
-              tappable
               draggable
               onDragEnd={handleMarkerDrag(i)}
               stopPropagation
@@ -123,7 +129,14 @@ const SurveyDetails = ({navigation}) => {
               tracksInfoWindowChanges={false}
             />
           ))}
-          {size(coordinates) ? <Polygon coordinates={coordinates} /> : null}
+          {size(coordinates) ? (
+            <Polygon
+              coordinates={coordinates}
+              strokeWidth={2}
+              strokeColor={'#3895D3'}
+              fillColor="#3895D326"
+            />
+          ) : null}
         </MapView>
         <View
           style={[
@@ -150,8 +163,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   map: {
-    height: '100%',
-    width: '100%',
+    ...StyleSheet.absoluteFillObject,
   },
   content: {
     position: 'absolute',
@@ -162,6 +174,21 @@ const styles = StyleSheet.create({
   },
   drawBtn: {
     alignSelf: 'flex-end',
+  },
+  markerWrapper: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.black,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  markerDot: {
+    width: 6,
+    height: 6,
+    backgroundColor: colors.black,
+    borderRadius: 3,
   },
 });
 
