@@ -15,10 +15,12 @@ import {
   getGeoSurveySelectedUnitIndex,
 } from '~data/selectors/geoSurvey.selectors';
 import {addUnit, updateUnitData} from '~data/reducers/geoSurvey.reducer';
+import {useIsFocused} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('window');
 
 const UnitForm = ({navigation}) => {
+  const isFocused = useIsFocused();
   const unitData = useSelector(getGeoSurveySelectedUnitData);
   const unitIndex = useSelector(getGeoSurveySelectedUnitIndex);
   const dispatch = useDispatch();
@@ -48,8 +50,8 @@ const UnitForm = ({navigation}) => {
         data,
       }),
     );
-    dispatch(addUnit());
-    navigation.navigate(screens.unitMap);
+    // dispatch(addUnit());
+    navigation.navigate(screens.unitList);
   };
 
   const handleReview = data => {
@@ -61,6 +63,15 @@ const UnitForm = ({navigation}) => {
     );
     navigation.navigate(screens.reviewScreen);
   };
+
+  const handleFocus = useCallback(
+    fieldName => () => {
+      setFocus(fieldName);
+    },
+    [],
+  );
+
+  if (!isFocused) return null;
 
   return (
     <View style={layout.container}>
@@ -88,7 +99,7 @@ const UnitForm = ({navigation}) => {
                 autoCorrect={false}
                 returnKeyType="next"
                 blurOnSubmit={false}
-                onSubmitEditing={() => setFocus('category')}
+                onSubmitEditing={handleFocus('category')}
               />
             )}
           />
@@ -111,7 +122,7 @@ const UnitForm = ({navigation}) => {
                 autoCorrect={false}
                 returnKeyType="next"
                 blurOnSubmit={false}
-                onSubmitEditing={() => setFocus('floors')}
+                onSubmitEditing={handleFocus('floors')}
               />
             )}
           />
@@ -136,7 +147,7 @@ const UnitForm = ({navigation}) => {
                 keyboardType="number-pad"
                 returnKeyType="next"
                 blurOnSubmit={false}
-                onSubmitEditing={() => setFocus('house_per_floor')}
+                onSubmitEditing={handleFocus('house_per_floor')}
               />
             )}
           />
@@ -160,7 +171,7 @@ const UnitForm = ({navigation}) => {
                 keyboardType="number-pad"
                 returnKeyType="next"
                 blurOnSubmit={false}
-                onSubmitEditing={() => setFocus('total_home_pass')}
+                onSubmitEditing={handleFocus('total_home_pass')}
               />
             )}
           />
@@ -183,22 +194,11 @@ const UnitForm = ({navigation}) => {
                 autoCorrect={false}
                 returnKeyType="done"
                 keyboardType="number-pad"
-                onSubmitEditing={() => {
-                  Keyboard.dismiss();
-                }}
+                onSubmitEditing={handleSubmit(handleAnotherUnit)}
               />
             )}
           />
           <View style={styles.buttonWrapper}>
-            <Button
-              style={styles.addBtn}
-              contentStyle={layout.button}
-              color={colors.black}
-              uppercase
-              mode="outlined"
-              onPress={handleSubmit(handleAnotherUnit)}>
-              Add another unit
-            </Button>
             <Button
               style={styles.reviewBtn}
               contentStyle={layout.button}
@@ -222,15 +222,14 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     paddingTop: 18,
     paddingBottom: 36,
-    flexDirection: 'row',
   },
   addBtn: {
-    flex: 2,
-    marginRight: 6,
+    // flex: 2,
+    // marginRight: 6,
   },
   reviewBtn: {
-    flex: 1,
-    marginLeft: 6,
+    // flex: 1,
+    // marginLeft: 6,
   },
 });
 

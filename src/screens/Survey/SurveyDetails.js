@@ -15,10 +15,12 @@ import {
 import {updateCoordinates} from '~data/reducers/geoSurvey.reducer';
 import {getInitialRegion, noop} from '~utils/app.utils';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const {width, height} = Dimensions.get('window');
 
 const SurveyDetails = ({navigation}) => {
+  const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
   const coords = useSelector(getGeoSurveyCoords);
   const isReviewed = useSelector(getIsReviewed);
@@ -69,11 +71,19 @@ const SurveyDetails = ({navigation}) => {
     setCoordinates([...coordinates, coords]);
   };
 
+  const handleCustomBack = () => {
+    if (isReviewed) {
+      navigation.navigate(screens.reviewScreen);
+    } else {
+      navigation.goBack();
+    }
+  };
+
   if (!isFocused) return null;
 
   return (
     <View style={layout.container}>
-      <BackHeader title="Draw on Map" onGoBack={navigation.goBack} />
+      <BackHeader title="Draw on Map" onGoBack={handleCustomBack} />
       <View style={[layout.container, layout.relative]}>
         <MapView
           ref={mapRef}
@@ -115,7 +125,13 @@ const SurveyDetails = ({navigation}) => {
           ))}
           {size(coordinates) ? <Polygon coordinates={coordinates} /> : null}
         </MapView>
-        <View style={styles.content}>
+        <View
+          style={[
+            styles.content,
+            {
+              marginBottom: Math.max(insets.bottom, 16),
+            },
+          ]}>
           <Button
             style={[layout.button, styles.drawBtn]}
             icon="pencil"

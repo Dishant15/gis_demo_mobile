@@ -9,8 +9,10 @@ import {colors, layout} from '~constants/constants';
 import Input from '~components/Common/Input';
 import {updateSurveyFormData} from '~data/reducers/geoSurvey.reducer';
 import {getGeoSurveyFormData} from '~data/selectors/geoSurvey.selectors';
+import {useIsFocused} from '@react-navigation/native';
 
 const SurveyForm = props => {
+  const isFocused = useIsFocused();
   const {onSaveDetails} = props;
   const formData = useSelector(getGeoSurveyFormData);
 
@@ -45,6 +47,8 @@ const SurveyForm = props => {
     },
     [],
   );
+
+  if (!isFocused) return null;
 
   return (
     <KeyboardAwareScrollView

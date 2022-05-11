@@ -34,14 +34,20 @@ const UnitList = props => {
         contentContainerStyle={{padding: 12, paddingBottom: 40}}
         data={units}
         renderItem={({item, index}) => {
-          return (
-            <Card style={{marginBottom: 12}} onPress={handleUnitSelect(index)}>
-              <Card.Content>
-                <Title>{item.name}</Title>
-                <Paragraph>{item.category}</Paragraph>
-              </Card.Content>
-            </Card>
-          );
+          if (item.name) {
+            return (
+              <Card
+                style={{marginBottom: 12}}
+                onPress={handleUnitSelect(index)}>
+                <Card.Content>
+                  <Title>{item.name}</Title>
+                  <Paragraph>{item.category}</Paragraph>
+                </Card.Content>
+              </Card>
+            );
+          } else {
+            return null;
+          }
         }}
         ListHeaderComponent={
           <Card onPress={handleAddUnit}>

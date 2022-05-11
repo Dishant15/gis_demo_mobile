@@ -16,10 +16,12 @@ import {getInitialRegion} from '~utils/app.utils';
 import Api from '~utils/api.utils';
 import {apiAddSurvey} from '~constants/url.constants';
 import {resetSurveyData, setReview} from '~data/reducers/geoSurvey.reducer';
+import {useIsFocused} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('window');
 
 const ReviewScreen = ({navigation}) => {
+  const isFocused = useIsFocused();
   const mapRef = useRef();
   const coordinates = useSelector(getGeoSurveyCoords);
   const formData = useSelector(getGeoSurveyFormData);
@@ -90,6 +92,20 @@ const ReviewScreen = ({navigation}) => {
     [],
   );
 
+  const onMapLayout = e => {
+    mapRef.current.fitToCoordinates(coordinates, {
+      edgePadding: {
+        top: 20,
+        right: 20,
+        bottom: 20,
+        left: 12,
+      },
+      animated: true,
+    });
+  };
+
+  if (!isFocused) return null;
+
   return (
     <View style={layout.container}>
       <BackHeader
@@ -105,20 +121,17 @@ const ReviewScreen = ({navigation}) => {
             width: width,
             height: height / 2,
           }}
-          initialRegion={getInitialRegion(
-            width,
-            height / 2,
-            0.01203651641793968,
-          )}
+          initialRegion={{
+            longitudeDelta: 0.06032254546880722,
+            latitudeDelta: 0.0005546677,
+            longitude: 72.56051184609532,
+            latitude: 23.024334044995985,
+          }}
           zoomEnabled={false}
           scrollEnabled={false}
           pitchEnabled={false}
           rotateEnabled={false}
-          onMapReady={() => {
-            if (size(coordinates)) {
-              mapRef.current.fitToCoordinates(coordinates, {animated: true});
-            }
-          }}>
+          onLayout={onMapLayout}>
           {unitMarkerList.map((marker, index) => {
             return (
               <Marker
