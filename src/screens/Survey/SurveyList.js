@@ -3,7 +3,7 @@ import {View, FlatList} from 'react-native';
 import {layout, screens} from '~constants/constants';
 import {Card, Title, Paragraph} from 'react-native-paper';
 
-const SurveyScreen = props => {
+const SurveyList = props => {
   const {navigation, route} = props;
   const surveyList = [
     {
@@ -43,4 +43,4 @@ const SurveyScreen = props => {
   );
 };
 
-export default SurveyScreen;
+export default SurveyList;

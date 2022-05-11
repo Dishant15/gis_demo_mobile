@@ -56,6 +56,26 @@ export default class SurveyMap extends Component {
     this.setState({coordinates: newCoords});
   };
 
+  handleMapClick = e => {
+    console.log('onPress', e.nativeEvent.coordinate);
+    if (!e.nativeEvent.coordinate) return;
+    const coords = e.nativeEvent.coordinate;
+    this.setState({
+      coordinates: [...this.state.coordinates, coords],
+      isDrawing: true,
+    });
+  };
+
+  handleMapPoiClick = e => {
+    console.log('onPoiClick', e.nativeEvent.coordinate);
+    if (!e.nativeEvent.coordinate) return;
+    const coords = e.nativeEvent.coordinate;
+    this.setState({
+      coordinates: [...this.state.coordinates, coords],
+      isDrawing: true,
+    });
+  };
+
   render = () => {
     const {coordinates, isDrawing, region} = this.state;
 
@@ -65,32 +85,26 @@ export default class SurveyMap extends Component {
           ref={this.mapRef}
           style={styles.map}
           initialRegion={region}
+          onLayout={() => {
+            this.mapRef.current.animateToRegion(
+              {
+                longitudeDelta: 0.06032254546880722,
+                latitudeDelta: 0.10201336785146964,
+                longitude: 72.56051184609532,
+                latitude: 23.024334044995985,
+              },
+              1000,
+            );
+          }}
           provider={PROVIDER_GOOGLE}
           // onRegionChangeComplete={data => console.log(data)}
-          onPress={e => {
-            console.log('onPress', e.nativeEvent.coordinate);
-            if (!e.nativeEvent.coordinate) return;
-            const coords = e.nativeEvent.coordinate;
-            this.setState({
-              coordinates: [...this.state.coordinates, coords],
-              isDrawing: true,
-            });
-          }}
-          onPoiClick={e => {
-            console.log('onPoiClick', e.nativeEvent.coordinate);
-            if (!e.nativeEvent.coordinate) return;
-            const coords = e.nativeEvent.coordinate;
-            this.setState({
-              coordinates: [...this.state.coordinates, coords],
-              isDrawing: true,
-            });
-          }}>
+          onPress={this.handleMapClick}
+          onPoiClick={this.handleMapPoiClick}>
           {coordinates.map((marker, i) => (
             <Marker
               coordinate={marker}
               key={i}
-              // icon={CIRCLE_ICON}
-              image={CIRCLE_ICON}
+              icon={require('../../assets/img/circle_40.png')}
               tappable
               draggable
               onDragEnd={this.handleMarkerDrag(i)}

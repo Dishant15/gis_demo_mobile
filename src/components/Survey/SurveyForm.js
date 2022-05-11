@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {useDispatch, useSelector} from 'react-redux';
@@ -38,6 +38,14 @@ const SurveyForm = props => {
       onSaveDetails();
     }
   };
+
+  const handleFocus = useCallback(
+    fieldName => () => {
+      setFocus(fieldName);
+    },
+    [],
+  );
+
   return (
     <KeyboardAwareScrollView
       keyboardShouldPersistTaps="always"
@@ -61,7 +69,7 @@ const SurveyForm = props => {
             autoCorrect={false}
             returnKeyType="next"
             blurOnSubmit={false}
-            onSubmitEditing={() => setFocus('address')}
+            onSubmitEditing={handleFocus('address')}
           />
         )}
       />
@@ -84,7 +92,7 @@ const SurveyForm = props => {
             autoCorrect={false}
             returnKeyType="next"
             blurOnSubmit={false}
-            onSubmitEditing={() => setFocus('area')}
+            onSubmitEditing={handleFocus('area')}
           />
         )}
       />
@@ -107,7 +115,7 @@ const SurveyForm = props => {
             autoCorrect={false}
             returnKeyType="next"
             blurOnSubmit={false}
-            onSubmitEditing={() => setFocus('city')}
+            onSubmitEditing={handleFocus('city')}
           />
         )}
       />
@@ -130,7 +138,7 @@ const SurveyForm = props => {
             autoCorrect={false}
             returnKeyType="next"
             blurOnSubmit={false}
-            onSubmitEditing={() => setFocus('state')}
+            onSubmitEditing={handleFocus('state')}
           />
         )}
       />
@@ -153,7 +161,7 @@ const SurveyForm = props => {
             autoCorrect={false}
             returnKeyType="next"
             blurOnSubmit={false}
-            onSubmitEditing={() => setFocus('pincode')}
+            onSubmitEditing={handleFocus('pincode')}
           />
         )}
       />

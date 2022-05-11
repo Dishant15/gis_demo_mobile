@@ -5,7 +5,7 @@ import {Title, List, Headline, Divider} from 'react-native-paper';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {layout, screens} from '~constants/constants';
 import DashboardScreen from '~screens/DashboardScreen';
-import SurveyScreen from '~screens/Survey/SurveyScreen';
+import SurveyList from '~screens/Survey/SurveyList';
 import NetworkScreen from '~screens/NetworkScreen';
 import ClientScreen from '~screens/ClientScreen';
 import PlanningScreen from '~screens/PlanningScreen';
@@ -39,7 +39,7 @@ const DrawerContent = props => {
             title="Geographic"
             onPress={() => {
               props.navigation.closeDrawer();
-              props.navigation.navigate(screens.surveyScreen);
+              props.navigation.navigate(screens.surveyList);
             }}
           />
           <List.Item
@@ -92,8 +92,8 @@ const DrawerNavigation = () => {
         }}
       />
       <Drawer.Screen
-        name={screens.surveyScreen}
-        component={SurveyScreen}
+        name={screens.surveyList}
+        component={SurveyList}
         options={{
           headerShown: true,
           headerTitleAlign: 'center',

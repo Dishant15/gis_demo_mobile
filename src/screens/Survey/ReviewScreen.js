@@ -41,7 +41,7 @@ const ReviewScreen = ({navigation}) => {
   const handleDiscart = () => {
     // reset and delete
     dispatch(resetSurveyData());
-    navigation.navigate(screens.surveyScreen);
+    navigation.navigate(screens.surveyList);
   };
 
   const handleSubmit = () => {
@@ -56,7 +56,7 @@ const ReviewScreen = ({navigation}) => {
         console.log('res', res);
         setLoading(false);
         dispatch(resetSurveyData());
-        navigation.navigate(screens.surveyScreen);
+        navigation.navigate(screens.surveyList);
       })
       .catch(err => {
         console.log('err', err.response);
