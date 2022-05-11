@@ -205,8 +205,8 @@ const UnitForm = ({navigation}) => {
               color={colors.black}
               uppercase
               mode="contained"
-              onPress={handleSubmit(handleReview)}>
-              Review
+              onPress={handleSubmit(handleAnotherUnit)}>
+              Submit
             </Button>
           </View>
         </KeyboardAwareScrollView>

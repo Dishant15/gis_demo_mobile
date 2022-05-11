@@ -1,12 +1,12 @@
 import React, {useCallback} from 'react';
 import {View, FlatList} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {Card, Title, Paragraph} from 'react-native-paper';
+import {Card, Title, Paragraph, Button} from 'react-native-paper';
 
 import BackHeader from '~components/Header/BackHeader';
 
 import {getGeoSurveyUnitList} from '~data/selectors/geoSurvey.selectors';
-import {layout, screens} from '~constants/constants';
+import {layout, screens, colors} from '~constants/constants';
 import {addUnit, selectUnit} from '~data/reducers/geoSurvey.reducer';
 
 const UnitList = props => {
@@ -50,11 +50,28 @@ const UnitList = props => {
           }
         }}
         ListHeaderComponent={
-          <Card onPress={handleAddUnit}>
+          <Card
+            onPress={handleAddUnit}
+            style={{
+              marginVertical: 12,
+            }}>
             <Card.Content>
               <Title style={{textAlign: 'center'}}>+ Add Unit</Title>
             </Card.Content>
           </Card>
+        }
+        ListFooterComponent={
+          <Button
+            style={{
+              marginVertical: 30,
+            }}
+            contentStyle={layout.button}
+            color={colors.black}
+            uppercase
+            mode="contained"
+            onPress={() => navigation.navigate(screens.reviewScreen)}>
+            Review
+          </Button>
         }
       />
     </View>
