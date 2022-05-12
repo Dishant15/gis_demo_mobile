@@ -149,6 +149,7 @@ const ReviewScreen = ({navigation}) => {
           // scrollEnabled={false}
           // pitchEnabled={false}
           // rotateEnabled={false}
+          onMapReady={onMapLayout}
           onLayout={onMapLayout}>
           {unitMarkerList.map((marker, index) => {
             return (
