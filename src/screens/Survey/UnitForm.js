@@ -1,5 +1,5 @@
 import React, {useRef, useState, useCallback} from 'react';
-import {View, StyleSheet, Dimensions, Keyboard} from 'react-native';
+import {View, StyleSheet, Dimensions, BackHandler} from 'react-native';
 import {Button, Caption, Chip} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -12,9 +12,10 @@ import {layout, screens, colors} from '~constants/constants';
 import {
   getGeoSurveySelectedUnitData,
   getGeoSurveySelectedUnitIndex,
+  getIsReviewed,
 } from '~data/selectors/geoSurvey.selectors';
 import {updateUnitData} from '~data/reducers/geoSurvey.reducer';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 
 const CATEGORY_OPTS = ['MDU', 'SDU', 'BOTH'];
 const UnitForm = ({navigation}) => {
@@ -25,7 +26,24 @@ const UnitForm = ({navigation}) => {
     unitData,
   );
   const unitIndex = useSelector(getGeoSurveySelectedUnitIndex);
+  const isReviewed = useSelector(getIsReviewed);
   const dispatch = useDispatch();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (isReviewed) {
+          navigation.navigate(screens.reviewScreen);
+          return true;
+        } else {
+          return false;
+        }
+      };
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [isReviewed]),
+  );
 
   const {
     control,
@@ -43,16 +61,6 @@ const UnitForm = ({navigation}) => {
     },
   });
 
-  const onSubmit = data => {
-    dispatch(
-      updateUnitData({
-        unitIndex,
-        data,
-      }),
-    );
-    console.log('🚀 ~ file: UnitForm.js ~ line 34 ~ UnitForm ~ data', data);
-  };
-
   const handleAnotherUnit = data => {
     dispatch(
       updateUnitData({
@@ -60,18 +68,11 @@ const UnitForm = ({navigation}) => {
         data,
       }),
     );
-    // dispatch(addUnit());
-    navigation.navigate(screens.unitList);
-  };
-
-  const handleReview = data => {
-    dispatch(
-      updateUnitData({
-        unitIndex,
-        data,
-      }),
-    );
-    navigation.navigate(screens.reviewScreen);
+    if (isReviewed) {
+      navigation.navigate(screens.reviewScreen);
+    } else {
+      navigation.navigate(screens.unitList);
+    }
   };
 
   const handleFocus = useCallback(
@@ -81,11 +82,19 @@ const UnitForm = ({navigation}) => {
     [],
   );
 
+  const handleCustomBack = () => {
+    if (isReviewed) {
+      navigation.navigate(screens.reviewScreen);
+    } else {
+      navigation.goBack();
+    }
+  };
+
   if (!isFocused) return null;
 
   return (
     <View style={layout.container}>
-      <BackHeader title="Add unit details" onGoBack={navigation.goBack} />
+      <BackHeader title="Add unit details" onGoBack={handleCustomBack} />
       <View style={layout.container}>
         <KeyboardAwareScrollView
           keyboardShouldPersistTaps="always"

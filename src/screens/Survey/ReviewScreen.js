@@ -1,5 +1,11 @@
 import React, {useMemo, useRef, useCallback, useState, useEffect} from 'react';
-import {View, Dimensions, StyleSheet, ScrollView} from 'react-native';
+import {
+  View,
+  Dimensions,
+  StyleSheet,
+  ScrollView,
+  BackHandler,
+} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {useDispatch, useSelector} from 'react-redux';
 import {size, get} from 'lodash';
@@ -16,7 +22,7 @@ import {getInitialRegion} from '~utils/app.utils';
 import Api from '~utils/api.utils';
 import {apiAddSurvey} from '~constants/url.constants';
 import {resetSurveyData, setReview} from '~data/reducers/geoSurvey.reducer';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('window');
 
@@ -33,6 +39,18 @@ const ReviewScreen = ({navigation}) => {
   useEffect(() => {
     dispatch(setReview());
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.navigate(screens.surveyList);
+        return true;
+      };
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, []),
+  );
 
   const unitMarkerList = useMemo(() => {
     const newList = [];
@@ -111,7 +129,7 @@ const ReviewScreen = ({navigation}) => {
       <BackHeader
         title="Review"
         subtitle="review your survey before submit"
-        onGoBack={navigation.goBack}
+        onGoBack={handleDiscart}
       />
       <ScrollView contentContainerStyle={{paddingBottom: 40}}>
         <MapView

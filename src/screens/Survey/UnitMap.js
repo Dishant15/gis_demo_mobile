@@ -66,7 +66,11 @@ const UnitMap = ({navigation}) => {
         coordinates: coordinate,
       }),
     );
-    navigation.navigate(screens.unitForm);
+    if (isReviewed) {
+      navigation.navigate(screens.reviewScreen);
+    } else {
+      navigation.navigate(screens.unitForm);
+    }
   };
 
   const handleMarkerDrag = useCallback(e => {
@@ -107,6 +111,14 @@ const UnitMap = ({navigation}) => {
     setCoordinate(coords);
   };
 
+  const handleCustomBack = () => {
+    if (isReviewed) {
+      navigation.navigate(screens.reviewScreen);
+    } else {
+      navigation.goBack();
+    }
+  };
+
   if (!isFocused) return null;
 
   return (
@@ -114,7 +126,7 @@ const UnitMap = ({navigation}) => {
       <BackHeader
         title="Add Marker"
         subtitle="Add marker within boundary"
-        onGoBack={navigation.goBack}
+        onGoBack={handleCustomBack}
       />
       <View style={[layout.container, layout.relative]}>
         <MapView

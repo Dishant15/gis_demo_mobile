@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, BackHandler} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {useDispatch, useSelector} from 'react-redux';
 import {Button} from 'react-native-paper';
@@ -11,8 +11,9 @@ import {updateSurveyFormData} from '~data/reducers/geoSurvey.reducer';
 import {
   getGeoSurveyCoords,
   getGeoSurveyFormData,
+  getIsReviewed,
 } from '~data/selectors/geoSurvey.selectors';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {groupBy, map, get} from 'lodash';
 import Api from '~utils/api.utils';
 import {getGoogleAddress} from '~constants/url.constants';
@@ -27,6 +28,8 @@ const SurveyForm = props => {
   const {onSaveDetails} = props;
   const formData = useSelector(getGeoSurveyFormData);
   const coords = useSelector(getGeoSurveyCoords);
+  const isReviewed = useSelector(getIsReviewed);
+
   const [loading, setLoading] = useState(true);
 
   const {
@@ -95,11 +98,27 @@ const SurveyForm = props => {
       });
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (isReviewed) {
+          navigation.navigate(screens.reviewScreen);
+          return true;
+        } else {
+          return false;
+        }
+      };
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [isReviewed]),
+  );
+
   const dispatch = useDispatch();
 
   const onSubmit = data => {
     dispatch(updateSurveyFormData({...data, tags: []}));
-    navigation.navigate(screens.unitList);
+    navigation.navigate(isReviewed ? screens.reviewScreen : screens.unitList);
   };
 
   const handleFocus = useCallback(
@@ -109,11 +128,19 @@ const SurveyForm = props => {
     [],
   );
 
+  const handleCustomBack = () => {
+    if (isReviewed) {
+      navigation.navigate(screens.reviewScreen);
+    } else {
+      navigation.goBack();
+    }
+  };
+
   if (!isFocused) return null;
 
   return (
     <View style={[layout.container, layout.relative]}>
-      <BackHeader title="Add Details" onGoBack={navigation.goBack} />
+      <BackHeader title="Add Details" onGoBack={handleCustomBack} />
       {loading ? <Loader /> : null}
       <KeyboardAwareScrollView
         keyboardShouldPersistTaps="always"
