@@ -89,7 +89,6 @@ const SurveyDetails = ({navigation}) => {
       <BackHeader title="Draw on Map" onGoBack={handleCustomBack} />
       <View style={[layout.container, layout.relative]}>
         <MapView
-          scrollEnabled={false}
           ref={mapRef}
           style={styles.map}
           initialRegion={{
