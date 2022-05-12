@@ -1,6 +1,6 @@
 import React, {useRef, useState, useCallback} from 'react';
 import {View, StyleSheet, Dimensions, Keyboard} from 'react-native';
-import {Button} from 'react-native-paper';
+import {Button, Caption, Chip} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useDispatch, useSelector} from 'react-redux';
@@ -10,18 +10,20 @@ import Input from '~components/Common/Input';
 
 import {layout, screens, colors} from '~constants/constants';
 import {
-  getGeoSurveyCoords,
   getGeoSurveySelectedUnitData,
   getGeoSurveySelectedUnitIndex,
 } from '~data/selectors/geoSurvey.selectors';
-import {addUnit, updateUnitData} from '~data/reducers/geoSurvey.reducer';
+import {updateUnitData} from '~data/reducers/geoSurvey.reducer';
 import {useIsFocused} from '@react-navigation/native';
 
-const {width, height} = Dimensions.get('window');
-
+const CATEGORY_OPTS = ['MDU', 'SDU', 'BOTH'];
 const UnitForm = ({navigation}) => {
   const isFocused = useIsFocused();
   const unitData = useSelector(getGeoSurveySelectedUnitData);
+  console.log(
+    '🚀 ~ file: UnitForm.js ~ line 25 ~ UnitForm ~ unitData',
+    unitData,
+  );
   const unitIndex = useSelector(getGeoSurveySelectedUnitIndex);
   const dispatch = useDispatch();
 
@@ -31,7 +33,15 @@ const UnitForm = ({navigation}) => {
     setError,
     setFocus,
     formState: {errors},
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      name: unitData.name,
+      category: unitData.category,
+      floors: unitData.floors,
+      house_per_floor: unitData.house_per_floor,
+      total_home_pass: unitData.total_home_pass,
+    },
+  });
 
   const onSubmit = data => {
     dispatch(
@@ -99,7 +109,7 @@ const UnitForm = ({navigation}) => {
                 autoCorrect={false}
                 returnKeyType="next"
                 blurOnSubmit={false}
-                onSubmitEditing={handleFocus('category')}
+                onSubmitEditing={handleFocus('floors')}
               />
             )}
           />
@@ -109,22 +119,26 @@ const UnitForm = ({navigation}) => {
             rules={{
               required: 'Category is required.',
             }}
-            render={({field: {ref, onChange, onBlur, value}}) => (
-              <Input
-                ref={ref}
-                label="Category"
-                onChangeText={onChange}
-                onBlur={onBlur}
-                value={value}
-                error={false}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                autoCorrect={false}
-                returnKeyType="next"
-                blurOnSubmit={false}
-                onSubmitEditing={handleFocus('floors')}
-              />
-            )}
+            render={({field: {ref, onChange, onBlur, value}}) => {
+              return (
+                <View style={styles.categoryWrapper}>
+                  <Caption>Category</Caption>
+                  <View style={styles.chipWrapper}>
+                    {CATEGORY_OPTS.map(opt => {
+                      const selected = opt === value;
+                      return (
+                        <Chip
+                          style={styles.chip}
+                          selected={selected}
+                          onPress={() => onChange(opt)}>
+                          {opt}
+                        </Chip>
+                      );
+                    })}
+                  </View>
+                </View>
+              );
+            }}
           />
 
           <Controller
@@ -230,6 +244,17 @@ const styles = StyleSheet.create({
   reviewBtn: {
     // flex: 1,
     // marginLeft: 6,
+  },
+  categoryWrapper: {
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+  },
+  chipWrapper: {
+    flexDirection: 'row',
+  },
+  chip: {
+    marginRight: 10,
+    marginTop: 8,
   },
 });
 
