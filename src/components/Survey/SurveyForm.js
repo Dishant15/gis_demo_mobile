@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Button} from 'react-native-paper';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {colors, layout} from '~constants/constants';
+import {colors, layout, screens} from '~constants/constants';
 import Input from '~components/Common/Input';
 import {updateSurveyFormData} from '~data/reducers/geoSurvey.reducer';
 import {
@@ -99,9 +99,7 @@ const SurveyForm = props => {
 
   const onSubmit = data => {
     dispatch(updateSurveyFormData({...data, tags: []}));
-    if (onSaveDetails) {
-      onSaveDetails();
-    }
+    navigation.navigate(screens.unitList);
   };
 
   const handleFocus = useCallback(

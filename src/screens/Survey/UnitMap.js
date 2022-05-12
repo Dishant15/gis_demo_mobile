@@ -2,7 +2,7 @@ import React, {useRef, useState, useCallback, useMemo, useEffect} from 'react';
 import {View, StyleSheet, Dimensions, BackHandler} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {Button} from 'react-native-paper';
-import {isNull, get, size} from 'lodash';
+import {isNull, get, size, differenceBy} from 'lodash';
 
 import BackHeader from '~components/Header/BackHeader';
 import {layout, screens} from '~constants/constants';
@@ -77,11 +77,14 @@ const UnitMap = ({navigation}) => {
   const isMarker = !isNull(coordinate);
 
   const existingMarkers = useMemo(() => {
-    const newList = [];
+    let newList = [];
     for (let index = 0; index < unitList.length; index++) {
       if (size(get(unitList, [index, 'coordinates']))) {
         newList.push(unitList[index].coordinates);
       }
+    }
+    if (unitData.coordinates) {
+      newList = differenceBy(newList, [unitData.coordinates], 'latitude');
     }
     return newList;
   }, [unitList]);
@@ -149,7 +152,14 @@ const UnitMap = ({navigation}) => {
               tracksInfoWindowChanges={false}
             />
           ) : null}
-          {size(surveyCoords) ? <Polygon coordinates={surveyCoords} /> : null}
+          {size(surveyCoords) ? (
+            <Polygon
+              coordinates={surveyCoords}
+              strokeWidth={2}
+              strokeColor={'#3895D3'}
+              fillColor="transparent"
+            />
+          ) : null}
         </MapView>
         <View
           pointerEvents="box-none"
