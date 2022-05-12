@@ -1,23 +1,19 @@
 import React, {useRef, useState} from 'react';
-import {View, StyleSheet, Dimensions, BackHandler} from 'react-native';
-import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
-import {FAB, Portal, Provider, Button} from 'react-native-paper';
+import {View, Text, StyleSheet, Dimensions, BackHandler} from 'react-native';
+import MapView, {PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import {size} from 'lodash';
 
 import {colors, layout, screens} from '~constants/constants';
 import BackHeader from '~components/Header/BackHeader';
-import SurveyMap from '~components/Survey/SurveyMap';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   getGeoSurveyCoords,
   getIsReviewed,
 } from '~data/selectors/geoSurvey.selectors';
 import {updateCoordinates} from '~data/reducers/geoSurvey.reducer';
-import {getInitialRegion, noop} from '~utils/app.utils';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
-import CIRCLE_ICON from '~assets/img/circle_40.png';
 import CustomMarker from '~components/Common/CustomMarker';
 
 const {width, height} = Dimensions.get('window');
@@ -49,7 +45,7 @@ const SurveyDetails = ({navigation}) => {
 
   const mapRef = useRef();
 
-  const handleButtonPress = () => {
+  const handleSavePolygon = () => {
     dispatch(updateCoordinates(coordinates));
     navigation.navigate(isReviewed ? screens.reviewScreen : screens.surveyForm);
   };
@@ -144,13 +140,13 @@ const SurveyDetails = ({navigation}) => {
               marginBottom: Math.max(insets.bottom, 16),
             },
           ]}>
-          <Button
+          <TouchableOpacity
             style={[layout.button, styles.drawBtn]}
             icon="pencil"
             mode="contained"
-            onPress={handleButtonPress}>
-            Save Polygon
-          </Button>
+            onPress={handleSavePolygon}>
+            <Text style={styles.drawBtnTxt}>Save Polygon</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -172,7 +168,12 @@ const styles = StyleSheet.create({
     padding: 14,
   },
   drawBtn: {
+    backgroundColor: 'black',
     alignSelf: 'flex-end',
+    paddingHorizontal: 15,
+  },
+  drawBtnTxt: {
+    color: 'white',
   },
   markerWrapper: {
     width: 20,

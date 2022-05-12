@@ -1,4 +1,4 @@
-import React, {useRef, useState, useCallback, useMemo} from 'react';
+import React, {useRef, useEffect, useCallback, useMemo} from 'react';
 import {View, StyleSheet, Dimensions, BackHandler} from 'react-native';
 import {Button, Caption, Chip} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
@@ -25,10 +25,6 @@ const UnitForm = ({navigation}) => {
   const isFocused = useIsFocused();
   const unitData = useSelector(getGeoSurveySelectedUnitData);
   const selectedSurveyTags = useSelector(getGeoSurveyTags);
-  console.log(
-    '🚀 ~ file: UnitForm.js ~ line 25 ~ UnitForm ~ unitData',
-    unitData,
-  );
   const unitIndex = useSelector(getGeoSurveySelectedUnitIndex);
   const isReviewed = useSelector(getIsReviewed);
   const dispatch = useDispatch();
@@ -161,6 +157,7 @@ const UnitForm = ({navigation}) => {
                       const selected = opt === value;
                       return (
                         <Chip
+                          key={opt}
                           style={styles.chip}
                           selected={selected}
                           onPress={() => onChange(opt)}>
