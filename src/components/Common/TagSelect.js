@@ -1,15 +1,11 @@
-import {find, findIndex, indexOf} from 'lodash';
+import {find, indexOf} from 'lodash';
 import React from 'react';
-import {View, Text, StyleSheet, Pressable} from 'react-native';
+import {View, StyleSheet, Pressable} from 'react-native';
 import {Button, Menu, Caption, Chip, Paragraph} from 'react-native-paper';
-import {colors, layout, SURVEY_TAG_LIST} from '~constants/constants';
+import {colors} from '~constants/constants';
 import {noop} from '~utils/app.utils';
 
-const TagSelect = ({
-  tagList = SURVEY_TAG_LIST,
-  selectedTags = [],
-  onSubmit = noop,
-}) => {
+const TagSelect = ({tagList, selectedTags = [], onSubmit = noop}) => {
   const [visible, setVisible] = React.useState(false);
   const [tags, setTags] = React.useState(selectedTags);
 
@@ -42,7 +38,7 @@ const TagSelect = ({
           <View style={styles.chipWrapper}>
             {selectedTags.length ? (
               selectedTags.map(opt => {
-                const option = find(SURVEY_TAG_LIST, ['value', opt]);
+                const option = find(tagList, ['value', opt]);
                 return (
                   <Chip key={option.value} style={styles.chip}>
                     {option.label}

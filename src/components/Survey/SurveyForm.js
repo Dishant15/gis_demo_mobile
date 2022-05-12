@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Button} from 'react-native-paper';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {colors, layout, screens} from '~constants/constants';
+import {colors, layout, screens, SURVEY_TAG_LIST} from '~constants/constants';
 import Input from '~components/Common/Input';
 import {updateSurveyFormData} from '~data/reducers/geoSurvey.reducer';
 import {
@@ -19,7 +19,7 @@ import Api from '~utils/api.utils';
 import {getGoogleAddress} from '~constants/url.constants';
 import BackHeader from '~components/Header/BackHeader';
 import Loader from '~components/Common/Loader';
-import TagSelect from './TagSelect';
+import TagSelect from '~components/Common/TagSelect';
 
 var turf = require('@turf/turf');
 
@@ -177,7 +177,11 @@ const SurveyForm = props => {
             required: 'Tags is required.',
           }}
           render={({field: {ref, onChange, onBlur, value}}) => (
-            <TagSelect onSubmit={onChange} selectedTags={value} />
+            <TagSelect
+              tagList={SURVEY_TAG_LIST}
+              onSubmit={onChange}
+              selectedTags={value}
+            />
           )}
         />
         <Controller

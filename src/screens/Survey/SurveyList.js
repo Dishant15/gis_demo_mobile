@@ -24,6 +24,18 @@ const SurveyList = props => {
       <FlatList
         contentContainerStyle={{padding: 12, paddingBottom: 40}}
         data={surveyList}
+        ListHeaderComponent={
+          <Card
+            style={{marginBottom: 12}}
+            onPress={() => {
+              dispatch(resetSurveyData());
+              navigation.navigate(screens.surveyDetails);
+            }}>
+            <Card.Content>
+              <Title style={{textAlign: 'center'}}>+ New Survey</Title>
+            </Card.Content>
+          </Card>
+        }
         renderItem={({item}) => {
           return (
             <Card style={{marginBottom: 12}}>
@@ -34,18 +46,6 @@ const SurveyList = props => {
             </Card>
           );
         }}
-        ListHeaderComponent={
-          <Card
-            style={{marginBottom: 12}}
-            onPress={() => {
-              dispatch(resetSurveyData());
-              navigation.navigate(screens.surveyDetails);
-            }}>
-            <Card.Content>
-              <Title style={{textAlign: 'center'}}>+ Add Survey</Title>
-            </Card.Content>
-          </Card>
-        }
       />
     </View>
   );

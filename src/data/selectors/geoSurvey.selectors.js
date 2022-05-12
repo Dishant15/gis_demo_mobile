@@ -4,6 +4,9 @@ export const getGeoSurveyCoords = store => store.geoSurvey.coordinates;
 
 export const getGeoSurveyFormData = store => store.geoSurvey.boundaryData;
 
+export const getGeoSurveyTags = store =>
+  store.geoSurvey.boundaryData.tags || [];
+
 export const getGeoSurveyUnitList = store => store.geoSurvey.units;
 
 export const getGeoSurveySelectedUnitIndex = store =>

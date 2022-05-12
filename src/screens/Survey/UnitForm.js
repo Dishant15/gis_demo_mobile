@@ -1,4 +1,4 @@
-import React, {useRef, useState, useCallback} from 'react';
+import React, {useRef, useState, useCallback, useMemo} from 'react';
 import {View, StyleSheet, Dimensions, BackHandler} from 'react-native';
 import {Button, Caption, Chip} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
@@ -7,20 +7,24 @@ import {useDispatch, useSelector} from 'react-redux';
 
 import BackHeader from '~components/Header/BackHeader';
 import Input from '~components/Common/Input';
+import TagSelect from '~components/Common/TagSelect';
 
-import {layout, screens, colors} from '~constants/constants';
+import {layout, screens, colors, SURVEY_TAG_LIST} from '~constants/constants';
 import {
   getGeoSurveySelectedUnitData,
   getGeoSurveySelectedUnitIndex,
+  getGeoSurveyTags,
   getIsReviewed,
 } from '~data/selectors/geoSurvey.selectors';
 import {updateUnitData} from '~data/reducers/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
+import {filter, includes} from 'lodash';
 
 const CATEGORY_OPTS = ['MDU', 'SDU', 'BOTH'];
 const UnitForm = ({navigation}) => {
   const isFocused = useIsFocused();
   const unitData = useSelector(getGeoSurveySelectedUnitData);
+  const selectedSurveyTags = useSelector(getGeoSurveyTags);
   console.log(
     '🚀 ~ file: UnitForm.js ~ line 25 ~ UnitForm ~ unitData',
     unitData,
@@ -44,6 +48,12 @@ const UnitForm = ({navigation}) => {
         BackHandler.removeEventListener('hardwareBackPress', onBackPress);
     }, [isReviewed]),
   );
+
+  const surveyTagList = useMemo(() => {
+    return filter(SURVEY_TAG_LIST, function (o) {
+      return includes(selectedSurveyTags, o.value);
+    });
+  }, [selectedSurveyTags]);
 
   const {
     control,
@@ -119,6 +129,20 @@ const UnitForm = ({navigation}) => {
                 returnKeyType="next"
                 blurOnSubmit={false}
                 onSubmitEditing={handleFocus('floors')}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="tags"
+            rules={{
+              required: 'Tags is required.',
+            }}
+            render={({field: {ref, onChange, onBlur, value}}) => (
+              <TagSelect
+                tagList={surveyTagList}
+                onSubmit={onChange}
+                selectedTags={value}
               />
             )}
           />
