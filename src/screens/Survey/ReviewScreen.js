@@ -127,10 +127,10 @@ const ReviewScreen = ({navigation}) => {
             longitude: 72.56051184609532,
             latitude: 23.024334044995985,
           }}
-          zoomEnabled={false}
-          scrollEnabled={false}
-          pitchEnabled={false}
-          rotateEnabled={false}
+          // zoomEnabled={false}
+          // scrollEnabled={false}
+          // pitchEnabled={false}
+          // rotateEnabled={false}
           onLayout={onMapLayout}>
           {unitMarkerList.map((marker, index) => {
             return (
@@ -143,7 +143,14 @@ const ReviewScreen = ({navigation}) => {
               />
             );
           })}
-          {size(coordinates) ? <Polygon coordinates={coordinates} /> : null}
+          {size(coordinates) ? (
+            <Polygon
+              coordinates={coordinates}
+              strokeWidth={2}
+              strokeColor={'#3895D3'}
+              fillColor="transparent"
+            />
+          ) : null}
         </MapView>
         <View style={styles.contentWrapper}>
           <Subheading style={styles.title}>Boundary</Subheading>
