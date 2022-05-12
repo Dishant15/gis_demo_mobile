@@ -19,6 +19,7 @@ import Api from '~utils/api.utils';
 import {getGoogleAddress} from '~constants/url.constants';
 import BackHeader from '~components/Header/BackHeader';
 import Loader from '~components/Common/Loader';
+import TagSelect from './TagSelect';
 
 var turf = require('@turf/turf');
 
@@ -47,6 +48,7 @@ const SurveyForm = props => {
       city: formData.city,
       state: formData.state,
       pincode: formData.pincode,
+      tags: formData.tags,
     },
   });
 
@@ -117,7 +119,7 @@ const SurveyForm = props => {
   const dispatch = useDispatch();
 
   const onSubmit = data => {
-    dispatch(updateSurveyFormData({...data, tags: []}));
+    dispatch(updateSurveyFormData({...data}));
     navigation.navigate(isReviewed ? screens.reviewScreen : screens.unitList);
   };
 
@@ -166,6 +168,16 @@ const SurveyForm = props => {
               blurOnSubmit={false}
               onSubmitEditing={handleFocus('address')}
             />
+          )}
+        />
+        <Controller
+          control={control}
+          name="tags"
+          rules={{
+            required: 'Tags is required.',
+          }}
+          render={({field: {ref, onChange, onBlur, value}}) => (
+            <TagSelect onSubmit={onChange} selectedTags={value} />
           )}
         />
         <Controller

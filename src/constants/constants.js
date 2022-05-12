@@ -33,6 +33,7 @@ export const fonts = {
 export const colors = {
   black: '#000',
   white: '#fff',
+  blackWithOp: 'rgba(0,0,0,0.3)',
 
   mainBgColor: 'rgb(247, 247, 247)',
   primaryFontColor: '#404040',
@@ -69,3 +70,12 @@ export const INIT_MAP_LOCATION = {
   longitude: 72.54943616688251,
   latitudeDelta: 0.09218772082917326,
 };
+
+export const SURVEY_TAG_LIST = [
+  {label: 'Residential', value: 'residential'},
+  {label: 'Commercial', value: 'commercial'},
+  {label: 'Semi Commercial', value: 'semi_commercial'},
+  {label: 'Government', value: 'government'},
+  {label: 'Hospital', value: 'hospital'},
+  {label: 'Educational', value: 'educational'},
+];

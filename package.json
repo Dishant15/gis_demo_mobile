@@ -15,6 +15,7 @@
     "clean-i": "cd ios && xcodebuild clean && cd ..",
     "clean-a": "cd android && ./gradlew clean && cd ..",
     "abr": "cd android && ./gradlew bundleRelease && cd ..",
+    "abd": "cd android && ./gradlew :app:assembleRelease && cd ..",
     "abi": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && react-native run-android"
   },
   "dependencies": {

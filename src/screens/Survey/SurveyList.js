@@ -36,6 +36,7 @@ const SurveyList = props => {
         }}
         ListHeaderComponent={
           <Card
+            style={{marginBottom: 12}}
             onPress={() => {
               dispatch(resetSurveyData());
               navigation.navigate(screens.surveyDetails);
