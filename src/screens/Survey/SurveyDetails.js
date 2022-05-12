@@ -139,6 +139,7 @@ const SurveyDetails = ({navigation}) => {
             },
           ]}>
           <TouchableOpacity
+            activeOpacity={0.6}
             style={[layout.button, styles.drawBtn]}
             onPress={handleSavePolygon}>
             <Text style={styles.drawBtnTxt}>Save Boundary</Text>

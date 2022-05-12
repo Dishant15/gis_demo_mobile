@@ -179,6 +179,7 @@ const UnitMap = ({navigation}) => {
             },
           ]}>
           <TouchableOpacity
+            activeOpacity={0.6}
             style={[layout.button, styles.drawBtn]}
             disabled={!isMarker}
             onPress={handleButtonPress}>
