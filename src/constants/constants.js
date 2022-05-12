@@ -50,7 +50,8 @@ export const layout = StyleSheet.create({
     justifyContent: 'center',
   },
   textInput: {
-    marginVertical: 4,
+    marginBottom: 8,
+    backgroundColor: 'transparent',
   },
   center: {
     justifyContent: 'center',

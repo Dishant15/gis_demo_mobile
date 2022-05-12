@@ -94,9 +94,13 @@ const SurveyForm = props => {
             underlineColorAndroid="transparent"
             autoCapitalize="none"
             autoCorrect={false}
-            returnKeyType="next"
-            blurOnSubmit={false}
+            returnKeyType="done"
+            blurOnSubmit={true}
+            multiline={true}
             onSubmitEditing={handleFocus('area')}
+            inputStyle={{
+              minHeight: 100,
+            }}
           />
         )}
       />

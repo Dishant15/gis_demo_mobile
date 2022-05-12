@@ -9,8 +9,9 @@ const Input = forwardRef((props, ref) => {
       <TextInput
         ref={ref}
         activeOutlineColor={colors.black}
+        selectionColor="#3895D344"
         style={[layout.textInput, props.inputStyle]}
-        mode="outlined"
+        mode="flat"
         {...props}
       />
       {props.error ? (
