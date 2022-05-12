@@ -16,8 +16,6 @@ import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import CustomMarker from '~components/Common/CustomMarker';
 
-const {width, height} = Dimensions.get('window');
-
 const SurveyDetails = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
@@ -142,10 +140,8 @@ const SurveyDetails = ({navigation}) => {
           ]}>
           <TouchableOpacity
             style={[layout.button, styles.drawBtn]}
-            icon="pencil"
-            mode="contained"
             onPress={handleSavePolygon}>
-            <Text style={styles.drawBtnTxt}>Save Polygon</Text>
+            <Text style={styles.drawBtnTxt}>Save Boundary</Text>
           </TouchableOpacity>
         </View>
       </View>

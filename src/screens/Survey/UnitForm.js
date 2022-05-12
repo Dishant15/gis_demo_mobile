@@ -62,6 +62,7 @@ const UnitForm = ({navigation}) => {
       name: unitData.name,
       category: unitData.category,
       floors: unitData.floors,
+      tags: unitData.tags,
       house_per_floor: unitData.house_per_floor,
       total_home_pass: unitData.total_home_pass,
     },

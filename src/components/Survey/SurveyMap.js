@@ -5,7 +5,6 @@ import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {FAB, Portal, Provider, Button} from 'react-native-paper';
 import {size} from 'lodash';
 
-import CIRCLE_ICON from '~assets/img/circle_40.png';
 import {layout} from '~constants/constants';
 import {updateCoordinates} from '~data/reducers/geoSurvey.reducer';
 import {getGeoSurveyCoords} from '~data/selectors/geoSurvey.selectors';

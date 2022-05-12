@@ -21,7 +21,11 @@ import {
 import {getInitialRegion} from '~utils/app.utils';
 import Api from '~utils/api.utils';
 import {apiAddSurvey} from '~constants/url.constants';
-import {resetSurveyData, setReview} from '~data/reducers/geoSurvey.reducer';
+import {
+  resetSurveyData,
+  setReview,
+  selectUnit,
+} from '~data/reducers/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('window');
@@ -97,14 +101,16 @@ const ReviewScreen = ({navigation}) => {
   }, []);
 
   const navigateToUnitMap = useCallback(
-    () => () => {
+    index => () => {
+      dispatch(selectUnit(index));
       navigation.navigate(screens.unitMap);
     },
     [],
   );
 
   const navigateToUnitForm = useCallback(
-    () => () => {
+    index => () => {
+      dispatch(selectUnit(index));
       navigation.navigate(screens.unitForm);
     },
     [],

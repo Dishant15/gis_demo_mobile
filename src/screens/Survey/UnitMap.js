@@ -1,12 +1,11 @@
 import React, {useRef, useState, useCallback, useMemo, useEffect} from 'react';
-import {View, StyleSheet, Dimensions, BackHandler} from 'react-native';
+import {View, Text, StyleSheet, Dimensions, BackHandler} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
-import {Button} from 'react-native-paper';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import {isNull, get, size, differenceBy} from 'lodash';
 
 import BackHeader from '~components/Header/BackHeader';
 import {layout, screens} from '~constants/constants';
-import {getInitialRegion} from '~utils/app.utils';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   getGeoSurveyCoords,
@@ -17,8 +16,6 @@ import {
 import {updateUnitCoordinates} from '~data/reducers/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-
-const {width, height} = Dimensions.get('window');
 
 const UnitMap = ({navigation}) => {
   const insets = useSafeAreaInsets();
@@ -181,14 +178,12 @@ const UnitMap = ({navigation}) => {
               marginBottom: Math.max(insets.bottom, 16),
             },
           ]}>
-          <Button
+          <TouchableOpacity
             style={[layout.button, styles.drawBtn]}
-            icon="pencil"
-            mode="contained"
             disabled={!isMarker}
             onPress={handleButtonPress}>
-            Save
-          </Button>
+            <Text style={styles.drawBtnTxt}>Save Location</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -208,7 +203,12 @@ const styles = StyleSheet.create({
     padding: 14,
   },
   drawBtn: {
+    backgroundColor: 'black',
     alignSelf: 'flex-end',
+    paddingHorizontal: 15,
+  },
+  drawBtnTxt: {
+    color: 'white',
   },
 });
 
