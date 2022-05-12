@@ -2,9 +2,12 @@ import React from 'react';
 import {View, FlatList} from 'react-native';
 import {layout, screens} from '~constants/constants';
 import {Card, Title, Paragraph} from 'react-native-paper';
+import {useDispatch} from 'react-redux';
+import {resetSurveyData} from '~data/reducers/geoSurvey.reducer';
 
 const SurveyList = props => {
   const {navigation, route} = props;
+  const dispatch = useDispatch();
   const surveyList = [
     {
       title: 'survey #1',
@@ -32,7 +35,11 @@ const SurveyList = props => {
           );
         }}
         ListHeaderComponent={
-          <Card onPress={() => navigation.navigate(screens.surveyDetails)}>
+          <Card
+            onPress={() => {
+              dispatch(resetSurveyData());
+              navigation.navigate(screens.surveyDetails);
+            }}>
             <Card.Content>
               <Title style={{textAlign: 'center'}}>+ Add Survey</Title>
             </Card.Content>
