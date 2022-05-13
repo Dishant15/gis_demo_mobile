@@ -1,5 +1,5 @@
-import React, {useRef, useEffect, useCallback, useMemo} from 'react';
-import {View, StyleSheet, Dimensions, BackHandler} from 'react-native';
+import React, {useCallback, useMemo} from 'react';
+import {View, StyleSheet, BackHandler} from 'react-native';
 import {Button, Caption, Chip} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -18,7 +18,7 @@ import {
 } from '~data/selectors/geoSurvey.selectors';
 import {updateUnitData} from '~data/reducers/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
-import {filter, includes} from 'lodash';
+import {filter, includes, multiply} from 'lodash';
 
 const CATEGORY_OPTS = ['MDU', 'SDU', 'BOTH'];
 const UnitForm = ({navigation}) => {
@@ -54,8 +54,9 @@ const UnitForm = ({navigation}) => {
   const {
     control,
     handleSubmit,
-    setError,
     setFocus,
+    getValues,
+    setValue,
     formState: {errors},
   } = useForm({
     defaultValues: {
@@ -207,7 +208,17 @@ const UnitForm = ({navigation}) => {
                 ref={ref}
                 label="House per floor"
                 onChangeText={onChange}
-                onBlur={onBlur}
+                onBlur={e => {
+                  const [house_per_floor, floors] = getValues([
+                    'house_per_floor',
+                    'floors',
+                  ]);
+                  setValue(
+                    'total_home_pass',
+                    String(multiply(floors, house_per_floor)),
+                  );
+                  onBlur(e);
+                }}
                 value={value}
                 error={false}
                 underlineColorAndroid="transparent"
