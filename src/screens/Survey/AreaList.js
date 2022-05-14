@@ -8,6 +8,14 @@ import DummyArea from './areaDummy.json';
 import {getAreaList} from '~data/selectors/geoSurvey.selectors';
 import {useFocusEffect} from '@react-navigation/native';
 
+/**
+ * Renders area list
+ *
+ * when user clicks on any area it will navigate to map with polygon
+ *
+ * Parent
+ *    drawer.navigation
+ */
 const AreaList = props => {
   const {navigation, route} = props;
   const dispatch = useDispatch();

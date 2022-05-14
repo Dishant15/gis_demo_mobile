@@ -23,6 +23,17 @@ const options = {
   headerShown: false,
 };
 
+/**
+ * Main navigation component
+ *
+ * Based on isUserLoggedIn flag app and auth navigation screens will be
+ * added to stack
+ *
+ * By default it wil show login screen
+ *
+ * Nested navigator components
+ *    drawer.navigation
+ */
 const RootNavigation = () => {
   const isUserLoggedIn = useSelector(getIsUserLoggedIn);
 

@@ -1,22 +1,39 @@
 import React, {useRef, useState} from 'react';
-import {View, Text, StyleSheet, Dimensions, BackHandler} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  BackHandler,
+  InteractionManager,
+} from 'react-native';
+
 import MapView, {PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
+import * as Animatable from 'react-native-animatable';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {size} from 'lodash';
 
-import {colors, layout, screens} from '~constants/constants';
 import BackHeader from '~components/Header/BackHeader';
-import {useDispatch, useSelector} from 'react-redux';
+import CustomMarker from '~components/Common/CustomMarker';
+
+import {colors, layout, screens} from '~constants/constants';
 import {
   getGeoSurveyCoords,
   getIsReviewed,
   getSelectedArea,
 } from '~data/selectors/geoSurvey.selectors';
 import {updateCoordinates} from '~data/reducers/geoSurvey.reducer';
-import {useIsFocused, useFocusEffect} from '@react-navigation/native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import CustomMarker from '~components/Common/CustomMarker';
 
+/**
+ * render maps with survey points
+ *
+ * Parent
+ *    AreaList
+ */
 const SurveyMap = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
@@ -28,8 +45,15 @@ const SurveyMap = ({navigation}) => {
     selectedArea,
   );
 
+  const [showMap, setMapVisibility] = useState(false);
   const [coordinates, setCoordinates] = useState(coords);
   const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      setMapVisibility(true);
+    });
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -100,6 +124,8 @@ const SurveyMap = ({navigation}) => {
     <View style={layout.container}>
       <BackHeader title="Draw on Map" onGoBack={handleCustomBack} />
       <View style={[layout.container, layout.relative]}>
+        {/* {showMap ? ( */}
+        {/* <Animatable.View animation="fadeIn" style={layout.container}> */}
         <MapView
           ref={mapRef}
           style={styles.map}
@@ -146,6 +172,8 @@ const SurveyMap = ({navigation}) => {
             />
           ) : null}
         </MapView>
+        {/* </Animatable.View>
+        ) : null} */}
         <View
           style={[
             styles.content,
