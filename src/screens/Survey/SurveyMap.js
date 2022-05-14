@@ -16,7 +16,7 @@ import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import CustomMarker from '~components/Common/CustomMarker';
 
-const SurveyDetails = ({navigation}) => {
+const SurveyMap = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
   const coords = useSelector(getGeoSurveyCoords);
@@ -189,4 +189,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SurveyDetails;
+export default SurveyMap;

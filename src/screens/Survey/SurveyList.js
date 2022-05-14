@@ -29,7 +29,7 @@ const SurveyList = props => {
             style={{marginBottom: 12}}
             onPress={() => {
               dispatch(resetSurveyData());
-              navigation.navigate(screens.surveyDetails);
+              navigation.navigate(screens.surveyMap);
             }}>
             <Card.Content>
               <Title style={{textAlign: 'center'}}>+ New Survey</Title>

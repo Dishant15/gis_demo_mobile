@@ -6,7 +6,7 @@ import SplashScreen from 'react-native-splash-screen';
 import DrawerStack from '~navigation/drawer.navigation';
 
 import LoginScreen from '~screens/Authentication/LoginScreen';
-import SurveyDetails from '~screens/Survey/SurveyDetails';
+import SurveyMap from '~screens/Survey/SurveyMap';
 import UnitList from '~screens/Survey/UnitList';
 import UnitMap from '~screens/Survey/UnitMap';
 import UnitForm from '~screens/Survey/UnitForm';
@@ -14,7 +14,7 @@ import UnitForm from '~screens/Survey/UnitForm';
 import {getIsUserLoggedIn} from '~data/selectors/auth.selectors';
 import {screens} from '~constants/constants';
 import ReviewScreen from '~screens/Survey/ReviewScreen';
-import SurveyForm from '~components/Survey/SurveyForm';
+import SurveyForm from '~screens/Survey/SurveyForm';
 
 const Stack = createStackNavigator();
 
@@ -40,8 +40,8 @@ const RootNavigation = () => {
               options={options}
             />
             <Stack.Screen
-              name={screens.surveyDetails}
-              component={SurveyDetails}
+              name={screens.surveyMap}
+              component={SurveyMap}
               options={options}
             />
             <Stack.Screen

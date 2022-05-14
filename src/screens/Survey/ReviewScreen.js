@@ -93,7 +93,7 @@ const ReviewScreen = ({navigation}) => {
   };
 
   const navigateToSurveyMap = useCallback(() => {
-    navigation.navigate(screens.surveyDetails);
+    navigation.navigate(screens.surveyMap);
   }, []);
 
   const navigateToSurveyForm = useCallback(() => {

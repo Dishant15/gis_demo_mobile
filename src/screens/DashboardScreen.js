@@ -9,9 +9,6 @@ const DashboardScreen = ({navigation}) => {
       <Headline>Welcome</Headline>
       <Headline>to</Headline>
       <Headline>Network GIS</Headline>
-      {/* <Button onPress={() => navigation.navigate(screens.surveyDetails)}>
-        Go to Demo
-      </Button> */}
     </View>
   );
 };
