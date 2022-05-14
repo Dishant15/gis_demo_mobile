@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo} from 'react';
 import {View, StyleSheet, BackHandler} from 'react-native';
-import {Button, Caption, Chip} from 'react-native-paper';
+import {Button, Caption, Chip, HelperText} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useDispatch, useSelector} from 'react-redux';
@@ -68,6 +68,7 @@ const UnitForm = ({navigation}) => {
       total_home_pass: unitData.total_home_pass,
     },
   });
+  console.log('🚀 ~ file: UnitForm.js ~ line 71 ~ UnitForm ~ errors', errors);
 
   const handleAnotherUnit = data => {
     dispatch(
@@ -120,7 +121,7 @@ const UnitForm = ({navigation}) => {
                 onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}
-                error={false}
+                error={errors.name?.message}
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -137,11 +138,18 @@ const UnitForm = ({navigation}) => {
               required: 'Tags is required.',
             }}
             render={({field: {ref, onChange, onBlur, value}}) => (
-              <TagSelect
-                tagList={surveyTagList}
-                onSubmit={onChange}
-                selectedTags={value}
-              />
+              <>
+                <TagSelect
+                  tagList={surveyTagList}
+                  onSubmit={onChange}
+                  selectedTags={value}
+                />
+                {!!errors.tags?.message ? (
+                  <HelperText type="error" visible={!!errors.tags?.message}>
+                    {errors.tags?.message}
+                  </HelperText>
+                ) : null}
+              </>
             )}
           />
           <Controller
@@ -168,6 +176,13 @@ const UnitForm = ({navigation}) => {
                       );
                     })}
                   </View>
+                  {!!errors.category?.message ? (
+                    <HelperText
+                      type="error"
+                      visible={!!errors.category?.message}>
+                      {errors.category?.message}
+                    </HelperText>
+                  ) : null}
                 </View>
               );
             }}
@@ -186,7 +201,7 @@ const UnitForm = ({navigation}) => {
                 onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}
-                error={false}
+                error={errors.floors?.message}
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -220,7 +235,7 @@ const UnitForm = ({navigation}) => {
                   onBlur(e);
                 }}
                 value={value}
-                error={false}
+                error={errors.house_per_floor?.message}
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -244,7 +259,7 @@ const UnitForm = ({navigation}) => {
                 onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}
-                error={false}
+                error={errors.total_home_pass?.message}
                 underlineColorAndroid="transparent"
                 autoCapitalize="none"
                 autoCorrect={false}

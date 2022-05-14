@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {View, StyleSheet, BackHandler} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {useDispatch, useSelector} from 'react-redux';
-import {Button} from 'react-native-paper';
+import {Button, HelperText} from 'react-native-paper';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {colors, layout, screens, SURVEY_TAG_LIST} from '~constants/constants';
@@ -160,7 +160,7 @@ const SurveyForm = props => {
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
-              error={false}
+              error={errors.name?.message}
               underlineColorAndroid="transparent"
               autoCapitalize="none"
               autoCorrect={false}
@@ -177,11 +177,18 @@ const SurveyForm = props => {
             required: 'Tags is required.',
           }}
           render={({field: {ref, onChange, onBlur, value}}) => (
-            <TagSelect
-              tagList={SURVEY_TAG_LIST}
-              onSubmit={onChange}
-              selectedTags={value}
-            />
+            <>
+              <TagSelect
+                tagList={SURVEY_TAG_LIST}
+                onSubmit={onChange}
+                selectedTags={value}
+              />
+              {!!errors.tags?.message ? (
+                <HelperText type="error" visible={!!errors.tags?.message}>
+                  {errors.tags?.message}
+                </HelperText>
+              ) : null}
+            </>
           )}
         />
         <Controller
@@ -197,7 +204,7 @@ const SurveyForm = props => {
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
-              error={false}
+              error={errors.address?.message}
               underlineColorAndroid="transparent"
               autoCapitalize="none"
               autoCorrect={false}
@@ -224,7 +231,7 @@ const SurveyForm = props => {
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
-              error={false}
+              error={errors.area?.message}
               underlineColorAndroid="transparent"
               autoCapitalize="none"
               autoCorrect={false}
@@ -247,7 +254,7 @@ const SurveyForm = props => {
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
-              error={false}
+              error={errors.city?.message}
               underlineColorAndroid="transparent"
               autoCapitalize="none"
               autoCorrect={false}
@@ -270,7 +277,7 @@ const SurveyForm = props => {
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
-              error={false}
+              error={errors.state?.message}
               underlineColorAndroid="transparent"
               autoCapitalize="none"
               autoCorrect={false}
@@ -293,7 +300,7 @@ const SurveyForm = props => {
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
-              error={false}
+              error={errors.pincode?.message}
               underlineColorAndroid="transparent"
               autoCapitalize="none"
               autoCorrect={false}
