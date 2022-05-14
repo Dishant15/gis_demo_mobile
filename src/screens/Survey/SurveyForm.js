@@ -88,12 +88,12 @@ const SurveyForm = props => {
         );
         const area = get(otherAddressData, 'political.0.long_name', '');
         const premise = get(otherAddressData, 'premise.0.long_name', '');
-        setValue('address', address);
-        setValue('pincode', pincode);
-        setValue('state', state);
-        setValue('city', city);
-        setValue('area', area);
-        setValue('name', premise || area);
+        setValue('address', formData.address || address);
+        setValue('pincode', formData.pincode || pincode);
+        setValue('state', formData.state || state);
+        setValue('city', formData.city || city);
+        setValue('area', formData.area || area);
+        setValue('name', formData.name || premise || area);
         setLoading(false);
       })
       .catch(err => {

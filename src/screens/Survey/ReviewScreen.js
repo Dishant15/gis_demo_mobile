@@ -74,6 +74,7 @@ const ReviewScreen = ({navigation}) => {
 
   const handleSubmit = () => {
     console.log('final data', coordinates, formData, unitList);
+    handleDiscart();
     return;
     setLoading(true);
     Api.post(apiAddSurvey(), {
