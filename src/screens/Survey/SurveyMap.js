@@ -142,6 +142,7 @@ const SurveyMap = ({navigation}) => {
               coordinates={selectedArea.path}
               strokeWidth={2}
               strokeColor={colors.black}
+              fillColor="transparent"
             />
           ) : null}
         </MapView>

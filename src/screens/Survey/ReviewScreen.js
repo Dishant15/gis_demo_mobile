@@ -44,17 +44,17 @@ const ReviewScreen = ({navigation}) => {
     dispatch(setReview());
   }, []);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const onBackPress = () => {
-        navigation.navigate(screens.surveyList);
-        return true;
-      };
-      BackHandler.addEventListener('hardwareBackPress', onBackPress);
-      return () =>
-        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    }, []),
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const onBackPress = () => {
+  //       navigation.navigate(screens.areaList);
+  //       return true;
+  //     };
+  //     BackHandler.addEventListener('hardwareBackPress', onBackPress);
+  //     return () =>
+  //       BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+  //   }, []),
+  // );
 
   const unitMarkerList = useMemo(() => {
     const newList = [];
@@ -69,7 +69,7 @@ const ReviewScreen = ({navigation}) => {
   const handleDiscart = () => {
     // reset and delete
     dispatch(resetSurveyData());
-    navigation.navigate(screens.surveyList);
+    navigation.navigate(screens.areaList);
   };
 
   const handleSubmit = () => {
@@ -85,7 +85,7 @@ const ReviewScreen = ({navigation}) => {
         console.log('res', res);
         setLoading(false);
         dispatch(resetSurveyData());
-        navigation.navigate(screens.surveyList);
+        navigation.navigate(screens.areaList);
       })
       .catch(err => {
         console.log('err', err.response);
@@ -173,8 +173,8 @@ const ReviewScreen = ({navigation}) => {
             <Polygon
               coordinates={coordinates}
               strokeWidth={2}
-              strokeColor={'#3895D3'}
-              fillColor="transparent"
+              strokeColor={'#FFA701'}
+              fillColor="#FFA70114"
             />
           ) : null}
         </MapView>

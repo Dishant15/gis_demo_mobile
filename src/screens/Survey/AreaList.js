@@ -6,14 +6,18 @@ import {useDispatch, useSelector} from 'react-redux';
 import {setAreaIndex, setAreaList} from '~data/reducers/geoSurvey.reducer';
 import DummyArea from './areaDummy.json';
 import {getAreaList} from '~data/selectors/geoSurvey.selectors';
+import {useFocusEffect} from '@react-navigation/native';
+
 const AreaList = props => {
   const {navigation, route} = props;
   const dispatch = useDispatch();
   const areaList = useSelector(getAreaList);
 
-  useEffect(() => {
-    dispatch(setAreaList(DummyArea));
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(setAreaList(DummyArea));
+    }, []),
+  );
 
   return (
     <View style={layout.container}>

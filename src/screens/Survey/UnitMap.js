@@ -165,8 +165,8 @@ const UnitMap = ({navigation}) => {
             <Polygon
               coordinates={surveyCoords}
               strokeWidth={2}
-              strokeColor={'#3895D3'}
-              fillColor="transparent"
+              strokeColor={'#FFA701'}
+              fillColor="#FFA70114"
             />
           ) : null}
         </MapView>
