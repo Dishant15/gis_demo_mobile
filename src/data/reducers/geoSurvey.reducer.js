@@ -1,4 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {map} from 'lodash';
+import {coordsToLatLongMap} from '~utils/map.utils';
 
 const defaultUnitData = {
   coordinates: null,
@@ -17,6 +19,8 @@ const defaultUnitData = {
 };
 
 const initialState = {
+  areaList: [],
+  selectedAreaIndex: null,
   coordinates: [],
   boundaryData: {
     name: '',
@@ -38,6 +42,15 @@ const geoSurveyReducer = createSlice({
   name: 'serveyDetails',
   initialState,
   reducers: {
+    setAreaList: (state, {payload}) => {
+      state.areaList = map(payload, d => ({
+        ...d,
+        path: coordsToLatLongMap(d.coordinates),
+      }));
+    },
+    setAreaIndex: (state, {payload}) => {
+      state.selectedAreaIndex = payload;
+    },
     updateCoordinates: (state, {payload}) => {
       state.coordinates = payload;
     },
@@ -82,5 +95,7 @@ export const {
   updateUnitData,
   resetSurveyData,
   setReview,
+  setAreaList,
+  setAreaIndex,
 } = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;

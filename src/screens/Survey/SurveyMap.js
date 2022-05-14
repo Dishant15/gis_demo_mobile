@@ -10,6 +10,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   getGeoSurveyCoords,
   getIsReviewed,
+  getSelectedArea,
 } from '~data/selectors/geoSurvey.selectors';
 import {updateCoordinates} from '~data/reducers/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
@@ -21,6 +22,11 @@ const SurveyMap = ({navigation}) => {
   const isFocused = useIsFocused();
   const coords = useSelector(getGeoSurveyCoords);
   const isReviewed = useSelector(getIsReviewed);
+  const selectedArea = useSelector(getSelectedArea);
+  console.log(
+    '🚀 ~ file: SurveyMap.js ~ line 26 ~ SurveyMap ~ selectedArea',
+    selectedArea,
+  );
 
   const [coordinates, setCoordinates] = useState(coords);
   const dispatch = useDispatch();
@@ -68,6 +74,18 @@ const SurveyMap = ({navigation}) => {
     setCoordinates([...coordinates, coords]);
   };
 
+  const onMapLayout = () => {
+    mapRef.current.fitToCoordinates(selectedArea.path, {
+      edgePadding: {
+        top: 20,
+        right: 20,
+        bottom: 20,
+        left: 12,
+      },
+      animated: true,
+    });
+  };
+
   const handleCustomBack = () => {
     if (isReviewed) {
       navigation.navigate(screens.reviewScreen);
@@ -92,18 +110,7 @@ const SurveyMap = ({navigation}) => {
             latitude: 23.024334044995985,
           }}
           loadingEnabled
-          onLayout={() => {
-            mapRef.current.setCamera({
-              center: {
-                longitude: 72.56051184609532,
-                latitude: 23.024334044995985,
-              },
-              pitch: 0,
-              heading: 0,
-              // Only when using Google Maps.
-              zoom: 16,
-            });
-          }}
+          onLayout={onMapLayout}
           provider={PROVIDER_GOOGLE}
           onPress={handleMapClick}
           onPoiClick={handleMapPoiClick}>
@@ -128,6 +135,13 @@ const SurveyMap = ({navigation}) => {
               strokeWidth={2}
               strokeColor={'#3895D3'}
               fillColor="#3895D326"
+            />
+          ) : null}
+          {size(selectedArea.path) ? (
+            <Polygon
+              coordinates={selectedArea.path}
+              strokeWidth={2}
+              strokeColor={colors.black}
             />
           ) : null}
         </MapView>

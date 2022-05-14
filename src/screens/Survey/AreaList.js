@@ -1,36 +1,38 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, FlatList} from 'react-native';
 import {layout, screens} from '~constants/constants';
 import {Card, Title, Paragraph} from 'react-native-paper';
-import {useDispatch} from 'react-redux';
-
+import {useDispatch, useSelector} from 'react-redux';
+import {setAreaIndex, setAreaList} from '~data/reducers/geoSurvey.reducer';
+import DummyArea from './areaDummy.json';
+import {getAreaList} from '~data/selectors/geoSurvey.selectors';
 const AreaList = props => {
   const {navigation, route} = props;
   const dispatch = useDispatch();
-  const areaList = [
-    {
-      name: 'Area One',
-      area: 'Science City, Thaltej, Ahmedabad, 380060',
-    },
-    {
-      name: 'Area Two',
-      area: 'Makarba, Ahmedabad South, 380051',
-    },
-  ];
+  const areaList = useSelector(getAreaList);
+
+  useEffect(() => {
+    dispatch(setAreaList(DummyArea));
+  }, []);
 
   return (
     <View style={layout.container}>
       <FlatList
         contentContainerStyle={{padding: 12, paddingBottom: 40}}
         data={areaList}
-        renderItem={({item}) => {
+        renderItem={({item, index}) => {
           return (
             <Card
               style={{marginBottom: 12}}
-              onPress={() => navigation.navigate(screens.surveyMap)}>
+              onPress={() => {
+                dispatch(setAreaIndex(index));
+                navigation.navigate(screens.surveyMap);
+              }}>
               <Card.Content>
                 <Title>{item.name}</Title>
-                <Paragraph>{item.area}</Paragraph>
+                <Paragraph>
+                  {item.area} - {item.pincode}
+                </Paragraph>
               </Card.Content>
             </Card>
           );

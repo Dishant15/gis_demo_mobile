@@ -18,3 +18,12 @@ export const getGeoSurveySelectedUnitData = createSelector(
 );
 
 export const getIsReviewed = store => store.geoSurvey.isReview;
+
+export const getAreaList = store => store.geoSurvey.areaList;
+
+const getSelectedAreaIndex = store => store.geoSurvey.selectedAreaIndex;
+
+export const getSelectedArea = createSelector(
+  [getAreaList, getSelectedAreaIndex],
+  (list, index) => list[index],
+);
