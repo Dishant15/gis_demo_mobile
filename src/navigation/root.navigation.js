@@ -1,5 +1,8 @@
 import React, {useEffect} from 'react';
 import {useSelector} from 'react-redux';
+
+import {StatusBar} from 'react-native';
+
 import {createStackNavigator} from '@react-navigation/stack';
 import SplashScreen from 'react-native-splash-screen';
 
@@ -43,6 +46,7 @@ const RootNavigation = () => {
 
   return (
     <>
+      <StatusBar barStyle="light-content" />
       <Stack.Navigator>
         {isUserLoggedIn ? (
           <>

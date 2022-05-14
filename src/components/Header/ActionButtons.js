@@ -19,7 +19,7 @@ export const DrawerButton = () => {
       <MaterialCommunityIcons
         size={34}
         name={isDrawerOpen ? 'close' : 'menu'}
-        color={colors.black}
+        color={colors.white}
         style={{textAlign: 'center'}}
       />
     </Pressable>

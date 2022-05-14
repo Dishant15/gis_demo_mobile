@@ -48,6 +48,7 @@ const SurveyMap = ({navigation}) => {
   const [showMap, setMapVisibility] = useState(false);
   const [coordinates, setCoordinates] = useState(coords);
   const dispatch = useDispatch();
+  const mapRef = useRef();
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -70,8 +71,6 @@ const SurveyMap = ({navigation}) => {
         BackHandler.removeEventListener('hardwareBackPress', onBackPress);
     }, [isReviewed]),
   );
-
-  const mapRef = useRef();
 
   const handleSavePolygon = () => {
     dispatch(updateCoordinates(coordinates));
@@ -98,7 +97,7 @@ const SurveyMap = ({navigation}) => {
     setCoordinates([...coordinates, coords]);
   };
 
-  const onMapLayout = () => {
+  const onMapReady = () => {
     mapRef.current.fitToCoordinates(selectedArea.path, {
       edgePadding: {
         top: 20,
@@ -124,56 +123,56 @@ const SurveyMap = ({navigation}) => {
     <View style={layout.container}>
       <BackHeader title="Draw on Map" onGoBack={handleCustomBack} />
       <View style={[layout.container, layout.relative]}>
-        {/* {showMap ? ( */}
-        {/* <Animatable.View animation="fadeIn" style={layout.container}> */}
-        <MapView
-          ref={mapRef}
-          style={styles.map}
-          initialRegion={{
-            longitudeDelta: 0.06032254546880722,
-            latitudeDelta: 0.0005546677,
-            longitude: 72.56051184609532,
-            latitude: 23.024334044995985,
-          }}
-          loadingEnabled
-          onLayout={onMapLayout}
-          provider={PROVIDER_GOOGLE}
-          onPress={handleMapClick}
-          onPoiClick={handleMapPoiClick}>
-          {coordinates.map((marker, i) => (
-            <CustomMarker
-              coordinate={marker}
-              anchor={{
-                x: 0.5,
-                y: 0.5,
+        {showMap ? (
+          <Animatable.View animation="fadeIn" style={layout.container}>
+            <MapView
+              ref={mapRef}
+              style={styles.map}
+              initialRegion={{
+                longitudeDelta: 0.06032254546880722,
+                latitudeDelta: 0.0005546677,
+                longitude: 72.56051184609532,
+                latitude: 23.024334044995985,
               }}
-              key={i}
-              draggable
-              onDragEnd={handleMarkerDrag(i)}
-              stopPropagation
-              flat
-              tracksInfoWindowChanges={false}
-            />
-          ))}
-          {size(coordinates) ? (
-            <Polygon
-              coordinates={coordinates}
-              strokeWidth={2}
-              strokeColor={'#3895D3'}
-              fillColor="#3895D326"
-            />
-          ) : null}
-          {size(selectedArea.path) ? (
-            <Polygon
-              coordinates={selectedArea.path}
-              strokeWidth={2}
-              strokeColor={colors.black}
-              fillColor="transparent"
-            />
-          ) : null}
-        </MapView>
-        {/* </Animatable.View>
-        ) : null} */}
+              loadingEnabled
+              onMapReady={onMapReady}
+              provider={PROVIDER_GOOGLE}
+              onPress={handleMapClick}
+              onPoiClick={handleMapPoiClick}>
+              {coordinates.map((marker, i) => (
+                <CustomMarker
+                  coordinate={marker}
+                  anchor={{
+                    x: 0.5,
+                    y: 0.5,
+                  }}
+                  key={i}
+                  draggable
+                  onDragEnd={handleMarkerDrag(i)}
+                  stopPropagation
+                  flat
+                  tracksInfoWindowChanges={false}
+                />
+              ))}
+              {size(coordinates) ? (
+                <Polygon
+                  coordinates={coordinates}
+                  strokeWidth={2}
+                  strokeColor={'#3895D3'}
+                  fillColor="#3895D326"
+                />
+              ) : null}
+              {size(selectedArea.path) ? (
+                <Polygon
+                  coordinates={selectedArea.path}
+                  strokeWidth={2}
+                  strokeColor={colors.black}
+                  fillColor="transparent"
+                />
+              ) : null}
+            </MapView>
+          </Animatable.View>
+        ) : null}
         <View
           style={[
             styles.content,

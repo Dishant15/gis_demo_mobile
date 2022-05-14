@@ -1,9 +1,9 @@
 import React from 'react';
 import {Dimensions, View, StyleSheet} from 'react-native';
-import {Title, List, Headline, Divider} from 'react-native-paper';
+import {Title, List, Headline, Divider, useTheme} from 'react-native-paper';
 
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import {layout, screens} from '~constants/constants';
+import {colors, layout, screens} from '~constants/constants';
 import DashboardScreen from '~screens/DashboardScreen';
 import SurveyList from '~screens/Survey/SurveyList';
 import NetworkScreen from '~screens/NetworkScreen';
@@ -12,16 +12,24 @@ import PlanningScreen from '~screens/PlanningScreen';
 import {DrawerButton} from '~components/Header/ActionButtons';
 import ComingSoon from '~components/ComingSoon';
 import AreaList from '~screens/Survey/AreaList';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const Drawer = createDrawerNavigator();
 
+/**
+ * Custom Drawer component
+ */
 const DrawerContent = props => {
-  const {navigation} = props;
+  const {top} = useSafeAreaInsets();
 
   return (
     <View style={layout.container}>
-      <View style={styles.headerContent}>
-        <Headline>Network GIS</Headline>
+      <View
+        style={[
+          styles.headerContent,
+          {paddingTop: top + 20, backgroundColor: colors.primaryMainDark},
+        ]}>
+        <Headline style={styles.headerText}>Network GIS</Headline>
       </View>
       <Divider />
       <List.Section>
@@ -71,6 +79,12 @@ const DrawerContent = props => {
   );
 };
 
+/**
+ * Navigation component
+ *
+ * Parent
+ *    root.navigation
+ */
 const DrawerNavigation = () => {
   return (
     <Drawer.Navigator
@@ -88,8 +102,13 @@ const DrawerNavigation = () => {
         options={{
           headerShown: true,
           headerTitleAlign: 'center',
-          headerTitle: () => <Title>NETWORK GIS</Title>,
+          headerTitle: () => (
+            <Title style={styles.headerText}>NETWORK GIS</Title>
+          ),
           headerLeft: () => <DrawerButton />,
+          headerStyle: {
+            backgroundColor: colors.primaryMain,
+          },
         }}
       />
       <Drawer.Screen
@@ -98,8 +117,13 @@ const DrawerNavigation = () => {
         options={{
           headerShown: true,
           headerTitleAlign: 'center',
-          headerTitle: () => <Title>Geographic</Title>,
+          headerTitle: () => (
+            <Title style={styles.headerText}>Geographic</Title>
+          ),
           headerLeft: () => <DrawerButton />,
+          headerStyle: {
+            backgroundColor: colors.primaryMain,
+          },
         }}
       />
       <Drawer.Screen
@@ -108,8 +132,11 @@ const DrawerNavigation = () => {
         options={{
           headerShown: true,
           headerTitleAlign: 'center',
-          headerTitle: () => <Title>Network</Title>,
+          headerTitle: () => <Title style={styles.headerText}>Network</Title>,
           headerLeft: () => <DrawerButton />,
+          headerStyle: {
+            backgroundColor: colors.primaryMain,
+          },
         }}
       />
       <Drawer.Screen
@@ -118,8 +145,11 @@ const DrawerNavigation = () => {
         options={{
           headerShown: true,
           headerTitleAlign: 'center',
-          headerTitle: () => <Title>Client</Title>,
+          headerTitle: () => <Title style={styles.headerText}>Client</Title>,
           headerLeft: () => <DrawerButton />,
+          headerStyle: {
+            backgroundColor: colors.primaryMain,
+          },
         }}
       />
       <Drawer.Screen
@@ -128,8 +158,11 @@ const DrawerNavigation = () => {
         options={{
           headerShown: true,
           headerTitleAlign: 'center',
-          headerTitle: () => <Title>Planning</Title>,
+          headerTitle: () => <Title style={styles.headerText}>Planning</Title>,
           headerLeft: () => <DrawerButton />,
+          headerStyle: {
+            backgroundColor: colors.primaryMain,
+          },
         }}
       />
     </Drawer.Navigator>
@@ -138,11 +171,14 @@ const DrawerNavigation = () => {
 
 const styles = StyleSheet.create({
   headerContent: {
-    paddingTop: 20,
     paddingBottom: 20,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.05)',
+  },
+
+  headerText: {
+    color: colors.accentTextColor,
   },
 });
 
