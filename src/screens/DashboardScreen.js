@@ -1,16 +1,36 @@
 import React from 'react';
-import {View} from 'react-native';
-import {Headline, Button} from 'react-native-paper';
-import {layout, screens} from '~constants/constants';
+import {View, Image, StyleSheet} from 'react-native';
+import {Headline} from 'react-native-paper';
+import {layout} from '~constants/constants';
+
+import underConstruction from '~assets/img/under_construction.jpg';
 
 const DashboardScreen = ({navigation}) => {
   return (
     <View style={[layout.container, layout.center]}>
-      <Headline>Welcome</Headline>
-      <Headline>to</Headline>
+      <View style={styles.imageWrapper}>
+        <Image
+          source={underConstruction}
+          style={styles.img}
+          resizeMode="contain"
+        />
+      </View>
       <Headline>Network GIS</Headline>
+      <Headline>Under Construction</Headline>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  imageWrapper: {
+    width: '80%',
+    height: 300,
+  },
+  img: {
+    flex: 1,
+    width: null,
+    height: null,
+  },
+});
 
 export default DashboardScreen;
