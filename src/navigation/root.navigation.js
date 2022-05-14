@@ -15,6 +15,7 @@ import {getIsUserLoggedIn} from '~data/selectors/auth.selectors';
 import {screens} from '~constants/constants';
 import ReviewScreen from '~screens/Survey/ReviewScreen';
 import SurveyForm from '~screens/Survey/SurveyForm';
+import SurveyList from '~screens/Survey/SurveyList';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,11 @@ const RootNavigation = () => {
             <Stack.Screen
               name={screens.drawerStack}
               component={DrawerStack}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.surveyList}
+              component={SurveyList}
               options={options}
             />
             <Stack.Screen

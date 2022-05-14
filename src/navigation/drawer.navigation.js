@@ -11,6 +11,7 @@ import ClientScreen from '~screens/ClientScreen';
 import PlanningScreen from '~screens/PlanningScreen';
 import {DrawerButton} from '~components/Header/ActionButtons';
 import ComingSoon from '~components/ComingSoon';
+import AreaList from '~screens/Survey/AreaList';
 
 const Drawer = createDrawerNavigator();
 
@@ -39,7 +40,7 @@ const DrawerContent = props => {
             title="Geographic"
             onPress={() => {
               props.navigation.closeDrawer();
-              props.navigation.navigate(screens.surveyList);
+              props.navigation.navigate(screens.areaList);
             }}
           />
           <List.Item
@@ -92,8 +93,8 @@ const DrawerNavigation = () => {
         }}
       />
       <Drawer.Screen
-        name={screens.surveyList}
-        component={SurveyList}
+        name={screens.areaList}
+        component={AreaList}
         options={{
           headerShown: true,
           headerTitleAlign: 'center',

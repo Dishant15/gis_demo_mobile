@@ -68,7 +68,6 @@ const UnitForm = ({navigation}) => {
       total_home_pass: unitData.total_home_pass,
     },
   });
-  console.log('🚀 ~ file: UnitForm.js ~ line 71 ~ UnitForm ~ errors', errors);
 
   const handleAnotherUnit = data => {
     dispatch(

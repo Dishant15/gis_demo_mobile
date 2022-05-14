@@ -7,6 +7,7 @@ export const screens = {
   loginScreen: 'loginScreen',
   dashboardScreen: 'dashboardScreen',
 
+  areaList: 'areaList',
   surveyList: 'surveyList',
   surveyMap: 'surveyMap',
   surveyForm: 'surveyForm',
