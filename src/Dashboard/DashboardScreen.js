@@ -5,6 +5,10 @@ import {layout} from '~constants/constants';
 
 import underConstruction from '~assets/img/under_construction.jpg';
 
+/**
+ * Parent:
+ *    drawer.navigation
+ */
 const DashboardScreen = ({navigation}) => {
   return (
     <View style={[layout.container, layout.center]}>

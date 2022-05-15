@@ -1,5 +1,4 @@
 import {API_HOST} from '@env';
-console.log('🚀 ~ file: api.utils.js ~ line 2 ~ API_HOST', API_HOST);
 import axios from 'axios';
 import {isNil, map, keys, join} from 'lodash';
 import store from '~store';
@@ -42,11 +41,6 @@ class Api {
   }
 
   static post(url, body, queryParams, config = {}) {
-    console.log(
-      '🚀 ~ file: api.utils.js ~ line 43 ~ Api ~ post ~ url, body',
-      url,
-      body,
-    );
     return axiosInstance.post(
       url + convertObjectToQueryParams(queryParams),
       body,

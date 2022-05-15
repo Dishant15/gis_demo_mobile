@@ -26,6 +26,10 @@ const CATEGORY_OPTS = [
   {value: 'B', label: 'BOTH'},
 ];
 
+/**
+ * Parent:
+ *    root.navigation
+ */
 const UnitForm = ({navigation}) => {
   const isFocused = useIsFocused();
   const unitData = useSelector(getGeoSurveySelectedUnitData);

@@ -15,7 +15,6 @@ import UnitMap from '~GeoServey/screens/UnitMap';
 import UnitForm from '~GeoServey/screens/UnitForm';
 import ReviewScreen from '~GeoServey/screens/ReviewScreen';
 import SurveyForm from '~GeoServey/screens/SurveyForm';
-import SurveyList from '~GeoServey/screens/SurveyList';
 
 import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';
 import {screens} from '~constants/constants';
@@ -36,6 +35,18 @@ const options = {
  *
  * Nested navigator components
  *    drawer.navigation
+ *
+ * Parent:
+ *    App
+ * Renders:
+ *    DrawerStack
+ *    SurveyMap
+ *    SurveyForm
+ *    UnitList
+ *    UnitMap
+ *    UnitForm
+ *    ReviewScreen
+ *    LoginScreen
  */
 const RootNavigation = () => {
   const isUserLoggedIn = useSelector(getIsUserLoggedIn);
@@ -53,11 +64,6 @@ const RootNavigation = () => {
             <Stack.Screen
               name={screens.drawerStack}
               component={DrawerStack}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.surveyList}
-              component={SurveyList}
               options={options}
             />
             <Stack.Screen

@@ -31,8 +31,8 @@ import {updateCoordinates} from '~GeoServey/data/geoSurvey.reducer';
 /**
  * render maps with survey points
  *
- * Parent
- *    AreaList
+ * Parent:
+ *    root.navigation
  */
 const SurveyMap = ({navigation}) => {
   const insets = useSafeAreaInsets();
@@ -81,14 +81,12 @@ const SurveyMap = ({navigation}) => {
   };
 
   const handleMapClick = e => {
-    console.log('onPress', e.nativeEvent.coordinate);
     if (!e.nativeEvent.coordinate) return;
     const coords = e.nativeEvent.coordinate;
     setCoordinates([...coordinates, coords]);
   };
 
   const handleMapPoiClick = e => {
-    console.log('onPoiClick', e.nativeEvent.coordinate);
     if (!e.nativeEvent.coordinate) return;
     const coords = e.nativeEvent.coordinate;
     setCoordinates([...coordinates, coords]);

@@ -23,10 +23,13 @@ import TagSelect from '~Common/TagSelect';
 
 var turf = require('@turf/turf');
 
+/**
+ * Parent:
+ *    root.navigation
+ */
 const SurveyForm = props => {
   const {navigation} = props;
   const isFocused = useIsFocused();
-  const {onSaveDetails} = props;
   const formData = useSelector(getGeoSurveyFormData);
   const coords = useSelector(getGeoSurveyCoords);
   const isReviewed = useSelector(getIsReviewed);

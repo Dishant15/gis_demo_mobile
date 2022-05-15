@@ -16,6 +16,16 @@ const Drawer = createDrawerNavigator();
 
 /**
  * Custom Drawer component
+ *
+ * Parent:
+ *    root.navigation
+ * Renders:
+ *    below are file names called drawer
+ *    DashboardScreen
+ *    AreaList
+ *    NetworkScreen
+ *    ClientScreen
+ *    PlanningScreen
  */
 const DrawerContent = props => {
   const {top} = useSafeAreaInsets();

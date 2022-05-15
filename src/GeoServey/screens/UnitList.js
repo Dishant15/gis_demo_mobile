@@ -9,6 +9,10 @@ import {getGeoSurveyUnitList} from '~GeoServey/data/geoSurvey.selectors';
 import {layout, screens, colors} from '~constants/constants';
 import {addUnit, selectUnit} from '~GeoServey/data/geoSurvey.reducer';
 
+/**
+ * Parent:
+ *    root.navigation
+ */
 const UnitList = props => {
   const {navigation} = props;
   const units = useSelector(getGeoSurveyUnitList);

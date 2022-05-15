@@ -8,7 +8,6 @@ export const screens = {
   dashboardScreen: 'dashboardScreen',
 
   areaList: 'areaList',
-  surveyList: 'surveyList',
   surveyMap: 'surveyMap',
   surveyForm: 'surveyForm',
 

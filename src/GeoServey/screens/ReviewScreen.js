@@ -28,6 +28,10 @@ import {parseErrorMessage} from '~utils/app.utils';
 
 const {width, height} = Dimensions.get('window');
 
+/**
+ * Parent:
+ *    root.navigation
+ */
 const ReviewScreen = ({navigation}) => {
   const isFocused = useIsFocused();
   const mapRef = useRef();

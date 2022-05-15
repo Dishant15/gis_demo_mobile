@@ -22,6 +22,10 @@ const theme = {
 
 const queryClient = new QueryClient();
 
+/**
+ * Renders:
+ *    RootNavigation
+ */
 const App = () => {
   return (
     <Provider store={store}>

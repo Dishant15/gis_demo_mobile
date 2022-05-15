@@ -17,6 +17,10 @@ import {updateUnitCoordinates} from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
+/**
+ * Parent:
+ *    root.navigation
+ */
 const UnitMap = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
@@ -56,7 +60,6 @@ const UnitMap = ({navigation}) => {
   }, [unitData]);
 
   const handleButtonPress = () => {
-    console.log('am i clicked');
     dispatch(
       updateUnitCoordinates({
         unitIndex,
