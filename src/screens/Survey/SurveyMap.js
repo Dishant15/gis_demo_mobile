@@ -73,6 +73,7 @@ const SurveyMap = ({navigation}) => {
   );
 
   const handleSavePolygon = () => {
+    if (!size(coordinates)) return;
     dispatch(updateCoordinates(coordinates));
     navigation.navigate(isReviewed ? screens.reviewScreen : screens.surveyForm);
   };
