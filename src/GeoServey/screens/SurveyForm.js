@@ -97,7 +97,7 @@ const SurveyForm = props => {
         setLoading(false);
       })
       .catch(err => {
-        console.log('err', err);
+        console.log('err', err.response);
         setLoading(false);
       });
   }, []);

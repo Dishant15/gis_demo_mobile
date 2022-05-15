@@ -73,6 +73,7 @@ export const parseErrorMessage = error => {
   let errorMessage = 'Something Went Wrong';
   const status = get(error, 'response.status');
   if (status) {
+    console.log('err', error.response);
     if (status === 400) {
       errorMessage = get(
         error,

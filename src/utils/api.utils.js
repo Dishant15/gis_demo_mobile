@@ -1,4 +1,5 @@
 import {API_HOST} from '@env';
+console.log('🚀 ~ file: api.utils.js ~ line 2 ~ API_HOST', API_HOST);
 import axios from 'axios';
 import {isNil, map, keys, join} from 'lodash';
 import store from '~store';
@@ -27,7 +28,8 @@ const axiosInstance = axios.create();
 
 axiosInstance.interceptors.request.use(function (config) {
   const token = store.getState().auth.token;
-  if (config.headers) config.headers.Authorization = token;
+  if (config.headers)
+    config.headers.Authorization = token ? `Token ${token}` : undefined;
   return config;
 });
 

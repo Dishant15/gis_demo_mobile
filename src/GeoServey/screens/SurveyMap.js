@@ -40,10 +40,6 @@ const SurveyMap = ({navigation}) => {
   const coords = useSelector(getGeoSurveyCoords);
   const isReviewed = useSelector(getIsReviewed);
   const selectedArea = useSelector(getSelectedArea);
-  console.log(
-    '🚀 ~ file: SurveyMap.js ~ line 26 ~ SurveyMap ~ selectedArea',
-    selectedArea,
-  );
 
   const [showMap, setMapVisibility] = useState(false);
   const [coordinates, setCoordinates] = useState(coords);

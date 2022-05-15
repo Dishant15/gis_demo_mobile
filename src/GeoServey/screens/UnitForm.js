@@ -20,7 +20,12 @@ import {updateUnitData} from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {filter, includes, multiply} from 'lodash';
 
-const CATEGORY_OPTS = ['MDU', 'SDU', 'BOTH'];
+const CATEGORY_OPTS = [
+  {value: 'M', label: 'MDU'},
+  {value: 'S', label: 'SDU'},
+  {value: 'B', label: 'BOTH'},
+];
+
 const UnitForm = ({navigation}) => {
   const isFocused = useIsFocused();
   const unitData = useSelector(getGeoSurveySelectedUnitData);
@@ -163,14 +168,14 @@ const UnitForm = ({navigation}) => {
                   <Caption>Category</Caption>
                   <View style={styles.chipWrapper}>
                     {CATEGORY_OPTS.map(opt => {
-                      const selected = opt === value;
+                      const selected = opt.value === value;
                       return (
                         <Chip
-                          key={opt}
+                          key={opt.value}
                           style={styles.chip}
                           selected={selected}
-                          onPress={() => onChange(opt)}>
-                          {opt}
+                          onPress={() => onChange(opt.value)}>
+                          {opt.label}
                         </Chip>
                       );
                     })}

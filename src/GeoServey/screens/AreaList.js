@@ -1,12 +1,16 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {View, FlatList} from 'react-native';
-import {layout, screens} from '~constants/constants';
 import {Card, Title, Paragraph} from 'react-native-paper';
-import {useDispatch, useSelector} from 'react-redux';
-import {setAreaIndex, setAreaList} from '~GeoServey/data/geoSurvey.reducer';
-import DummyArea from './areaDummy.json';
-import {getAreaList} from '~GeoServey/data/geoSurvey.selectors';
-import {useFocusEffect} from '@react-navigation/native';
+import {useDispatch} from 'react-redux';
+import {useQuery} from 'react-query';
+import {size} from 'lodash';
+
+import Loader from '~Common/Loader';
+import {setAreaData, setAreaIndex} from '~GeoServey/data/geoSurvey.reducer';
+import {fetchAreaPockets} from '~GeoServey/data/geoSurvey.service';
+import {layout, screens} from '~constants/constants';
+
+import {coordsToLatLongMap} from '~utils/map.utils';
 
 /**
  * Renders area list
@@ -19,25 +23,34 @@ import {useFocusEffect} from '@react-navigation/native';
 const AreaList = props => {
   const {navigation, route} = props;
   const dispatch = useDispatch();
-  const areaList = useSelector(getAreaList);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      dispatch(setAreaList(DummyArea));
-    }, []),
+  const {isLoading, data, refetch} = useQuery(
+    'areaPocketList',
+    fetchAreaPockets,
+    {
+      select: queryData => {
+        // return queryData;
+        return queryData.map(d => {
+          // [ [lat, lng], ...]
+          const {coordinates} = d;
+          d.path = coordsToLatLongMap(coordinates);
+          return d;
+        });
+      },
+    },
   );
 
   return (
-    <View style={layout.container}>
+    <View style={[layout.container, layout.relative]}>
       <FlatList
         contentContainerStyle={{padding: 12, paddingBottom: 40}}
-        data={areaList}
+        data={data}
         renderItem={({item, index}) => {
           return (
             <Card
               style={{marginBottom: 12}}
               onPress={() => {
-                dispatch(setAreaIndex(index));
+                dispatch(setAreaData(item));
                 navigation.navigate(screens.surveyMap);
               }}>
               <Card.Content>
@@ -49,7 +62,10 @@ const AreaList = props => {
             </Card>
           );
         }}
+        onRefresh={refetch}
+        refreshing={!!(isLoading && size(data))}
       />
+      {isLoading ? <Loader /> : null}
     </View>
   );
 };

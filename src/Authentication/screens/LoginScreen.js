@@ -71,9 +71,6 @@ const LoginScreen = () => {
               <Input
                 ref={ref}
                 label="Username"
-                mode="outlined"
-                activeOutlineColor={colors.black}
-                style={layout.textInput}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}
@@ -97,16 +94,12 @@ const LoginScreen = () => {
               <Input
                 ref={ref}
                 label="Password"
-                mode="outlined"
                 secureTextEntry={!showPassword}
-                activeOutlineColor={colors.black}
-                style={layout.textInput}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}
                 error={passwordError}
                 underlineColorAndroid="transparent"
-                keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
                 returnKeyType="done"

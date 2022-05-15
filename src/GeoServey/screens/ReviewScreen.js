@@ -1,14 +1,8 @@
 import React, {useMemo, useRef, useCallback, useState, useEffect} from 'react';
-import {
-  View,
-  Dimensions,
-  StyleSheet,
-  ScrollView,
-  BackHandler,
-} from 'react-native';
+import {View, Dimensions, StyleSheet, ScrollView} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {useDispatch, useSelector} from 'react-redux';
-import {size, get} from 'lodash';
+import {size, get, join, map} from 'lodash';
 import {Card, Button, Paragraph, Subheading} from 'react-native-paper';
 
 import BackHeader from '~Common/components/Header/BackHeader';
@@ -17,8 +11,8 @@ import {
   getGeoSurveyCoords,
   getGeoSurveyUnitList,
   getGeoSurveyFormData,
+  getSelectedArea,
 } from '~GeoServey/data/geoSurvey.selectors';
-import {getInitialRegion} from '~utils/app.utils';
 import Api from '~utils/api.utils';
 import {apiAddSurvey} from '~constants/url.constants';
 import {
@@ -26,7 +20,11 @@ import {
   setReview,
   selectUnit,
 } from '~GeoServey/data/geoSurvey.reducer';
-import {useIsFocused, useFocusEffect} from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
+import {latLongMapToCoords} from '~utils/map.utils';
+import {useMutation} from 'react-query';
+import {postGeoServey} from '~GeoServey/data/geoSurvey.service';
+import {parseErrorMessage} from '~utils/app.utils';
 
 const {width, height} = Dimensions.get('window');
 
@@ -36,25 +34,26 @@ const ReviewScreen = ({navigation}) => {
   const coordinates = useSelector(getGeoSurveyCoords);
   const formData = useSelector(getGeoSurveyFormData);
   const unitList = useSelector(getGeoSurveyUnitList);
-  const dispatch = useDispatch();
+  const selectedArea = useSelector(getSelectedArea);
 
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(setReview());
   }, []);
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const onBackPress = () => {
-  //       navigation.navigate(screens.areaList);
-  //       return true;
-  //     };
-  //     BackHandler.addEventListener('hardwareBackPress', onBackPress);
-  //     return () =>
-  //       BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-  //   }, []),
-  // );
+  const {mutate, isLoading} = useMutation(postGeoServey, {
+    onSuccess: res => {
+      handleDiscart();
+    },
+    onError: err => {
+      const errorMessage = parseErrorMessage(err);
+      console.log(
+        '🚀 ~ file: ReviewScreen.js ~ line 52 ~ ReviewScreen ~ errorMessage',
+        errorMessage,
+      );
+    },
+  });
 
   const unitMarkerList = useMemo(() => {
     const newList = [];
@@ -73,25 +72,18 @@ const ReviewScreen = ({navigation}) => {
   };
 
   const handleSubmit = () => {
-    console.log('final data', coordinates, formData, unitList);
-    handleDiscart();
-    return;
-    setLoading(true);
-    Api.post(apiAddSurvey(), {
-      coordinates,
-      boundaryData: formData,
-      unitList,
-    })
-      .then(res => {
-        console.log('res', res);
-        setLoading(false);
-        dispatch(resetSurveyData());
-        navigation.navigate(screens.areaList);
-      })
-      .catch(err => {
-        console.log('err', err.response);
-        setLoading(false);
-      });
+    // convert data
+    const data = {
+      boundaryData: {
+        ...formData,
+        unique_id: selectedArea.unique_id,
+        parent_id: selectedArea.id,
+        tags: join(formData.tags, ','),
+        coordinates: latLongMapToCoords(coordinates),
+      },
+      unitList: map(unitList, unit => ({...unit, tags: join(unit.tags, ',')})),
+    };
+    mutate(data);
   };
 
   const navigateToSurveyMap = useCallback(() => {
@@ -243,7 +235,7 @@ const ReviewScreen = ({navigation}) => {
               contentStyle={layout.button}
               color={colors.black}
               uppercase
-              loading={loading}
+              loading={isLoading}
               mode="contained"
               onPress={handleSubmit}>
               Submit

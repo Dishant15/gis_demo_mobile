@@ -1,4 +1,4 @@
-// coordinates :- [ [lat, lng], ...]
+// coordinates :- [ [latitude, longitude], ...]
 export const coordsToLatLongMap = coordinates => {
   const latLongMap = [];
   for (let cInd = 0; cInd < coordinates.length; cInd++) {
@@ -11,7 +11,7 @@ export const coordsToLatLongMap = coordinates => {
   return latLongMap;
 };
 
-// latLongMap :- [ {lat, lng}, ...]
+// latLongMap :- [ {latitude, longitude}, ...]
 export const latLongMapToCoords = latLongMap => {
   const coordinates = [];
   for (let lInd = 0; lInd < latLongMap.length; lInd++) {

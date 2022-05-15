@@ -19,7 +19,7 @@ const defaultUnitData = {
 };
 
 const initialState = {
-  areaList: [],
+  selectedArea: {},
   selectedAreaIndex: null,
   coordinates: [],
   boundaryData: {
@@ -42,14 +42,11 @@ const geoSurveyReducer = createSlice({
   name: 'serveyDetails',
   initialState,
   reducers: {
-    setAreaList: (state, {payload}) => {
-      state.areaList = map(payload, d => ({
-        ...d,
-        path: coordsToLatLongMap(d.coordinates),
-      }));
-    },
-    setAreaIndex: (state, {payload}) => {
-      state.selectedAreaIndex = payload;
+    setAreaData: (state, {payload}) => {
+      return {
+        ...initialState,
+        selectedArea: payload,
+      };
     },
     updateCoordinates: (state, {payload}) => {
       state.coordinates = payload;
@@ -95,7 +92,6 @@ export const {
   updateUnitData,
   resetSurveyData,
   setReview,
-  setAreaList,
-  setAreaIndex,
+  setAreaData,
 } = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;
