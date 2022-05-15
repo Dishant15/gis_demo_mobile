@@ -3,6 +3,8 @@ import {StyleSheet} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {Marker} from 'react-native-maps';
 
+import Circle40 from '~assets/img/circle_40.png';
+
 const CustomMarker = props => {
   const [tracksViewChanges, setTracksViewChanges] = useState(true);
   const stopTrackingViewChanges = useCallback(() => {
@@ -12,7 +14,7 @@ const CustomMarker = props => {
   return (
     <Marker {...props} tracksViewChanges={tracksViewChanges}>
       <FastImage
-        source={require('../../assets/img/circle_40.png')}
+        source={Circle40}
         onLoad={stopTrackingViewChanges}
         fadeDuration={0}
         style={styles.image}

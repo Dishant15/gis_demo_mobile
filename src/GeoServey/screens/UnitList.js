@@ -3,11 +3,11 @@ import {View, FlatList} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Card, Title, Paragraph, Button} from 'react-native-paper';
 
-import BackHeader from '~components/Header/BackHeader';
+import BackHeader from '~Common/components/Header/BackHeader';
 
-import {getGeoSurveyUnitList} from '~data/selectors/geoSurvey.selectors';
+import {getGeoSurveyUnitList} from '~GeoServey/data/geoSurvey.selectors';
 import {layout, screens, colors} from '~constants/constants';
-import {addUnit, selectUnit} from '~data/reducers/geoSurvey.reducer';
+import {addUnit, selectUnit} from '~GeoServey/data/geoSurvey.reducer';
 
 const UnitList = props => {
   const {navigation} = props;

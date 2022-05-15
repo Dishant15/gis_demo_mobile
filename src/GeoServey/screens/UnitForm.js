@@ -5,9 +5,9 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useDispatch, useSelector} from 'react-redux';
 
-import BackHeader from '~components/Header/BackHeader';
-import Input from '~components/Common/Input';
-import TagSelect from '~components/Common/TagSelect';
+import BackHeader from '~Common/components/Header/BackHeader';
+import Input from '~Common/Input';
+import TagSelect from '~Common/TagSelect';
 
 import {layout, screens, colors, SURVEY_TAG_LIST} from '~constants/constants';
 import {
@@ -15,8 +15,8 @@ import {
   getGeoSurveySelectedUnitIndex,
   getGeoSurveyTags,
   getIsReviewed,
-} from '~data/selectors/geoSurvey.selectors';
-import {updateUnitData} from '~data/reducers/geoSurvey.reducer';
+} from '~GeoServey/data/geoSurvey.selectors';
+import {updateUnitData} from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {filter, includes, multiply} from 'lodash';
 

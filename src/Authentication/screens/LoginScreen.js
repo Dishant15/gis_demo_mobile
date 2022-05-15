@@ -9,9 +9,9 @@ import {useDispatch} from 'react-redux';
 import {colors, fonts, layout} from '~constants/constants';
 import authBg from '~assets/img/authBg.png';
 import {useMutation} from 'react-query';
-import {postLogin} from './services';
-import {login} from '~data/reducers/auth.reducer';
-import Input from '~components/Common/Input';
+import {postLogin} from '../services';
+import {login} from '~Authentication/data/auth.reducer';
+import Input from '~Common/Input';
 
 const {width, height} = Dimensions.get('screen');
 

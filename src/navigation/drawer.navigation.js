@@ -4,14 +4,10 @@ import {Title, List, Headline, Divider, useTheme} from 'react-native-paper';
 
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {colors, layout, screens} from '~constants/constants';
-import DashboardScreen from '~screens/DashboardScreen';
-import SurveyList from '~screens/Survey/SurveyList';
-import NetworkScreen from '~screens/NetworkScreen';
-import ClientScreen from '~screens/ClientScreen';
-import PlanningScreen from '~screens/PlanningScreen';
-import {DrawerButton} from '~components/Header/ActionButtons';
-import ComingSoon from '~components/ComingSoon';
-import AreaList from '~screens/Survey/AreaList';
+import DashboardScreen from '~Dashboard/DashboardScreen';
+import {DrawerButton} from '~Common/components/Header/ActionButtons';
+import ComingSoon from '~Common/components/ComingSoon';
+import AreaList from '~GeoServey/screens/AreaList';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const Drawer = createDrawerNavigator();

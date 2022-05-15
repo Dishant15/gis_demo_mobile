@@ -6,20 +6,20 @@ import {Button, HelperText} from 'react-native-paper';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {colors, layout, screens, SURVEY_TAG_LIST} from '~constants/constants';
-import Input from '~components/Common/Input';
-import {updateSurveyFormData} from '~data/reducers/geoSurvey.reducer';
+import Input from '~Common/Input';
+import {updateSurveyFormData} from '~GeoServey/data/geoSurvey.reducer';
 import {
   getGeoSurveyCoords,
   getGeoSurveyFormData,
   getIsReviewed,
-} from '~data/selectors/geoSurvey.selectors';
+} from '~GeoServey/data/geoSurvey.selectors';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {groupBy, map, get} from 'lodash';
 import Api from '~utils/api.utils';
 import {getGoogleAddress} from '~constants/url.constants';
-import BackHeader from '~components/Header/BackHeader';
-import Loader from '~components/Common/Loader';
-import TagSelect from '~components/Common/TagSelect';
+import BackHeader from '~Common/components/Header/BackHeader';
+import Loader from '~Common/Loader';
+import TagSelect from '~Common/TagSelect';
 
 var turf = require('@turf/turf');
 

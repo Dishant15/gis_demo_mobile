@@ -4,7 +4,7 @@ import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {isNull, get, size, differenceBy} from 'lodash';
 
-import BackHeader from '~components/Header/BackHeader';
+import BackHeader from '~Common/components/Header/BackHeader';
 import {layout, screens} from '~constants/constants';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -12,8 +12,8 @@ import {
   getGeoSurveySelectedUnitIndex,
   getGeoSurveyUnitList,
   getIsReviewed,
-} from '~data/selectors/geoSurvey.selectors';
-import {updateUnitCoordinates} from '~data/reducers/geoSurvey.reducer';
+} from '~GeoServey/data/geoSurvey.selectors';
+import {updateUnitCoordinates} from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 

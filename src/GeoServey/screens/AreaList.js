@@ -3,9 +3,9 @@ import {View, FlatList} from 'react-native';
 import {layout, screens} from '~constants/constants';
 import {Card, Title, Paragraph} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
-import {setAreaIndex, setAreaList} from '~data/reducers/geoSurvey.reducer';
+import {setAreaIndex, setAreaList} from '~GeoServey/data/geoSurvey.reducer';
 import DummyArea from './areaDummy.json';
-import {getAreaList} from '~data/selectors/geoSurvey.selectors';
+import {getAreaList} from '~GeoServey/data/geoSurvey.selectors';
 import {useFocusEffect} from '@react-navigation/native';
 
 /**

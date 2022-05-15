@@ -7,7 +7,7 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 import RootNavigation from '~navigation/root.navigation';
 import {colors} from '~constants/constants';
-import store from '~data/store';
+import store from '~store';
 
 const theme = {
   ...DefaultTheme,

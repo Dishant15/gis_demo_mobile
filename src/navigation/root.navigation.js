@@ -8,17 +8,17 @@ import SplashScreen from 'react-native-splash-screen';
 
 import DrawerStack from '~navigation/drawer.navigation';
 
-import LoginScreen from '~screens/Authentication/LoginScreen';
-import SurveyMap from '~screens/Survey/SurveyMap';
-import UnitList from '~screens/Survey/UnitList';
-import UnitMap from '~screens/Survey/UnitMap';
-import UnitForm from '~screens/Survey/UnitForm';
+import LoginScreen from '~Authentication/screens/LoginScreen';
+import SurveyMap from '~GeoServey/screens/SurveyMap';
+import UnitList from '~GeoServey/screens/UnitList';
+import UnitMap from '~GeoServey/screens/UnitMap';
+import UnitForm from '~GeoServey/screens/UnitForm';
+import ReviewScreen from '~GeoServey/screens/ReviewScreen';
+import SurveyForm from '~GeoServey/screens/SurveyForm';
+import SurveyList from '~GeoServey/screens/SurveyList';
 
-import {getIsUserLoggedIn} from '~data/selectors/auth.selectors';
+import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';
 import {screens} from '~constants/constants';
-import ReviewScreen from '~screens/Survey/ReviewScreen';
-import SurveyForm from '~screens/Survey/SurveyForm';
-import SurveyList from '~screens/Survey/SurveyList';
 
 const Stack = createStackNavigator();
 

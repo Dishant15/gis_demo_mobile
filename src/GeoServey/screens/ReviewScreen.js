@@ -11,13 +11,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import {size, get} from 'lodash';
 import {Card, Button, Paragraph, Subheading} from 'react-native-paper';
 
-import BackHeader from '~components/Header/BackHeader';
+import BackHeader from '~Common/components/Header/BackHeader';
 import {layout, screens, colors} from '~constants/constants';
 import {
   getGeoSurveyCoords,
   getGeoSurveyUnitList,
   getGeoSurveyFormData,
-} from '~data/selectors/geoSurvey.selectors';
+} from '~GeoServey/data/geoSurvey.selectors';
 import {getInitialRegion} from '~utils/app.utils';
 import Api from '~utils/api.utils';
 import {apiAddSurvey} from '~constants/url.constants';
@@ -25,7 +25,7 @@ import {
   resetSurveyData,
   setReview,
   selectUnit,
-} from '~data/reducers/geoSurvey.reducer';
+} from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('window');

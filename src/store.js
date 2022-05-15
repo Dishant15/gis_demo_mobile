@@ -1,8 +1,8 @@
 import {configureStore} from '@reduxjs/toolkit';
 
-import appStateReducer from '~data/reducers/appstate.reducer';
-import authReducer from '~data/reducers/auth.reducer';
-import geoSurveyReducer from '~data/reducers/geoSurvey.reducer';
+import appStateReducer from '~Common/data/appstate.reducer';
+import authReducer from '~Authentication/data/auth.reducer';
+import geoSurveyReducer from '~GeoServey/data/geoSurvey.reducer';
 
 const store = configureStore({
   reducer: {

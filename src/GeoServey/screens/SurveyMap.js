@@ -17,16 +17,16 @@ import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {size} from 'lodash';
 
-import BackHeader from '~components/Header/BackHeader';
-import CustomMarker from '~components/Common/CustomMarker';
+import BackHeader from '~Common/components/Header/BackHeader';
+import CustomMarker from '~Common/CustomMarker';
 
 import {colors, layout, screens} from '~constants/constants';
 import {
   getGeoSurveyCoords,
   getIsReviewed,
   getSelectedArea,
-} from '~data/selectors/geoSurvey.selectors';
-import {updateCoordinates} from '~data/reducers/geoSurvey.reducer';
+} from '~GeoServey/data/geoSurvey.selectors';
+import {updateCoordinates} from '~GeoServey/data/geoSurvey.reducer';
 
 /**
  * render maps with survey points

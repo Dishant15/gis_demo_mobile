@@ -3,7 +3,7 @@ import {View, FlatList} from 'react-native';
 import {layout, screens} from '~constants/constants';
 import {Card, Title, Paragraph} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
-import {resetSurveyData} from '~data/reducers/geoSurvey.reducer';
+import {resetSurveyData} from '~GeoServey/data/geoSurvey.reducer';
 
 const SurveyList = props => {
   const {navigation, route} = props;
