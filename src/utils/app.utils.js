@@ -1,3 +1,5 @@
+import {get} from 'lodash';
+
 export const noop = data => console.log('noop => ', data);
 
 /**
@@ -62,4 +64,26 @@ const calcZoom = longitudeDelta => {
 const calcLongitudeDelta = zoom => {
   const power = Math.log2(360) - zoom;
   return Math.pow(2, power);
+};
+
+/**
+ * Parse axios error and return simple error message
+ */
+export const parseErrorMessage = error => {
+  let errorMessage = 'Something Went Wrong';
+  const status = get(error, 'response.status');
+  if (status) {
+    if (status === 400) {
+      errorMessage = get(
+        error,
+        'response.data.non_field_errors.0',
+        'Bad request',
+      );
+    } else if (status === 403) {
+      errorMessage = 'Unauthorized';
+    }
+  } else {
+    errorMessage = error.message;
+  }
+  return errorMessage;
 };

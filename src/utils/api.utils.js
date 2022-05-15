@@ -1,6 +1,7 @@
+import {API_HOST} from '@env';
 import axios from 'axios';
 import {isNil, map, keys, join} from 'lodash';
-// import store from '../store';
+import store from '~store';
 
 export function convertObjectToQueryParams(object) {
   if (!isNil(object)) {
@@ -14,6 +15,7 @@ export function convertObjectToQueryParams(object) {
 }
 
 export const apiRequestConfig = {
+  baseURL: API_HOST,
   timeout: 20000,
   headers: {
     'Content-Type': 'application/json',
@@ -24,10 +26,8 @@ export const apiRequestConfig = {
 const axiosInstance = axios.create();
 
 axiosInstance.interceptors.request.use(function (config) {
-  // const token = store.getState().auth.token;
-  const token = '';
-  // if (config.headers) config.headers.Authorization = token;
-
+  const token = store.getState().auth.token;
+  if (config.headers) config.headers.Authorization = token;
   return config;
 });
 

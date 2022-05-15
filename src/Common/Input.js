@@ -11,7 +11,7 @@ const Input = forwardRef((props, ref) => {
         activeOutlineColor={colors.black}
         selectionColor="#3895D344"
         style={[layout.textInput, props.inputStyle]}
-        mode="flat"
+        mode="outlined"
         {...props}
       />
       {props.error ? (

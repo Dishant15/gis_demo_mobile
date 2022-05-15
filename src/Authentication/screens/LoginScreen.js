@@ -5,18 +5,20 @@ import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
 import {useDispatch} from 'react-redux';
-
-import {colors, fonts, layout} from '~constants/constants';
-import authBg from '~assets/img/authBg.png';
 import {useMutation} from 'react-query';
-import {postLogin} from '../services';
-import {login} from '~Authentication/data/auth.reducer';
+
 import Input from '~Common/Input';
+import {login} from '~Authentication/data/auth.reducer';
+import {postLogin} from '~Authentication/data/auth.service';
+import {colors, fonts, layout} from '~constants/constants';
+import {parseErrorMessage} from '~utils/app.utils';
+import authBg from '~assets/img/authBg.png';
 
 const {width, height} = Dimensions.get('screen');
 
 const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
 
   const {
     control,
@@ -25,37 +27,20 @@ const LoginScreen = () => {
     setFocus,
     formState: {errors},
   } = useForm();
-  console.log(
-    '🚀 ~ file: LoginScreen.js ~ line 25 ~ LoginScreen ~ errors',
-    errors,
-  );
-  const dispatch = useDispatch();
 
-  // const mutation = useMutation(postLogin, {
-  //   onSuccess: res => {
-  //     console.log(
-  //       '🚀 ~ file: LoginScreen.js ~ line 32 ~ useMutation ~ res',
-  //       res,
-  //     );
-  //   },
-  //   onError: err => {
-  //     console.log(
-  //       '🚀 ~ file: LoginScreen.js ~ line 33 ~ useMutation ~ err',
-  //       err,
-  //     );
-  //   },
-  // });
-
-  const onSubmit = data => {
-    postLogin(data)
-      .then(res => dispatch(login(res.token)))
-      .catch(err =>
-        setError('password', {message: 'Credentials are invalid.'}),
-      );
-  };
+  const {mutate, isLoading} = useMutation(postLogin, {
+    onSuccess: res => {
+      dispatch(login(res.token));
+    },
+    onError: err => {
+      const errorMessage = parseErrorMessage(err);
+      setError('password', {message: errorMessage});
+    },
+  });
 
   const emaiError = errors.username?.message;
   const passwordError = errors.password?.message;
+
   return (
     <View style={[styles.container]}>
       <StatusBar
@@ -68,7 +53,9 @@ const LoginScreen = () => {
         source={authBg}
         resizeMode={FastImage.resizeMode.cover}
       />
-      <KeyboardAwareScrollView contentContainerStyle={styles.scrollWrapper}>
+      <KeyboardAwareScrollView
+        keyboardShouldPersistTaps="always"
+        contentContainerStyle={styles.scrollWrapper}>
         <View style={styles.formWrapper}>
           <Text style={styles.formLabel} maxFontSizeMultiplier={1}>
             NETWORK GIS
@@ -100,11 +87,6 @@ const LoginScreen = () => {
               />
             )}
           />
-          {/* {emaiError ? (
-            <HelperText type="error" visible={emaiError}>
-              {emaiError}
-            </HelperText>
-          ) : null} */}
           <Controller
             control={control}
             name="password"
@@ -128,7 +110,7 @@ const LoginScreen = () => {
                 autoCapitalize="none"
                 autoCorrect={false}
                 returnKeyType="done"
-                onSubmitEditing={handleSubmit(onSubmit)}
+                onSubmitEditing={handleSubmit(mutate)}
                 right={
                   <TextInput.Icon
                     name={showPassword ? 'eye-off' : 'eye'}
@@ -138,27 +120,21 @@ const LoginScreen = () => {
               />
             )}
           />
-          {/* {passwordError ? (
-            <HelperText type="error" visible={passwordError}>
-              {passwordError}
-            </HelperText>
-          ) : null} */}
-          <Text
+          {/* <Text
             style={styles.forgetPass}
             maxFontSizeMultiplier={1}
             onPress={() => {}}>
             Forgot Password
-          </Text>
-
-          {/* <ErrorBlock error={errors} field="__all__" /> */}
+          </Text> */}
 
           <View style={styles.submitBtnWrapper}>
             <Button
+              loading={isLoading}
               contentStyle={layout.button}
               color={colors.black}
               uppercase
               mode="contained"
-              onPress={handleSubmit(onSubmit)}>
+              onPress={handleSubmit(mutate)}>
               Login
             </Button>
           </View>
