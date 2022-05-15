@@ -9,6 +9,8 @@ import {DrawerButton} from '~Common/components/Header/ActionButtons';
 import ComingSoon from '~Common/components/ComingSoon';
 import AreaList from '~GeoServey/screens/AreaList';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useDispatch} from 'react-redux';
+import {logout} from '~Authentication/data/auth.reducer';
 
 const Drawer = createDrawerNavigator();
 
@@ -17,6 +19,7 @@ const Drawer = createDrawerNavigator();
  */
 const DrawerContent = props => {
   const {top} = useSafeAreaInsets();
+  const dispatch = useDispatch();
 
   return (
     <View style={layout.container}>
@@ -68,6 +71,13 @@ const DrawerContent = props => {
           onPress={() => {
             props.navigation.closeDrawer();
             props.navigation.navigate(screens.planningScreen);
+          }}
+        />
+        <List.Item
+          title="Logout"
+          left={() => <List.Icon icon="logout" />}
+          onPress={() => {
+            dispatch(logout());
           }}
         />
       </List.Section>

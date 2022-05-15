@@ -4,10 +4,11 @@ import {Provider as PaperProvider, DefaultTheme} from 'react-native-paper';
 import {QueryClientProvider, QueryClient} from 'react-query';
 import {NavigationContainer} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {PersistGate} from 'redux-persist/integration/react';
 
 import RootNavigation from '~navigation/root.navigation';
 import {colors} from '~constants/constants';
-import store from '~store';
+import store, {persistor} from '~store';
 
 const theme = {
   ...DefaultTheme,
@@ -24,15 +25,17 @@ const queryClient = new QueryClient();
 const App = () => {
   return (
     <Provider store={store}>
-      <PaperProvider theme={theme}>
-        <QueryClientProvider client={queryClient}>
-          <NavigationContainer>
-            <SafeAreaProvider>
-              <RootNavigation />
-            </SafeAreaProvider>
-          </NavigationContainer>
-        </QueryClientProvider>
-      </PaperProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <PaperProvider theme={theme}>
+          <QueryClientProvider client={queryClient}>
+            <NavigationContainer>
+              <SafeAreaProvider>
+                <RootNavigation />
+              </SafeAreaProvider>
+            </NavigationContainer>
+          </QueryClientProvider>
+        </PaperProvider>
+      </PersistGate>
     </Provider>
   );
 };
