@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, FlatList} from 'react-native';
-import {Card, Title, Paragraph} from 'react-native-paper';
+import {Card, Title, Subheading, Paragraph} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 import {useQuery} from 'react-query';
 import {size} from 'lodash';
@@ -64,6 +64,11 @@ const AreaList = props => {
         }}
         onRefresh={refetch}
         refreshing={!!(isLoading && size(data))}
+        ListEmptyComponent={
+          <View style={[layout.center, {paddingVertical: 200}]}>
+            <Subheading>No areas yet. please contact admin.</Subheading>
+          </View>
+        }
       />
       {isLoading ? <Loader /> : null}
     </View>

@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Image, StyleSheet} from 'react-native';
+import {View, Image, StyleSheet, Dimensions} from 'react-native';
 import {Headline} from 'react-native-paper';
 import {layout} from '~constants/constants';
 
@@ -27,7 +27,7 @@ const DashboardScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   imageWrapper: {
-    width: '80%',
+    width: Dimensions.get('screen').width * 0.8,
     height: 300,
   },
   img: {
