@@ -80,8 +80,7 @@ const ReviewScreen = ({navigation}) => {
     const data = {
       boundaryData: {
         ...formData,
-        unique_id: selectedArea.unique_id,
-        parent_id: selectedArea.id,
+        parentId: selectedArea.id,
         tags: join(formData.tags, ','),
         coordinates: latLongMapToCoords(coordinates),
       },

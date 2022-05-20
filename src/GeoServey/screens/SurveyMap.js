@@ -116,7 +116,20 @@ const SurveyMap = ({navigation}) => {
 
   return (
     <View style={layout.container}>
-      <BackHeader title="Draw on Map" onGoBack={handleCustomBack} />
+      <BackHeader
+        title="Tap on Map"
+        subtitle="put marker by tapping, long press for move"
+        onGoBack={handleCustomBack}
+        style={{
+          height: 80,
+        }}
+        titleStyle={{
+          fontSize: 22,
+        }}
+        subtitleStyle={{
+          fontSize: 16,
+        }}
+      />
       <View style={[layout.container, layout.relative]}>
         {showMap ? (
           <Animatable.View animation="fadeIn" style={layout.container}>
