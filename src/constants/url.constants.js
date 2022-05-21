@@ -1,5 +1,5 @@
 const GOOGLE_KEY = 'AIzaSyC4fchbQzIjIhCiuV-FqvuALteha7484ik';
-export const apiPostLogin = () => `/api/token`;
+export const apiPostLogin = () => `/api/token/`;
 
 export const apiAddSurvey = () => `/api/geo/survey/add/`;
 

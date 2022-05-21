@@ -28,7 +28,7 @@ const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use(function (config) {
   const token = store.getState().auth.token;
   if (config.headers)
-    config.headers.Authorization = token ? `Token ${token}` : undefined;
+    config.headers.Authorization = token ? `Bearer ${token}` : undefined;
   return config;
 });
 
