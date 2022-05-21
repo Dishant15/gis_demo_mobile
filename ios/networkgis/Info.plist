@@ -46,7 +46,7 @@
 		<string>MaterialCommunityIcons.ttf</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Permission required to focus map using user current location and better user experiance</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

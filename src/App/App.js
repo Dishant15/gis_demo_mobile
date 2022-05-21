@@ -5,9 +5,11 @@ import {QueryClientProvider, QueryClient} from 'react-query';
 import {NavigationContainer} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {PersistGate} from 'redux-persist/integration/react';
+import Toast from 'react-native-toast-message';
 
 import RootNavigation from '~navigation/root.navigation';
 import {colors} from '~constants/constants';
+import {toastConfig} from '~utils/toast.utils';
 import store, {persistor} from '~store';
 
 const theme = {
@@ -36,6 +38,7 @@ const App = () => {
             <NavigationContainer>
               <SafeAreaProvider>
                 <RootNavigation />
+                <Toast config={toastConfig} />
               </SafeAreaProvider>
             </NavigationContainer>
           </QueryClientProvider>

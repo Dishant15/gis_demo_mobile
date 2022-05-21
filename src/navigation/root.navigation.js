@@ -18,6 +18,7 @@ import SurveyForm from '~GeoServey/screens/SurveyForm';
 
 import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';
 import {screens} from '~constants/constants';
+import LocationProvider from '~Common/LocationProvider';
 
 const Stack = createStackNavigator();
 
@@ -39,6 +40,7 @@ const options = {
  * Parent:
  *    App
  * Renders:
+ *    LocationProvider - above navigation stack
  *    DrawerStack
  *    SurveyMap
  *    SurveyForm
@@ -58,9 +60,9 @@ const RootNavigation = () => {
   return (
     <>
       <StatusBar barStyle="light-content" />
-      <Stack.Navigator>
-        {isUserLoggedIn ? (
-          <>
+      {isUserLoggedIn ? (
+        <LocationProvider>
+          <Stack.Navigator>
             <Stack.Screen
               name={screens.drawerStack}
               component={DrawerStack}
@@ -96,15 +98,17 @@ const RootNavigation = () => {
               component={ReviewScreen}
               options={options}
             />
-          </>
-        ) : (
+          </Stack.Navigator>
+        </LocationProvider>
+      ) : (
+        <Stack.Navigator>
           <Stack.Screen
             name={screens.loginScreen}
             component={LoginScreen}
             options={options}
           />
-        )}
-      </Stack.Navigator>
+        </Stack.Navigator>
+      )}
     </>
   );
 };
