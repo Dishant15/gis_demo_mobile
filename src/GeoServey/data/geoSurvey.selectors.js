@@ -20,5 +20,8 @@ export const getGeoSurveySelectedUnitData = createSelector(
 export const getIsReviewed = store => store.geoSurvey.isReview;
 
 export const getSelectedArea = store => store.geoSurvey.selectedArea;
+export const getSelectedSurveyId = store => store.geoSurvey.selectedSurvey.id;
 
 export const getParentId = store => store.geoSurvey.parentId;
+
+export const getSurveyPolygons = store => store.geoSurvey.surveyList;

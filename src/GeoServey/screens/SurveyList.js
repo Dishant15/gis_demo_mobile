@@ -1,16 +1,28 @@
 import React, {useCallback} from 'react';
 import {View, FlatList, StyleSheet} from 'react-native';
-import {Card, Title, Subheading, Paragraph, Chip} from 'react-native-paper';
+import {
+  Card,
+  Title,
+  Subheading,
+  Paragraph,
+  Chip,
+  Button,
+} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 import {useQuery} from 'react-query';
 import {get, replace, size, split} from 'lodash';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 
 import Loader from '~Common/Loader';
-import {setSurveyData} from '~GeoServey/data/geoSurvey.reducer';
+import {
+  setSurveyData,
+  setServeyList,
+  addSurvey,
+} from '~GeoServey/data/geoSurvey.reducer';
 import {fetchSurveyList} from '~GeoServey/data/geoSurvey.service';
-import {layout, screens} from '~constants/constants';
+import {layout, screens, colors} from '~constants/constants';
 
 import {coordsToLatLongMap} from '~utils/map.utils';
 
@@ -25,6 +37,7 @@ import {coordsToLatLongMap} from '~utils/map.utils';
 const SurveyList = props => {
   const {navigation, route} = props;
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
 
   const {isLoading, data, refetch} = useQuery('surveyList', fetchSurveyList, {
     select: queryData => {
@@ -36,9 +49,13 @@ const SurveyList = props => {
         return d;
       });
     },
+    onSuccess: res => {
+      dispatch(setServeyList(res));
+    },
   });
 
-  const handleAddSurvey = useCallback(() => {
+  const navigateToMap = useCallback(() => {
+    dispatch(addSurvey());
     navigation.navigate(screens.surveyMap);
   }, []);
 
@@ -49,7 +66,7 @@ const SurveyList = props => {
         contentContainerStyle={styles.contentContainerStyle}
         data={data}
         keyExtractor={item => item.id}
-        renderItem={({item, index}) => {
+        renderItem={({item}) => {
           const tags = split(get(item, 'tags', []), ',');
           return (
             <Card
@@ -77,13 +94,6 @@ const SurveyList = props => {
         }}
         onRefresh={refetch}
         refreshing={!!(isLoading && size(data))}
-        ListHeaderComponent={
-          <Card onPress={handleAddSurvey} style={styles.cardHeader}>
-            <Card.Content>
-              <Title style={{textAlign: 'center'}}>+ Add Survey</Title>
-            </Card.Content>
-          </Card>
-        }
         ListEmptyComponent={
           isLoading ? null : (
             <View style={[layout.center, layout.container]}>
@@ -93,6 +103,17 @@ const SurveyList = props => {
         }
       />
       {isLoading ? <Loader /> : null}
+      {!!size(data) ? (
+        <Button
+          style={[styles.buttonStyle, {paddingBottom: insets.bottom || 0}]}
+          contentStyle={layout.button}
+          color={colors.black}
+          uppercase
+          mode="contained"
+          onPress={navigateToMap}>
+          View on map
+        </Button>
+      ) : null}
     </View>
   );
 };
@@ -116,6 +137,9 @@ const styles = StyleSheet.create({
     padding: 12,
     paddingBottom: 40,
     flexGrow: 1,
+  },
+  buttonStyle: {
+    borderRadius: 0,
   },
 });
 

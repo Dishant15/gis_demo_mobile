@@ -21,7 +21,9 @@ const defaultUnitData = {
 const initialState = {
   parentId: null,
   selectedArea: {},
+  surveyList: [],
   selectedSurvey: {},
+  // abstract survey fields
   coordinates: [],
   boundaryData: {
     name: '',
@@ -51,26 +53,37 @@ const geoSurveyReducer = createSlice({
       };
     },
     setSurveyData: (state, {payload}) => {
+      state.selectedSurvey = payload;
+      state.coordinates = payload.path;
+      state.boundaryData = pick(payload, [
+        'id',
+        'name',
+        'address',
+        'area',
+        'city',
+        'state',
+        'pincode',
+        'tags',
+      ]);
+      state.units = map(payload.units, unit => ({
+        ...unit,
+        coordinates: coordsToLatLongMap([unit.coordinates])[0],
+      }));
+    },
+    setServeyList: (state, {payload}) => {
+      const surveyList = map(payload, survey => ({
+        id: survey.id,
+        name: survey.name,
+        path: survey.path,
+      }));
+      state.surveyList = surveyList;
+    },
+    addSurvey: state => {
       return {
         ...initialState,
         selectedArea: state.selectedArea,
         parentId: state.parentId,
-        selectedSurvey: payload,
-        coordinates: payload.path,
-        boundaryData: pick(payload, [
-          'id',
-          'name',
-          'address',
-          'area',
-          'city',
-          'state',
-          'pincode',
-          'tags',
-        ]),
-        units: map(payload.units, unit => ({
-          ...unit,
-          coordinates: coordsToLatLongMap([unit.coordinates])[0],
-        })),
+        surveyList: state.surveyList,
       };
     },
     updateCoordinates: (state, {payload}) => {
@@ -119,5 +132,7 @@ export const {
   setReview,
   setAreaData,
   setSurveyData,
+  setServeyList,
+  addSurvey,
 } = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;

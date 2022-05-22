@@ -25,8 +25,11 @@ import {
   getGeoSurveyCoords,
   getIsReviewed,
   getSelectedArea,
+  getSelectedSurveyId,
+  getSurveyPolygons,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {updateCoordinates} from '~GeoServey/data/geoSurvey.reducer';
+import {noop} from '~utils/app.utils';
 
 /**
  * render maps with survey points
@@ -40,6 +43,9 @@ const SurveyMap = ({navigation}) => {
   const coords = useSelector(getGeoSurveyCoords);
   const isReviewed = useSelector(getIsReviewed);
   const selectedArea = useSelector(getSelectedArea);
+  const allPolygons = useSelector(getSurveyPolygons);
+  // surveyId indicate that survey is add or edit
+  const surveyId = useSelector(getSelectedSurveyId);
 
   const [showMap, setMapVisibility] = useState(false);
   const [coordinates, setCoordinates] = useState(coords);
@@ -69,7 +75,6 @@ const SurveyMap = ({navigation}) => {
   );
 
   const handleSavePolygon = () => {
-    if (!size(coordinates)) return;
     dispatch(updateCoordinates(coordinates));
     navigation.navigate(isReviewed ? screens.reviewScreen : screens.surveyForm);
   };
@@ -112,8 +117,10 @@ const SurveyMap = ({navigation}) => {
     }
   };
 
-  if (!isFocused) return null;
+  // enable btn if polygon is created ( alteast 3 markers )
+  const enableBtn = size(coordinates) > 2;
 
+  if (!isFocused) return null;
   return (
     <View style={layout.container}>
       <BackHeader
@@ -170,6 +177,20 @@ const SurveyMap = ({navigation}) => {
                   fillColor="#3895D326"
                 />
               ) : null}
+              {size(allPolygons)
+                ? allPolygons.map(poly => {
+                    if (poly.id === surveyId) return null;
+                    return (
+                      <Polygon
+                        key={poly.id}
+                        coordinates={poly.path}
+                        strokeWidth={2}
+                        strokeColor={'#FFA701'}
+                        fillColor="#FFA70114"
+                      />
+                    );
+                  })
+                : null}
               {size(selectedArea.path) ? (
                 <Polygon
                   coordinates={selectedArea.path}
@@ -190,9 +211,15 @@ const SurveyMap = ({navigation}) => {
           ]}>
           <TouchableOpacity
             activeOpacity={0.6}
-            style={[layout.button, styles.drawBtn]}
-            onPress={handleSavePolygon}>
-            <Text style={styles.drawBtnTxt}>Save Boundary</Text>
+            style={[
+              layout.button,
+              styles.drawBtn,
+              !enableBtn && styles.disableBtn,
+            ]}
+            onPress={enableBtn ? handleSavePolygon : noop}>
+            <Text style={styles.drawBtnTxt}>
+              {surveyId ? 'Update' : 'Save'} Boundary
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -218,6 +245,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     alignSelf: 'flex-end',
     paddingHorizontal: 15,
+  },
+  disableBtn: {
+    backgroundColor: '#A9A9A9',
   },
   drawBtnTxt: {
     color: 'white',
