@@ -19,6 +19,7 @@ import SurveyForm from '~GeoServey/screens/SurveyForm';
 import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';
 import {screens} from '~constants/constants';
 import LocationProvider from '~Common/LocationProvider';
+import SurveyList from '~GeoServey/screens/SurveyList';
 
 const Stack = createStackNavigator();
 
@@ -66,6 +67,11 @@ const RootNavigation = () => {
             <Stack.Screen
               name={screens.drawerStack}
               component={DrawerStack}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.surveyList}
+              component={SurveyList}
               options={options}
             />
             <Stack.Screen

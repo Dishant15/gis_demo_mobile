@@ -10,6 +10,7 @@ export const screens = {
   areaList: 'areaList',
   surveyMap: 'surveyMap',
   surveyForm: 'surveyForm',
+  surveyList: 'surveyList',
 
   unitList: 'unitList',
   unitMap: 'unitMap',

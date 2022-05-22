@@ -51,13 +51,14 @@ const AreaList = props => {
               style={{marginBottom: 12}}
               onPress={() => {
                 dispatch(setAreaData(item));
-                navigation.navigate(screens.surveyMap);
+                navigation.navigate(screens.surveyList);
               }}>
               <Card.Content>
                 <Title>{item.name}</Title>
                 <Paragraph>
                   {item.area} - {item.pincode}
                 </Paragraph>
+                <Paragraph>Surveys - {item.survey_count}</Paragraph>
               </Card.Content>
             </Card>
           );

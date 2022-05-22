@@ -1,5 +1,5 @@
+import {map, pick} from 'lodash';
 import {createSlice} from '@reduxjs/toolkit';
-import {map} from 'lodash';
 import {coordsToLatLongMap} from '~utils/map.utils';
 
 const defaultUnitData = {
@@ -20,7 +20,7 @@ const defaultUnitData = {
 
 const initialState = {
   selectedArea: {},
-  selectedAreaIndex: null,
+  selectedSurvey: {},
   coordinates: [],
   boundaryData: {
     name: '',
@@ -46,6 +46,28 @@ const geoSurveyReducer = createSlice({
       return {
         ...initialState,
         selectedArea: payload,
+      };
+    },
+    setSurveyData: (state, {payload}) => {
+      return {
+        ...initialState,
+        selectedArea: state.selectedArea,
+        selectedSurvey: payload,
+        coordinates: payload.path,
+        boundaryData: pick(payload, [
+          'id',
+          'name',
+          'address',
+          'area',
+          'city',
+          'state',
+          'pincode',
+          'tags',
+        ]),
+        units: map(payload.units, unit => ({
+          ...unit,
+          coordinates: coordsToLatLongMap([unit.coordinates])[0],
+        })),
       };
     },
     updateCoordinates: (state, {payload}) => {
@@ -93,5 +115,6 @@ export const {
   resetSurveyData,
   setReview,
   setAreaData,
+  setSurveyData,
 } = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;
