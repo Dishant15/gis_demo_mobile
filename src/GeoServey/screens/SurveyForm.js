@@ -46,6 +46,10 @@ const SurveyForm = props => {
   const {mutate, isLoading} = useMutation(updateGeoServey, {
     onSuccess: res => {
       dispatch(updateSurveyFormData(res));
+      showToast(
+        `Survey boundary ${isReviewed ? 'updated' : 'created'} successfully.`,
+        TOAST_TYPE.SUCCESS,
+      );
       navigation.navigate(isReviewed ? screens.reviewScreen : screens.unitList);
     },
     onError: err => {

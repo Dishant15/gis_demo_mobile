@@ -27,9 +27,15 @@ import {
   getSelectedArea,
   getSelectedSurveyId,
   getSurveyPolygons,
+  getGeoSurveyFormData,
+  getParentId,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {updateCoordinates} from '~GeoServey/data/geoSurvey.reducer';
 import {noop} from '~utils/app.utils';
+import {useMutation} from 'react-query';
+import {updateGeoServey} from '~GeoServey/data/geoSurvey.service';
+import {latLongMapToCoords} from '~utils/map.utils';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
 /**
  * render maps with survey points
@@ -44,13 +50,18 @@ const SurveyMap = ({navigation}) => {
   const isReviewed = useSelector(getIsReviewed);
   const selectedArea = useSelector(getSelectedArea);
   const allPolygons = useSelector(getSurveyPolygons);
+  const formData = useSelector(getGeoSurveyFormData);
   // surveyId indicate that survey is add or edit
   const surveyId = useSelector(getSelectedSurveyId);
+  const parentId = useSelector(getParentId);
 
   const [showMap, setMapVisibility] = useState(false);
   const [coordinates, setCoordinates] = useState(coords);
   const dispatch = useDispatch();
   const mapRef = useRef();
+
+  // enable btn if polygon is created ( alteast 3 markers )
+  const enableBtn = size(coordinates) > 2;
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -74,9 +85,45 @@ const SurveyMap = ({navigation}) => {
     }, [isReviewed]),
   );
 
+  const {mutate, isLoading} = useMutation(updateGeoServey, {
+    onSuccess: res => {
+      dispatch(updateCoordinates(coordinates));
+      navigation.navigate(screens.reviewScreen);
+      showToast('Survey boundary updated successfully.', TOAST_TYPE.SUCCESS);
+    },
+    onError: err => {
+      showToast('Input Error', TOAST_TYPE.ERROR);
+      console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err.response);
+    },
+  });
+
+  const handleUpdatePolygon = () => {
+    const data = {
+      ...formData,
+      tags: Array.isArray(formData.tags)
+        ? join(formData.tags, ',')
+        : formData.tags,
+      id: formData.id,
+      coordinates: latLongMapToCoords(coords),
+      parentId,
+    };
+    mutate(data);
+  };
+
   const handleSavePolygon = () => {
     dispatch(updateCoordinates(coordinates));
     navigation.navigate(isReviewed ? screens.reviewScreen : screens.surveyForm);
+  };
+
+  const handleBtnPress = () => {
+    if (isLoading) return;
+    if (enableBtn) {
+      if (surveyId) {
+        handleUpdatePolygon();
+      } else {
+        handleSavePolygon();
+      }
+    }
   };
 
   const handleMarkerDrag = index => e => {
@@ -116,9 +163,6 @@ const SurveyMap = ({navigation}) => {
       navigation.goBack();
     }
   };
-
-  // enable btn if polygon is created ( alteast 3 markers )
-  const enableBtn = size(coordinates) > 2;
 
   if (!isFocused) return null;
   return (
@@ -216,9 +260,11 @@ const SurveyMap = ({navigation}) => {
               styles.drawBtn,
               !enableBtn && styles.disableBtn,
             ]}
-            onPress={enableBtn ? handleSavePolygon : noop}>
+            onPress={handleBtnPress}>
             <Text style={styles.drawBtnTxt}>
-              {surveyId ? 'Update' : 'Save'} Boundary
+              {isLoading
+                ? 'Loading...'
+                : `${surveyId ? 'Update' : 'Save'} Boundary`}
             </Text>
           </TouchableOpacity>
         </View>
