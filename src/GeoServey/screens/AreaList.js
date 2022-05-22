@@ -1,12 +1,12 @@
 import React from 'react';
-import {View, FlatList} from 'react-native';
+import {View, FlatList, StyleSheet} from 'react-native';
 import {Card, Title, Subheading, Paragraph} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 import {useQuery} from 'react-query';
 import {size} from 'lodash';
 
 import Loader from '~Common/Loader';
-import {setAreaData, setAreaIndex} from '~GeoServey/data/geoSurvey.reducer';
+import {setAreaData} from '~GeoServey/data/geoSurvey.reducer';
 import {fetchAreaPockets} from '~GeoServey/data/geoSurvey.service';
 import {layout, screens} from '~constants/constants';
 
@@ -43,8 +43,9 @@ const AreaList = props => {
   return (
     <View style={[layout.container, layout.relative]}>
       <FlatList
-        contentContainerStyle={{padding: 12, paddingBottom: 40}}
+        contentContainerStyle={styles.contentContainerStyle}
         data={data}
+        keyExtractor={item => item.id}
         renderItem={({item, index}) => {
           return (
             <Card
@@ -66,14 +67,24 @@ const AreaList = props => {
         onRefresh={refetch}
         refreshing={!!(isLoading && size(data))}
         ListEmptyComponent={
-          <View style={[layout.center, {paddingVertical: 200}]}>
-            <Subheading>No areas yet. please contact admin.</Subheading>
-          </View>
+          isLoading ? null : (
+            <View style={[layout.container, layout.center]}>
+              <Subheading>No areas yet. please contact admin.</Subheading>
+            </View>
+          )
         }
       />
       {isLoading ? <Loader /> : null}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  contentContainerStyle: {
+    padding: 12,
+    paddingBottom: 40,
+    flexGrow: 1,
+  },
+});
 
 export default AreaList;

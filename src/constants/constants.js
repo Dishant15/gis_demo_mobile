@@ -87,3 +87,12 @@ export const SURVEY_TAG_LIST = [
   {label: 'Hospital', value: 'hospital'},
   {label: 'Educational', value: 'educational'},
 ];
+
+export const SURVEY_TAG_OBJ = {
+  residential: 'Residential',
+  commercial: 'Commercial',
+  semi_commercial: 'Semi Commercial',
+  government: 'Government',
+  hospital: 'Hospital',
+  educational: 'Educational',
+};

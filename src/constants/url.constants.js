@@ -8,4 +8,8 @@ export const getGoogleAddress = (lat, long) =>
 
 /* External server apis **/
 export const apiGetAreaPocketList = () => '/api/geo/survey/area-pocket/list/';
+
 export const apiGetSurveyList = () => '/api/geo/survey/list/';
+export const apiGetSurveyAddBoundary = () => '/api/geo/survey/boundary/add/';
+export const apiGetSurveyEditBoundary = (surveyId = ':survey_id') =>
+  `/api/geo/survey/boundary/${surveyId}/edit/`;

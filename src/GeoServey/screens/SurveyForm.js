@@ -12,14 +12,19 @@ import {
   getGeoSurveyCoords,
   getGeoSurveyFormData,
   getIsReviewed,
+  getParentId,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
-import {groupBy, map, get} from 'lodash';
+import {groupBy, map, get, join, split} from 'lodash';
 import Api from '~utils/api.utils';
 import {getGoogleAddress} from '~constants/url.constants';
 import BackHeader from '~Common/components/Header/BackHeader';
 import Loader from '~Common/Loader';
 import TagSelect from '~Common/TagSelect';
+import {useMutation} from 'react-query';
+import {updateGeoServey} from '~GeoServey/data/geoSurvey.service';
+import {latLongMapToCoords} from '~utils/map.utils';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
 var turf = require('@turf/turf');
 
@@ -33,8 +38,23 @@ const SurveyForm = props => {
   const formData = useSelector(getGeoSurveyFormData);
   const coords = useSelector(getGeoSurveyCoords);
   const isReviewed = useSelector(getIsReviewed);
+  const parentId = useSelector(getParentId);
 
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+
+  const {mutate, isLoading} = useMutation(updateGeoServey, {
+    onSuccess: res => {
+      dispatch(updateSurveyFormData(res));
+      navigation.navigate(isReviewed ? screens.reviewScreen : screens.unitList);
+    },
+    onError: err => {
+      showToast('Input Error', TOAST_TYPE.ERROR);
+      console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err.response);
+      // const errorMessage = parseErrorMessage(err);
+      // setError('password', {message: errorMessage});
+    },
+  });
 
   const {
     control,
@@ -51,7 +71,9 @@ const SurveyForm = props => {
       city: formData.city,
       state: formData.state,
       pincode: formData.pincode,
-      tags: formData.tags,
+      tags: Array.isArray(formData.tags)
+        ? formData.tags
+        : split(formData.tags, ','),
     },
   });
 
@@ -121,11 +143,15 @@ const SurveyForm = props => {
     }, [isReviewed]),
   );
 
-  const dispatch = useDispatch();
-
-  const onSubmit = data => {
-    dispatch(updateSurveyFormData({...data}));
-    navigation.navigate(isReviewed ? screens.reviewScreen : screens.unitList);
+  const onSubmit = formState => {
+    const data = {
+      ...formState,
+      tags: join(formState.tags, ','),
+      id: formData.id,
+      coordinates: latLongMapToCoords(coords),
+      parentId,
+    };
+    mutate(data);
   };
 
   const handleFocus = useCallback(
@@ -317,6 +343,7 @@ const SurveyForm = props => {
         />
         <View style={styles.buttonWrapper}>
           <Button
+            loading={isLoading}
             contentStyle={layout.button}
             color={colors.black}
             uppercase

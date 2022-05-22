@@ -21,6 +21,7 @@ import FastImage from 'react-native-fast-image';
 import LocationIcon from '~assets/img/location.png';
 import {isNull} from 'lodash';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {logout} from '~Authentication/data/auth.reducer';
 
 /**
  * Hoc component
@@ -130,7 +131,7 @@ const LocationProvider = ({children}) => {
     );
   };
 
-  if (!isNull(locationPermissionType)) {
+  if (locationPermissionType === PERMISSIONS_TYPE.ALLOW) {
     return children;
   } else {
     return (
@@ -155,7 +156,7 @@ const LocationProvider = ({children}) => {
           onPress={getLocationPermission}>
           Enable Permission
         </Button>
-        <Button
+        {/* <Button
           style={styles.deniedBtn}
           contentStyle={layout.button}
           color={colors.primaryMain}
@@ -163,6 +164,15 @@ const LocationProvider = ({children}) => {
           mode="text"
           onPress={onPermissonSkip}>
           Not yet
+        </Button> */}
+        <Button
+          style={styles.deniedBtn}
+          contentStyle={layout.button}
+          color={colors.primaryMain}
+          uppercase
+          mode="text"
+          onPress={() => dispatch(logout())}>
+          Logout
         </Button>
       </View>
     );

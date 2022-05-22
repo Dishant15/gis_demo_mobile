@@ -19,6 +19,7 @@ const defaultUnitData = {
 };
 
 const initialState = {
+  parentId: null,
   selectedArea: {},
   selectedSurvey: {},
   coordinates: [],
@@ -46,12 +47,14 @@ const geoSurveyReducer = createSlice({
       return {
         ...initialState,
         selectedArea: payload,
+        parentId: payload.id,
       };
     },
     setSurveyData: (state, {payload}) => {
       return {
         ...initialState,
         selectedArea: state.selectedArea,
+        parentId: state.parentId,
         selectedSurvey: payload,
         coordinates: payload.path,
         boundaryData: pick(payload, [
