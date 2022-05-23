@@ -89,6 +89,10 @@ const ReviewScreen = ({navigation}) => {
     mutate(data);
   };
 
+  const navigateToSurveyList = useCallback(() => {
+    navigation.navigate(screens.surveyList);
+  }, []);
+
   const navigateToSurveyMap = useCallback(() => {
     navigation.navigate(screens.surveyMap);
   }, []);
@@ -224,7 +228,7 @@ const ReviewScreen = ({navigation}) => {
             </>
           ) : null}
           <View style={styles.buttonWrapper}>
-            <Button
+            {/* <Button
               style={styles.discardBtn}
               contentStyle={layout.button}
               color={colors.black}
@@ -232,7 +236,7 @@ const ReviewScreen = ({navigation}) => {
               mode="outlined"
               onPress={handleDiscart}>
               Discard
-            </Button>
+            </Button> */}
             <Button
               style={styles.submitBtn}
               contentStyle={layout.button}
@@ -240,8 +244,8 @@ const ReviewScreen = ({navigation}) => {
               uppercase
               loading={isLoading}
               mode="contained"
-              onPress={handleSubmit}>
-              Submit
+              onPress={navigateToSurveyList}>
+              Go to Survey List
             </Button>
           </View>
         </View>
@@ -269,8 +273,8 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   submitBtn: {
-    flex: 2,
-    marginLeft: 6,
+    flex: 1,
+    // marginLeft: 6,
   },
 });
 

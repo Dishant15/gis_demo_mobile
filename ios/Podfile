@@ -7,6 +7,12 @@ target 'networkgis' do
   # React Native Maps dependencies
   rn_maps_path = '../node_modules/react-native-maps'
   pod 'react-native-google-maps', :path => rn_maps_path
+
+  permissions_path = '../node_modules/react-native-permissions/ios'
+  pod 'Permission-LocationAccuracy', :path => "#{permissions_path}/LocationAccuracy"
+  pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways"
+  pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
+
   config = use_native_modules!
 
   use_react_native!(
