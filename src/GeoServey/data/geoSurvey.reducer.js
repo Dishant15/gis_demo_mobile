@@ -35,9 +35,11 @@ const initialState = {
     // list of strings
     tags: [],
   },
+  selectedUnitData: {},
   // list of units data
   units: [],
-  selectedUnit: null,
+  // unit index if selected , -1 if new unit add
+  selectedUnitIndex: null,
   isReview: false,
 };
 
@@ -92,18 +94,21 @@ const geoSurveyReducer = createSlice({
     updateSurveyFormData: (state, {payload}) => {
       state.boundaryData = payload;
     },
-    addUnit: state => {
-      const newUnit = [...state.units, {...defaultUnitData}];
-      state.units = newUnit;
-      state.selectedUnit = newUnit.length - 1;
-    },
     // payload : unit index
     selectUnit: (state, {payload}) => {
-      state.selectedUnit = payload;
+      if (payload === -1) {
+        // handle unit add
+        state.selectedUnitData = {...defaultUnitData};
+        state.selectedUnitIndex = -1;
+      } else {
+        state.selectedUnitData = {...units[payload]};
+        state.selectedUnitIndex = payload;
+      }
     },
     // payload : { unitIndex, coordinates }
     updateUnitCoordinates: (state, {payload}) => {
-      state.units[payload.unitIndex].coordinates = payload.coordinates;
+      state.selectedUnitData.coordinates = payload.coordinates;
+      // update units data in redux after api hit success
     },
     // payload : { unitIndex, data }
     updateUnitData: (state, {payload}) => {
@@ -124,7 +129,6 @@ const geoSurveyReducer = createSlice({
 export const {
   updateCoordinates,
   updateSurveyFormData,
-  addUnit,
   selectUnit,
   updateUnitCoordinates,
   updateUnitData,

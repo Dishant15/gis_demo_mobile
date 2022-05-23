@@ -4,6 +4,8 @@ import {
   apiGetSurveyAddBoundary,
   apiGetSurveyEditBoundary,
   apiGetSurveyList,
+  apiPostSurveyAddUnit,
+  apiPutEditUnit,
 } from '~constants/url.constants';
 import Api from '~utils/api.utils';
 
@@ -29,6 +31,17 @@ export const updateGeoServey = async data => {
     return res.data;
   } else {
     const res = await Api.post(apiGetSurveyAddBoundary(), data);
+    return res.data;
+  }
+};
+
+// handle add / edti survey
+export const upsertSurveyUnit = async data => {
+  if (data.id) {
+    const res = await Api.put(apiPutEditUnit(data.id), data);
+    return res.data;
+  } else {
+    const res = await Api.post(apiPostSurveyAddUnit(), data);
     return res.data;
   }
 };

@@ -14,6 +14,7 @@ import {
   getGeoSurveySelectedUnitData,
   getGeoSurveySelectedUnitIndex,
   getGeoSurveyTags,
+  getGeoSurveyUnitFormData,
   getIsReviewed,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {updateUnitData} from '~GeoServey/data/geoSurvey.reducer';
@@ -23,7 +24,6 @@ import {filter, includes, multiply} from 'lodash';
 const CATEGORY_OPTS = [
   {value: 'M', label: 'MDU'},
   {value: 'S', label: 'SDU'},
-  {value: 'B', label: 'BOTH'},
 ];
 
 /**
@@ -32,7 +32,7 @@ const CATEGORY_OPTS = [
  */
 const UnitForm = ({navigation}) => {
   const isFocused = useIsFocused();
-  const unitData = useSelector(getGeoSurveySelectedUnitData);
+  const unitData = useSelector(getGeoSurveyUnitFormData);
   const selectedSurveyTags = useSelector(getGeoSurveyTags);
   const unitIndex = useSelector(getGeoSurveySelectedUnitIndex);
   const isReviewed = useSelector(getIsReviewed);
@@ -66,6 +66,7 @@ const UnitForm = ({navigation}) => {
     setFocus,
     getValues,
     setValue,
+    watch,
     formState: {errors},
   } = useForm({
     defaultValues: {
@@ -79,11 +80,20 @@ const UnitForm = ({navigation}) => {
   });
 
   const handleAnotherUnit = data => {
+    let valideData = {...data};
+    if (data.category === 'S') {
+      valideData.floors = 1;
+      valideData.house_per_floor = 1;
+    }
     dispatch(
       updateUnitData({
         unitIndex,
-        data,
+        data: valideData,
       }),
+    );
+    console.log(
+      '🚀 ~ file: UnitForm.js ~ line 84 ~ UnitForm ~ valideData',
+      valideData,
     );
     if (isReviewed) {
       navigation.navigate(screens.reviewScreen);
@@ -108,6 +118,8 @@ const UnitForm = ({navigation}) => {
   };
 
   if (!isFocused) return null;
+
+  const selectedCategory = watch('category');
 
   return (
     <View style={layout.container}>
@@ -195,65 +207,69 @@ const UnitForm = ({navigation}) => {
               );
             }}
           />
+          {selectedCategory === 'M' ? (
+            <Controller
+              control={control}
+              name="floors"
+              rules={{
+                required: 'Floors is required.',
+              }}
+              render={({field: {ref, onChange, onBlur, value}}) => (
+                <Input
+                  ref={ref}
+                  label="Floors"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  error={errors.floors?.message}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="number-pad"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                  onSubmitEditing={handleFocus('house_per_floor')}
+                />
+              )}
+            />
+          ) : null}
 
-          <Controller
-            control={control}
-            name="floors"
-            rules={{
-              required: 'Floors is required.',
-            }}
-            render={({field: {ref, onChange, onBlur, value}}) => (
-              <Input
-                ref={ref}
-                label="Floors"
-                onChangeText={onChange}
-                onBlur={onBlur}
-                value={value}
-                error={errors.floors?.message}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="number-pad"
-                returnKeyType="next"
-                blurOnSubmit={false}
-                onSubmitEditing={handleFocus('house_per_floor')}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="house_per_floor"
-            rules={{
-              required: 'House per floor is required.',
-            }}
-            render={({field: {ref, onChange, onBlur, value}}) => (
-              <Input
-                ref={ref}
-                label="House per floor"
-                onChangeText={onChange}
-                onBlur={e => {
-                  const [house_per_floor, floors] = getValues([
-                    'house_per_floor',
-                    'floors',
-                  ]);
-                  setValue(
-                    'total_home_pass',
-                    String(multiply(floors, house_per_floor)),
-                  );
-                  onBlur(e);
-                }}
-                value={value}
-                error={errors.house_per_floor?.message}
-                underlineColorAndroid="transparent"
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="number-pad"
-                returnKeyType="next"
-                blurOnSubmit={false}
-                onSubmitEditing={handleFocus('total_home_pass')}
-              />
-            )}
-          />
+          {selectedCategory === 'M' ? (
+            <Controller
+              control={control}
+              name="house_per_floor"
+              rules={{
+                required: 'House per floor is required.',
+              }}
+              render={({field: {ref, onChange, onBlur, value}}) => (
+                <Input
+                  ref={ref}
+                  label="House per floor"
+                  onChangeText={onChange}
+                  onBlur={e => {
+                    const [house_per_floor, floors] = getValues([
+                      'house_per_floor',
+                      'floors',
+                    ]);
+                    setValue(
+                      'total_home_pass',
+                      String(multiply(floors, house_per_floor)),
+                    );
+                    onBlur(e);
+                  }}
+                  value={value}
+                  error={errors.house_per_floor?.message}
+                  underlineColorAndroid="transparent"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="number-pad"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                  onSubmitEditing={handleFocus('total_home_pass')}
+                />
+              )}
+            />
+          ) : null}
           <Controller
             control={control}
             name="total_home_pass"
@@ -263,7 +279,9 @@ const UnitForm = ({navigation}) => {
             render={({field: {ref, onChange, onBlur, value}}) => (
               <Input
                 ref={ref}
-                label="Total home pass"
+                label={
+                  selectedCategory === 'M' ? 'Total home pass' : 'No. of units'
+                }
                 onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}

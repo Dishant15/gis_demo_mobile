@@ -7,7 +7,7 @@ import BackHeader from '~Common/components/Header/BackHeader';
 
 import {getGeoSurveyUnitList} from '~GeoServey/data/geoSurvey.selectors';
 import {layout, screens, colors} from '~constants/constants';
-import {addUnit, selectUnit} from '~GeoServey/data/geoSurvey.reducer';
+import {selectUnit} from '~GeoServey/data/geoSurvey.reducer';
 
 /**
  * Parent:
@@ -17,11 +17,6 @@ const UnitList = props => {
   const {navigation} = props;
   const units = useSelector(getGeoSurveyUnitList);
   const dispatch = useDispatch();
-
-  const handleAddUnit = useCallback(() => {
-    dispatch(addUnit());
-    navigation.navigate(screens.unitMap);
-  }, []);
 
   const handleUnitSelect = useCallback(
     index => () => {
@@ -55,7 +50,7 @@ const UnitList = props => {
         }}
         ListHeaderComponent={
           <Card
-            onPress={handleAddUnit}
+            onPress={handleUnitSelect(-1)}
             style={{
               marginVertical: 12,
             }}>

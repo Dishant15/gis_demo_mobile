@@ -10,12 +10,15 @@ export const getGeoSurveyTags = store =>
 export const getGeoSurveyUnitList = store => store.geoSurvey.units;
 
 export const getGeoSurveySelectedUnitIndex = store =>
-  store.geoSurvey.selectedUnit;
+  store.geoSurvey.selectedUnitIndex;
 
 export const getGeoSurveySelectedUnitData = createSelector(
   [getGeoSurveyUnitList, getGeoSurveySelectedUnitIndex],
   (units, index) => units[index],
 );
+
+export const getGeoSurveyUnitFormData = store =>
+  store.geoSurvey.selectedUnitData;
 
 export const getIsReviewed = store => store.geoSurvey.isReview;
 

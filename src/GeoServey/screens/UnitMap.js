@@ -10,12 +10,14 @@ import {useDispatch, useSelector} from 'react-redux';
 import {
   getGeoSurveyCoords,
   getGeoSurveySelectedUnitIndex,
+  getGeoSurveyUnitFormData,
   getGeoSurveyUnitList,
   getIsReviewed,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {updateUnitCoordinates} from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {upsertSurveyUnit} from '~GeoServey/data/geoSurvey.service';
 
 /**
  * Parent:
@@ -27,7 +29,7 @@ const UnitMap = ({navigation}) => {
   const isReviewed = useSelector(getIsReviewed);
   const unitList = useSelector(getGeoSurveyUnitList);
   const unitIndex = useSelector(getGeoSurveySelectedUnitIndex);
-  const unitData = unitList[unitIndex];
+  const unitData = useSelector(getGeoSurveyUnitFormData);
 
   const surveyCoords = useSelector(getGeoSurveyCoords);
   const dispatch = useDispatch();
@@ -59,7 +61,20 @@ const UnitMap = ({navigation}) => {
     }
   }, [unitData]);
 
+  // const {mutate, isLoading} = useMutation(upsertSurveyUnit, {
+  //   onSuccess: res => {
+  //     dispatch(updateCoordinates(coordinates));
+  //     navigation.navigate(screens.reviewScreen);
+  //     showToast('Survey boundary updated successfully.', TOAST_TYPE.SUCCESS);
+  //   },
+  //   onError: err => {
+  //     showToast('Input Error', TOAST_TYPE.ERROR);
+  //     console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err.response);
+  //   },
+  // });
+
   const handleButtonPress = () => {
+    if (isLoading) return;
     dispatch(
       updateUnitCoordinates({
         unitIndex,
