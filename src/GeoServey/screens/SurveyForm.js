@@ -10,12 +10,14 @@ import Input from '~Common/Input';
 import {
   setSurveyData,
   updateSurveyFormData,
+  updateSurveyList,
 } from '~GeoServey/data/geoSurvey.reducer';
 import {
   getGeoSurveyCoords,
   getGeoSurveyFormData,
   getIsReviewed,
   getParentId,
+  getTaskId,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {groupBy, map, get, join, split} from 'lodash';
@@ -26,7 +28,7 @@ import Loader from '~Common/Loader';
 import TagSelect from '~Common/TagSelect';
 import {useMutation} from 'react-query';
 import {updateGeoServey} from '~GeoServey/data/geoSurvey.service';
-import {latLongMapToCoords} from '~utils/map.utils';
+import {coordsToLatLongMap, latLongMapToCoords} from '~utils/map.utils';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
 var turf = require('@turf/turf');
@@ -40,14 +42,20 @@ const SurveyForm = props => {
   const isFocused = useIsFocused();
   const formData = useSelector(getGeoSurveyFormData);
   const isReviewed = useSelector(getIsReviewed);
-  const parentId = useSelector(getParentId);
+  const taskId = useSelector(getTaskId);
 
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
   const {mutate, isLoading} = useMutation(updateGeoServey, {
     onSuccess: res => {
-      dispatch(updateSurveyFormData(res));
+      const newData = {
+        ...res,
+        coordinates: coordsToLatLongMap(res.coordinates),
+        tags: split(res.tags, ','),
+      };
+      dispatch(updateSurveyFormData(newData));
+      dispatch(updateSurveyList(newData));
       showToast(
         `Survey boundary ${isReviewed ? 'updated' : 'created'} successfully.`,
         TOAST_TYPE.SUCCESS,
@@ -56,9 +64,7 @@ const SurveyForm = props => {
     },
     onError: err => {
       showToast('Input Error', TOAST_TYPE.ERROR);
-      console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err.response);
-      // const errorMessage = parseErrorMessage(err);
-      // setError('password', {message: errorMessage});
+      console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err);
     },
   });
 
@@ -153,7 +159,7 @@ const SurveyForm = props => {
       tags: join(formState.tags, ','),
       id: formData.id,
       coordinates: latLongMapToCoords(formData.coordinates),
-      parentId,
+      taskId,
     };
     mutate(data);
   };

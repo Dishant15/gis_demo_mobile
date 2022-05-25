@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {View, FlatList, StyleSheet} from 'react-native';
 import {
   Card,
@@ -14,7 +14,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 
-import {setSurveyData} from '~GeoServey/data/geoSurvey.reducer';
+import {setReview, setSurveyData} from '~GeoServey/data/geoSurvey.reducer';
 import {layout, screens, colors} from '~constants/constants';
 
 import {getSurveyBoundaryList} from '~GeoServey/data/geoSurvey.selectors';
@@ -34,6 +34,10 @@ const SurveyList = props => {
 
   // get survey list from redux store
   const surveyList = useSelector(getSurveyBoundaryList);
+
+  useEffect(() => {
+    dispatch(setReview(false));
+  }, []);
 
   const navigateToMap = useCallback(() => {
     dispatch(setSurveyData(null));

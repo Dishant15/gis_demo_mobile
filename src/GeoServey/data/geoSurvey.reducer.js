@@ -121,7 +121,7 @@ const geoSurveyReducer = createSlice({
       }
     },
     setReview: (state, {payload}) => {
-      state.isReview = true;
+      state.isReview = payload;
     },
     resetSurveyData: () => {
       return initialState;

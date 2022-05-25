@@ -33,5 +33,5 @@ export const getGeoSurveyUnitFormData = store =>
 
 // other integration data selectors
 export const getIsReviewed = store => store.geoSurvey.isReview;
-export const getParentId = store => store.geoSurvey.parentId;
+export const getParentId = store => store.geoSurvey.selectedAreaData.id;
 export const getTaskId = store => store.geoSurvey.selectedTaskId;

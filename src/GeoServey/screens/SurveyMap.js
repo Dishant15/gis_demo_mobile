@@ -119,6 +119,7 @@ const SurveyMap = ({navigation}) => {
     if (isLoading) return;
     if (!isPolygonValid) {
       showToast('Please create a valid polygon', TOAST_TYPE.ERROR);
+      return;
     }
     if (surveyId) {
       handleUpdatePolygon();

@@ -41,7 +41,7 @@ const ReviewScreen = ({navigation}) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setReview());
+    dispatch(setReview(true));
   }, []);
 
   const {mutate, isLoading} = useMutation(postGeoServey, {
