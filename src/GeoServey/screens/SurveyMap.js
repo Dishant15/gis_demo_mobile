@@ -5,7 +5,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   BackHandler,
   InteractionManager,
 } from 'react-native';
@@ -22,16 +21,15 @@ import CustomMarker from '~Common/CustomMarker';
 
 import {colors, layout, screens} from '~constants/constants';
 import {
-  getGeoSurveyCoords,
+  getSurveyCoordinates,
   getIsReviewed,
   getSelectedArea,
   getSelectedSurveyId,
-  getSurveyPolygons,
+  getSurveyBoundaryList,
   getGeoSurveyFormData,
-  getParentId,
+  getTaskId,
 } from '~GeoServey/data/geoSurvey.selectors';
-import {updateCoordinates} from '~GeoServey/data/geoSurvey.reducer';
-import {noop} from '~utils/app.utils';
+import {updateSurveyFormData} from '~GeoServey/data/geoSurvey.reducer';
 import {useMutation} from 'react-query';
 import {updateGeoServey} from '~GeoServey/data/geoSurvey.service';
 import {latLongMapToCoords} from '~utils/map.utils';
@@ -46,14 +44,15 @@ import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 const SurveyMap = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
-  const coords = useSelector(getGeoSurveyCoords);
+
+  const coords = useSelector(getSurveyCoordinates);
   const isReviewed = useSelector(getIsReviewed);
   const selectedArea = useSelector(getSelectedArea);
-  const allPolygons = useSelector(getSurveyPolygons);
+  const surveyList = useSelector(getSurveyBoundaryList);
   const formData = useSelector(getGeoSurveyFormData);
   // surveyId indicate that survey is add or edit
   const surveyId = useSelector(getSelectedSurveyId);
-  const parentId = useSelector(getParentId);
+  const taskId = useSelector(getTaskId);
 
   const [showMap, setMapVisibility] = useState(false);
   const [coordinates, setCoordinates] = useState(coords);
@@ -61,7 +60,7 @@ const SurveyMap = ({navigation}) => {
   const mapRef = useRef();
 
   // enable btn if polygon is created ( alteast 3 markers )
-  const enableBtn = size(coordinates) > 2;
+  const isPolygonValid = size(coordinates) > 2;
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -87,7 +86,8 @@ const SurveyMap = ({navigation}) => {
 
   const {mutate, isLoading} = useMutation(updateGeoServey, {
     onSuccess: res => {
-      dispatch(updateCoordinates(coordinates));
+      dispatch(updateSurveyFormData({...formData, coordinates}));
+      dispatch(updateSurveyList({...formData, coordinates}));
       navigation.navigate(screens.reviewScreen);
       showToast('Survey boundary updated successfully.', TOAST_TYPE.SUCCESS);
     },
@@ -104,25 +104,26 @@ const SurveyMap = ({navigation}) => {
         ? join(formData.tags, ',')
         : formData.tags,
       id: formData.id,
-      coordinates: latLongMapToCoords(coords),
-      parentId,
+      coordinates: latLongMapToCoords(coordinates),
+      taskId,
     };
     mutate(data);
   };
 
   const handleSavePolygon = () => {
-    dispatch(updateCoordinates(coordinates));
+    dispatch(updateSurveyFormData({...formData, coordinates}));
     navigation.navigate(isReviewed ? screens.reviewScreen : screens.surveyForm);
   };
 
   const handleBtnPress = () => {
     if (isLoading) return;
-    if (enableBtn) {
-      if (surveyId) {
-        handleUpdatePolygon();
-      } else {
-        handleSavePolygon();
-      }
+    if (!isPolygonValid) {
+      showToast('Please create a valid polygon', TOAST_TYPE.ERROR);
+    }
+    if (surveyId) {
+      handleUpdatePolygon();
+    } else {
+      handleSavePolygon();
     }
   };
 
@@ -134,18 +135,18 @@ const SurveyMap = ({navigation}) => {
 
   const handleMapClick = e => {
     if (!e.nativeEvent.coordinate) return;
-    const coords = e.nativeEvent.coordinate;
-    setCoordinates([...coordinates, coords]);
+    const updatedCoords = e.nativeEvent.coordinate;
+    setCoordinates([...coordinates, updatedCoords]);
   };
 
   const handleMapPoiClick = e => {
     if (!e.nativeEvent.coordinate) return;
-    const coords = e.nativeEvent.coordinate;
-    setCoordinates([...coordinates, coords]);
+    const updatedCoords = e.nativeEvent.coordinate;
+    setCoordinates([...coordinates, updatedCoords]);
   };
 
   const onMapReady = () => {
-    mapRef.current.fitToCoordinates(selectedArea.path, {
+    mapRef.current.fitToCoordinates(selectedArea.coordinates, {
       edgePadding: {
         top: 20,
         right: 20,
@@ -221,13 +222,13 @@ const SurveyMap = ({navigation}) => {
                   fillColor="#3895D326"
                 />
               ) : null}
-              {size(allPolygons)
-                ? allPolygons.map(poly => {
-                    if (poly.id === surveyId) return null;
+              {size(surveyList)
+                ? surveyList.map(survey => {
+                    if (survey.id === surveyId) return null;
                     return (
                       <Polygon
-                        key={poly.id}
-                        coordinates={poly.path}
+                        key={survey.id}
+                        coordinates={survey.coordinates}
                         strokeWidth={2}
                         strokeColor={'#FFA701'}
                         fillColor="#FFA70114"
@@ -258,7 +259,7 @@ const SurveyMap = ({navigation}) => {
             style={[
               layout.button,
               styles.drawBtn,
-              !enableBtn && styles.disableBtn,
+              !isPolygonValid && styles.disableBtn,
             ]}
             onPress={handleBtnPress}>
             <Text style={styles.drawBtnTxt}>

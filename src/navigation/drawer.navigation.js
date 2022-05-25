@@ -113,21 +113,6 @@ const DrawerNavigation = () => {
         return <DrawerContent {...props} />;
       }}>
       <Drawer.Screen
-        name={screens.dashboardScreen}
-        component={DashboardScreen}
-        options={{
-          headerShown: true,
-          headerTitleAlign: 'center',
-          headerTitle: () => (
-            <Title style={styles.headerText}>NETWORK GIS</Title>
-          ),
-          headerLeft: () => <DrawerButton />,
-          headerStyle: {
-            backgroundColor: colors.primaryMain,
-          },
-        }}
-      />
-      <Drawer.Screen
         name={screens.areaList}
         component={AreaList}
         options={{
@@ -142,6 +127,22 @@ const DrawerNavigation = () => {
           },
         }}
       />
+      <Drawer.Screen
+        name={screens.dashboardScreen}
+        component={DashboardScreen}
+        options={{
+          headerShown: true,
+          headerTitleAlign: 'center',
+          headerTitle: () => (
+            <Title style={styles.headerText}>NETWORK GIS</Title>
+          ),
+          headerLeft: () => <DrawerButton />,
+          headerStyle: {
+            backgroundColor: colors.primaryMain,
+          },
+        }}
+      />
+
       <Drawer.Screen
         name={screens.networkScreen}
         component={ComingSoon}

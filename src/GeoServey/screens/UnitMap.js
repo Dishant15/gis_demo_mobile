@@ -19,6 +19,7 @@ import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {upsertSurveyUnit} from '~GeoServey/data/geoSurvey.service';
 import {useMutation} from 'react-query';
+import {TOAST_TYPE} from '~utils/toast.utils';
 
 /**
  * Parent:
@@ -41,13 +42,11 @@ const UnitMap = ({navigation}) => {
   const dispatch = useDispatch();
 
   const mapRef = useRef();
-  const [coordinate, setCoordinate] = useState(null);
-  const isAdd = unitIndex === -1;
-  const enableBtn = !isNull(coordinate);
-  console.log(
-    '🚀 ~ file: UnitMap.js ~ line 40 ~ UnitMap ~ coordinate',
-    coordinate,
+  const [coordinate, setCoordinate] = useState(
+    get(unitData, 'coordinates', null),
   );
+  const isAdd = unitIndex === -1;
+  const markerSelected = !isNull(coordinate);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -65,13 +64,13 @@ const UnitMap = ({navigation}) => {
     }, [isReviewed]),
   );
 
-  useEffect(() => {
-    if (size(unitData.coordinates)) {
-      setCoordinate(unitData.coordinates);
-    } else {
-      setCoordinate(null);
-    }
-  }, [unitData]);
+  // useEffect(() => {
+  //   if (size(unitData.coordinates)) {
+  //     setCoordinate(unitData.coordinates);
+  //   } else {
+  //     setCoordinate(null);
+  //   }
+  // }, [unitData]);
 
   const {mutate, isLoading} = useMutation(upsertSurveyUnit, {
     onSuccess: res => {
@@ -87,34 +86,31 @@ const UnitMap = ({navigation}) => {
 
   const handleButtonPress = () => {
     if (isLoading) return;
-    if (enableBtn) {
-      if (isAdd) {
-        console.log('here');
-        handleSaveUnit();
+    if (!markerSelected) {
+      showToast('Tap on the map to select unit location', TOAST_TYPE.ERROR);
+    }
+    if (isAdd) {
+      // update redux with map coordinates
+      dispatch(
+        updateUnitCoordinates({
+          unitIndex,
+          coordinates: coordinate,
+        }),
+      );
+      navigation.navigate(screens.unitForm);
+    } else {
+      // call edit unit server api
+      console.log(
+        '🚀 ~ file: UnitMap.js ~ line 78 ~ UnitMap ~ unitData',
+        unitData,
+      );
+      return;
+      if (isReviewed) {
+        navigation.navigate(screens.reviewScreen);
       } else {
+        navigation.navigate(screens.unitForm);
       }
     }
-    // dispatch(
-    //   updateUnitCoordinates({
-    //     unitIndex,
-    //     coordinates: coordinate,
-    //   }),
-    // );
-    // if (isReviewed) {
-    //   navigation.navigate(screens.reviewScreen);
-    // } else {
-    //   navigation.navigate(screens.unitForm);
-    // }
-  };
-
-  const handleSaveUnit = () => {
-    dispatch(
-      updateUnitCoordinates({
-        unitIndex,
-        coordinates: coordinate,
-      }),
-    );
-    navigation.navigate(screens.unitForm);
   };
 
   const handleMarkerDrag = useCallback(e => {
@@ -230,7 +226,7 @@ const UnitMap = ({navigation}) => {
             style={[
               layout.button,
               styles.drawBtn,
-              !enableBtn && styles.disableBtn,
+              !markerSelected && styles.disableBtn,
             ]}
             disabled={!isMarker}
             onPress={handleButtonPress}>

@@ -8,23 +8,17 @@ import {
   Chip,
   Button,
 } from 'react-native-paper';
-import {useDispatch} from 'react-redux';
-import {useQuery} from 'react-query';
-import {get, replace, size, split} from 'lodash';
+import {useDispatch, useSelector} from 'react-redux';
+import {replace, size} from 'lodash';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 
-import Loader from '~Common/Loader';
-import {
-  setSurveyData,
-  setServeyList,
-  addSurvey,
-} from '~GeoServey/data/geoSurvey.reducer';
-import {fetchSurveyList} from '~GeoServey/data/geoSurvey.service';
+import {setSurveyData} from '~GeoServey/data/geoSurvey.reducer';
 import {layout, screens, colors} from '~constants/constants';
 
 import {coordsToLatLongMap} from '~utils/map.utils';
+import {getSurveyBoundaryList} from '~GeoServey/data/geoSurvey.selectors';
 
 /**
  * Renders survey list
@@ -35,27 +29,16 @@ import {coordsToLatLongMap} from '~utils/map.utils';
  *    drawer.navigation
  */
 const SurveyList = props => {
-  const {navigation, route} = props;
+  const {navigation} = props;
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
 
-  const {isLoading, data, refetch} = useQuery('surveyList', fetchSurveyList, {
-    select: queryData => {
-      // return queryData;
-      return queryData.map(d => {
-        // [ [lat, lng], ...]
-        const {coordinates} = d;
-        d.path = coordsToLatLongMap(coordinates);
-        return d;
-      });
-    },
-    onSuccess: res => {
-      dispatch(setServeyList(res));
-    },
-  });
+  // get survey list from redux store
+  const surveyList = useSelector(getSurveyBoundaryList);
+  console.log('🚀 ~ file: SurveyList.js ~ line 41 ~ surveyList', surveyList);
 
   const navigateToMap = useCallback(() => {
-    dispatch(addSurvey());
+    dispatch(setSurveyData(null));
     navigation.navigate(screens.surveyMap);
   }, []);
 
@@ -64,21 +47,26 @@ const SurveyList = props => {
       <BackHeader title="Surveys" onGoBack={navigation.goBack} />
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
-        data={data}
+        data={surveyList}
         keyExtractor={item => item.id}
-        renderItem={({item}) => {
-          const tags = split(get(item, 'tags', []), ',');
+        renderItem={({item, index}) => {
+          const {name, area, pincode, tags} = item;
           return (
             <Card
               style={styles.cardItem}
               onPress={() => {
-                dispatch(setSurveyData(item));
+                dispatch(
+                  setSurveyData({
+                    surveyIndex: index,
+                    surveyData: item,
+                  }),
+                );
                 navigation.navigate(screens.reviewScreen);
               }}>
               <Card.Content>
-                <Title>{item.name}</Title>
+                <Title>{name}</Title>
                 <Paragraph>
-                  {item.area} - {item.pincode}
+                  {area} - {pincode}
                 </Paragraph>
                 <Paragraph>Units - {size(item.units)}</Paragraph>
                 <View style={styles.chipWrapper}>
@@ -92,18 +80,14 @@ const SurveyList = props => {
             </Card>
           );
         }}
-        onRefresh={refetch}
-        refreshing={!!(isLoading && size(data))}
         ListEmptyComponent={
-          isLoading ? null : (
-            <View style={[layout.center, layout.container]}>
-              <Subheading>No survey yet.</Subheading>
-            </View>
-          )
+          <View style={[layout.center, layout.container]}>
+            <Subheading>Survey list is Empty</Subheading>
+          </View>
         }
       />
-      {isLoading ? <Loader /> : null}
-      {!!size(data) ? (
+
+      {!!size(surveyList) ? (
         <Button
           style={[styles.buttonStyle, {paddingBottom: insets.bottom || 0}]}
           contentStyle={layout.button}

@@ -1,6 +1,6 @@
 import {
   apiAddSurvey,
-  apiGetAreaPocketList,
+  apiGetUserTaskList,
   apiGetSurveyAddBoundary,
   apiGetSurveyEditBoundary,
   apiGetSurveyList,
@@ -9,13 +9,8 @@ import {
 } from '~constants/url.constants';
 import Api from '~utils/api.utils';
 
-export const fetchAreaPockets = async () => {
-  const res = await Api.get(apiGetAreaPocketList());
-  return res.data;
-};
-
-export const fetchSurveyList = async () => {
-  const res = await Api.get(apiGetSurveyList());
+export const fetchUserTaskList = async () => {
+  const res = await Api.get(apiGetUserTaskList());
   return res.data;
 };
 

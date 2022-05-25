@@ -42,6 +42,10 @@ const UnitForm = ({navigation}) => {
   const unitIndex = useSelector(getGeoSurveySelectedUnitIndex);
   const isReviewed = useSelector(getIsReviewed);
   const surveyId = useSelector(getSelectedSurveyId);
+  console.log(
+    '🚀 ~ file: UnitForm.js ~ line 45 ~ UnitForm ~ surveyId',
+    surveyId,
+  );
   const dispatch = useDispatch();
   const isAdd = unitIndex === -1;
 
@@ -115,7 +119,7 @@ const UnitForm = ({navigation}) => {
     },
   });
 
-  const handleAnotherUnit = data => {
+  const handleUnitSubmit = data => {
     if (isLoading) return;
     let valideData = {...data};
     valideData.tags = join(valideData.tags, ',');
@@ -125,6 +129,11 @@ const UnitForm = ({navigation}) => {
       valideData.floors = 1;
       valideData.house_per_floor = 1;
     }
+    console.log(
+      '🚀 ~ file: UnitForm.js ~ line 124 ~ UnitForm ~ valideData',
+      valideData,
+    );
+    return;
     mutate(valideData);
   };
 
@@ -317,7 +326,7 @@ const UnitForm = ({navigation}) => {
                 autoCorrect={false}
                 returnKeyType="done"
                 keyboardType="number-pad"
-                onSubmitEditing={handleSubmit(handleAnotherUnit)}
+                onSubmitEditing={handleSubmit(handleUnitSubmit)}
               />
             )}
           />
@@ -329,7 +338,7 @@ const UnitForm = ({navigation}) => {
               uppercase
               mode="contained"
               loading={isLoading}
-              onPress={handleSubmit(handleAnotherUnit)}>
+              onPress={handleSubmit(handleUnitSubmit)}>
               Submit
             </Button>
           </View>

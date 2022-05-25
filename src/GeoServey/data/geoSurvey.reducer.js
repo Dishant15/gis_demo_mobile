@@ -1,8 +1,8 @@
-import {map, pick} from 'lodash';
+import {isNull} from 'lodash';
 import {createSlice} from '@reduxjs/toolkit';
-import {coordsToLatLongMap} from '~utils/map.utils';
 
 const defaultUnitData = {
+  // coordinates in redux shape: {"latitude": 23.04, "longitude": 72.51}
   coordinates: null,
   location: {},
   name: '',
@@ -18,28 +18,29 @@ const defaultUnitData = {
   total_home_pass: 1,
 };
 
-const initialState = {
-  parentId: null,
-  selectedArea: {},
-  surveyList: [],
-  selectedSurvey: {},
-  // abstract survey fields
+const defaultSurveyData = {
+  name: '',
+  address: '',
+  area: '',
+  city: '',
+  state: '',
+  pincode: '',
+  // list of strings
+  tags: [],
   coordinates: [],
-  boundaryData: {
-    name: '',
-    address: '',
-    area: '',
-    city: '',
-    state: '',
-    pincode: '',
-    // list of strings
-    tags: [],
-  },
-  selectedUnitData: {},
-  // list of units data
   units: [],
+};
+
+const initialState = {
+  selectedTaskId: null,
+  selectedAreaData: {},
+  surveyList: [],
+  // all data bellow is for form edit / add purpose
+  selectedSurveyIndex: null,
+  selectedSurvey: {},
   // unit index if selected , -1 if new unit add
   selectedUnitIndex: null,
+  selectedUnitData: {},
   isReview: false,
 };
 
@@ -47,52 +48,39 @@ const geoSurveyReducer = createSlice({
   name: 'serveyDetails',
   initialState,
   reducers: {
-    setAreaData: (state, {payload}) => {
-      return {
-        ...initialState,
-        selectedArea: payload,
-        parentId: payload.id,
-      };
+    // when user click on one of the task on task list screen
+    // payload shape: {...taskData, area_pocket: {}, survey_boundaries: [{...survey1, survey2}] }
+    setTaskData: (state, {payload}) => {
+      const {id, area_pocket, survey_boundaries} = payload;
+      state.selectedTaskId = id;
+      state.selectedAreaData = {...area_pocket};
+      state.surveyList = [...survey_boundaries];
     },
+    // when user clicks one of the survey from taskList -> surveyList
+    // payload shape: {surveyIndex, surveyData: {...surveyData, units: [ {...unit1, ...}]}
+    // payload will be null if creating new survey
     setSurveyData: (state, {payload}) => {
-      state.selectedSurvey = payload;
-      state.coordinates = payload.path;
-      state.boundaryData = pick(payload, [
-        'id',
-        'name',
-        'address',
-        'area',
-        'city',
-        'state',
-        'pincode',
-        'tags',
-      ]);
-      state.units = map(payload.units, unit => ({
-        ...unit,
-        coordinates: coordsToLatLongMap([unit.coordinates])[0],
-      }));
-    },
-    setServeyList: (state, {payload}) => {
-      const surveyList = map(payload, survey => ({
-        id: survey.id,
-        name: survey.name,
-        path: survey.path,
-      }));
-      state.surveyList = surveyList;
-    },
-    addSurvey: state => {
-      return {
-        ...initialState,
-        selectedArea: state.selectedArea,
-        parentId: state.parentId,
-        surveyList: state.surveyList,
-      };
-    },
-    updateCoordinates: (state, {payload}) => {
-      state.coordinates = payload;
+      if (isNull(payload)) {
+        state.selectedSurvey = {...defaultSurveyData};
+        state.selectedSurveyIndex = -1;
+        state.selectedUnitIndex = null;
+        state.selectedUnitData = {};
+      } else {
+        state.selectedSurvey = {...payload.surveyData};
+        state.selectedSurveyIndex = payload.surveyIndex;
+        state.selectedUnitIndex = null;
+        state.selectedUnitData = {};
+      }
     },
     updateSurveyFormData: (state, {payload}) => {
-      state.boundaryData = payload;
+      state.selectedSurvey = {...payload};
+    },
+    updateSurveyList: (state, {payload}) => {
+      if (state.selectedSurveyIndex === -1) {
+        state.surveyList.push({...payload});
+      } else {
+        state.surveyList[state.selectedSurveyIndex] = {...payload};
+      }
     },
     // payload : unit index
     selectUnit: (state, {payload}) => {
@@ -122,6 +110,16 @@ const geoSurveyReducer = createSlice({
         };
       }
     },
+    updateSurveyUnitData: (state, {payload}) => {
+      const {selectedSurveyIndex, selectedUnitIndex} = state;
+      if (selectedUnitIndex === -1) {
+        state.surveyList[selectedSurveyIndex].units.push({...payload});
+      } else {
+        state.surveyList[selectedSurveyIndex].units[selectedUnitIndex] = {
+          ...payload,
+        };
+      }
+    },
     setReview: (state, {payload}) => {
       state.isReview = true;
     },
@@ -132,16 +130,15 @@ const geoSurveyReducer = createSlice({
 });
 
 export const {
-  updateCoordinates,
   updateSurveyFormData,
+  updateSurveyList,
   selectUnit,
   updateUnitCoordinates,
   updateUnitData,
+  updateSurveyUnitData,
   resetSurveyData,
   setReview,
-  setAreaData,
+  setTaskData,
   setSurveyData,
-  setServeyList,
-  addSurvey,
 } = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;
