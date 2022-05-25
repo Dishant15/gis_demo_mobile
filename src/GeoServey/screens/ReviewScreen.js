@@ -16,15 +16,12 @@ import {
 import Api from '~utils/api.utils';
 import {apiAddSurvey} from '~constants/url.constants';
 import {
-  resetSurveyData,
+  resetAllData,
   setReview,
   selectUnit,
+  resetServeyData,
 } from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused} from '@react-navigation/native';
-import {latLongMapToCoords} from '~utils/map.utils';
-import {useMutation} from 'react-query';
-import {postGeoServey} from '~GeoServey/data/geoSurvey.service';
-import {parseErrorMessage} from '~utils/app.utils';
 
 const {width, height} = Dimensions.get('window');
 
@@ -37,29 +34,12 @@ const ReviewScreen = ({navigation}) => {
   const mapRef = useRef();
   const formData = useSelector(getGeoSurveyFormData);
   const unitList = get(formData, 'units', []);
-  console.log(
-    '🚀 ~ file: ReviewScreen.js ~ line 39 ~ ReviewScreen ~ formData',
-    formData,
-  );
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(setReview(true));
   }, []);
-
-  const {mutate, isLoading} = useMutation(postGeoServey, {
-    onSuccess: res => {
-      handleDiscart();
-    },
-    onError: err => {
-      const errorMessage = parseErrorMessage(err);
-      console.log(
-        '🚀 ~ file: ReviewScreen.js ~ line 52 ~ ReviewScreen ~ errorMessage',
-        errorMessage,
-      );
-    },
-  });
 
   const unitMarkerList = useMemo(() => {
     const newList = [];
@@ -70,19 +50,10 @@ const ReviewScreen = ({navigation}) => {
     }
     return newList;
   }, [unitList]);
-  console.log(
-    '🚀 ~ file: ReviewScreen.js ~ line 68 ~ unitMarkerList ~ unitMarkerList',
-    unitMarkerList,
-  );
-
-  const handleDiscart = () => {
-    // reset and delete
-    dispatch(resetSurveyData());
-    navigation.navigate(screens.areaList);
-  };
 
   const navigateToSurveyList = useCallback(() => {
     navigation.navigate(screens.surveyList);
+    dispatch(resetServeyData());
   }, []);
 
   const navigateToSurveyMap = useCallback(() => {
@@ -126,9 +97,8 @@ const ReviewScreen = ({navigation}) => {
   return (
     <View style={layout.container}>
       <BackHeader
-        title="Review"
-        subtitle="review your survey before submit"
-        onGoBack={handleDiscart}
+        title={`Review ${get(formData, 'name')}`}
+        onGoBack={navigateToSurveyList}
       />
       <ScrollView contentContainerStyle={{paddingBottom: 40}}>
         <MapView
@@ -234,7 +204,6 @@ const ReviewScreen = ({navigation}) => {
               contentStyle={layout.button}
               color={colors.black}
               uppercase
-              loading={isLoading}
               mode="contained"
               onPress={navigateToSurveyList}>
               Go to Survey List

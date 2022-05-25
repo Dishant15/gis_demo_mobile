@@ -2,24 +2,27 @@ import React, {useRef, useState, useCallback, useMemo, useEffect} from 'react';
 import {View, Text, StyleSheet, Dimensions, BackHandler} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {isNull, get, size, differenceBy} from 'lodash';
+import {isNull, get, size, differenceBy, join, split} from 'lodash';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 import {layout, screens} from '~constants/constants';
 import {useDispatch, useSelector} from 'react-redux';
 import {
-  getGeoSurveySelectedUnitIndex,
   getGeoSurveyUnitFormData,
   getGeoSurveyUnitList,
   getIsReviewed,
   getSurveyCoordinates,
+  getSelectedSurveyId,
 } from '~GeoServey/data/geoSurvey.selectors';
-import {updateUnitFormData} from '~GeoServey/data/geoSurvey.reducer';
+import {
+  updateUnitFormData,
+  updateSurveyUnitList,
+} from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {upsertSurveyUnit} from '~GeoServey/data/geoSurvey.service';
 import {useMutation} from 'react-query';
-import {TOAST_TYPE} from '~utils/toast.utils';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
 /**
  * Parent:
@@ -31,6 +34,7 @@ const UnitMap = ({navigation}) => {
   const isReviewed = useSelector(getIsReviewed);
   const unitList = useSelector(getGeoSurveyUnitList);
   const unitData = useSelector(getGeoSurveyUnitFormData);
+  const surveyId = useSelector(getSelectedSurveyId);
 
   const surveyCoords = useSelector(getSurveyCoordinates);
   const dispatch = useDispatch();
@@ -42,6 +46,15 @@ const UnitMap = ({navigation}) => {
 
   const isAdd = !Boolean(unitData.id);
   const markerSelected = !isNull(coordinate);
+
+  // update state when screen is not unmounted and data gets updated
+  useEffect(() => {
+    if (size(unitData.coordinates)) {
+      setCoordinate(unitData.coordinates);
+    } else {
+      setCoordinate(null);
+    }
+  }, [unitData]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -61,13 +74,24 @@ const UnitMap = ({navigation}) => {
 
   const {mutate, isLoading} = useMutation(upsertSurveyUnit, {
     onSuccess: res => {
-      dispatch(updateUnitFormData(res));
+      const newData = {
+        ...res,
+        tags: split(res.tags, ','),
+        coordinates: {
+          latitude: res.coordinates[1],
+          longitude: res.coordinates[0],
+        },
+      };
+      dispatch(updateUnitFormData(newData));
+      if (!isAdd) {
+        dispatch(updateSurveyUnitList(newData));
+      }
       navigation.navigate(screens.reviewScreen);
       showToast('Marker cordinate updated successfully.', TOAST_TYPE.SUCCESS);
     },
     onError: err => {
-      showToast('Input Error', TOAST_TYPE.ERROR);
       console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err.response);
+      showToast('Input Error', TOAST_TYPE.ERROR);
     },
   });
 
@@ -77,17 +101,15 @@ const UnitMap = ({navigation}) => {
       showToast('Tap on the map to select unit location', TOAST_TYPE.ERROR);
       return;
     }
-    const newData = {...unitData, coordinates: coordinate};
+    let newData = {...unitData, coordinates: coordinate};
     if (isAdd) {
       // update redux with map coordinates
       dispatch(updateUnitFormData(newData));
       navigation.navigate(screens.unitForm);
     } else {
       // call edit unit server api
-      console.log(
-        '🚀 ~ file: UnitMap.js ~ line 78 ~ UnitMap ~ unitData',
-        unitData,
-      );
+      newData.parentId = surveyId;
+      newData.tags = join(newData.tags, ',');
       mutate(newData);
     }
   };

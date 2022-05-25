@@ -17,4 +17,4 @@ export const apiGetSurveyEditBoundary = (surveyId = ':survey_id') =>
 
 export const apiPostSurveyAddUnit = () => '/api/geo/survey/unit/add/';
 export const apiPutEditUnit = (unitId = ':unit_id') =>
-  `/api/geo/survey/boundary/${unitId}/edit/`;
+  `/api/geo/survey/unit/${unitId}/edit/`;

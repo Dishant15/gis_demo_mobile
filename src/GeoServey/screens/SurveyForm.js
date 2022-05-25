@@ -20,7 +20,7 @@ import {
   getTaskId,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
-import {groupBy, map, get, join, split} from 'lodash';
+import {groupBy, map, get, join, split, size} from 'lodash';
 import Api from '~utils/api.utils';
 import {getGoogleAddress} from '~constants/url.constants';
 import BackHeader from '~Common/components/Header/BackHeader';
@@ -50,11 +50,14 @@ const SurveyForm = props => {
 
   const {mutate, isLoading} = useMutation(updateGeoServey, {
     onSuccess: res => {
-      const newData = {
+      let newData = {
         ...res,
         coordinates: coordsToLatLongMap(res.coordinates),
         tags: split(res.tags, ','),
       };
+      if (!size(res.units)) {
+        newData.units = [];
+      }
       dispatch(updateSurveyFormData(newData));
       dispatch(updateSurveyList(newData));
       showToast(

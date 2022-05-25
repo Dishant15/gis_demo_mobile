@@ -78,6 +78,7 @@ const geoSurveyReducer = createSlice({
     updateSurveyList: (state, {payload}) => {
       if (state.selectedSurveyIndex === -1) {
         state.surveyList.push({...payload});
+        state.selectedSurveyIndex = 0;
       } else {
         state.surveyList[state.selectedSurveyIndex] = {...payload};
       }
@@ -89,7 +90,8 @@ const geoSurveyReducer = createSlice({
         state.selectedUnitData = {...defaultUnitData};
         state.selectedUnitIndex = -1;
       } else {
-        state.selectedUnitData = {...units[payload]};
+        const serveyUnits = state.selectedSurvey.units || [];
+        state.selectedUnitData = {...serveyUnits[payload]};
         state.selectedUnitIndex = payload;
       }
     },
@@ -99,9 +101,15 @@ const geoSurveyReducer = createSlice({
     updateSurveyUnitList: (state, {payload}) => {
       const {selectedSurveyIndex, selectedUnitIndex} = state;
       if (selectedUnitIndex === -1) {
-        state.surveyList[selectedSurveyIndex].units.push({...payload});
+        const serveyUnits = state.selectedSurvey.units || [];
+        serveyUnits.push({...payload});
+        state.surveyList[selectedSurveyIndex].units = serveyUnits;
+        state.selectedSurvey.units = serveyUnits;
       } else {
         state.surveyList[selectedSurveyIndex].units[selectedUnitIndex] = {
+          ...payload,
+        };
+        state.selectedSurvey.units[selectedUnitIndex] = {
           ...payload,
         };
       }
@@ -109,7 +117,15 @@ const geoSurveyReducer = createSlice({
     setReview: (state, {payload}) => {
       state.isReview = payload;
     },
-    resetSurveyData: () => {
+    resetServeyData: state => {
+      // all data bellow is for form edit / add purpose
+      state.selectedSurveyIndex = null;
+      state.selectedSurvey = {};
+      state.selectedUnitIndex = null;
+      state.selectedUnitData = {};
+      state.isReview = false;
+    },
+    resetAllData: () => {
       return initialState;
     },
   },
@@ -123,7 +139,8 @@ export const {
   selectUnit,
   updateUnitFormData,
   updateSurveyUnitList,
-  resetSurveyData,
   setReview,
+  resetServeyData,
+  resetAllData,
 } = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;
