@@ -7,7 +7,10 @@ import {Button, HelperText} from 'react-native-paper';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {colors, layout, screens, SURVEY_TAG_LIST} from '~constants/constants';
 import Input from '~Common/Input';
-import {updateSurveyFormData} from '~GeoServey/data/geoSurvey.reducer';
+import {
+  setSurveyData,
+  updateSurveyFormData,
+} from '~GeoServey/data/geoSurvey.reducer';
 import {
   getGeoSurveyCoords,
   getGeoSurveyFormData,

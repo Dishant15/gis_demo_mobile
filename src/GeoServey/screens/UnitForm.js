@@ -16,10 +16,15 @@ import {
   getGeoSurveyTags,
   getGeoSurveyUnitFormData,
   getIsReviewed,
+  getSelectedSurveyId,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {updateUnitData} from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
-import {filter, includes, multiply} from 'lodash';
+import {filter, includes, join, multiply, split} from 'lodash';
+import {upsertSurveyUnit} from '~GeoServey/data/geoSurvey.service';
+import {useMutation} from 'react-query';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {unitAddSuccess} from '~constants/messages';
 
 const CATEGORY_OPTS = [
   {value: 'M', label: 'MDU'},
@@ -32,16 +37,21 @@ const CATEGORY_OPTS = [
  */
 const UnitForm = ({navigation}) => {
   const isFocused = useIsFocused();
-  const unitData = useSelector(getGeoSurveyUnitFormData);
   const selectedSurveyTags = useSelector(getGeoSurveyTags);
+  const unitData = useSelector(getGeoSurveyUnitFormData);
   const unitIndex = useSelector(getGeoSurveySelectedUnitIndex);
   const isReviewed = useSelector(getIsReviewed);
+  const surveyId = useSelector(getSelectedSurveyId);
   const dispatch = useDispatch();
+  const isAdd = unitIndex === -1;
 
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
-        if (isReviewed) {
+        if (isAdd) {
+          navigation.navigate(screens.unitMap);
+          return true;
+        } else if (isReviewed) {
           navigation.navigate(screens.reviewScreen);
           return true;
         } else {
@@ -72,34 +82,50 @@ const UnitForm = ({navigation}) => {
     defaultValues: {
       name: unitData.name,
       category: unitData.category,
-      floors: unitData.floors,
-      tags: unitData.tags,
-      house_per_floor: unitData.house_per_floor,
-      total_home_pass: unitData.total_home_pass,
+      tags: Array.isArray(unitData.tags)
+        ? unitData.tags
+        : split(unitData.tags, ','),
+      floors: String(unitData.floors),
+      house_per_floor: String(unitData.house_per_floor),
+      total_home_pass: String(unitData.total_home_pass),
+    },
+  });
+
+  const {mutate, isLoading} = useMutation(upsertSurveyUnit, {
+    onSuccess: res => {
+      console.log('🚀 ~ file: UnitForm.js res', res);
+      dispatch(
+        updateUnitData({
+          unitIndex,
+          data: {
+            ...res,
+            coordinates: {
+              latitude: res.coordinates[0],
+              longitude: res.coordinates[1],
+            },
+          },
+        }),
+      );
+      showToast(unitAddSuccess(), TOAST_TYPE.SUCCESS);
+      navigation.navigate(screens.reviewScreen);
+    },
+    onError: err => {
+      console.log('🚀 ~ file: UnitForm.js err', err.response);
+      showToast('Input Error', TOAST_TYPE.ERROR);
     },
   });
 
   const handleAnotherUnit = data => {
+    if (isLoading) return;
     let valideData = {...data};
+    valideData.tags = join(valideData.tags, ',');
+    valideData.parentId = surveyId;
+    valideData.coordinates = unitData.coordinates;
     if (data.category === 'S') {
       valideData.floors = 1;
       valideData.house_per_floor = 1;
     }
-    dispatch(
-      updateUnitData({
-        unitIndex,
-        data: valideData,
-      }),
-    );
-    console.log(
-      '🚀 ~ file: UnitForm.js ~ line 84 ~ UnitForm ~ valideData',
-      valideData,
-    );
-    if (isReviewed) {
-      navigation.navigate(screens.reviewScreen);
-    } else {
-      navigation.navigate(screens.unitList);
-    }
+    mutate(valideData);
   };
 
   const handleFocus = useCallback(
@@ -117,9 +143,9 @@ const UnitForm = ({navigation}) => {
     }
   };
 
-  if (!isFocused) return null;
-
   const selectedCategory = watch('category');
+
+  if (!isFocused) return null;
 
   return (
     <View style={layout.container}>
@@ -302,6 +328,7 @@ const UnitForm = ({navigation}) => {
               color={colors.black}
               uppercase
               mode="contained"
+              loading={isLoading}
               onPress={handleSubmit(handleAnotherUnit)}>
               Submit
             </Button>

@@ -18,6 +18,7 @@ import {updateUnitCoordinates} from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {upsertSurveyUnit} from '~GeoServey/data/geoSurvey.service';
+import {useMutation} from 'react-query';
 
 /**
  * Parent:
@@ -29,13 +30,24 @@ const UnitMap = ({navigation}) => {
   const isReviewed = useSelector(getIsReviewed);
   const unitList = useSelector(getGeoSurveyUnitList);
   const unitIndex = useSelector(getGeoSurveySelectedUnitIndex);
+  console.log(
+    '🚀 ~ file: UnitMap.js ~ line 32 ~ UnitMap ~ unitIndex',
+    unitIndex,
+  );
   const unitData = useSelector(getGeoSurveyUnitFormData);
+  console.log('🚀 ~ file: UnitMap.js ~ line 33 ~ UnitMap ~ unitData', unitData);
 
   const surveyCoords = useSelector(getGeoSurveyCoords);
   const dispatch = useDispatch();
 
   const mapRef = useRef();
   const [coordinate, setCoordinate] = useState(null);
+  const isAdd = unitIndex === -1;
+  const enableBtn = !isNull(coordinate);
+  console.log(
+    '🚀 ~ file: UnitMap.js ~ line 40 ~ UnitMap ~ coordinate',
+    coordinate,
+  );
 
   useFocusEffect(
     React.useCallback(() => {
@@ -61,31 +73,48 @@ const UnitMap = ({navigation}) => {
     }
   }, [unitData]);
 
-  // const {mutate, isLoading} = useMutation(upsertSurveyUnit, {
-  //   onSuccess: res => {
-  //     dispatch(updateCoordinates(coordinates));
-  //     navigation.navigate(screens.reviewScreen);
-  //     showToast('Survey boundary updated successfully.', TOAST_TYPE.SUCCESS);
-  //   },
-  //   onError: err => {
-  //     showToast('Input Error', TOAST_TYPE.ERROR);
-  //     console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err.response);
-  //   },
-  // });
+  const {mutate, isLoading} = useMutation(upsertSurveyUnit, {
+    onSuccess: res => {
+      dispatch(updateCoordinates(coordinates));
+      navigation.navigate(screens.reviewScreen);
+      showToast('Survey boundary updated successfully.', TOAST_TYPE.SUCCESS);
+    },
+    onError: err => {
+      showToast('Input Error', TOAST_TYPE.ERROR);
+      console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err.response);
+    },
+  });
 
   const handleButtonPress = () => {
     if (isLoading) return;
+    if (enableBtn) {
+      if (isAdd) {
+        console.log('here');
+        handleSaveUnit();
+      } else {
+      }
+    }
+    // dispatch(
+    //   updateUnitCoordinates({
+    //     unitIndex,
+    //     coordinates: coordinate,
+    //   }),
+    // );
+    // if (isReviewed) {
+    //   navigation.navigate(screens.reviewScreen);
+    // } else {
+    //   navigation.navigate(screens.unitForm);
+    // }
+  };
+
+  const handleSaveUnit = () => {
     dispatch(
       updateUnitCoordinates({
         unitIndex,
         coordinates: coordinate,
       }),
     );
-    if (isReviewed) {
-      navigation.navigate(screens.reviewScreen);
-    } else {
-      navigation.navigate(screens.unitForm);
-    }
+    navigation.navigate(screens.unitForm);
   };
 
   const handleMarkerDrag = useCallback(e => {
@@ -198,10 +227,18 @@ const UnitMap = ({navigation}) => {
           ]}>
           <TouchableOpacity
             activeOpacity={0.6}
-            style={[layout.button, styles.drawBtn]}
+            style={[
+              layout.button,
+              styles.drawBtn,
+              !enableBtn && styles.disableBtn,
+            ]}
             disabled={!isMarker}
             onPress={handleButtonPress}>
-            <Text style={styles.drawBtnTxt}>Save Location</Text>
+            <Text style={styles.drawBtnTxt}>
+              {isLoading
+                ? 'Loading...'
+                : `${isAdd ? 'Save' : 'Update'} Location`}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -228,6 +265,9 @@ const styles = StyleSheet.create({
   },
   drawBtnTxt: {
     color: 'white',
+  },
+  disableBtn: {
+    backgroundColor: '#A9A9A9',
   },
 });
 

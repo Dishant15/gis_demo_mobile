@@ -1,4 +1,5 @@
 import {API_HOST} from '@env';
+console.log('🚀 ~ file: api.utils.js ~ line 2 ~ API_HOST', API_HOST);
 import axios from 'axios';
 import {isNil, map, keys, join} from 'lodash';
 import store from '~store';
@@ -16,7 +17,7 @@ export function convertObjectToQueryParams(object) {
 
 export const apiRequestConfig = {
   baseURL: API_HOST,
-  timeout: 20000,
+  timeout: 40000,
   headers: {
     'Content-Type': 'application/json',
   },

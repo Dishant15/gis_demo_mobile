@@ -242,6 +242,15 @@ const ReviewScreen = ({navigation}) => {
               contentStyle={layout.button}
               color={colors.black}
               uppercase
+              mode="contained"
+              onPress={navigateToUnitMap(-1)}>
+              Add Unit
+            </Button>
+            <Button
+              style={styles.submitBtn}
+              contentStyle={layout.button}
+              color={colors.black}
+              uppercase
               loading={isLoading}
               mode="contained"
               onPress={navigateToSurveyList}>

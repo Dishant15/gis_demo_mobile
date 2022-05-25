@@ -112,10 +112,15 @@ const geoSurveyReducer = createSlice({
     },
     // payload : { unitIndex, data }
     updateUnitData: (state, {payload}) => {
-      state.units[payload.unitIndex] = {
-        ...state.units[payload.unitIndex],
-        ...payload.data,
-      };
+      const unitIndex = payload.unitIndex;
+      if (unitIndex === -1) {
+        state.units.push(payload.data);
+      } else {
+        state.units[payload.unitIndex] = {
+          ...state.units[payload.unitIndex],
+          ...payload.data,
+        };
+      }
     },
     setReview: (state, {payload}) => {
       state.isReview = true;
