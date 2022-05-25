@@ -18,7 +18,11 @@ import {
   getIsReviewed,
   getSelectedSurveyId,
 } from '~GeoServey/data/geoSurvey.selectors';
-import {updateUnitData} from '~GeoServey/data/geoSurvey.reducer';
+import {
+  updateSurveyUnitList,
+  updateUnitData,
+  updateUnitFormData,
+} from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {filter, includes, join, multiply, split} from 'lodash';
 import {upsertSurveyUnit} from '~GeoServey/data/geoSurvey.service';
@@ -42,10 +46,6 @@ const UnitForm = ({navigation}) => {
   const unitIndex = useSelector(getGeoSurveySelectedUnitIndex);
   const isReviewed = useSelector(getIsReviewed);
   const surveyId = useSelector(getSelectedSurveyId);
-  console.log(
-    '🚀 ~ file: UnitForm.js ~ line 45 ~ UnitForm ~ surveyId',
-    surveyId,
-  );
   const dispatch = useDispatch();
   const isAdd = unitIndex === -1;
 
@@ -86,9 +86,7 @@ const UnitForm = ({navigation}) => {
     defaultValues: {
       name: unitData.name,
       category: unitData.category,
-      tags: Array.isArray(unitData.tags)
-        ? unitData.tags
-        : split(unitData.tags, ','),
+      tags: unitData.tags,
       floors: String(unitData.floors),
       house_per_floor: String(unitData.house_per_floor),
       total_home_pass: String(unitData.total_home_pass),
@@ -97,19 +95,16 @@ const UnitForm = ({navigation}) => {
 
   const {mutate, isLoading} = useMutation(upsertSurveyUnit, {
     onSuccess: res => {
-      console.log('🚀 ~ file: UnitForm.js res', res);
-      dispatch(
-        updateUnitData({
-          unitIndex,
-          data: {
-            ...res,
-            coordinates: {
-              latitude: res.coordinates[0],
-              longitude: res.coordinates[1],
-            },
-          },
-        }),
-      );
+      const newData = {
+        ...res,
+        tags: split(res.tags, ','),
+        coordinates: {
+          latitude: res.coordinates[1],
+          longitude: res.coordinates[0],
+        },
+      };
+      dispatch(updateUnitFormData(newData));
+      dispatch(updateSurveyUnitList(newData));
       showToast(unitAddSuccess(), TOAST_TYPE.SUCCESS);
       navigation.navigate(screens.reviewScreen);
     },
@@ -129,11 +124,6 @@ const UnitForm = ({navigation}) => {
       valideData.floors = 1;
       valideData.house_per_floor = 1;
     }
-    console.log(
-      '🚀 ~ file: UnitForm.js ~ line 124 ~ UnitForm ~ valideData',
-      valideData,
-    );
-    return;
     mutate(valideData);
   };
 
@@ -223,8 +213,9 @@ const UnitForm = ({navigation}) => {
                       return (
                         <Chip
                           key={opt.value}
-                          style={styles.chip}
+                          style={[styles.chip, selected && styles.chipActive]}
                           selected={selected}
+                          selectedColor={selected ? colors.white : null}
                           onPress={() => onChange(opt.value)}>
                           {opt.label}
                         </Chip>
@@ -374,6 +365,9 @@ const styles = StyleSheet.create({
   chip: {
     marginRight: 10,
     marginTop: 8,
+  },
+  chipActive: {
+    backgroundColor: colors.primaryMain + 'cc',
   },
 });
 

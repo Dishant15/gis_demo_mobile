@@ -36,7 +36,11 @@ const ReviewScreen = ({navigation}) => {
   const isFocused = useIsFocused();
   const mapRef = useRef();
   const formData = useSelector(getGeoSurveyFormData);
-  const selectedArea = useSelector(getSelectedArea);
+  const unitList = get(formData, 'units', []);
+  console.log(
+    '🚀 ~ file: ReviewScreen.js ~ line 39 ~ ReviewScreen ~ formData',
+    formData,
+  );
 
   const dispatch = useDispatch();
 
@@ -59,35 +63,22 @@ const ReviewScreen = ({navigation}) => {
 
   const unitMarkerList = useMemo(() => {
     const newList = [];
-    for (let index = 0; index < formData.units.length; index++) {
-      if (size(get(formData.units, [index, 'coordinates']))) {
-        newList.push(formData.units[index].coordinates);
+    for (let index = 0; index < unitList.length; index++) {
+      if (size(get(unitList, [index, 'coordinates']))) {
+        newList.push(unitList[index].coordinates);
       }
     }
     return newList;
-  }, [formData.units]);
+  }, [unitList]);
+  console.log(
+    '🚀 ~ file: ReviewScreen.js ~ line 68 ~ unitMarkerList ~ unitMarkerList',
+    unitMarkerList,
+  );
 
   const handleDiscart = () => {
     // reset and delete
     dispatch(resetSurveyData());
     navigation.navigate(screens.areaList);
-  };
-
-  const handleSubmit = () => {
-    // convert data
-    const data = {
-      boundaryData: {
-        ...formData,
-        parentId: selectedArea.id,
-        tags: join(formData.tags, ','),
-        coordinates: latLongMapToCoords(formData.coordinates),
-      },
-      unitList: map(formData.units, unit => ({
-        ...unit,
-        tags: join(unit.tags, ','),
-      })),
-    };
-    mutate(data);
   };
 
   const navigateToSurveyList = useCallback(() => {
@@ -199,10 +190,10 @@ const ReviewScreen = ({navigation}) => {
               </Button>
             </Card.Actions>
           </Card>
-          {size(formData.units) ? (
+          {size(unitList) ? (
             <>
               <Subheading style={styles.title}>Units</Subheading>
-              {formData.units.map((unit, index) => {
+              {unitList.map((unit, index) => {
                 return (
                   <Card elevation={3} key={index} style={{marginBottom: 14}}>
                     <Card.Content>
@@ -229,21 +220,12 @@ const ReviewScreen = ({navigation}) => {
             </>
           ) : null}
           <View style={styles.buttonWrapper}>
-            {/* <Button
-              style={styles.discardBtn}
-              contentStyle={layout.button}
-              color={colors.black}
-              uppercase
-              mode="outlined"
-              onPress={handleDiscart}>
-              Discard
-            </Button> */}
             <Button
               style={styles.submitBtn}
               contentStyle={layout.button}
               color={colors.black}
               uppercase
-              mode="contained"
+              mode="outlined"
               onPress={navigateToUnitMap(-1)}>
               Add Unit
             </Button>
@@ -274,9 +256,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   buttonWrapper: {
-    paddingTop: 18,
-    paddingBottom: 36,
-    flexDirection: 'row',
+    paddingTop: 28,
+    paddingBottom: 46,
   },
   discardBtn: {
     flex: 1,
@@ -284,7 +265,7 @@ const styles = StyleSheet.create({
   },
   submitBtn: {
     flex: 1,
-    // marginLeft: 6,
+    marginBottom: 26,
   },
 });
 

@@ -14,7 +14,7 @@ import * as Animatable from 'react-native-animatable';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {size} from 'lodash';
+import {size, join} from 'lodash';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 import CustomMarker from '~Common/CustomMarker';
@@ -29,7 +29,10 @@ import {
   getGeoSurveyFormData,
   getTaskId,
 } from '~GeoServey/data/geoSurvey.selectors';
-import {updateSurveyFormData} from '~GeoServey/data/geoSurvey.reducer';
+import {
+  updateSurveyFormData,
+  updateSurveyList,
+} from '~GeoServey/data/geoSurvey.reducer';
 import {useMutation} from 'react-query';
 import {updateGeoServey} from '~GeoServey/data/geoSurvey.service';
 import {latLongMapToCoords} from '~utils/map.utils';
@@ -100,12 +103,10 @@ const SurveyMap = ({navigation}) => {
   const handleUpdatePolygon = () => {
     const data = {
       ...formData,
-      tags: Array.isArray(formData.tags)
-        ? join(formData.tags, ',')
-        : formData.tags,
+      tags: join(formData.tags, ','),
       id: formData.id,
       coordinates: latLongMapToCoords(coordinates),
-      taskId,
+      parentId: selectedArea.id,
     };
     mutate(data);
   };
@@ -293,6 +294,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     alignSelf: 'flex-end',
     paddingHorizontal: 15,
+    minWidth: 150,
   },
   disableBtn: {
     backgroundColor: '#A9A9A9',

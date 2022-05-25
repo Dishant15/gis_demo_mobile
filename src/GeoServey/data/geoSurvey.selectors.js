@@ -16,10 +16,11 @@ export const getSurveyCoordinates = store =>
 export const getGeoSurveyFormData = store => store.geoSurvey.selectedSurvey;
 
 export const getGeoSurveyTags = store =>
-  store.geoSurvey.boundaryData.tags || [];
+  store.geoSurvey.selectedSurvey.tags || [];
 
 // survey unit related selectors
-export const getGeoSurveyUnitList = store => store.geoSurvey.units;
+export const getGeoSurveyUnitList = store =>
+  store.geoSurvey.selectedSurvey.units;
 export const getGeoSurveySelectedUnitIndex = store =>
   store.geoSurvey.selectedUnitIndex;
 

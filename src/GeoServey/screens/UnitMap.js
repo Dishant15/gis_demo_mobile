@@ -8,13 +8,13 @@ import BackHeader from '~Common/components/Header/BackHeader';
 import {layout, screens} from '~constants/constants';
 import {useDispatch, useSelector} from 'react-redux';
 import {
-  getGeoSurveyCoords,
   getGeoSurveySelectedUnitIndex,
   getGeoSurveyUnitFormData,
   getGeoSurveyUnitList,
   getIsReviewed,
+  getSurveyCoordinates,
 } from '~GeoServey/data/geoSurvey.selectors';
-import {updateUnitCoordinates} from '~GeoServey/data/geoSurvey.reducer';
+import {updateUnitFormData} from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {upsertSurveyUnit} from '~GeoServey/data/geoSurvey.service';
@@ -30,22 +30,17 @@ const UnitMap = ({navigation}) => {
   const isFocused = useIsFocused();
   const isReviewed = useSelector(getIsReviewed);
   const unitList = useSelector(getGeoSurveyUnitList);
-  const unitIndex = useSelector(getGeoSurveySelectedUnitIndex);
-  console.log(
-    '🚀 ~ file: UnitMap.js ~ line 32 ~ UnitMap ~ unitIndex',
-    unitIndex,
-  );
   const unitData = useSelector(getGeoSurveyUnitFormData);
-  console.log('🚀 ~ file: UnitMap.js ~ line 33 ~ UnitMap ~ unitData', unitData);
 
-  const surveyCoords = useSelector(getGeoSurveyCoords);
+  const surveyCoords = useSelector(getSurveyCoordinates);
   const dispatch = useDispatch();
 
   const mapRef = useRef();
   const [coordinate, setCoordinate] = useState(
     get(unitData, 'coordinates', null),
   );
-  const isAdd = unitIndex === -1;
+
+  const isAdd = !Boolean(unitData.id);
   const markerSelected = !isNull(coordinate);
 
   useFocusEffect(
@@ -64,19 +59,11 @@ const UnitMap = ({navigation}) => {
     }, [isReviewed]),
   );
 
-  // useEffect(() => {
-  //   if (size(unitData.coordinates)) {
-  //     setCoordinate(unitData.coordinates);
-  //   } else {
-  //     setCoordinate(null);
-  //   }
-  // }, [unitData]);
-
   const {mutate, isLoading} = useMutation(upsertSurveyUnit, {
     onSuccess: res => {
-      dispatch(updateCoordinates(coordinates));
+      dispatch(updateUnitFormData(res));
       navigation.navigate(screens.reviewScreen);
-      showToast('Survey boundary updated successfully.', TOAST_TYPE.SUCCESS);
+      showToast('Marker cordinate updated successfully.', TOAST_TYPE.SUCCESS);
     },
     onError: err => {
       showToast('Input Error', TOAST_TYPE.ERROR);
@@ -88,15 +75,12 @@ const UnitMap = ({navigation}) => {
     if (isLoading) return;
     if (!markerSelected) {
       showToast('Tap on the map to select unit location', TOAST_TYPE.ERROR);
+      return;
     }
+    const newData = {...unitData, coordinates: coordinate};
     if (isAdd) {
       // update redux with map coordinates
-      dispatch(
-        updateUnitCoordinates({
-          unitIndex,
-          coordinates: coordinate,
-        }),
-      );
+      dispatch(updateUnitFormData(newData));
       navigation.navigate(screens.unitForm);
     } else {
       // call edit unit server api
@@ -104,12 +88,7 @@ const UnitMap = ({navigation}) => {
         '🚀 ~ file: UnitMap.js ~ line 78 ~ UnitMap ~ unitData',
         unitData,
       );
-      return;
-      if (isReviewed) {
-        navigation.navigate(screens.reviewScreen);
-      } else {
-        navigation.navigate(screens.unitForm);
-      }
+      mutate(newData);
     }
   };
 

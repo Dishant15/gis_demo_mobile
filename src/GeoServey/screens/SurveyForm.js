@@ -43,6 +43,7 @@ const SurveyForm = props => {
   const formData = useSelector(getGeoSurveyFormData);
   const isReviewed = useSelector(getIsReviewed);
   const taskId = useSelector(getTaskId);
+  const parentId = useSelector(getParentId);
 
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -160,6 +161,7 @@ const SurveyForm = props => {
       id: formData.id,
       coordinates: latLongMapToCoords(formData.coordinates),
       taskId,
+      parentId,
     };
     mutate(data);
   };
