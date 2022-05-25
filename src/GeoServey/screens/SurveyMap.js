@@ -236,9 +236,9 @@ const SurveyMap = ({navigation}) => {
                     );
                   })
                 : null}
-              {size(selectedArea.path) ? (
+              {size(selectedArea.coordinates) ? (
                 <Polygon
-                  coordinates={selectedArea.path}
+                  coordinates={selectedArea.coordinates}
                   strokeWidth={2}
                   strokeColor={colors.black}
                   fillColor="transparent"

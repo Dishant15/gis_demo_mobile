@@ -39,7 +39,6 @@ const SurveyForm = props => {
   const {navigation} = props;
   const isFocused = useIsFocused();
   const formData = useSelector(getGeoSurveyFormData);
-  const coords = useSelector(getGeoSurveyCoords);
   const isReviewed = useSelector(getIsReviewed);
   const parentId = useSelector(getParentId);
 
@@ -78,14 +77,12 @@ const SurveyForm = props => {
       city: formData.city,
       state: formData.state,
       pincode: formData.pincode,
-      tags: Array.isArray(formData.tags)
-        ? formData.tags
-        : split(formData.tags, ','),
+      tags: formData.tags,
     },
   });
 
   useEffect(() => {
-    const polygonPoint = map(coords, point => [
+    const polygonPoint = map(formData.coordinates, point => [
       point.latitude,
       point.longitude,
     ]);
@@ -155,7 +152,7 @@ const SurveyForm = props => {
       ...formState,
       tags: join(formState.tags, ','),
       id: formData.id,
-      coordinates: latLongMapToCoords(coords),
+      coordinates: latLongMapToCoords(formData.coordinates),
       parentId,
     };
     mutate(data);

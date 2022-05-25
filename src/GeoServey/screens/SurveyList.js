@@ -17,7 +17,6 @@ import BackHeader from '~Common/components/Header/BackHeader';
 import {setSurveyData} from '~GeoServey/data/geoSurvey.reducer';
 import {layout, screens, colors} from '~constants/constants';
 
-import {coordsToLatLongMap} from '~utils/map.utils';
 import {getSurveyBoundaryList} from '~GeoServey/data/geoSurvey.selectors';
 
 /**
@@ -35,7 +34,6 @@ const SurveyList = props => {
 
   // get survey list from redux store
   const surveyList = useSelector(getSurveyBoundaryList);
-  console.log('🚀 ~ file: SurveyList.js ~ line 41 ~ surveyList', surveyList);
 
   const navigateToMap = useCallback(() => {
     dispatch(setSurveyData(null));
@@ -87,17 +85,15 @@ const SurveyList = props => {
         }
       />
 
-      {!!size(surveyList) ? (
-        <Button
-          style={[styles.buttonStyle, {paddingBottom: insets.bottom || 0}]}
-          contentStyle={layout.button}
-          color={colors.black}
-          uppercase
-          mode="contained"
-          onPress={navigateToMap}>
-          View on map
-        </Button>
-      ) : null}
+      <Button
+        style={[styles.buttonStyle, {paddingBottom: insets.bottom || 0}]}
+        contentStyle={layout.button}
+        color={colors.black}
+        uppercase
+        mode="contained"
+        onPress={navigateToMap}>
+        View on map
+      </Button>
     </View>
   );
 };

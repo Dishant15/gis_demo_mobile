@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {View, FlatList, StyleSheet} from 'react-native';
 import {Card, Title, Subheading, Paragraph} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
@@ -27,42 +27,41 @@ const AreaList = props => {
   const {isLoading, data, refetch} = useQuery(
     'userTaskList',
     fetchUserTaskList,
-    {
-      select: queryData => {
-        let resultData = [...queryData];
-        for (let r_ind = 0; r_ind < resultData.length; r_ind++) {
-          const userTask = resultData[r_ind];
-          let {area_pocket, survey_boundaries} = userTask;
-
-          userTask.survey_count = size(survey_boundaries);
-          // convert area coordinate data
-          area_pocket.coordinates = coordsToLatLongMap(area_pocket.coordinates);
-          // convert survey_boundaries coordinate, tags data
-          for (let s_ind = 0; s_ind < survey_boundaries.length; s_ind++) {
-            const survey = survey_boundaries[s_ind];
-            const {units} = survey;
-            // convert survey_boundaries.units coordinate, tags data
-            survey.coordinates = coordsToLatLongMap(survey.coordinates);
-            survey.tags = survey.tags.split(',');
-            for (let u_ind = 0; u_ind < units.length; u_ind++) {
-              const unit = units[u_ind];
-              // convert survey_boundaries.units coordinate, tags data
-              unit.coordinates = coordsToLatLongMap([unit.coordinates])[0];
-              unit.tags = unit.tags.split(',');
-            }
-          }
-        }
-
-        return resultData;
-      },
-    },
   );
-  console.log('🚀 ~ file: AreaList.js ~ line 28 ~ data', data);
+
+  const userTaskList = useMemo(() => {
+    let resultData = data ? [...data] : [];
+    for (let r_ind = 0; r_ind < resultData.length; r_ind++) {
+      const userTask = resultData[r_ind];
+      let {area_pocket, survey_boundaries} = userTask;
+
+      userTask.survey_count = size(survey_boundaries);
+      // convert area coordinate data
+      area_pocket.coordinates = coordsToLatLongMap(area_pocket.coordinates);
+      // convert survey_boundaries coordinate, tags data
+      for (let s_ind = 0; s_ind < survey_boundaries.length; s_ind++) {
+        const survey = survey_boundaries[s_ind];
+        const {units} = survey;
+        // convert survey_boundaries.units coordinate, tags data
+        survey.coordinates = coordsToLatLongMap(survey.coordinates);
+        survey.tags = survey.tags.toString().split(',');
+        for (let u_ind = 0; u_ind < units.length; u_ind++) {
+          const unit = units[u_ind];
+          // convert survey_boundaries.units coordinate, tags data
+          unit.coordinates = coordsToLatLongMap([unit.coordinates])[0];
+          unit.tags = unit.tags.toString().split(',');
+        }
+      }
+    }
+
+    return resultData;
+  }, [data]);
+
   return (
     <View style={[layout.container, layout.relative]}>
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
-        data={data}
+        data={userTaskList}
         keyExtractor={item => item.id}
         renderItem={({item}) => {
           const {name, area_pocket} = item;
@@ -84,7 +83,7 @@ const AreaList = props => {
           );
         }}
         onRefresh={refetch}
-        refreshing={!!(isLoading && size(data))}
+        refreshing={!!(isLoading && size(userTaskList))}
         ListEmptyComponent={
           isLoading ? null : (
             <View style={[layout.container, layout.center]}>

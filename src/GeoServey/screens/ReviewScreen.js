@@ -35,9 +35,7 @@ const {width, height} = Dimensions.get('window');
 const ReviewScreen = ({navigation}) => {
   const isFocused = useIsFocused();
   const mapRef = useRef();
-  const coordinates = useSelector(getGeoSurveyCoords);
   const formData = useSelector(getGeoSurveyFormData);
-  const unitList = useSelector(getGeoSurveyUnitList);
   const selectedArea = useSelector(getSelectedArea);
 
   const dispatch = useDispatch();
@@ -61,13 +59,13 @@ const ReviewScreen = ({navigation}) => {
 
   const unitMarkerList = useMemo(() => {
     const newList = [];
-    for (let index = 0; index < unitList.length; index++) {
-      if (size(get(unitList, [index, 'coordinates']))) {
-        newList.push(unitList[index].coordinates);
+    for (let index = 0; index < formData.units.length; index++) {
+      if (size(get(formData.units, [index, 'coordinates']))) {
+        newList.push(formData.units[index].coordinates);
       }
     }
     return newList;
-  }, [unitList]);
+  }, [formData.units]);
 
   const handleDiscart = () => {
     // reset and delete
@@ -82,9 +80,12 @@ const ReviewScreen = ({navigation}) => {
         ...formData,
         parentId: selectedArea.id,
         tags: join(formData.tags, ','),
-        coordinates: latLongMapToCoords(coordinates),
+        coordinates: latLongMapToCoords(formData.coordinates),
       },
-      unitList: map(unitList, unit => ({...unit, tags: join(unit.tags, ',')})),
+      unitList: map(formData.units, unit => ({
+        ...unit,
+        tags: join(unit.tags, ','),
+      })),
     };
     mutate(data);
   };
@@ -118,7 +119,7 @@ const ReviewScreen = ({navigation}) => {
   );
 
   const onMapLayout = e => {
-    mapRef.current.fitToCoordinates(coordinates, {
+    mapRef.current.fitToCoordinates(formData.coordinates, {
       edgePadding: {
         top: 20,
         right: 20,
@@ -169,9 +170,9 @@ const ReviewScreen = ({navigation}) => {
               />
             );
           })}
-          {size(coordinates) ? (
+          {size(formData.coordinates) ? (
             <Polygon
-              coordinates={coordinates}
+              coordinates={formData.coordinates}
               strokeWidth={2}
               strokeColor={'#FFA701'}
               fillColor="#FFA70114"
@@ -198,10 +199,10 @@ const ReviewScreen = ({navigation}) => {
               </Button>
             </Card.Actions>
           </Card>
-          {size(unitList) ? (
+          {size(formData.units) ? (
             <>
               <Subheading style={styles.title}>Units</Subheading>
-              {unitList.map((unit, index) => {
+              {formData.units.map((unit, index) => {
                 return (
                   <Card elevation={3} key={index} style={{marginBottom: 14}}>
                     <Card.Content>
