@@ -102,18 +102,10 @@ const SurveyForm = props => {
     Api.get(getGoogleAddress(center[0], center[1]))
       .then(res => {
         const data = res.data;
-        console.log(
-          '🚀 ~ file: SurveyForm.js ~ line 41 ~ useEffect ~ data',
-          data,
-        );
         const firstAddress = get(data, 'results.0.address_components', []);
         const address = get(data, 'results.0.formatted_address', '');
         // get country, state, pincode, city
         const otherAddressData = groupBy(firstAddress, 'types.0');
-        console.log(
-          '🚀 ~ file: SurveyForm.js ~ line 73 ~ useEffect ~ otherAddressData',
-          otherAddressData,
-        );
         const pincode = get(otherAddressData, 'postal_code.0.long_name', '');
         const state = get(
           otherAddressData,

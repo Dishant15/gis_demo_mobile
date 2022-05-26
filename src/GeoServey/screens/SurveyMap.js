@@ -7,6 +7,7 @@ import {
   StyleSheet,
   BackHandler,
   InteractionManager,
+  Dimensions,
 } from 'react-native';
 
 import MapView, {PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
@@ -37,6 +38,18 @@ import {useMutation} from 'react-query';
 import {updateGeoServey} from '~GeoServey/data/geoSurvey.service';
 import {latLongMapToCoords} from '~utils/map.utils';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {
+  getCurrentLocation,
+  getLocationPermissionType,
+} from '~Common/data/appstate.selector';
+import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
+
+let {width, height} = Dimensions.get('window');
+const ASPECT_RATIO = width / height;
+
+const LATITUDE_DELTA = 0.00444;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 /**
  * render maps with survey points
@@ -56,6 +69,9 @@ const SurveyMap = ({navigation}) => {
   // surveyId indicate that survey is add or edit
   const surveyId = useSelector(getSelectedSurveyId);
   const taskId = useSelector(getTaskId);
+  // location
+  const locationPermType = useSelector(getLocationPermissionType);
+  const currentLocation = useSelector(getCurrentLocation);
 
   const [showMap, setMapVisibility] = useState(false);
   const [coordinates, setCoordinates] = useState(coords);
@@ -159,6 +175,18 @@ const SurveyMap = ({navigation}) => {
     });
   };
 
+  const handleCurrentLocationPress = () => {
+    mapRef.current.animateToRegion(
+      {
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      },
+      200,
+    );
+  };
+
   const handleCustomBack = () => {
     if (isReviewed) {
       navigation.navigate(screens.reviewScreen);
@@ -188,6 +216,10 @@ const SurveyMap = ({navigation}) => {
         {showMap ? (
           <Animatable.View animation="fadeIn" style={layout.container}>
             <MapView
+              showsUserLocation={locationPermType === PERMISSIONS_TYPE.ALLOW}
+              showsMyLocationButton={
+                locationPermType === PERMISSIONS_TYPE.ALLOW
+              }
               ref={mapRef}
               style={styles.map}
               initialRegion={{
@@ -256,6 +288,18 @@ const SurveyMap = ({navigation}) => {
               marginBottom: Math.max(insets.bottom, 16),
             },
           ]}>
+          {/* {locationPermType === PERMISSIONS_TYPE.ALLOW ? (
+            <TouchableOpacity
+              activeOpacity={0.6}
+              style={styles.circleBtn}
+              onPress={handleCurrentLocationPress}>
+              <MaterialIcons
+                size={22}
+                name={'my-location'}
+                color={colors.white}
+              />
+            </TouchableOpacity>
+          ) : null} */}
           <TouchableOpacity
             activeOpacity={0.6}
             style={[
@@ -295,6 +339,15 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     paddingHorizontal: 15,
     minWidth: 150,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
   disableBtn: {
     backgroundColor: '#A9A9A9',
@@ -316,6 +369,25 @@ const styles = StyleSheet.create({
     height: 6,
     backgroundColor: colors.black,
     borderRadius: 3,
+  },
+  circleBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 40,
+    backgroundColor: colors.black,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    marginBottom: 18,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
 });
 

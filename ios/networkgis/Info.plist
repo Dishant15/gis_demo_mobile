@@ -44,6 +44,7 @@
 		<string>fonts/Roboto-Medium.ttf</string>
 		<string>fonts/Roboto-Regular.ttf</string>
 		<string>MaterialCommunityIcons.ttf</string>
+		<string>MaterialIcons.ttf</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Permission required to focus map using user current location and better user experiance</string>

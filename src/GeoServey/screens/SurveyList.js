@@ -18,6 +18,7 @@ import {setReview, setSurveyData} from '~GeoServey/data/geoSurvey.reducer';
 import {layout, screens, colors} from '~constants/constants';
 
 import {getSurveyBoundaryList} from '~GeoServey/data/geoSurvey.selectors';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 /**
  * Renders survey list
@@ -88,6 +89,7 @@ const SurveyList = props => {
           </View>
         }
       />
+      {/* map-marker-path */}
 
       <Button
         style={[styles.buttonStyle, {paddingBottom: insets.bottom || 0}]}
@@ -95,6 +97,7 @@ const SurveyList = props => {
         color={colors.black}
         uppercase
         mode="contained"
+        icon={'map-marker-path'}
         onPress={navigateToMap}>
         View on map
       </Button>
