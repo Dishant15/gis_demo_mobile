@@ -9,6 +9,7 @@ import {
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {isNull, get, size, differenceBy, join, split} from 'lodash';
+import * as Animatable from 'react-native-animatable';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 import {layout, screens} from '~constants/constants';
@@ -35,6 +36,8 @@ import {showToast, TOAST_TYPE} from '~utils/toast.utils';
  *    root.navigation
  */
 const UnitMap = ({navigation}) => {
+  const [showMap, setMapVisibility] = useState(false);
+
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
   const isReviewed = useSelector(getIsReviewed);
@@ -53,16 +56,11 @@ const UnitMap = ({navigation}) => {
   const isAdd = !Boolean(unitData.id);
   const markerSelected = !isNull(coordinate);
 
-  // update state when screen is not unmounted and data gets updated
-  useEffect(() => {
+  React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      if (size(unitData.coordinates)) {
-        setCoordinate(unitData.coordinates);
-      } else {
-        setCoordinate(null);
-      }
+      setMapVisibility(true);
     });
-  }, [unitData]);
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -127,18 +125,19 @@ const UnitMap = ({navigation}) => {
 
   const isMarker = !isNull(coordinate);
 
-  const existingMarkers = useMemo(() => {
-    let newList = [];
-    for (let index = 0; index < unitList.length; index++) {
-      if (size(get(unitList, [index, 'coordinates']))) {
-        newList.push(unitList[index].coordinates);
-      }
+  let existingMarkers = [];
+  for (let index = 0; index < unitList.length; index++) {
+    if (size(get(unitList, [index, 'coordinates']))) {
+      existingMarkers.push(unitList[index].coordinates);
     }
-    if (unitData.coordinates) {
-      newList = differenceBy(newList, [unitData.coordinates], 'latitude');
-    }
-    return newList;
-  }, [unitList]);
+  }
+  if (unitData.coordinates) {
+    existingMarkers = differenceBy(
+      existingMarkers,
+      [unitData.coordinates],
+      'latitude',
+    );
+  }
 
   const onMapLayout = e => {
     mapRef.current.fitToCoordinates(surveyCoords, {
@@ -150,6 +149,7 @@ const UnitMap = ({navigation}) => {
       },
       animated: true,
     });
+    setCoordinate(unitData.coordinates);
   };
 
   const handleMapClick = e => {
@@ -176,50 +176,54 @@ const UnitMap = ({navigation}) => {
         onGoBack={handleCustomBack}
       />
       <View style={[layout.container, layout.relative]}>
-        <MapView
-          ref={mapRef}
-          style={styles.map}
-          initialRegion={{
-            longitudeDelta: 0.06032254546880722,
-            latitudeDelta: 0.0005546677,
-            longitude: 72.56051184609532,
-            latitude: 23.024334044995985,
-          }}
-          provider={PROVIDER_GOOGLE}
-          onPress={handleMapClick}
-          onLayout={onMapLayout}>
-          {existingMarkers.map((marker, index) => {
-            return (
-              <Marker
-                key={index}
-                coordinate={marker}
-                stopPropagation
-                flat
-                tracksInfoWindowChanges={false}
-              />
-            );
-          })}
-          {isMarker ? (
-            <Marker
-              pinColor="green"
-              coordinate={coordinate}
-              tappable
-              draggable
-              onDragEnd={handleMarkerDrag}
-              stopPropagation
-              flat
-              tracksInfoWindowChanges={false}
-            />
-          ) : null}
-          {size(surveyCoords) ? (
-            <Polygon
-              coordinates={surveyCoords}
-              strokeWidth={2}
-              strokeColor={'#FFA701'}
-              fillColor="#FFA70114"
-            />
-          ) : null}
-        </MapView>
+        {showMap ? (
+          <Animatable.View animation="fadeIn" style={layout.container}>
+            <MapView
+              ref={mapRef}
+              style={styles.map}
+              initialRegion={{
+                longitudeDelta: 0.06032254546880722,
+                latitudeDelta: 0.0005546677,
+                longitude: 72.56051184609532,
+                latitude: 23.024334044995985,
+              }}
+              provider={PROVIDER_GOOGLE}
+              onPress={handleMapClick}
+              onLayout={onMapLayout}>
+              {existingMarkers.map((marker, index) => {
+                return (
+                  <Marker
+                    key={index}
+                    coordinate={marker}
+                    stopPropagation
+                    flat
+                    tracksInfoWindowChanges={false}
+                  />
+                );
+              })}
+              {isMarker ? (
+                <Marker
+                  pinColor="green"
+                  coordinate={coordinate}
+                  tappable
+                  draggable
+                  onDragEnd={handleMarkerDrag}
+                  stopPropagation
+                  flat
+                  tracksInfoWindowChanges={false}
+                />
+              ) : null}
+              {size(surveyCoords) ? (
+                <Polygon
+                  coordinates={surveyCoords}
+                  strokeWidth={2}
+                  strokeColor={'#FFA701'}
+                  fillColor="#FFA70114"
+                />
+              ) : null}
+            </MapView>
+          </Animatable.View>
+        ) : null}
         <View
           pointerEvents="box-none"
           style={[

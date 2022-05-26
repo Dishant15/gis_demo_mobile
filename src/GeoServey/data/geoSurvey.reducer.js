@@ -78,7 +78,7 @@ const geoSurveyReducer = createSlice({
     updateSurveyList: (state, {payload}) => {
       if (state.selectedSurveyIndex === -1) {
         state.surveyList.push({...payload});
-        state.selectedSurveyIndex = 0;
+        state.selectedSurveyIndex = state.surveyList.length - 1;
       } else {
         state.surveyList[state.selectedSurveyIndex] = {...payload};
       }
