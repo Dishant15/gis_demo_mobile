@@ -52,10 +52,7 @@ const UnitForm = ({navigation}) => {
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
-        if (isAdd) {
-          navigation.navigate(screens.unitMap);
-          return true;
-        } else if (isReviewed) {
+        if (isReviewed) {
           navigation.navigate(screens.reviewScreen);
           return true;
         } else {
@@ -106,7 +103,7 @@ const UnitForm = ({navigation}) => {
       dispatch(updateUnitFormData(newData));
       dispatch(updateSurveyUnitList(newData));
       showToast(unitAddSuccess(), TOAST_TYPE.SUCCESS);
-      navigation.navigate(screens.reviewScreen);
+      navigation.navigate(screens.unitList);
     },
     onError: err => {
       console.log('🚀 ~ file: UnitForm.js err', err.response);

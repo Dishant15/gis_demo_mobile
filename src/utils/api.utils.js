@@ -1,8 +1,11 @@
 import {API_HOST} from '@env';
 console.log('🚀 ~ file: api.utils.js ~ line 2 ~ API_HOST', API_HOST);
 import axios from 'axios';
-import {isNil, map, keys, join} from 'lodash';
+import {isNil, map, keys, join, get} from 'lodash';
+import {logout} from '~Authentication/data/auth.reducer';
+import {authRevoked} from '~constants/messages';
 import store from '~store';
+import {showToast, TOAST_TYPE} from './toast.utils';
 
 export function convertObjectToQueryParams(object) {
   if (!isNil(object)) {
@@ -32,6 +35,19 @@ axiosInstance.interceptors.request.use(function (config) {
     config.headers.Authorization = token ? `Bearer ${token}` : undefined;
   return config;
 });
+
+axiosInstance.interceptors.response.use(
+  res => res,
+  err => {
+    // dispatch logout action if request unauthorised.
+    const status = get(err, 'response.status');
+    if (status === 401) {
+      store.dispatch(logout());
+      showToast(authRevoked(), TOAST_TYPE.INFO);
+    }
+    return err;
+  },
+);
 
 class Api {
   static get(url, queryParams, config = {}) {

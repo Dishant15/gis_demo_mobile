@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import {View, FlatList} from 'react-native';
+import {View, FlatList, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Card, Title, Paragraph, Button} from 'react-native-paper';
 
@@ -8,6 +8,7 @@ import BackHeader from '~Common/components/Header/BackHeader';
 import {getGeoSurveyUnitList} from '~GeoServey/data/geoSurvey.selectors';
 import {layout, screens, colors} from '~constants/constants';
 import {selectUnit} from '~GeoServey/data/geoSurvey.reducer';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 /**
  * Parent:
@@ -15,6 +16,7 @@ import {selectUnit} from '~GeoServey/data/geoSurvey.reducer';
  */
 const UnitList = props => {
   const {navigation} = props;
+  const insets = useSafeAreaInsets();
   const units = useSelector(getGeoSurveyUnitList);
   const dispatch = useDispatch();
 
@@ -27,10 +29,10 @@ const UnitList = props => {
   );
 
   return (
-    <View style={layout.container}>
+    <View style={[layout.container, layout.relative]}>
       <BackHeader title="Survey units" onGoBack={navigation.goBack} />
       <FlatList
-        contentContainerStyle={{padding: 12, paddingBottom: 40}}
+        contentContainerStyle={styles.contentContainerStyle}
         data={units}
         renderItem={({item, index}) => {
           if (item.name) {
@@ -59,22 +61,37 @@ const UnitList = props => {
             </Card.Content>
           </Card>
         }
-        ListFooterComponent={
-          <Button
-            style={{
-              marginVertical: 30,
-            }}
-            contentStyle={layout.button}
-            color={colors.black}
-            uppercase
-            mode="contained"
-            onPress={() => navigation.navigate(screens.reviewScreen)}>
-            Review
-          </Button>
-        }
       />
+      <View style={styles.bottomWrapper}>
+        <Button
+          style={[styles.btn, {paddingBottom: Math.max(insets.bottom, 0)}]}
+          contentStyle={layout.button}
+          color={colors.black}
+          uppercase
+          mode="contained"
+          onPress={() => navigation.navigate(screens.reviewScreen)}>
+          Review
+        </Button>
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  contentContainerStyle: {
+    padding: 12,
+    paddingBottom: 40,
+  },
+  bottomWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  btn: {
+    borderRadius: 0,
+    backgroundColor: colors.black,
+  },
+});
 
 export default UnitList;

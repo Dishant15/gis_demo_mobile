@@ -1,22 +1,14 @@
-import React, {useMemo, useRef, useCallback, useState, useEffect} from 'react';
+import React, {useMemo, useRef, useCallback, useEffect} from 'react';
 import {View, Dimensions, StyleSheet, ScrollView} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {useDispatch, useSelector} from 'react-redux';
-import {size, get, join, map} from 'lodash';
+import {size, get} from 'lodash';
 import {Card, Button, Paragraph, Subheading} from 'react-native-paper';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 import {layout, screens, colors} from '~constants/constants';
+import {getGeoSurveyFormData} from '~GeoServey/data/geoSurvey.selectors';
 import {
-  getGeoSurveyCoords,
-  getGeoSurveyUnitList,
-  getGeoSurveyFormData,
-  getSelectedArea,
-} from '~GeoServey/data/geoSurvey.selectors';
-import Api from '~utils/api.utils';
-import {apiAddSurvey} from '~constants/url.constants';
-import {
-  resetAllData,
   setReview,
   selectUnit,
   resetServeyData,
@@ -190,15 +182,6 @@ const ReviewScreen = ({navigation}) => {
             </>
           ) : null}
           <View style={styles.buttonWrapper}>
-            <Button
-              style={styles.submitBtn}
-              contentStyle={layout.button}
-              color={colors.black}
-              uppercase
-              mode="outlined"
-              onPress={navigateToUnitMap(-1)}>
-              Add Unit
-            </Button>
             <Button
               style={styles.submitBtn}
               contentStyle={layout.button}

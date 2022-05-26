@@ -296,7 +296,7 @@ const SurveyMap = ({navigation}) => {
           <TouchableOpacity onPress={handleMapType}>
             <FastImage
               style={styles.mapTypeImage}
-              resizeMode="contain"
+              resizeMode="cover"
               source={mapType === 'standard' ? DefaultMapImg : TerrainMapImg}
             />
           </TouchableOpacity>

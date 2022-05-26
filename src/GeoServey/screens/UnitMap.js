@@ -268,6 +268,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     alignSelf: 'flex-end',
     paddingHorizontal: 15,
+    minWidth: 150,
   },
   drawBtnTxt: {
     color: 'white',
