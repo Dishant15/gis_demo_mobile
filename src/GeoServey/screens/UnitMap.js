@@ -125,19 +125,18 @@ const UnitMap = ({navigation}) => {
 
   const isMarker = !isNull(coordinate);
 
-  let existingMarkers = [];
-  for (let index = 0; index < unitList.length; index++) {
-    if (size(get(unitList, [index, 'coordinates']))) {
-      existingMarkers.push(unitList[index].coordinates);
+  const existingMarkers = useMemo(() => {
+    let newList = [];
+    for (let index = 0; index < unitList.length; index++) {
+      if (size(get(unitList, [index, 'coordinates']))) {
+        newList.push(unitList[index].coordinates);
+      }
     }
-  }
-  if (unitData.coordinates) {
-    existingMarkers = differenceBy(
-      existingMarkers,
-      [unitData.coordinates],
-      'latitude',
-    );
-  }
+    if (unitData.coordinates) {
+      newList = differenceBy(newList, [unitData.coordinates], 'latitude');
+    }
+    return newList;
+  }, [unitList, unitData]);
 
   const onMapLayout = e => {
     mapRef.current.fitToCoordinates(surveyCoords, {
