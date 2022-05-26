@@ -1,5 +1,11 @@
 import React, {useRef, useState, useCallback, useMemo, useEffect} from 'react';
-import {View, Text, StyleSheet, Dimensions, BackHandler} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  InteractionManager,
+  BackHandler,
+} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {isNull, get, size, differenceBy, join, split} from 'lodash';
@@ -49,11 +55,13 @@ const UnitMap = ({navigation}) => {
 
   // update state when screen is not unmounted and data gets updated
   useEffect(() => {
-    if (size(unitData.coordinates)) {
-      setCoordinate(unitData.coordinates);
-    } else {
-      setCoordinate(null);
-    }
+    InteractionManager.runAfterInteractions(() => {
+      if (size(unitData.coordinates)) {
+        setCoordinate(unitData.coordinates);
+      } else {
+        setCoordinate(null);
+      }
+    });
   }, [unitData]);
 
   useFocusEffect(
@@ -83,9 +91,7 @@ const UnitMap = ({navigation}) => {
         },
       };
       dispatch(updateUnitFormData(newData));
-      if (!isAdd) {
-        dispatch(updateSurveyUnitList(newData));
-      }
+      dispatch(updateSurveyUnitList(newData));
       navigation.navigate(screens.reviewScreen);
       showToast('Marker cordinate updated successfully.', TOAST_TYPE.SUCCESS);
     },
