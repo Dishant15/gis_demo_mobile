@@ -38,12 +38,16 @@ import {useMutation} from 'react-query';
 import {updateGeoServey} from '~GeoServey/data/geoSurvey.service';
 import {latLongMapToCoords} from '~utils/map.utils';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
   getCurrentLocation,
   getLocationPermissionType,
+  getMapType,
 } from '~Common/data/appstate.selector';
-import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
+import {PERMISSIONS_TYPE, toggleMapType} from '~Common/data/appstate.reducer';
+import FastImage from 'react-native-fast-image';
+
+import DefaultMapImg from '~assets/img/map_default.png';
+import TerrainMapImg from '~assets/img/map_terrain.png';
 
 let {width, height} = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
@@ -72,6 +76,7 @@ const SurveyMap = ({navigation}) => {
   // location
   const locationPermType = useSelector(getLocationPermissionType);
   const currentLocation = useSelector(getCurrentLocation);
+  const mapType = useSelector(getMapType);
 
   const [showMap, setMapVisibility] = useState(false);
   const [coordinates, setCoordinates] = useState(coords);
@@ -195,6 +200,10 @@ const SurveyMap = ({navigation}) => {
     }
   };
 
+  const handleMapType = () => {
+    dispatch(toggleMapType());
+  };
+
   if (!isFocused) return null;
   return (
     <View style={layout.container}>
@@ -220,6 +229,8 @@ const SurveyMap = ({navigation}) => {
               showsMyLocationButton={
                 locationPermType === PERMISSIONS_TYPE.ALLOW
               }
+              showsIndoorLevelPicker
+              mapType={mapType}
               ref={mapRef}
               style={styles.map}
               initialRegion={{
@@ -281,6 +292,15 @@ const SurveyMap = ({navigation}) => {
             </MapView>
           </Animatable.View>
         ) : null}
+        <View style={styles.mapTypeWrapper}>
+          <TouchableOpacity onPress={handleMapType}>
+            <FastImage
+              style={styles.mapTypeImage}
+              resizeMode="contain"
+              source={mapType === 'standard' ? DefaultMapImg : TerrainMapImg}
+            />
+          </TouchableOpacity>
+        </View>
         <View
           style={[
             styles.content,
@@ -288,18 +308,6 @@ const SurveyMap = ({navigation}) => {
               marginBottom: Math.max(insets.bottom, 16),
             },
           ]}>
-          {/* {locationPermType === PERMISSIONS_TYPE.ALLOW ? (
-            <TouchableOpacity
-              activeOpacity={0.6}
-              style={styles.circleBtn}
-              onPress={handleCurrentLocationPress}>
-              <MaterialIcons
-                size={22}
-                name={'my-location'}
-                color={colors.white}
-              />
-            </TouchableOpacity>
-          ) : null} */}
           <TouchableOpacity
             activeOpacity={0.6}
             style={[
@@ -388,6 +396,26 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
 
     elevation: 5,
+  },
+  mapTypeWrapper: {
+    position: 'absolute',
+    right: 0,
+    top: 65,
+    right: 14,
+    backgroundColor: colors.white,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  mapTypeImage: {
+    width: 44,
+    height: 44,
   },
 });
 

@@ -10,6 +10,7 @@ const initialState = {
   showInfoScreens: true,
   locationPermissionType: PERMISSIONS_TYPE.NONE,
   currentLocation: null,
+  mapType: 'standard', // terrain
 };
 
 const appstateReducer = createSlice({
@@ -25,6 +26,10 @@ const appstateReducer = createSlice({
     setCurrentLocation: (state, {payload}) => {
       state.currentLocation = payload;
     },
+    toggleMapType: state => {
+      const {mapType} = state;
+      state.mapType = mapType === 'standard' ? 'terrain' : 'standard';
+    },
     resetAppState: () => {
       return initialState;
     },
@@ -36,5 +41,6 @@ export const {
   resetAppState,
   setLocationPermission,
   setCurrentLocation,
+  toggleMapType,
 } = appstateReducer.actions;
 export default appstateReducer.reducer;
