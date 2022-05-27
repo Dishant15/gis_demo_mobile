@@ -5,7 +5,12 @@ import {Button, Menu, Caption, Chip, Paragraph} from 'react-native-paper';
 import {colors} from '~constants/constants';
 import {noop} from '~utils/app.utils';
 
-const TagSelect = ({tagList, selectedTags = [], onSubmit = noop}) => {
+const TagSelect = ({
+  tagList,
+  selectedTags = [],
+  inputLabel = '',
+  onSubmit = noop,
+}) => {
   const [visible, setVisible] = React.useState(false);
   const [tags, setTags] = React.useState(selectedTags);
 
@@ -34,7 +39,7 @@ const TagSelect = ({tagList, selectedTags = [], onSubmit = noop}) => {
       onDismiss={closeMenu}
       anchor={
         <Pressable onPress={openMenu} style={styles.categoryWrapper}>
-          <Caption>Select Tags</Caption>
+          <Caption>{inputLabel}</Caption>
           <View style={styles.chipWrapper}>
             {selectedTags.length ? (
               selectedTags.map(opt => {

@@ -42,6 +42,7 @@ const SurveyList = props => {
 
   const navigateToMap = useCallback(() => {
     dispatch(setSurveyData(null));
+    dispatch(setReview(false));
     navigation.navigate(screens.surveyMap);
   }, []);
 

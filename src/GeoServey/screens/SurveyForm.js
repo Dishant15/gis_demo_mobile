@@ -5,7 +5,14 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Button, HelperText} from 'react-native-paper';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {colors, layout, screens, SURVEY_TAG_LIST} from '~constants/constants';
+import {
+  BroadbandProviders,
+  colors,
+  layout,
+  screens,
+  SURVEY_TAG_LIST,
+  TVProviders,
+} from '~constants/constants';
 import Input from '~Common/Input';
 import {
   setSurveyData,
@@ -30,6 +37,7 @@ import {useMutation} from 'react-query';
 import {updateGeoServey} from '~GeoServey/data/geoSurvey.service';
 import {coordsToLatLongMap, latLongMapToCoords} from '~utils/map.utils';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import MultiSelect from 'react-native-multiple-select';
 
 var turf = require('@turf/turf');
 
@@ -54,9 +62,14 @@ const SurveyForm = props => {
         ...res,
         coordinates: coordsToLatLongMap(res.coordinates),
         tags: split(res.tags, ','),
+        broadband_availability: split(res.broadband_availability, ','),
+        cable_tv_availability: split(res.cable_tv_availability, ','),
       };
       if (!size(res.units)) {
         newData.units = [];
+      }
+      if (size(formData.units)) {
+        newData.units = formData.units;
       }
       dispatch(updateSurveyFormData(newData));
       dispatch(updateSurveyList(newData));
@@ -67,8 +80,8 @@ const SurveyForm = props => {
       navigation.navigate(isReviewed ? screens.reviewScreen : screens.unitList);
     },
     onError: err => {
+      console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err.response);
       showToast('Input Error', TOAST_TYPE.ERROR);
-      console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err);
     },
   });
 
@@ -88,6 +101,8 @@ const SurveyForm = props => {
       state: formData.state,
       pincode: formData.pincode,
       tags: formData.tags,
+      broadband_availability: formData.broadband_availability,
+      cable_tv_availability: formData.cable_tv_availability,
     },
   });
 
@@ -153,6 +168,8 @@ const SurveyForm = props => {
     const data = {
       ...formState,
       tags: join(formState.tags, ','),
+      broadband_availability: join(formState.broadband_availability, ','),
+      cable_tv_availability: join(formState.cable_tv_availability, ','),
       id: formData.id,
       coordinates: latLongMapToCoords(formData.coordinates),
       taskId,
@@ -217,6 +234,7 @@ const SurveyForm = props => {
           render={({field: {ref, onChange, onBlur, value}}) => (
             <>
               <TagSelect
+                inputLabel="Select Tags"
                 tagList={SURVEY_TAG_LIST}
                 onSubmit={onChange}
                 selectedTags={value}
@@ -224,6 +242,54 @@ const SurveyForm = props => {
               {!!errors.tags?.message ? (
                 <HelperText type="error" visible={!!errors.tags?.message}>
                   {errors.tags?.message}
+                </HelperText>
+              ) : null}
+            </>
+          )}
+        />
+        <Controller
+          control={control}
+          name="broadband_availability"
+          rules={{
+            required: 'this field is required.',
+          }}
+          render={({field: {ref, onChange, onBlur, value}}) => (
+            <>
+              <TagSelect
+                inputLabel="Broadband Service Availability"
+                tagList={BroadbandProviders}
+                onSubmit={onChange}
+                selectedTags={value}
+              />
+              {!!errors.broadband_availability?.message ? (
+                <HelperText
+                  type="error"
+                  visible={!!errors.broadband_availability?.message}>
+                  {errors.broadband_availability?.message}
+                </HelperText>
+              ) : null}
+            </>
+          )}
+        />
+        <Controller
+          control={control}
+          name="cable_tv_availability"
+          rules={{
+            required: 'this field is required.',
+          }}
+          render={({field: {ref, onChange, onBlur, value}}) => (
+            <>
+              <TagSelect
+                inputLabel="Cable TV Service Availability"
+                tagList={TVProviders}
+                onSubmit={onChange}
+                selectedTags={value}
+              />
+              {!!errors.cable_tv_availability?.message ? (
+                <HelperText
+                  type="error"
+                  visible={!!errors.cable_tv_availability?.message}>
+                  {errors.cable_tv_availability?.message}
                 </HelperText>
               ) : null}
             </>

@@ -36,16 +36,18 @@ axiosInstance.interceptors.request.use(function (config) {
   return config;
 });
 
-axiosInstance.interceptors.response.use(
-  res => res,
-  err => {
+axios.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  function (error) {
     // dispatch logout action if request unauthorised.
     const status = get(err, 'response.status');
     if (status === 401) {
       store.dispatch(logout());
       showToast(authRevoked(), TOAST_TYPE.INFO);
     }
-    return err;
+    return Promise.reject(error);
   },
 );
 

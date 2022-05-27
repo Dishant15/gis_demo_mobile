@@ -125,6 +125,8 @@ const SurveyMap = ({navigation}) => {
     const data = {
       ...formData,
       tags: join(formData.tags, ','),
+      broadband_availability: join(formData.broadband_availability, ','),
+      cable_tv_availability: join(formData.cable_tv_availability, ','),
       id: formData.id,
       coordinates: latLongMapToCoords(coordinates),
       parentId: selectedArea.id,

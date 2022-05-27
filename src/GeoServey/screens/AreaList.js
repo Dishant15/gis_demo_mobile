@@ -45,6 +45,20 @@ const AreaList = props => {
         // convert survey_boundaries.units coordinate, tags data
         survey.coordinates = coordsToLatLongMap(survey.coordinates);
         survey.tags = survey.tags.toString().split(',');
+        try {
+          survey.broadband_availability = survey.broadband_availability
+            .toString()
+            .split(',');
+        } catch (error) {
+          survey.broadband_availability = [];
+        }
+        try {
+          survey.cable_tv_availability = survey.cable_tv_availability
+            .toString()
+            .split(',');
+        } catch (error) {
+          survey.cable_tv_availability = [];
+        }
         for (let u_ind = 0; u_ind < units.length; u_ind++) {
           const unit = units[u_ind];
           // convert survey_boundaries.units coordinate, tags data
