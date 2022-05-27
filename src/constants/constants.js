@@ -84,7 +84,6 @@ export const INIT_MAP_LOCATION = {
 export const SURVEY_TAG_LIST = [
   {label: 'Residential', value: 'residential'},
   {label: 'Commercial', value: 'commercial'},
-  {label: 'Semi Commercial', value: 'semi_commercial'},
   {label: 'Government', value: 'government'},
   {label: 'Hospital', value: 'hospital'},
   {label: 'Educational', value: 'educational'},

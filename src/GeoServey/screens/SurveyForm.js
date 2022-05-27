@@ -15,12 +15,10 @@ import {
 } from '~constants/constants';
 import Input from '~Common/Input';
 import {
-  setSurveyData,
   updateSurveyFormData,
   updateSurveyList,
 } from '~GeoServey/data/geoSurvey.reducer';
 import {
-  getGeoSurveyCoords,
   getGeoSurveyFormData,
   getIsReviewed,
   getParentId,
@@ -37,7 +35,6 @@ import {useMutation} from 'react-query';
 import {updateGeoServey} from '~GeoServey/data/geoSurvey.service';
 import {coordsToLatLongMap, latLongMapToCoords} from '~utils/map.utils';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import MultiSelect from 'react-native-multiple-select';
 
 var turf = require('@turf/turf');
 
@@ -227,76 +224,6 @@ const SurveyForm = props => {
         />
         <Controller
           control={control}
-          name="tags"
-          rules={{
-            required: 'Tags is required.',
-          }}
-          render={({field: {ref, onChange, onBlur, value}}) => (
-            <>
-              <TagSelect
-                inputLabel="Select Tags"
-                tagList={SURVEY_TAG_LIST}
-                onSubmit={onChange}
-                selectedTags={value}
-              />
-              {!!errors.tags?.message ? (
-                <HelperText type="error" visible={!!errors.tags?.message}>
-                  {errors.tags?.message}
-                </HelperText>
-              ) : null}
-            </>
-          )}
-        />
-        <Controller
-          control={control}
-          name="broadband_availability"
-          rules={{
-            required: 'this field is required.',
-          }}
-          render={({field: {ref, onChange, onBlur, value}}) => (
-            <>
-              <TagSelect
-                inputLabel="Broadband Service Availability"
-                tagList={BroadbandProviders}
-                onSubmit={onChange}
-                selectedTags={value}
-              />
-              {!!errors.broadband_availability?.message ? (
-                <HelperText
-                  type="error"
-                  visible={!!errors.broadband_availability?.message}>
-                  {errors.broadband_availability?.message}
-                </HelperText>
-              ) : null}
-            </>
-          )}
-        />
-        <Controller
-          control={control}
-          name="cable_tv_availability"
-          rules={{
-            required: 'this field is required.',
-          }}
-          render={({field: {ref, onChange, onBlur, value}}) => (
-            <>
-              <TagSelect
-                inputLabel="Cable TV Service Availability"
-                tagList={TVProviders}
-                onSubmit={onChange}
-                selectedTags={value}
-              />
-              {!!errors.cable_tv_availability?.message ? (
-                <HelperText
-                  type="error"
-                  visible={!!errors.cable_tv_availability?.message}>
-                  {errors.cable_tv_availability?.message}
-                </HelperText>
-              ) : null}
-            </>
-          )}
-        />
-        <Controller
-          control={control}
           name="address"
           rules={{
             required: 'Address is required.',
@@ -412,6 +339,76 @@ const SurveyForm = props => {
               keyboardType="number-pad"
               onSubmitEditing={handleSubmit(onSubmit)}
             />
+          )}
+        />
+        <Controller
+          control={control}
+          name="tags"
+          rules={{
+            required: 'Tags is required.',
+          }}
+          render={({field: {ref, onChange, onBlur, value}}) => (
+            <>
+              <TagSelect
+                inputLabel="Select Tags"
+                tagList={SURVEY_TAG_LIST}
+                onSubmit={onChange}
+                selectedTags={value}
+              />
+              {!!errors.tags?.message ? (
+                <HelperText type="error" visible={!!errors.tags?.message}>
+                  {errors.tags?.message}
+                </HelperText>
+              ) : null}
+            </>
+          )}
+        />
+        <Controller
+          control={control}
+          name="broadband_availability"
+          rules={{
+            required: 'this field is required.',
+          }}
+          render={({field: {ref, onChange, onBlur, value}}) => (
+            <>
+              <TagSelect
+                inputLabel="Broadband Service Availability"
+                tagList={BroadbandProviders}
+                onSubmit={onChange}
+                selectedTags={value}
+              />
+              {!!errors.broadband_availability?.message ? (
+                <HelperText
+                  type="error"
+                  visible={!!errors.broadband_availability?.message}>
+                  {errors.broadband_availability?.message}
+                </HelperText>
+              ) : null}
+            </>
+          )}
+        />
+        <Controller
+          control={control}
+          name="cable_tv_availability"
+          rules={{
+            required: 'this field is required.',
+          }}
+          render={({field: {ref, onChange, onBlur, value}}) => (
+            <>
+              <TagSelect
+                inputLabel="Cable TV Service Availability"
+                tagList={TVProviders}
+                onSubmit={onChange}
+                selectedTags={value}
+              />
+              {!!errors.cable_tv_availability?.message ? (
+                <HelperText
+                  type="error"
+                  visible={!!errors.cable_tv_availability?.message}>
+                  {errors.cable_tv_availability?.message}
+                </HelperText>
+              ) : null}
+            </>
           )}
         />
         <View style={styles.buttonWrapper}>

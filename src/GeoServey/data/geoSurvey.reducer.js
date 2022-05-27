@@ -1,4 +1,4 @@
-import {isNull} from 'lodash';
+import {isNull, orderBy} from 'lodash';
 import {createSlice} from '@reduxjs/toolkit';
 
 const defaultUnitData = {
@@ -54,7 +54,7 @@ const geoSurveyReducer = createSlice({
       const {id, area_pocket, survey_boundaries} = payload;
       state.selectedTaskId = id;
       state.selectedAreaData = {...area_pocket};
-      state.surveyList = [...survey_boundaries];
+      state.surveyList = orderBy(survey_boundaries, ['updated_on'], ['desc']);
     },
     // when user clicks one of the survey from taskList -> surveyList
     // payload shape: {surveyIndex, surveyData: {...surveyData, units: [ {...unit1, ...}]}
