@@ -104,6 +104,7 @@ const DrawerContent = props => {
 const DrawerNavigation = () => {
   return (
     <Drawer.Navigator
+      initialRouteName={screens.areaList}
       drawerType="front"
       drawerStyle={{
         width: Dimensions.get('screen').width * 0.8,

@@ -3,7 +3,7 @@ import {View, Dimensions, StyleSheet, ScrollView} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {useDispatch, useSelector} from 'react-redux';
 import {size, get} from 'lodash';
-import {Card, Button, Paragraph, Subheading} from 'react-native-paper';
+import {Card, Button, Paragraph, Subheading, Title} from 'react-native-paper';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 import {layout, screens, colors} from '~constants/constants';
@@ -134,9 +134,9 @@ const ReviewScreen = ({navigation}) => {
         </MapView>
         <View style={styles.contentWrapper}>
           <Subheading style={styles.title}>Boundary</Subheading>
-          <Card elevation={3}>
+          <Card elevation={0} style={styles.cardBorder}>
             <Card.Content>
-              <Subheading>{get(formData, 'name')}</Subheading>
+              <Title>{get(formData, 'name')}</Title>
               <Paragraph>
                 {get(formData, 'address')} {'\n'}
                 {get(formData, 'area')}, {get(formData, 'city')},{' '}
@@ -156,17 +156,31 @@ const ReviewScreen = ({navigation}) => {
             <>
               <Subheading style={styles.title}>Units</Subheading>
               {unitList.map((unit, index) => {
+                const {category} = unit;
+                const isSDUCategory = category === 'S';
                 return (
-                  <Card elevation={3} key={index} style={{marginBottom: 14}}>
-                    <Card.Content>
-                      <Subheading>{get(unit, 'name')}</Subheading>
+                  <Card
+                    elevation={0}
+                    key={index}
+                    style={[styles.cardBorder, styles.unitCard]}>
+                    <Card.Content style={styles.cardContent}>
+                      <Title>{get(unit, 'name')}</Title>
                       <Paragraph>
-                        {get(unit, 'category')} {'\n'}
-                        Floors: {get(unit, 'floors')}, Hours per floor:{' '}
-                        {get(unit, 'house_per_floor')}
-                        {'\n'}
-                        Total house pass : {get(unit, 'total_home_pass')}
+                        Category : {isSDUCategory ? 'SDU' : 'MDU'}
                       </Paragraph>
+                      {isSDUCategory ? (
+                        <Paragraph>
+                          No. of units : {get(unit, 'total_home_pass')}
+                        </Paragraph>
+                      ) : (
+                        <Paragraph>
+                          Floors: {get(unit, 'floors')}
+                          {'\n'}
+                          House per floor : {get(unit, 'house_per_floor')}
+                          {'\n'}
+                          Total home pass : {get(unit, 'total_home_pass')}
+                        </Paragraph>
+                      )}
                     </Card.Content>
                     <Card.Actions>
                       <Button color="blue" onPress={navigateToUnitMap(index)}>
@@ -201,12 +215,18 @@ const ReviewScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   contentWrapper: {
     padding: 12,
+    paddingTop: 4,
   },
   title: {
+    fontSize: 22,
     fontWeight: 'bold',
-    paddingVertical: 6,
+    paddingTop: 22,
+    paddingBottom: 18,
     paddingHorizontal: 4,
+    textAlign: 'center',
+    color: 'rgba(0, 0, 0, 0.77)',
   },
+  subheadingStyle: {},
   buttonWrapper: {
     paddingTop: 28,
     paddingBottom: 46,
@@ -218,6 +238,17 @@ const styles = StyleSheet.create({
   submitBtn: {
     flex: 1,
     marginBottom: 26,
+  },
+  cardBorder: {
+    borderWidth: 1,
+    borderColor: colors.separator,
+    borderRadius: 0,
+  },
+  unitCard: {
+    marginBottom: 28,
+  },
+  cardContent: {
+    paddingTop: 8,
   },
 });
 

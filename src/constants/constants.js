@@ -46,6 +46,8 @@ export const colors = {
   accentTextColor: '#ffffff',
   textColor: '#212121',
   error: '#d32f2f',
+
+  separator: '#CCCCCC',
 };
 
 export const layout = StyleSheet.create({
@@ -126,3 +128,9 @@ export const TVProviders = [
     value: 'IN CABLE',
   },
 ];
+
+export const SURVEY_TASK_STATUS = {
+  O: {label: 'On Going', color: 'orange'},
+  C: {label: 'Completed', color: 'green'},
+  A: {label: 'Archived', color: 'grey'},
+};

@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {View, FlatList, StyleSheet} from 'react-native';
+import {View, FlatList, StyleSheet, Pressable} from 'react-native';
 import {Card, Title, Subheading, Paragraph} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 import {useQuery} from 'react-query';
@@ -8,7 +8,8 @@ import {size} from 'lodash';
 import Loader from '~Common/Loader';
 import {setTaskData} from '~GeoServey/data/geoSurvey.reducer';
 import {fetchUserTaskList} from '~GeoServey/data/geoSurvey.service';
-import {layout, screens} from '~constants/constants';
+import {colors, layout, screens} from '~constants/constants';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {coordsToLatLongMap} from '~utils/map.utils';
 
@@ -78,24 +79,38 @@ const AreaList = props => {
         data={userTaskList}
         keyExtractor={item => item.id}
         renderItem={({item}) => {
-          const {name, area_pocket} = item;
+          const {name, area_pocket, survey_count} = item;
           return (
-            <Card
-              style={{marginBottom: 12}}
+            <Pressable
+              style={styles.itemWrapper}
               onPress={() => {
                 dispatch(setTaskData(item));
                 navigation.navigate(screens.surveyList);
               }}>
-              <Card.Content>
+              <View style={styles.content}>
                 <Title>{name}</Title>
                 <Paragraph>
                   {area_pocket.area} - {area_pocket.pincode}
                 </Paragraph>
-                <Paragraph>Surveys - {item.survey_count}</Paragraph>
-              </Card.Content>
-            </Card>
+                {survey_count ? (
+                  <Paragraph>Total Surveys - {survey_count}</Paragraph>
+                ) : (
+                  <Paragraph>No survey added to this task yet</Paragraph>
+                )}
+              </View>
+              <View style={styles.iconWrapper}>
+                <MaterialCommunityIcons
+                  size={22}
+                  name="chevron-right"
+                  color={'#767676'}
+                />
+              </View>
+            </Pressable>
           );
         }}
+        ItemSeparatorComponent={() => (
+          <View style={{height: 1, backgroundColor: colors.separator}} />
+        )}
         onRefresh={refetch}
         refreshing={!!(isLoading && size(userTaskList))}
         ListEmptyComponent={
@@ -118,6 +133,19 @@ const styles = StyleSheet.create({
     padding: 12,
     paddingBottom: 40,
     flexGrow: 1,
+  },
+  itemWrapper: {
+    flexDirection: 'row',
+    padding: 12,
+    backgroundColor: colors.white,
+  },
+  content: {
+    flex: 1,
+  },
+  iconWrapper: {
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

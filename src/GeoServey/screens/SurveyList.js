@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect} from 'react';
-import {View, FlatList, StyleSheet} from 'react-native';
+import {View, FlatList, StyleSheet, Pressable} from 'react-native';
 import {
   Card,
   Title,
@@ -56,7 +56,7 @@ const SurveyList = props => {
         renderItem={({item, index}) => {
           const {name, area, pincode, tags} = item;
           return (
-            <Card
+            <Pressable
               style={styles.cardItem}
               onPress={() => {
                 dispatch(
@@ -67,21 +67,31 @@ const SurveyList = props => {
                 );
                 navigation.navigate(screens.reviewScreen);
               }}>
-              <Card.Content>
+              <View style={styles.content}>
                 <Title>{name}</Title>
                 <Paragraph>
                   {area} - {pincode}
                 </Paragraph>
-                <Paragraph>Units - {size(item.units)}</Paragraph>
+                <Paragraph>Total Units - {size(item.units)}</Paragraph>
                 <View style={styles.chipWrapper}>
                   {tags.map(tag => (
-                    <Chip key={tag} style={styles.chip}>
+                    <Chip
+                      key={tag}
+                      style={styles.chip}
+                      textStyle={styles.chipTextStyle}>
                       {replace(tag, '_', ' ')}
                     </Chip>
                   ))}
                 </View>
-              </Card.Content>
-            </Card>
+              </View>
+              <View style={styles.iconWrapper}>
+                <MaterialCommunityIcons
+                  size={22}
+                  name="chevron-right"
+                  color={'#767676'}
+                />
+              </View>
+            </Pressable>
           );
         }}
         ListEmptyComponent={
@@ -89,6 +99,9 @@ const SurveyList = props => {
             <Subheading>Survey list is Empty</Subheading>
           </View>
         }
+        ItemSeparatorComponent={() => (
+          <View style={{height: 1, backgroundColor: colors.separator}} />
+        )}
       />
       {/* map-marker-path */}
 
@@ -108,7 +121,9 @@ const SurveyList = props => {
 
 const styles = StyleSheet.create({
   cardItem: {
-    marginBottom: 12,
+    flexDirection: 'row',
+    padding: 12,
+    backgroundColor: colors.white,
   },
   cardHeader: {
     marginVertical: 12,
@@ -120,6 +135,7 @@ const styles = StyleSheet.create({
   chip: {
     marginRight: 10,
     marginTop: 8,
+    // borderRadius: 4,
   },
   contentContainerStyle: {
     padding: 12,
@@ -129,6 +145,20 @@ const styles = StyleSheet.create({
   buttonStyle: {
     borderRadius: 0,
   },
+  content: {
+    flex: 1,
+  },
+  iconWrapper: {
+    width: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // chipTextStyle: {
+  //   marginVertical: 0,
+  //   marginLeft: 0,
+  //   marginRight: 0,
+  //   paddingHorizontal: 3,
+  // },
 });
 
 export default SurveyList;

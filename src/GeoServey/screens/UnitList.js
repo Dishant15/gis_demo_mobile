@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import {View, FlatList, StyleSheet} from 'react-native';
+import {View, FlatList, StyleSheet, Pressable} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Card, Title, Paragraph, Button} from 'react-native-paper';
 
@@ -9,6 +9,7 @@ import {getGeoSurveyUnitList} from '~GeoServey/data/geoSurvey.selectors';
 import {layout, screens, colors} from '~constants/constants';
 import {selectUnit} from '~GeoServey/data/geoSurvey.reducer';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 /**
  * Parent:
@@ -37,29 +38,35 @@ const UnitList = props => {
         renderItem={({item, index}) => {
           if (item.name) {
             return (
-              <Card
-                style={{marginBottom: 12}}
+              <Pressable
+                style={styles.itemWrapper}
                 onPress={handleUnitSelect(index)}>
-                <Card.Content>
+                <View style={styles.content}>
                   <Title>{item.name}</Title>
-                  <Paragraph>{item.category}</Paragraph>
-                </Card.Content>
-              </Card>
+                  <Paragraph>
+                    Category : {item.category === 'M' ? 'MDU' : 'SDU'}
+                  </Paragraph>
+                </View>
+                <View style={styles.iconWrapper}>
+                  <MaterialCommunityIcons
+                    size={22}
+                    name="chevron-right"
+                    color={'#767676'}
+                  />
+                </View>
+              </Pressable>
             );
           } else {
             return null;
           }
         }}
+        ItemSeparatorComponent={() => (
+          <View style={{height: 1, backgroundColor: colors.separator}} />
+        )}
         ListHeaderComponent={
-          <Card
-            onPress={handleUnitSelect(-1)}
-            style={{
-              marginVertical: 12,
-            }}>
-            <Card.Content>
-              <Title style={{textAlign: 'center'}}>+ Add Unit</Title>
-            </Card.Content>
-          </Card>
+          <Pressable onPress={handleUnitSelect(-1)} style={styles.addWrapper}>
+            <Title style={{textAlign: 'center'}}>+ Add Unit</Title>
+          </Pressable>
         }
       />
       <View style={styles.bottomWrapper}>
@@ -91,6 +98,24 @@ const styles = StyleSheet.create({
   btn: {
     borderRadius: 0,
     backgroundColor: colors.black,
+  },
+  itemWrapper: {
+    flexDirection: 'row',
+    padding: 12,
+    backgroundColor: colors.white,
+  },
+  content: {
+    flex: 1,
+  },
+  iconWrapper: {
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addWrapper: {
+    borderWidth: 1,
+    borderColor: colors.separator,
+    paddingVertical: 18,
   },
 });
 
