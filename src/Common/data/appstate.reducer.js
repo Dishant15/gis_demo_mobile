@@ -10,7 +10,7 @@ const initialState = {
   showInfoScreens: true,
   locationPermissionType: PERMISSIONS_TYPE.NONE,
   currentLocation: null,
-  mapType: 'standard', // terrain
+  mapType: 'standard', // satellite
 };
 
 const appstateReducer = createSlice({
@@ -28,7 +28,7 @@ const appstateReducer = createSlice({
     },
     toggleMapType: state => {
       const {mapType} = state;
-      state.mapType = mapType === 'standard' ? 'terrain' : 'standard';
+      state.mapType = mapType === 'standard' ? 'satellite' : 'standard';
     },
     resetAppState: () => {
       return initialState;

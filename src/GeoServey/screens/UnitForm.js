@@ -24,7 +24,7 @@ import {
   updateUnitFormData,
 } from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
-import {filter, includes, join, multiply, split} from 'lodash';
+import {filter, has, includes, join, multiply, split} from 'lodash';
 import {upsertSurveyUnit} from '~GeoServey/data/geoSurvey.service';
 import {useMutation} from 'react-query';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
@@ -103,7 +103,11 @@ const UnitForm = ({navigation}) => {
       dispatch(updateUnitFormData(newData));
       dispatch(updateSurveyUnitList(newData));
       showToast(unitAddSuccess(), TOAST_TYPE.SUCCESS);
-      navigation.navigate(screens.unitList);
+      if (isReviewed) {
+        navigation.navigate(screens.reviewScreen);
+      } else {
+        navigation.navigate(screens.unitList);
+      }
     },
     onError: err => {
       console.log('🚀 ~ file: UnitForm.js err', err.response);
@@ -111,18 +115,24 @@ const UnitForm = ({navigation}) => {
     },
   });
 
-  const handleUnitSubmit = data => {
-    if (isLoading) return;
-    let valideData = {...data};
-    valideData.tags = join(valideData.tags, ',');
-    valideData.parentId = surveyId;
-    valideData.coordinates = unitData.coordinates;
-    if (data.category === 'S') {
-      valideData.floors = 1;
-      valideData.house_per_floor = 1;
-    }
-    mutate(valideData);
-  };
+  const handleUnitSubmit = useCallback(
+    data => {
+      if (isLoading) return;
+      let valideData = {...data};
+      valideData.tags = join(valideData.tags, ',');
+      valideData.parentId = surveyId;
+      valideData.coordinates = unitData.coordinates;
+      if (data.category === 'S') {
+        valideData.floors = 1;
+        valideData.house_per_floor = 1;
+      }
+      if (has(unitData, 'id')) {
+        valideData.id = unitData.id;
+      }
+      mutate(valideData);
+    },
+    [unitData],
+  );
 
   const handleFocus = useCallback(
     fieldName => () => {

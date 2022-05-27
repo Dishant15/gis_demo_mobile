@@ -1,9 +1,9 @@
 import React, {useMemo} from 'react';
 import {View, FlatList, StyleSheet, Pressable} from 'react-native';
-import {Card, Title, Subheading, Paragraph} from 'react-native-paper';
+import {Title, Subheading, Paragraph} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 import {useQuery} from 'react-query';
-import {size} from 'lodash';
+import {orderBy, size} from 'lodash';
 
 import Loader from '~Common/Loader';
 import {setTaskData} from '~GeoServey/data/geoSurvey.reducer';
@@ -69,7 +69,7 @@ const AreaList = props => {
       }
     }
 
-    return resultData;
+    return orderBy(resultData, ['updated_on'], ['desc']);
   }, [data]);
 
   return (
@@ -108,9 +108,6 @@ const AreaList = props => {
             </Pressable>
           );
         }}
-        ItemSeparatorComponent={() => (
-          <View style={{height: 1, backgroundColor: colors.separator}} />
-        )}
         onRefresh={refetch}
         refreshing={!!(isLoading && size(userTaskList))}
         ListEmptyComponent={
@@ -138,6 +135,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 12,
     backgroundColor: colors.white,
+    borderBottomColor: colors.separator,
+    borderBottomWidth: 1,
   },
   content: {
     flex: 1,

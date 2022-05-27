@@ -47,7 +47,7 @@ import {PERMISSIONS_TYPE, toggleMapType} from '~Common/data/appstate.reducer';
 import FastImage from 'react-native-fast-image';
 
 import DefaultMapImg from '~assets/img/map_default.png';
-import TerrainMapImg from '~assets/img/map_terrain.png';
+import SatelliteMapImg from '~assets/img/map_satellite.png';
 
 let {width, height} = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
@@ -299,7 +299,7 @@ const SurveyMap = ({navigation}) => {
             <FastImage
               style={styles.mapTypeImage}
               resizeMode="cover"
-              source={mapType === 'standard' ? DefaultMapImg : TerrainMapImg}
+              source={mapType === 'standard' ? SatelliteMapImg : DefaultMapImg}
             />
           </TouchableOpacity>
         </View>

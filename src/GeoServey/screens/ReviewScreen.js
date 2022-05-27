@@ -1,5 +1,11 @@
 import React, {useMemo, useRef, useCallback, useEffect} from 'react';
-import {View, Dimensions, StyleSheet, ScrollView} from 'react-native';
+import {
+  View,
+  Dimensions,
+  StyleSheet,
+  ScrollView,
+  BackHandler,
+} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {useDispatch, useSelector} from 'react-redux';
 import {size, get} from 'lodash';
@@ -13,7 +19,7 @@ import {
   selectUnit,
   resetServeyData,
 } from '~GeoServey/data/geoSurvey.reducer';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('window');
 
@@ -32,6 +38,17 @@ const ReviewScreen = ({navigation}) => {
   useEffect(() => {
     dispatch(setReview(true));
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', navigateToSurveyList);
+      return () =>
+        BackHandler.removeEventListener(
+          'hardwareBackPress',
+          navigateToSurveyList,
+        );
+    }, []),
+  );
 
   const unitMarkerList = useMemo(() => {
     const newList = [];
