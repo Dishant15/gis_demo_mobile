@@ -108,9 +108,6 @@ const AreaList = props => {
             </Pressable>
           );
         }}
-        ItemSeparatorComponent={() => (
-          <View style={{height: 1, backgroundColor: colors.separator}} />
-        )}
         onRefresh={refetch}
         refreshing={!!(isLoading && size(userTaskList))}
         ListEmptyComponent={
@@ -138,6 +135,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 12,
     backgroundColor: colors.white,
+    borderBottomColor: colors.separator,
+    borderBottomWidth: 1,
   },
   content: {
     flex: 1,

@@ -99,12 +99,7 @@ const SurveyList = props => {
             <Subheading>Survey list is Empty</Subheading>
           </View>
         }
-        ItemSeparatorComponent={() => (
-          <View style={{height: 1, backgroundColor: colors.separator}} />
-        )}
       />
-      {/* map-marker-path */}
-
       <Button
         style={[styles.buttonStyle, {paddingBottom: insets.bottom || 0}]}
         contentStyle={layout.button}
@@ -124,6 +119,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 12,
     backgroundColor: colors.white,
+    borderBottomColor: colors.separator,
+    borderBottomWidth: 1,
   },
   cardHeader: {
     marginVertical: 12,

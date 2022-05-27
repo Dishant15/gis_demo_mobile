@@ -12,7 +12,7 @@ import {isNull, get, size, differenceBy, join, split} from 'lodash';
 import * as Animatable from 'react-native-animatable';
 
 import BackHeader from '~Common/components/Header/BackHeader';
-import {layout, screens} from '~constants/constants';
+import {colors, layout, screens} from '~constants/constants';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   getGeoSurveyUnitFormData,
@@ -30,6 +30,12 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {upsertSurveyUnit} from '~GeoServey/data/geoSurvey.service';
 import {useMutation} from 'react-query';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {getMapType} from '~Common/data/appstate.selector';
+
+import DefaultMapImg from '~assets/img/map_default.png';
+import SatelliteMapImg from '~assets/img/map_satellite.png';
+import {toggleMapType} from '~Common/data/appstate.reducer';
+import FastImage from 'react-native-fast-image';
 
 /**
  * Parent:
@@ -44,6 +50,7 @@ const UnitMap = ({navigation}) => {
   const unitList = useSelector(getGeoSurveyUnitList);
   const unitData = useSelector(getGeoSurveyUnitFormData);
   const surveyId = useSelector(getSelectedSurveyId);
+  const mapType = useSelector(getMapType);
 
   const surveyCoords = useSelector(getSurveyCoordinates);
   const dispatch = useDispatch();
@@ -165,6 +172,10 @@ const UnitMap = ({navigation}) => {
     }
   };
 
+  const handleMapType = () => {
+    dispatch(toggleMapType());
+  };
+
   if (!isFocused) return null;
 
   return (
@@ -179,6 +190,7 @@ const UnitMap = ({navigation}) => {
           <Animatable.View animation="fadeIn" style={layout.container}>
             <MapView
               ref={mapRef}
+              mapType={mapType}
               style={styles.map}
               initialRegion={{
                 longitudeDelta: 0.06032254546880722,
@@ -223,6 +235,15 @@ const UnitMap = ({navigation}) => {
             </MapView>
           </Animatable.View>
         ) : null}
+        <View style={styles.mapTypeWrapper}>
+          <TouchableOpacity onPress={handleMapType}>
+            <FastImage
+              style={styles.mapTypeImage}
+              resizeMode="cover"
+              source={mapType === 'standard' ? SatelliteMapImg : DefaultMapImg}
+            />
+          </TouchableOpacity>
+        </View>
         <View
           pointerEvents="box-none"
           style={[
@@ -275,6 +296,26 @@ const styles = StyleSheet.create({
   },
   disableBtn: {
     backgroundColor: '#A9A9A9',
+  },
+  mapTypeWrapper: {
+    position: 'absolute',
+    right: 0,
+    top: 65,
+    right: 14,
+    backgroundColor: colors.white,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  mapTypeImage: {
+    width: 44,
+    height: 44,
   },
 });
 
