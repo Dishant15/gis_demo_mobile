@@ -81,6 +81,15 @@ const ReviewScreen = ({navigation}) => {
     [],
   );
 
+  const resetReviewAndnavigateToUnitMap = useCallback(
+    index => () => {
+      dispatch(setReview(false));
+      dispatch(selectUnit(index));
+      navigation.navigate(screens.unitMap);
+    },
+    [],
+  );
+
   const navigateToUnitForm = useCallback(
     index => () => {
       dispatch(selectUnit(index));
@@ -106,7 +115,7 @@ const ReviewScreen = ({navigation}) => {
   return (
     <View style={layout.container}>
       <BackHeader
-        title={`Review ${get(formData, 'name')}`}
+        title={`${get(formData, 'name')}`}
         onGoBack={navigateToSurveyList}
       />
       <ScrollView contentContainerStyle={{paddingBottom: 40}}>
@@ -150,7 +159,7 @@ const ReviewScreen = ({navigation}) => {
           ) : null}
         </MapView>
         <View style={styles.contentWrapper}>
-          <Subheading style={styles.title}>Boundary</Subheading>
+          <Subheading style={styles.title}>Survey</Subheading>
           <Card elevation={0} style={styles.cardBorder}>
             <Card.Content>
               <Title>{get(formData, 'name')}</Title>
@@ -213,6 +222,15 @@ const ReviewScreen = ({navigation}) => {
             </>
           ) : null}
           <View style={styles.buttonWrapper}>
+            <Button
+              style={styles.submitBtn}
+              contentStyle={layout.button}
+              color={colors.black}
+              uppercase
+              mode="outlined"
+              onPress={resetReviewAndnavigateToUnitMap(-1)}>
+              Add Unit
+            </Button>
             <Button
               style={styles.submitBtn}
               contentStyle={layout.button}

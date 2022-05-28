@@ -48,7 +48,7 @@ const SurveyList = props => {
 
   return (
     <View style={[layout.container, layout.relative]}>
-      <BackHeader title="Surveys" onGoBack={navigation.goBack} />
+      <BackHeader title="Survey list" onGoBack={navigation.goBack} />
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
         data={surveyList}
