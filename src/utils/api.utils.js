@@ -42,7 +42,7 @@ axios.interceptors.response.use(
   },
   function (error) {
     // dispatch logout action if request unauthorised.
-    const status = get(err, 'response.status');
+    const status = get(error, 'response.status');
     if (status === 401) {
       store.dispatch(logout());
       showToast(authRevoked(), TOAST_TYPE.INFO);
