@@ -42,7 +42,7 @@ export const colors = {
 
   primaryMain: '#1976d2',
   primaryMainDark: '#1565c0',
-  secondaryMain: '#9c27b0',
+  secondaryMain: '#b98919',
   accentTextColor: '#ffffff',
   textColor: '#212121',
   error: '#d32f2f',

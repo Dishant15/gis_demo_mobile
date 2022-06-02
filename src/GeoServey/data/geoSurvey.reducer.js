@@ -1,4 +1,4 @@
-import {isNull, orderBy} from 'lodash';
+import {differenceBy, isNull, orderBy} from 'lodash';
 import {createSlice} from '@reduxjs/toolkit';
 
 const defaultUnitData = {
@@ -114,6 +114,32 @@ const geoSurveyReducer = createSlice({
         };
       }
     },
+    deleteSurveyData: (state, {payload}) => {
+      // payload = surveyId
+      state.surveyList = differenceBy(state.surveyList, [{id: payload}], 'id');
+      state.selectedAreaData = {};
+      // all data bellow is for form edit / add purpose
+      state.selectedSurveyIndex = null;
+      state.selectedSurvey = {};
+      // unit index if selected , -1 if new unit add
+      state.selectedUnitIndex = null;
+      state.selectedUnitData = {};
+      state.isReview = false;
+    },
+    deleteUnitData: (state, {payload}) => {
+      // payload = unitId
+      const newUnitList = differenceBy(
+        state.selectedSurvey.units,
+        [{id: payload}],
+        'id',
+      );
+      state.surveyList[state.selectedSurveyIndex].units = newUnitList;
+      state.selectedSurvey.units = newUnitList;
+      // unit index if selected , -1 if new unit add
+      state.selectedUnitIndex = null;
+      state.selectedUnitData = {};
+      state.isReview = false;
+    },
     setReview: (state, {payload}) => {
       state.isReview = payload;
     },
@@ -142,5 +168,7 @@ export const {
   setReview,
   resetServeyData,
   resetAllData,
+  deleteSurveyData,
+  deleteUnitData,
 } = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;

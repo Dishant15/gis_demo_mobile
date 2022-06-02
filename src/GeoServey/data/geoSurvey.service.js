@@ -6,6 +6,8 @@ import {
   apiGetSurveyList,
   apiPostSurveyAddUnit,
   apiPutEditUnit,
+  apiDeteleSurvey,
+  apiDeleteUnit,
 } from '~constants/url.constants';
 import Api from '~utils/api.utils';
 
@@ -39,4 +41,14 @@ export const upsertSurveyUnit = async data => {
     const res = await Api.post(apiPostSurveyAddUnit(), data);
     return res.data;
   }
+};
+
+export const deleteSurvey = async surveyId => {
+  const res = await Api.delete(apiDeteleSurvey(surveyId));
+  return res.data;
+};
+
+export const deleteUnit = async unitId => {
+  const res = await Api.delete(apiDeleteUnit(unitId));
+  return res.data;
 };

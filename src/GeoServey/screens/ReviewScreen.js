@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useCallback, useEffect} from 'react';
+import React, {useMemo, useRef, useCallback, useEffect, useState} from 'react';
 import {
   View,
   Dimensions,
@@ -18,8 +18,14 @@ import {
   setReview,
   selectUnit,
   resetServeyData,
+  deleteSurveyData,
+  deleteUnitData,
 } from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
+import {useMutation} from 'react-query';
+import {deleteSurvey, deleteUnit} from '~GeoServey/data/geoSurvey.service';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {surveyDeleteSuccess, unitDeleteSuccess} from '~constants/messages';
 
 const {width, height} = Dimensions.get('window');
 
@@ -33,6 +39,7 @@ const ReviewScreen = ({navigation}) => {
   const formData = useSelector(getGeoSurveyFormData);
   const unitList = get(formData, 'units', []);
 
+  const [deletingUnitId, setDeletingUnitId] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -48,6 +55,33 @@ const ReviewScreen = ({navigation}) => {
           navigateToSurveyList,
         );
     }, []),
+  );
+
+  const {mutate, isLoading: isSurveyDeleting} = useMutation(deleteSurvey, {
+    onSuccess: (res, variables) => {
+      navigateToSurveyList();
+      dispatch(deleteSurveyData(variables));
+      showToast(surveyDeleteSuccess(), TOAST_TYPE.SUCCESS);
+    },
+    onError: err => {
+      showToast(err.message, TOAST_TYPE.ERROR);
+    },
+  });
+
+  const {mutate: handleUnitDetele, isLoading: isUnitDeleting} = useMutation(
+    deleteUnit,
+    {
+      onSuccess: (res, variables) => {
+        // navigateToSurveyList();
+        dispatch(deleteUnitData(variables));
+        setDeletingUnitId(null);
+        showToast(unitDeleteSuccess(), TOAST_TYPE.SUCCESS);
+      },
+      onError: err => {
+        setDeletingUnitId(null);
+        showToast(err.message, TOAST_TYPE.ERROR);
+      },
+    },
   );
 
   const unitMarkerList = useMemo(() => {
@@ -169,13 +203,30 @@ const ReviewScreen = ({navigation}) => {
                 {get(formData, 'state')}, {get(formData, 'pincode')}
               </Paragraph>
             </Card.Content>
-            <Card.Actions>
-              <Button color="blue" onPress={navigateToSurveyMap}>
-                Edit Boundary
-              </Button>
-              <Button color="blue" onPress={navigateToSurveyForm}>
-                Edit Details
-              </Button>
+            <Card.Actions style={styles.cardActionWrapper}>
+              <Button
+                loading={isSurveyDeleting}
+                icon="trash-can-outline"
+                color={colors.error}
+                style={styles.deleteBtnBg}
+                onPress={() => mutate(formData.id)}
+              />
+              <View style={styles.cardRightAction}>
+                <Button
+                  icon="map-marker-path"
+                  color={colors.secondaryMain}
+                  style={styles.buttonBg}
+                  onPress={navigateToSurveyMap}>
+                  Map
+                </Button>
+                <Button
+                  icon="form-select"
+                  color={colors.secondaryMain}
+                  style={styles.buttonBg}
+                  onPress={navigateToSurveyForm}>
+                  Details
+                </Button>
+              </View>
             </Card.Actions>
           </Card>
           {size(unitList) ? (
@@ -184,6 +235,7 @@ const ReviewScreen = ({navigation}) => {
               {unitList.map((unit, index) => {
                 const {category} = unit;
                 const isSDUCategory = category === 'S';
+                const deleting = isUnitDeleting && unit.id === deletingUnitId;
                 return (
                   <Card
                     elevation={0}
@@ -208,13 +260,33 @@ const ReviewScreen = ({navigation}) => {
                         </Paragraph>
                       )}
                     </Card.Content>
-                    <Card.Actions>
-                      <Button color="blue" onPress={navigateToUnitMap(index)}>
-                        Edit Location
-                      </Button>
-                      <Button color="blue" onPress={navigateToUnitForm(index)}>
-                        Edit Details
-                      </Button>
+                    <Card.Actions style={styles.cardActionWrapper}>
+                      <Button
+                        loading={deleting}
+                        icon="trash-can-outline"
+                        color={colors.error}
+                        style={styles.deleteBtnBg}
+                        onPress={() => {
+                          setDeletingUnitId(unit.id);
+                          handleUnitDetele(unit.id);
+                        }}
+                      />
+                      <View style={styles.cardRightAction}>
+                        <Button
+                          icon="map-marker-path"
+                          color={colors.secondaryMain}
+                          style={styles.buttonBg}
+                          onPress={navigateToUnitMap(index)}>
+                          Map
+                        </Button>
+                        <Button
+                          icon="form-select"
+                          color={colors.secondaryMain}
+                          style={styles.buttonBg}
+                          onPress={navigateToUnitForm(index)}>
+                          Details
+                        </Button>
+                      </View>
                     </Card.Actions>
                   </Card>
                 );
@@ -238,7 +310,7 @@ const ReviewScreen = ({navigation}) => {
               uppercase
               mode="contained"
               onPress={navigateToSurveyList}>
-              Go to Survey List
+              Complete
             </Button>
           </View>
         </View>
@@ -284,6 +356,24 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     paddingTop: 8,
+  },
+  cardActionWrapper: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  cardRightAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 3,
+  },
+  buttonBg: {
+    marginStart: 8,
+    backgroundColor: 'rgba(185, 137, 25, 0.16)',
+    flex: 1,
+  },
+  deleteBtnBg: {
+    backgroundColor: colors.error + '29',
+    flex: 1,
   },
 });
 
