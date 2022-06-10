@@ -1,19 +1,23 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {get} from 'lodash';
 
 const initialState = {
   token: '',
   user: null,
+  isAdmin: false,
 };
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    login: (state, action) => {
-      state.token = action.payload;
-      // resetting form data if exist
-      state.formData = {};
-      state.formErrorMessage = null;
+    login: (state, {payload}) => {
+      state.token = payload.token;
+      state.user = payload.user;
+      // admin or superadmin can view
+      state.isAdmin = !!(
+        get(payload, 'user.is_staff') || get(payload, 'user.is_superuser')
+      );
     },
     logout: state => {
       return initialState;
