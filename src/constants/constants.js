@@ -37,6 +37,7 @@ export const colors = {
   black: '#000',
   white: '#fff',
   blackWithOp: 'rgba(0,0,0,0.3)',
+  primeFontColor: 'rgba(0, 0, 0, 0.6)',
 
   mainBgColor: 'rgb(247, 247, 247)',
   primaryFontColor: '#404040',
@@ -50,12 +51,17 @@ export const colors = {
   error: '#d32f2f',
 
   separator: '#CCCCCC',
+
+  grey1: '#efefef',
 };
 
 export const layout = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
+  },
+  listContainer: {
+    backgroundColor: colors.grey1,
   },
   button: {
     height: 50,
@@ -68,6 +74,10 @@ export const layout = StyleSheet.create({
   },
   center: {
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rowCenter: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   relative: {
