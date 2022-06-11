@@ -1,15 +1,18 @@
 import React from 'react';
 import {Dimensions, View, StyleSheet} from 'react-native';
-import {Title, List, Headline, Divider, useTheme} from 'react-native-paper';
+import {Title, List, Headline, Divider} from 'react-native-paper';
 
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import {colors, layout, screens} from '~constants/constants';
-import DashboardScreen from '~Dashboard/DashboardScreen';
+import {useDispatch} from 'react-redux';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+
 import {DrawerButton} from '~Common/components/Header/ActionButtons';
 import ComingSoon from '~Common/components/ComingSoon';
-import AreaList from '~GeoServey/screens/AreaList';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useDispatch} from 'react-redux';
+
+import DashboardScreen from '~Dashboard/DashboardScreen';
+import SurveyTicketList from '~GeoServey/screens/SurveyTicketList';
+
+import {colors, layout, screens} from '~constants/constants';
 import {logout} from '~Authentication/data/auth.reducer';
 
 const Drawer = createDrawerNavigator();
@@ -22,7 +25,6 @@ const Drawer = createDrawerNavigator();
  * Renders:
  *    below are file names called drawer
  *    DashboardScreen
- *    AreaList
  *    NetworkScreen
  *    ClientScreen
  *    PlanningScreen
@@ -57,7 +59,7 @@ const DrawerContent = props => {
             title="Geographic"
             onPress={() => {
               props.navigation.closeDrawer();
-              props.navigation.navigate(screens.areaList);
+              props.navigation.navigate(screens.surveyTicketList);
             }}
           />
           <List.Item
@@ -129,8 +131,8 @@ const DrawerNavigation = () => {
         }}
       />
       <Drawer.Screen
-        name={screens.areaList}
-        component={AreaList}
+        name={screens.surveyTicketList}
+        component={SurveyTicketList}
         options={{
           headerShown: true,
           headerTitleAlign: 'center',

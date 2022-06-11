@@ -7,14 +7,18 @@ import {get, size} from 'lodash';
 import Loader from '~Common/Loader';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {colors, layout, screens} from '~constants/constants';
-
-import {fetchTicketList} from './data/services';
+import {fetchTicketList} from '~Dashboard/data/services';
 
 /**
- * Parent:
+ * Renders survey ticket list
+ *
+ * when user clicks on any area it will navigate to survey list of that area
+ *
+ * Parent
  *    drawer.navigation
  */
-const DashboardScreen = ({navigation}) => {
+const SurveyTicketList = props => {
+  const {navigation} = props;
   const {isLoading, data, refetch} = useQuery('ticketList', fetchTicketList);
 
   const navigateToWorkorder = id => () => {
@@ -102,4 +106,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-export default DashboardScreen;
+
+export default SurveyTicketList;

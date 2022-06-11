@@ -11,6 +11,8 @@ export const screens = {
   surveyMap: 'surveyMap',
   surveyForm: 'surveyForm',
   surveyList: 'surveyList',
+  surveyTicketList: 'surveyTicketList',
+  workorderScreen: 'workorderScreen',
 
   unitList: 'unitList',
   unitMap: 'unitMap',

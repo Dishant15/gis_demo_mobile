@@ -15,11 +15,12 @@ import UnitMap from '~GeoServey/screens/UnitMap';
 import UnitForm from '~GeoServey/screens/UnitForm';
 import ReviewScreen from '~GeoServey/screens/ReviewScreen';
 import SurveyForm from '~GeoServey/screens/SurveyForm';
+import SurveyList from '~GeoServey/screens/SurveyList';
+import WorkorderScreen from '~ticket/screens/WorkorderScreen';
 
 import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';
 import {screens} from '~constants/constants';
 import LocationProvider from '~Common/LocationProvider';
-import SurveyList from '~GeoServey/screens/SurveyList';
 
 const Stack = createStackNavigator();
 
@@ -67,6 +68,11 @@ const RootNavigation = () => {
             <Stack.Screen
               name={screens.drawerStack}
               component={DrawerStack}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.workorderScreen}
+              component={WorkorderScreen}
               options={options}
             />
             <Stack.Screen

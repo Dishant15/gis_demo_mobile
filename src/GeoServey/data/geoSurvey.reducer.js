@@ -1,5 +1,6 @@
 import {differenceBy, isNull, orderBy} from 'lodash';
 import {createSlice} from '@reduxjs/toolkit';
+import {convertWorkOrderData} from '~utils/map.utils';
 
 const defaultUnitData = {
   // coordinates in redux shape: {"latitude": 23.04, "longitude": 72.51}
@@ -32,7 +33,7 @@ const defaultSurveyData = {
 };
 
 const initialState = {
-  selectedTaskId: null,
+  selectedTicketId: null,
   selectedAreaData: {},
   surveyList: [],
   // all data bellow is for form edit / add purpose
@@ -49,12 +50,12 @@ const geoSurveyReducer = createSlice({
   initialState,
   reducers: {
     // when user click on one of the task on task list screen
-    // payload shape: {...taskData, area_pocket: {}, survey_boundaries: [{...survey1, survey2}] }
+    // payload shape: {...taskData, area_pocket: {}, work_orders: [{...survey1, survey2}] }
     setTaskData: (state, {payload}) => {
-      const {id, area_pocket, survey_boundaries} = payload;
-      state.selectedTaskId = id;
+      const {id, area_pocket, work_orders} = convertWorkOrderData(payload);
+      state.selectedTicketId = id;
       state.selectedAreaData = {...area_pocket};
-      state.surveyList = orderBy(survey_boundaries, ['updated_on'], ['desc']);
+      state.surveyList = orderBy(work_orders, ['updated_on'], ['desc']);
     },
     // when user clicks one of the survey from taskList -> surveyList
     // payload shape: {surveyIndex, surveyData: {...surveyData, units: [ {...unit1, ...}]}

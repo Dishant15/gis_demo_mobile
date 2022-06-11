@@ -1,3 +1,5 @@
+import {orderBy, size} from 'lodash';
+
 // coordinates :- [ [latitude, longitude], ...]
 export const coordsToLatLongMap = coordinates => {
   const latLongMap = [];
@@ -26,4 +28,43 @@ export const latLongMapToCoords = latLongMap => {
     coordinates.push(coordinates[0]);
   }
   return coordinates;
+};
+
+export const convertWorkOrderData = workOrder => {
+  let convertedWorkOrder = {...workOrder};
+  let {area_pocket, work_orders} = convertedWorkOrder;
+
+  convertedWorkOrder.survey_count = size(work_orders);
+  // convert area coordinate data
+  area_pocket.coordinates = coordsToLatLongMap(area_pocket.coordinates);
+  // convert work_orders coordinate, tags data
+  for (let s_ind = 0; s_ind < work_orders.length; s_ind++) {
+    const survey = work_orders[s_ind];
+    const {units} = survey;
+    // convert work_orders.units coordinate, tags data
+    survey.coordinates = coordsToLatLongMap(survey.coordinates);
+    survey.tags = survey.tags.toString().split(',');
+    try {
+      survey.broadband_availability = survey.broadband_availability
+        .toString()
+        .split(',');
+    } catch (error) {
+      survey.broadband_availability = [];
+    }
+    try {
+      survey.cable_tv_availability = survey.cable_tv_availability
+        .toString()
+        .split(',');
+    } catch (error) {
+      survey.cable_tv_availability = [];
+    }
+    for (let u_ind = 0; u_ind < units.length; u_ind++) {
+      const unit = units[u_ind];
+      // convert work_orders.units coordinate, tags data
+      unit.coordinates = coordsToLatLongMap([unit.coordinates])[0];
+      unit.tags = unit.tags.toString().split(',');
+    }
+  }
+
+  return convertedWorkOrder;
 };

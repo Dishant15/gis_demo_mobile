@@ -1,20 +1,16 @@
-import React, {useMemo} from 'react';
+import React from 'react';
 import {View, FlatList, StyleSheet, Pressable} from 'react-native';
 import {Title, Subheading, Paragraph} from 'react-native-paper';
-import {useDispatch} from 'react-redux';
 import {useQuery} from 'react-query';
-import {orderBy, size} from 'lodash';
+import {get, size} from 'lodash';
 
 import Loader from '~Common/Loader';
-import {setTaskData} from '~GeoServey/data/geoSurvey.reducer';
-import {fetchUserTaskList} from '~GeoServey/data/geoSurvey.service';
-import {colors, layout, screens} from '~constants/constants';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import {coordsToLatLongMap} from '~utils/map.utils';
+import {colors, layout, screens} from '~constants/constants';
+import {fetchTicketList} from '~Dashboard/data/services';
 
 /**
- * Renders task list
+ * Renders survey ticket list
  *
  * when user clicks on any area it will navigate to survey list of that area
  *
@@ -22,55 +18,11 @@ import {coordsToLatLongMap} from '~utils/map.utils';
  *    drawer.navigation
  */
 const AreaList = props => {
-  const {navigation} = props;
-  const dispatch = useDispatch();
+  const {isLoading, data, refetch} = useQuery('ticketList', fetchTicketList);
 
-  const {isLoading, data, refetch} = useQuery(
-    'userTaskList',
-    fetchUserTaskList,
-  );
-
-  const userTaskList = useMemo(() => {
-    let resultData = data ? [...data] : [];
-    for (let r_ind = 0; r_ind < resultData.length; r_ind++) {
-      const userTask = resultData[r_ind];
-      let {area_pocket, survey_boundaries} = userTask;
-
-      userTask.survey_count = size(survey_boundaries);
-      // convert area coordinate data
-      area_pocket.coordinates = coordsToLatLongMap(area_pocket.coordinates);
-      // convert survey_boundaries coordinate, tags data
-      for (let s_ind = 0; s_ind < survey_boundaries.length; s_ind++) {
-        const survey = survey_boundaries[s_ind];
-        const {units} = survey;
-        // convert survey_boundaries.units coordinate, tags data
-        survey.coordinates = coordsToLatLongMap(survey.coordinates);
-        survey.tags = survey.tags.toString().split(',');
-        try {
-          survey.broadband_availability = survey.broadband_availability
-            .toString()
-            .split(',');
-        } catch (error) {
-          survey.broadband_availability = [];
-        }
-        try {
-          survey.cable_tv_availability = survey.cable_tv_availability
-            .toString()
-            .split(',');
-        } catch (error) {
-          survey.cable_tv_availability = [];
-        }
-        for (let u_ind = 0; u_ind < units.length; u_ind++) {
-          const unit = units[u_ind];
-          // convert survey_boundaries.units coordinate, tags data
-          unit.coordinates = coordsToLatLongMap([unit.coordinates])[0];
-          unit.tags = unit.tags.toString().split(',');
-        }
-      }
-    }
-
-    return orderBy(resultData, ['updated_on'], ['desc']);
-  }, [data]);
+  const navigateToWorkorder = id => () => {
+    navigation.navigate(screens.workorderScreen, {ticketId: id});
+  };
 
   return (
     <View style={[layout.container, layout.relative]}>

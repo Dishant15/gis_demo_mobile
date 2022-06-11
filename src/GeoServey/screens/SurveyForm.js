@@ -22,7 +22,7 @@ import {
   getGeoSurveyFormData,
   getIsReviewed,
   getParentId,
-  getTaskId,
+  getTicketId,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {groupBy, map, get, join, split, size} from 'lodash';
@@ -47,8 +47,7 @@ const SurveyForm = props => {
   const isFocused = useIsFocused();
   const formData = useSelector(getGeoSurveyFormData);
   const isReviewed = useSelector(getIsReviewed);
-  const taskId = useSelector(getTaskId);
-  const parentId = useSelector(getParentId);
+  const ticketId = useSelector(getTicketId);
 
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -169,8 +168,7 @@ const SurveyForm = props => {
       cable_tv_availability: join(formState.cable_tv_availability, ','),
       id: formData.id,
       coordinates: latLongMapToCoords(formData.coordinates),
-      taskId,
-      parentId,
+      ticketId,
     };
     mutate(data);
   };

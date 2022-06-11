@@ -22,3 +22,7 @@ export const apiPutEditUnit = (unitId = ':unit_id') =>
   `/api/geo/survey/unit/${unitId}/edit/`;
 export const apiDeleteUnit = (unitId = ':unit_id') =>
   `/api/geo/survey/unit/${unitId}/delete/`;
+
+export const apiGetTicketList = () => '/api/ticket/list/';
+export const apiGetTicketWorkorders = ticketId =>
+  `/api/ticket/${ticketId}/workorders/`;

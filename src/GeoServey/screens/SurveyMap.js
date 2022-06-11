@@ -28,7 +28,7 @@ import {
   getSelectedSurveyId,
   getSurveyBoundaryList,
   getGeoSurveyFormData,
-  getTaskId,
+  getTicketId,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {
   updateSurveyFormData,
@@ -72,7 +72,11 @@ const SurveyMap = ({navigation}) => {
   const formData = useSelector(getGeoSurveyFormData);
   // surveyId indicate that survey is add or edit
   const surveyId = useSelector(getSelectedSurveyId);
-  const taskId = useSelector(getTaskId);
+  console.log(
+    '🚀 ~ file: SurveyMap.js ~ line 75 ~ SurveyMap ~ surveyId',
+    surveyId,
+  );
+  const ticketId = useSelector(getTicketId);
   // location
   const locationPermType = useSelector(getLocationPermissionType);
   const currentLocation = useSelector(getCurrentLocation);
@@ -122,16 +126,7 @@ const SurveyMap = ({navigation}) => {
   });
 
   const handleUpdatePolygon = () => {
-    const data = {
-      ...formData,
-      tags: join(formData.tags, ','),
-      broadband_availability: join(formData.broadband_availability, ','),
-      cable_tv_availability: join(formData.cable_tv_availability, ','),
-      id: formData.id,
-      coordinates: latLongMapToCoords(coordinates),
-      parentId: selectedArea.id,
-    };
-    mutate(data);
+    mutate({id: formData.id, coordinates: latLongMapToCoords(coordinates)});
   };
 
   const handleSavePolygon = () => {

@@ -13,7 +13,10 @@ import {Card, Button, Paragraph, Subheading, Title} from 'react-native-paper';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 import {layout, screens, colors} from '~constants/constants';
-import {getGeoSurveyFormData} from '~GeoServey/data/geoSurvey.selectors';
+import {
+  getGeoSurveyFormData,
+  getTicketId,
+} from '~GeoServey/data/geoSurvey.selectors';
 import {
   setReview,
   selectUnit,
@@ -38,6 +41,7 @@ const ReviewScreen = ({navigation}) => {
   const mapRef = useRef();
   const formData = useSelector(getGeoSurveyFormData);
   const unitList = get(formData, 'units', []);
+  const ticketId = useSelector(getTicketId);
 
   const [deletingUnitId, setDeletingUnitId] = useState(null);
   const dispatch = useDispatch();
@@ -95,8 +99,10 @@ const ReviewScreen = ({navigation}) => {
   }, [unitList]);
 
   const navigateToSurveyList = useCallback(() => {
-    navigation.navigate(screens.surveyList);
+    console.log('am i here ??');
+    navigation.navigate(screens.workorderScreen, {ticketId});
     dispatch(resetServeyData());
+    return true; // required for backHandler
   }, []);
 
   const navigateToSurveyMap = useCallback(() => {
