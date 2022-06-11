@@ -24,14 +24,21 @@ import {layout, screens, colors} from '~constants/constants';
 
 import {getSurveyBoundaryList} from '~GeoServey/data/geoSurvey.selectors';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 
+/**
+ * Parent:
+ *  Root navigation
+ *
+ * called on ticket click
+ */
 const WorkorderScreen = props => {
   const {navigation} = props;
   const ticketId = get(props, 'route.params.ticketId');
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
 
-  const {isLoading, data} = useQuery(
+  const {isLoading, data, refetch} = useQuery(
     ['ticketWorkOrderList', ticketId],
     fetchTicketWorkorders,
     {
@@ -41,6 +48,8 @@ const WorkorderScreen = props => {
       },
     },
   );
+
+  useRefreshOnFocus(refetch);
 
   // get survey list from redux store
   const surveyList = useSelector(getSurveyBoundaryList);

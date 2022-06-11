@@ -13,7 +13,6 @@ import {get, size} from 'lodash';
 import {format} from 'date-fns';
 
 import Loader from '~Common/Loader';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {colors, layout, screens} from '~constants/constants';
 
 import {fetchTicketList} from './data/services';
@@ -132,32 +131,6 @@ const DashboardScreen = ({navigation}) => {
               </Card.Content>
             </Card>
           );
-          return (
-            <Pressable
-              style={styles.itemWrapper}
-              onPress={navigateToWorkorder(item.id)}>
-              <View style={styles.content}>
-                <Title>{unique_id}</Title>
-                <Title>{name}</Title>
-                <Paragraph>
-                  {ticket_type} - {network_type}
-                </Paragraph>
-                <Paragraph>
-                  {get(region, 'name', '')} {due_date}
-                </Paragraph>
-                <Paragraph>
-                  {status} {remarks}
-                </Paragraph>
-              </View>
-              <View style={styles.iconWrapper}>
-                <MaterialCommunityIcons
-                  size={22}
-                  name="chevron-right"
-                  color={'#767676'}
-                />
-              </View>
-            </Pressable>
-          );
         }}
         onRefresh={refetch}
         refreshing={!!(isLoading && size(data))}
@@ -245,4 +218,5 @@ const styles = StyleSheet.create({
     color: colors.primeFontColor,
   },
 });
+
 export default DashboardScreen;
