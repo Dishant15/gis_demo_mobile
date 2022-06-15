@@ -28,7 +28,6 @@ import {
   getSelectedSurveyId,
   getSurveyBoundaryList,
   getGeoSurveyFormData,
-  getTicketId,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {
   updateSurveyFormData,
@@ -72,11 +71,7 @@ const SurveyMap = ({navigation}) => {
   const formData = useSelector(getGeoSurveyFormData);
   // surveyId indicate that survey is add or edit
   const surveyId = useSelector(getSelectedSurveyId);
-  console.log(
-    '🚀 ~ file: SurveyMap.js ~ line 75 ~ SurveyMap ~ surveyId',
-    surveyId,
-  );
-  const ticketId = useSelector(getTicketId);
+
   // location
   const locationPermType = useSelector(getLocationPermissionType);
   const currentLocation = useSelector(getCurrentLocation);
@@ -84,6 +79,8 @@ const SurveyMap = ({navigation}) => {
 
   const [showMap, setMapVisibility] = useState(false);
   const [coordinates, setCoordinates] = useState(coords);
+  const [startEditing, setStartEditing] = useState(!!surveyId);
+
   const dispatch = useDispatch();
   const mapRef = useRef();
 
@@ -135,6 +132,10 @@ const SurveyMap = ({navigation}) => {
   };
 
   const handleBtnPress = () => {
+    if (!startEditing) {
+      setStartEditing(true);
+      return;
+    }
     if (isLoading) return;
     if (!isPolygonValid) {
       showToast('Please create a valid polygon', TOAST_TYPE.ERROR);
@@ -154,6 +155,7 @@ const SurveyMap = ({navigation}) => {
   };
 
   const handleMapClick = e => {
+    if (!startEditing) return;
     if (!e.nativeEvent.coordinate) return;
     const updatedCoords = e.nativeEvent.coordinate;
     setCoordinates([...coordinates, updatedCoords]);
@@ -202,6 +204,11 @@ const SurveyMap = ({navigation}) => {
   };
 
   if (!isFocused) return null;
+  const btnText = startEditing
+    ? isLoading
+      ? 'Loading...'
+      : `${surveyId ? 'Update' : 'Save'} Boundary`
+    : 'Create Polygon';
   return (
     <View style={layout.container}>
       <BackHeader
@@ -310,14 +317,10 @@ const SurveyMap = ({navigation}) => {
             style={[
               layout.button,
               styles.drawBtn,
-              !isPolygonValid && styles.disableBtn,
+              !isPolygonValid || (!startEditing && styles.disableBtn),
             ]}
             onPress={handleBtnPress}>
-            <Text style={styles.drawBtnTxt}>
-              {isLoading
-                ? 'Loading...'
-                : `${surveyId ? 'Update' : 'Save'} Boundary`}
-            </Text>
+            <Text style={styles.drawBtnTxt}>{btnText}</Text>
           </TouchableOpacity>
         </View>
       </View>
