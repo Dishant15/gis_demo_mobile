@@ -13,6 +13,7 @@ const TagSelect = ({
   selectedTags = [],
   inputLabel = '',
   onSubmit = noop,
+  creatable = false,
 }) => {
   const [visible, setVisible] = useState(false);
   const [tags, setTags] = useState(selectedTags);
@@ -27,6 +28,7 @@ const TagSelect = ({
   }, [onSubmit, closeMenu, tags]);
 
   const handleAddNewOpt = useCallback(() => {
+    if (!extraOpt) return;
     setTags(currTags => [...currTags, extraOpt]);
     setExtraOpt('');
   }, [extraOpt, setTags, setExtraOpt]);
@@ -41,21 +43,8 @@ const TagSelect = ({
 
   return (
     <Menu
-      style={{
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        backgroundColor: colors.blackWithOp,
-        zIndex: 2,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      contentStyle={{
-        minWidth: '70%',
-        maxHeight: 400,
-      }}
+      style={styles.menuModal}
+      contentStyle={styles.menuContentStyle}
       visible={visible}
       onDismiss={closeMenu}
       anchor={
@@ -82,7 +71,6 @@ const TagSelect = ({
       <View style={styles.menuWrapper}>
         {fullTagList.map(tag => {
           const selected = tags.indexOf(tag.value) !== -1;
-
           return (
             <Menu.Item
               icon={
@@ -98,10 +86,12 @@ const TagSelect = ({
             />
           );
         })}
-        <View>
-          <Input label="Other" onChangeText={setExtraOpt} value={extraOpt} />
-          <Button onPress={handleAddNewOpt}>Add</Button>
-        </View>
+        {creatable ? (
+          <View>
+            <Input label="Other" onChangeText={setExtraOpt} value={extraOpt} />
+            <Button onPress={handleAddNewOpt}>Add</Button>
+          </View>
+        ) : null}
         <View style={styles.wrapper}>
           <Button
             style={styles.btn1}
@@ -109,7 +99,7 @@ const TagSelect = ({
             onPress={() => {
               setTags([]);
             }}>
-            Reset
+            Clear
           </Button>
           <Button style={styles.btn2} mode="contained" onPress={handleSubmit}>
             Apply
@@ -121,6 +111,21 @@ const TagSelect = ({
 };
 
 const styles = StyleSheet.create({
+  menuModal: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: colors.blackWithOp,
+    zIndex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuContentStyle: {
+    minWidth: '70%',
+    maxHeight: 400,
+  },
   menuWrapper: {},
   wrapper: {
     justifyContent: 'space-between',
