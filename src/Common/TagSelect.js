@@ -1,9 +1,12 @@
-import {find, indexOf} from 'lodash';
-import React from 'react';
+import React, {useState, useCallback} from 'react';
 import {View, StyleSheet, Pressable} from 'react-native';
 import {Button, Menu, Caption, Chip, Paragraph} from 'react-native-paper';
+
+import {difference, find, indexOf, map} from 'lodash';
+
 import {colors} from '~constants/constants';
 import {noop} from '~utils/app.utils';
+import Input from './Input';
 
 const TagSelect = ({
   tagList,
@@ -11,12 +14,30 @@ const TagSelect = ({
   inputLabel = '',
   onSubmit = noop,
 }) => {
-  const [visible, setVisible] = React.useState(false);
-  const [tags, setTags] = React.useState(selectedTags);
+  const [visible, setVisible] = useState(false);
+  const [tags, setTags] = useState(selectedTags);
+  const [extraOpt, setExtraOpt] = useState('');
 
   const openMenu = () => setVisible(true);
-
   const closeMenu = () => setVisible(false);
+
+  const handleSubmit = useCallback(() => {
+    onSubmit(tags);
+    closeMenu();
+  }, [onSubmit, closeMenu, tags]);
+
+  const handleAddNewOpt = useCallback(() => {
+    setTags(currTags => [...currTags, extraOpt]);
+    setExtraOpt('');
+  }, [extraOpt, setTags, setExtraOpt]);
+
+  // get extra options that user added and concat with input options
+  const fullTagList = tagList.concat(
+    difference(tags, map(tagList, 'value')).map(opt => ({
+      value: opt,
+      label: opt,
+    })),
+  );
 
   return (
     <Menu
@@ -59,7 +80,7 @@ const TagSelect = ({
         </Pressable>
       }>
       <View style={styles.menuWrapper}>
-        {tagList.map((tag, ind) => {
+        {fullTagList.map(tag => {
           const selected = tags.indexOf(tag.value) !== -1;
 
           return (
@@ -77,6 +98,10 @@ const TagSelect = ({
             />
           );
         })}
+        <View>
+          <Input label="Other" onChangeText={setExtraOpt} value={extraOpt} />
+          <Button onPress={handleAddNewOpt}>Add</Button>
+        </View>
         <View style={styles.wrapper}>
           <Button
             style={styles.btn1}
@@ -86,13 +111,7 @@ const TagSelect = ({
             }}>
             Reset
           </Button>
-          <Button
-            style={styles.btn2}
-            mode="contained"
-            onPress={() => {
-              onSubmit(tags);
-              closeMenu();
-            }}>
+          <Button style={styles.btn2} mode="contained" onPress={handleSubmit}>
             Apply
           </Button>
         </View>

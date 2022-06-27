@@ -1,19 +1,18 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {View, StyleSheet, BackHandler} from 'react-native';
-import {useForm, Controller} from 'react-hook-form';
 import {useDispatch, useSelector} from 'react-redux';
+import {useMutation} from 'react-query';
+import {View, StyleSheet, BackHandler} from 'react-native';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
+import {useForm, Controller} from 'react-hook-form';
 import {Button, HelperText} from 'react-native-paper';
-
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {
-  BroadbandProviders,
-  colors,
-  layout,
-  screens,
-  SURVEY_TAG_LIST,
-  TVProviders,
-} from '~constants/constants';
+import {groupBy, map, get, join, split, size} from 'lodash';
+
 import Input from '~Common/Input';
+import BackHeader from '~Common/components/Header/BackHeader';
+import Loader from '~Common/Loader';
+import TagSelect from '~Common/TagSelect';
+
 import {
   updateSurveyFormData,
   updateSurveyList,
@@ -24,17 +23,19 @@ import {
   getParentId,
   getTicketId,
 } from '~GeoServey/data/geoSurvey.selectors';
-import {useIsFocused, useFocusEffect} from '@react-navigation/native';
-import {groupBy, map, get, join, split, size} from 'lodash';
 import Api from '~utils/api.utils';
 import {getGoogleAddress} from '~constants/url.constants';
-import BackHeader from '~Common/components/Header/BackHeader';
-import Loader from '~Common/Loader';
-import TagSelect from '~Common/TagSelect';
-import {useMutation} from 'react-query';
 import {updateGeoServey} from '~GeoServey/data/geoSurvey.service';
 import {coordsToLatLongMap, latLongMapToCoords} from '~utils/map.utils';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {
+  BroadbandProviders,
+  colors,
+  layout,
+  screens,
+  SURVEY_TAG_LIST,
+  TVProviders,
+} from '~constants/constants';
 
 var turf = require('@turf/turf');
 
