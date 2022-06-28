@@ -1,10 +1,10 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useMutation} from 'react-query';
-import {View, StyleSheet, BackHandler} from 'react-native';
+import {View, StyleSheet, BackHandler, Pressable} from 'react-native';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useForm, Controller} from 'react-hook-form';
-import {Button, HelperText} from 'react-native-paper';
+import {Button, HelperText, Chip, Caption, Text} from 'react-native-paper';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {groupBy, map, get, join, split, size} from 'lodash';
 
@@ -12,6 +12,7 @@ import Input from '~Common/Input';
 import BackHeader from '~Common/components/Header/BackHeader';
 import Loader from '~Common/Loader';
 import TagSelect from '~Common/TagSelect';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {
   updateSurveyFormData,
@@ -32,6 +33,7 @@ import {
   BroadbandProviders,
   colors,
   layout,
+  LOCALITY_OPTS,
   screens,
   SURVEY_TAG_LIST,
   TVProviders,
@@ -104,6 +106,10 @@ const SurveyForm = props => {
       tags: formData.tags,
       broadband_availability: formData.broadband_availability,
       cable_tv_availability: formData.cable_tv_availability,
+      over_head_cable: formData.over_head_cable,
+      cabling_required: formData.cabling_required,
+      poll_cabling_possible: formData.poll_cabling_possible,
+      locality_status: formData.locality_status,
     },
   });
 
@@ -410,6 +416,122 @@ const SurveyForm = props => {
             </>
           )}
         />
+        <Controller
+          control={control}
+          name="locality_status"
+          render={({field: {ref, onChange, onBlur, value}}) => {
+            return (
+              <View style={styles.categoryWrapper}>
+                <Caption>Locality</Caption>
+                <View style={styles.chipWrapper}>
+                  {LOCALITY_OPTS.map(opt => {
+                    const selected = opt.value === value;
+                    return (
+                      <Chip
+                        key={opt.value}
+                        style={[styles.chip, selected && styles.chipActive]}
+                        selected={selected}
+                        selectedColor={selected ? colors.white : null}
+                        onPress={() => onChange(opt.value)}>
+                        {opt.label}
+                      </Chip>
+                    );
+                  })}
+                </View>
+                {!!errors.locality_status?.message ? (
+                  <HelperText
+                    type="error"
+                    visible={!!errors.locality_status?.message}>
+                    {errors.locality_status?.message}
+                  </HelperText>
+                ) : null}
+              </View>
+            );
+          }}
+        />
+        <Controller
+          control={control}
+          name="over_head_cable"
+          render={({field: {onChange, value}}) => (
+            <>
+              <Pressable
+                style={styles.checkboxWrapper}
+                onPress={() => onChange(!value)}>
+                <MaterialCommunityIcons
+                  size={26}
+                  name={value ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                  color={value ? colors.primaryMain : colors.primaryFontColor}
+                  style={{textAlign: 'center'}}
+                />
+                <Text style={styles.checkboxText}>Over head cable allowed</Text>
+              </Pressable>
+              {!!errors.over_head_cable?.message ? (
+                <HelperText
+                  type="error"
+                  visible={!!errors.over_head_cable?.message}>
+                  {errors.over_head_cable?.message}
+                </HelperText>
+              ) : null}
+            </>
+          )}
+        />
+        <Controller
+          control={control}
+          name="cabling_required"
+          render={({field: {onChange, value}}) => (
+            <>
+              <Pressable
+                style={styles.checkboxWrapper}
+                onPress={() => onChange(!value)}>
+                <MaterialCommunityIcons
+                  size={26}
+                  name={value ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                  color={value ? colors.primaryMain : colors.primaryFontColor}
+                  style={{textAlign: 'center'}}
+                />
+                <Text style={styles.checkboxText}>
+                  In Building cabeling required
+                </Text>
+              </Pressable>
+
+              {!!errors.cabling_required?.message ? (
+                <HelperText
+                  type="error"
+                  visible={!!errors.cabling_required?.message}>
+                  {errors.cabling_required?.message}
+                </HelperText>
+              ) : null}
+            </>
+          )}
+        />
+        <Controller
+          control={control}
+          name="poll_cabling_possible"
+          render={({field: {onChange, value}}) => (
+            <>
+              <Pressable
+                style={styles.checkboxWrapper}
+                onPress={() => onChange(!value)}>
+                <MaterialCommunityIcons
+                  size={26}
+                  name={value ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                  color={value ? colors.primaryMain : colors.primaryFontColor}
+                  style={{textAlign: 'center'}}
+                />
+                <Text style={styles.checkboxText}>
+                  Pole to pole cabling possible
+                </Text>
+              </Pressable>
+              {!!errors.poll_cabling_possible?.message ? (
+                <HelperText
+                  type="error"
+                  visible={!!errors.poll_cabling_possible?.message}>
+                  {errors.poll_cabling_possible?.message}
+                </HelperText>
+              ) : null}
+            </>
+          )}
+        />
         <View style={styles.buttonWrapper}>
           <Button
             loading={isLoading}
@@ -433,6 +555,30 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     paddingTop: 18,
     paddingBottom: 36,
+  },
+  categoryWrapper: {
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+  },
+  chipWrapper: {
+    flexDirection: 'row',
+  },
+  chip: {
+    marginRight: 10,
+    marginTop: 8,
+  },
+  chipActive: {
+    backgroundColor: colors.primaryMain + 'cc',
+  },
+  checkboxWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingLeft: 8,
+  },
+  checkboxText: {
+    fontSize: 17,
+    paddingLeft: 8,
   },
 });
 

@@ -147,3 +147,10 @@ export const SURVEY_TASK_STATUS = {
   C: {label: 'Completed', color: 'green'},
   A: {label: 'Archived', color: 'grey'},
 };
+
+export const LOCALITY_OPTS = [
+  {label: 'High', value: '1'},
+  {label: 'Medium', value: '2'},
+  {label: 'Average', value: '3'},
+  {label: 'Poor', value: '4'},
+];
