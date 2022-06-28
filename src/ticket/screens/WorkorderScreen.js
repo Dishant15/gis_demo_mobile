@@ -12,6 +12,7 @@ import {
   Paragraph,
   Chip,
   Button,
+  Avatar,
 } from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {replace, size} from 'lodash';
@@ -26,6 +27,10 @@ import {getSurveyBoundaryList} from '~GeoServey/data/geoSurvey.selectors';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 import Loader from '~Common/Loader';
+
+import AcceptImg from '~assets/img/accept.png';
+import CancelImg from '~assets/img/cancel.png';
+import InprogressImg from '~assets/img/inprogress.png';
 
 /**
  * Parent:
@@ -73,7 +78,8 @@ const WorkorderScreen = props => {
         data={surveyList}
         keyExtractor={item => item.id}
         renderItem={({item, index}) => {
-          const {name, area, pincode, tags} = item;
+          const {name, area, pincode, tags, status, remark} = item;
+
           return (
             <Pressable
               style={styles.cardItem}
@@ -87,11 +93,16 @@ const WorkorderScreen = props => {
                 navigation.navigate(screens.reviewScreen);
               }}>
               <View style={styles.content}>
-                <Title>{name}</Title>
+                <Card.Title
+                  style={styles.cardTitle}
+                  title={name}
+                  left={props => <StatusAvatar status={status} />}
+                />
                 <Paragraph>
                   {area} - {pincode}
                 </Paragraph>
                 <Paragraph>Total Units - {size(item.units)}</Paragraph>
+                {!!remark ? <Paragraph>Remarks - {remark}</Paragraph> : null}
                 <View style={styles.chipWrapper}>
                   {tags.map(tag => (
                     <Chip
@@ -134,7 +145,23 @@ const WorkorderScreen = props => {
   );
 };
 
+const StatusAvatar = ({status}) => {
+  if (status === 'V') {
+    return <Avatar.Image size={40} source={AcceptImg} />;
+  } else if (status === 'R') {
+    return <Avatar.Image size={40} source={CancelImg} />;
+  } else if (status === 'S') {
+    return <Avatar.Image size={40} source={InprogressImg} />;
+  }
+  return null;
+};
+
 const styles = StyleSheet.create({
+  cardTitle: {
+    minHeight: 'auto',
+    paddingLeft: 0,
+    paddingBottom: 4,
+  },
   cardItem: {
     flexDirection: 'row',
     padding: 12,

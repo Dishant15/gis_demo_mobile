@@ -153,7 +153,7 @@ const TagSelect = ({
                     style={styles.btn2}
                     mode="contained"
                     onPress={handleSubmit}>
-                    Apply
+                    Done
                   </Button>
                 </View>
               </View>
