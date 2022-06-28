@@ -25,6 +25,7 @@ import {layout, screens, colors} from '~constants/constants';
 import {getSurveyBoundaryList} from '~GeoServey/data/geoSurvey.selectors';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
+import Loader from '~Common/Loader';
 
 /**
  * Parent:
@@ -128,6 +129,7 @@ const WorkorderScreen = props => {
         onPress={navigateToMap}>
         View on map
       </Button>
+      {isLoading ? <Loader /> : null}
     </View>
   );
 };
