@@ -7,6 +7,7 @@ import {
   Card,
   Chip,
   Divider,
+  Headline,
 } from 'react-native-paper';
 import {useQuery} from 'react-query';
 import {get, size} from 'lodash';
@@ -37,6 +38,9 @@ const DashboardScreen = ({navigation}) => {
         contentContainerStyle={styles.contentContainerStyle}
         data={data}
         keyExtractor={item => item.id}
+        ListHeaderComponent={() => (
+          <Headline style={styles.listHeaderStyle}>My Tickets</Headline>
+        )}
         renderItem={({item}) => {
           const {
             name,
@@ -216,6 +220,10 @@ const styles = StyleSheet.create({
   },
   primeColot: {
     color: colors.primeFontColor,
+  },
+  listHeaderStyle: {
+    paddingBottom: 12,
+    paddingLeft: 12,
   },
 });
 
