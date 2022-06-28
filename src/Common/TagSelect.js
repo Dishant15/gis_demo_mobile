@@ -1,5 +1,5 @@
-import React, {useState, useCallback} from 'react';
-import {View, StyleSheet, Pressable} from 'react-native';
+import React, {useState, useCallback, useRef} from 'react';
+import {View, StyleSheet, Pressable, Dimensions} from 'react-native';
 import {
   Button,
   Menu,
@@ -7,13 +7,19 @@ import {
   Chip,
   Paragraph,
   TextInput,
+  Modal,
+  Portal,
 } from 'react-native-paper';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import {difference, find, indexOf, map} from 'lodash';
 
 import {colors} from '~constants/constants';
 import {noop} from '~utils/app.utils';
 import Input from './Input';
+import {useKeyboard} from '~utils/useKeyboard';
+
+const {height, width} = Dimensions.get('screen');
 
 const TagSelect = ({
   tagList,
@@ -25,9 +31,18 @@ const TagSelect = ({
   const [visible, setVisible] = useState(false);
   const [tags, setTags] = useState(selectedTags);
   const [extraOpt, setExtraOpt] = useState('');
+  const scrollRef = useRef();
+
+  const isKeyboardVisible = useKeyboard();
 
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
+
+  const handleReset = useCallback(() => {
+    setTags([]);
+    onSubmit([]);
+    closeMenu();
+  }, [onSubmit, closeMenu, tags]);
 
   const handleSubmit = useCallback(() => {
     onSubmit(tags);
@@ -38,7 +53,8 @@ const TagSelect = ({
     if (!extraOpt) return;
     setTags(currTags => [...currTags, extraOpt]);
     setExtraOpt('');
-  }, [extraOpt, setTags, setExtraOpt]);
+    scrollRef.current.scrollToEnd({animated: true});
+  }, [extraOpt, setTags, setExtraOpt, scrollRef]);
 
   // get extra options that user added and concat with input options
   const fullTagList = tagList.concat(
@@ -49,107 +65,113 @@ const TagSelect = ({
   );
 
   return (
-    <Menu
-      style={styles.menuModal}
-      contentStyle={styles.menuContentStyle}
-      visible={visible}
-      onDismiss={closeMenu}
-      anchor={
-        <Pressable onPress={openMenu} style={styles.categoryWrapper}>
-          <Caption>{inputLabel}</Caption>
-          <View style={styles.chipWrapper}>
-            {selectedTags.length ? (
-              selectedTags.map(opt => {
-                const option = find(fullTagList, ['value', opt]);
+    <>
+      <Pressable onPress={openMenu} style={styles.categoryWrapper}>
+        <Caption>{inputLabel}</Caption>
+        <View style={styles.chipWrapper}>
+          {selectedTags.length ? (
+            selectedTags.map(opt => {
+              const option = find(fullTagList, ['value', opt]);
+              if (option) {
                 return (
                   <Chip key={option.value} style={styles.chip}>
                     {option.label}
                   </Chip>
                 );
-              })
-            ) : (
-              <Paragraph style={styles.emptyText}>
-                Click Here to select
-              </Paragraph>
-            )}
-          </View>
-        </Pressable>
-      }>
-      <View style={styles.menuWrapper}>
-        {fullTagList.map(tag => {
-          const selected = tags.indexOf(tag.value) !== -1;
-          return (
-            <Menu.Item
-              icon={
-                selected ? 'checkbox-marked-outline' : 'checkbox-blank-outline'
+              } else {
+                return null;
               }
-              key={tag.value}
-              onPress={() => {
-                let newList = [...tags];
-                toggleFromList(newList, tag.value);
-                setTags(newList);
-              }}
-              title={tag.label}
-            />
-          );
-        })}
-        {creatable ? (
-          <View style={styles.creatableWrapper}>
-            <Input
-              label="Other"
-              onChangeText={setExtraOpt}
-              value={extraOpt}
-              underlineColorAndroid="transparent"
-              autoCapitalize="none"
-              autoCorrect={false}
-              returnKeyType="done"
-              onSubmitEditing={handleAddNewOpt}
-              right={
-                <TextInput.Icon
-                  name="plus"
-                  color={colors.white}
-                  style={styles.addIcon}
-                  onPress={handleAddNewOpt}
-                />
-              }
-            />
-          </View>
-        ) : null}
-        <View style={styles.wrapper}>
-          <Button
-            style={styles.btn1}
-            mode="outlined"
-            onPress={() => {
-              setTags([]);
-            }}>
-            Clear
-          </Button>
-          <Button style={styles.btn2} mode="contained" onPress={handleSubmit}>
-            Apply
-          </Button>
+            })
+          ) : (
+            <Paragraph style={styles.emptyText}>Click Here to select</Paragraph>
+          )}
         </View>
-      </View>
-    </Menu>
+      </Pressable>
+      {visible ? (
+        <Portal>
+          <Modal visible={visible} onDismiss={closeMenu}>
+            <View
+              style={[
+                styles.menuContentStyle,
+                {maxHeight: isKeyboardVisible ? height * 0.5 : height * 0.8},
+              ]}>
+              <KeyboardAwareScrollView
+                keyboardShouldPersistTaps="always"
+                ref={scrollRef}>
+                {fullTagList.map(tag => {
+                  const selected = tags.indexOf(tag.value) !== -1;
+                  return (
+                    <Menu.Item
+                      style={styles.itemMax}
+                      icon={
+                        selected
+                          ? 'checkbox-marked-outline'
+                          : 'checkbox-blank-outline'
+                      }
+                      key={tag.value}
+                      onPress={() => {
+                        let newList = [...tags];
+                        toggleFromList(newList, tag.value);
+                        setTags(newList);
+                      }}
+                      title={tag.label}
+                    />
+                  );
+                })}
+              </KeyboardAwareScrollView>
+              <View style={styles.actionsWrapper}>
+                {creatable ? (
+                  <View style={styles.creatableWrapper}>
+                    <Input
+                      label="Other"
+                      onChangeText={setExtraOpt}
+                      value={extraOpt}
+                      underlineColorAndroid="transparent"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      returnKeyType="done"
+                      onSubmitEditing={handleAddNewOpt}
+                      right={
+                        <TextInput.Icon
+                          name="plus"
+                          color={colors.white}
+                          style={styles.addIcon}
+                          onPress={handleAddNewOpt}
+                        />
+                      }
+                    />
+                  </View>
+                ) : null}
+                <View style={styles.wrapper}>
+                  <Button
+                    style={styles.btn1}
+                    mode="outlined"
+                    onPress={handleReset}>
+                    Clear
+                  </Button>
+                  <Button
+                    style={styles.btn2}
+                    mode="contained"
+                    onPress={handleSubmit}>
+                    Apply
+                  </Button>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        </Portal>
+      ) : null}
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  menuModal: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: colors.blackWithOp,
-    zIndex: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   menuContentStyle: {
-    minWidth: '70%',
-    maxHeight: 400,
+    // maxHeight: height * 0.8,
+    backgroundColor: colors.white,
+    marginHorizontal: 30,
+    borderRadius: 4,
   },
-  menuWrapper: {},
   wrapper: {
     justifyContent: 'space-between',
     flexDirection: 'row',
@@ -187,6 +209,20 @@ const styles = StyleSheet.create({
   },
   creatableWrapper: {
     marginHorizontal: 16,
+  },
+  itemMax: {
+    maxWidth: '100%',
+  },
+  actionsWrapper: {
+    backgroundColor: colors.white,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
 });
 
