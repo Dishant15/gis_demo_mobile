@@ -1,6 +1,13 @@
 import React, {useState, useCallback} from 'react';
 import {View, StyleSheet, Pressable} from 'react-native';
-import {Button, Menu, Caption, Chip, Paragraph} from 'react-native-paper';
+import {
+  Button,
+  Menu,
+  Caption,
+  Chip,
+  Paragraph,
+  TextInput,
+} from 'react-native-paper';
 
 import {difference, find, indexOf, map} from 'lodash';
 
@@ -53,7 +60,7 @@ const TagSelect = ({
           <View style={styles.chipWrapper}>
             {selectedTags.length ? (
               selectedTags.map(opt => {
-                const option = find(tagList, ['value', opt]);
+                const option = find(fullTagList, ['value', opt]);
                 return (
                   <Chip key={option.value} style={styles.chip}>
                     {option.label}
@@ -87,9 +94,25 @@ const TagSelect = ({
           );
         })}
         {creatable ? (
-          <View>
-            <Input label="Other" onChangeText={setExtraOpt} value={extraOpt} />
-            <Button onPress={handleAddNewOpt}>Add</Button>
+          <View style={styles.creatableWrapper}>
+            <Input
+              label="Other"
+              onChangeText={setExtraOpt}
+              value={extraOpt}
+              underlineColorAndroid="transparent"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="done"
+              onSubmitEditing={handleAddNewOpt}
+              right={
+                <TextInput.Icon
+                  name="plus"
+                  color={colors.white}
+                  style={styles.addIcon}
+                  onPress={handleAddNewOpt}
+                />
+              }
+            />
           </View>
         ) : null}
         <View style={styles.wrapper}>
@@ -157,6 +180,13 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     paddingVertical: 4,
+  },
+  addIcon: {
+    backgroundColor: colors.primaryMain,
+    borderRadius: 4,
+  },
+  creatableWrapper: {
+    marginHorizontal: 16,
   },
 });
 

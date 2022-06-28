@@ -212,8 +212,10 @@ const SurveyMap = ({navigation}) => {
   return (
     <View style={layout.container}>
       <BackHeader
-        title="Tap on Map"
-        subtitle="put marker by tapping, long press for move"
+        title={startEditing ? 'Tap on Map' : 'Create Polygon'}
+        subtitle={
+          startEditing ? 'put marker by tapping, long press for move' : ''
+        }
         onGoBack={handleCustomBack}
         style={{
           height: 80,

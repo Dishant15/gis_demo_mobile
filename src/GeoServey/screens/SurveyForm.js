@@ -59,8 +59,12 @@ const SurveyForm = props => {
         ...res,
         coordinates: coordsToLatLongMap(res.coordinates),
         tags: split(res.tags, ','),
-        broadband_availability: split(res.broadband_availability, ','),
-        cable_tv_availability: split(res.cable_tv_availability, ','),
+        broadband_availability: res.broadband_availability
+          ? split(res.broadband_availability, ',')
+          : '',
+        cable_tv_availability: res.cable_tv_availability
+          ? split(res.cable_tv_availability, ',')
+          : '',
       };
       if (!size(res.units)) {
         newData.units = [];
@@ -365,9 +369,6 @@ const SurveyForm = props => {
         <Controller
           control={control}
           name="broadband_availability"
-          rules={{
-            required: 'this field is required.',
-          }}
           render={({field: {ref, onChange, onBlur, value}}) => (
             <>
               <TagSelect
@@ -375,6 +376,7 @@ const SurveyForm = props => {
                 tagList={BroadbandProviders}
                 onSubmit={onChange}
                 selectedTags={value}
+                creatable
               />
               {!!errors.broadband_availability?.message ? (
                 <HelperText
@@ -389,9 +391,6 @@ const SurveyForm = props => {
         <Controller
           control={control}
           name="cable_tv_availability"
-          rules={{
-            required: 'this field is required.',
-          }}
           render={({field: {ref, onChange, onBlur, value}}) => (
             <>
               <TagSelect
@@ -399,6 +398,7 @@ const SurveyForm = props => {
                 tagList={TVProviders}
                 onSubmit={onChange}
                 selectedTags={value}
+                creatable
               />
               {!!errors.cable_tv_availability?.message ? (
                 <HelperText

@@ -46,15 +46,15 @@ export const convertWorkOrderData = workOrder => {
     survey.tags = survey.tags.toString().split(',');
     try {
       survey.broadband_availability = survey.broadband_availability
-        .toString()
-        .split(',');
+        ? survey.broadband_availability.toString().split(',')
+        : [];
     } catch (error) {
       survey.broadband_availability = [];
     }
     try {
       survey.cable_tv_availability = survey.cable_tv_availability
-        .toString()
-        .split(',');
+        ? survey.cable_tv_availability.toString().split(',')
+        : [];
     } catch (error) {
       survey.cable_tv_availability = [];
     }
