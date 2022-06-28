@@ -12,6 +12,7 @@ export const getSelectedSurveyIndex = store =>
   store.geoSurvey.selectedSurveyIndex;
 export const getSurveyCoordinates = store =>
   store.geoSurvey.selectedSurvey.coordinates;
+export const getSurveyStatus = store => store.geoSurvey.selectedSurvey.status;
 
 export const getGeoSurveyFormData = store => store.geoSurvey.selectedSurvey;
 

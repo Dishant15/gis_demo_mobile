@@ -20,6 +20,7 @@ import {
   getIsReviewed,
   getSurveyCoordinates,
   getSelectedSurveyId,
+  getSurveyStatus,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {
   updateUnitFormData,
@@ -53,6 +54,7 @@ const UnitMap = ({navigation}) => {
   const mapType = useSelector(getMapType);
 
   const surveyCoords = useSelector(getSurveyCoordinates);
+  const surveyStatus = useSelector(getSurveyStatus);
   const dispatch = useDispatch();
 
   const mapRef = useRef();
@@ -178,6 +180,13 @@ const UnitMap = ({navigation}) => {
 
   if (!isFocused) return null;
 
+  let strokeColor = colors.warning; // Submited, status "S"
+  if (surveyStatus === 'V') {
+    strokeColor = colors.success;
+  } else if (surveyStatus === 'R') {
+    strokeColor = colors.error;
+  }
+
   return (
     <View style={layout.container}>
       <BackHeader
@@ -228,8 +237,8 @@ const UnitMap = ({navigation}) => {
                 <Polygon
                   coordinates={surveyCoords}
                   strokeWidth={2}
-                  strokeColor={'#FFA701'}
-                  fillColor="#FFA70114"
+                  strokeColor={strokeColor}
+                  fillColor={`${strokeColor}14`}
                 />
               ) : null}
             </MapView>

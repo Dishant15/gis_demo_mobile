@@ -275,14 +275,21 @@ const SurveyMap = ({navigation}) => {
               ) : null}
               {size(surveyList)
                 ? surveyList.map(survey => {
-                    if (survey.id === surveyId) return null;
+                    const {id, coordinates, status} = survey;
+                    if (id === surveyId) return null;
+                    let strokeColor = colors.warning; // Submited, status "S"
+                    if (status === 'V') {
+                      strokeColor = colors.success;
+                    } else if (status === 'R') {
+                      strokeColor = colors.error;
+                    }
                     return (
                       <Polygon
-                        key={survey.id}
-                        coordinates={survey.coordinates}
+                        key={id}
+                        coordinates={coordinates}
                         strokeWidth={2}
-                        strokeColor={'#FFA701'}
-                        fillColor="#FFA70114"
+                        strokeColor={strokeColor}
+                        fillColor={`${strokeColor}14`}
                       />
                     );
                   })

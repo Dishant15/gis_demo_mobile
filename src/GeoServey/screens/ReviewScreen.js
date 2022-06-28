@@ -99,7 +99,6 @@ const ReviewScreen = ({navigation}) => {
   }, [unitList]);
 
   const navigateToSurveyList = useCallback(() => {
-    console.log('am i here ??');
     navigation.navigate(screens.workorderScreen, {ticketId});
     dispatch(resetServeyData());
     return true; // required for backHandler
@@ -152,6 +151,14 @@ const ReviewScreen = ({navigation}) => {
 
   if (!isFocused) return null;
 
+  const status = get(formData, 'status');
+  let strokeColor = colors.warning; // Submited, status "S"
+  if (status === 'V') {
+    strokeColor = colors.success;
+  } else if (status === 'R') {
+    strokeColor = colors.error;
+  }
+
   return (
     <View style={layout.container}>
       <BackHeader
@@ -193,8 +200,8 @@ const ReviewScreen = ({navigation}) => {
             <Polygon
               coordinates={formData.coordinates}
               strokeWidth={2}
-              strokeColor={'#FFA701'}
-              fillColor="#FFA70114"
+              strokeColor={strokeColor}
+              fillColor={`${strokeColor}14`}
             />
           ) : null}
         </MapView>

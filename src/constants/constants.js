@@ -48,8 +48,10 @@ export const colors = {
   secondaryMain: '#b98919',
   accentTextColor: '#ffffff',
   textColor: '#212121',
-  error: '#d32f2f',
 
+  error: '#e24c4b',
+  warning: '#ffc005',
+  success: '#4bae4f',
   separator: '#CCCCCC',
 
   grey1: '#efefef',
