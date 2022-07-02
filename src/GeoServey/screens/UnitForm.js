@@ -192,6 +192,7 @@ const UnitForm = ({navigation}) => {
             render={({field: {ref, onChange, onBlur, value}}) => (
               <>
                 <TagSelect
+                  inputLabel="Select Tags"
                   tagList={surveyTagList}
                   onSubmit={onChange}
                   selectedTags={value}

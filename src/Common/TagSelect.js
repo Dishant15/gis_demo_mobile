@@ -9,6 +9,7 @@ import {
   TextInput,
   Modal,
   Portal,
+  Title,
 } from 'react-native-paper';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
@@ -18,6 +19,7 @@ import {colors} from '~constants/constants';
 import {noop} from '~utils/app.utils';
 import Input from './Input';
 import {useKeyboard} from '~utils/useKeyboard';
+import CloseIcon from '~assets/svg/icon_close.svg';
 
 const {height, width} = Dimensions.get('screen');
 
@@ -95,6 +97,17 @@ const TagSelect = ({
                 styles.menuContentStyle,
                 {maxHeight: isKeyboardVisible ? height * 0.5 : height * 0.8},
               ]}>
+              <View style={styles.titleWrapper}>
+                <Title
+                  style={styles.title}
+                  numberOfLines={1}
+                  ellipsizeMode="tail">
+                  {inputLabel}
+                </Title>
+                <Pressable style={styles.iconWrapper} onPress={closeMenu}>
+                  <CloseIcon width={18} height={18} color="red" />
+                </Pressable>
+              </View>
               <KeyboardAwareScrollView
                 keyboardShouldPersistTaps="always"
                 ref={scrollRef}>
@@ -223,6 +236,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.27,
     shadowRadius: 4.65,
     elevation: 6,
+  },
+  iconWrapper: {
+    alignContent: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+    width: 40,
+  },
+  titleWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: colors.primaryMain,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  title: {
+    color: colors.white,
+    flex: 1,
   },
 });
 
