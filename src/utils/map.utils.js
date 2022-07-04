@@ -30,6 +30,11 @@ export const latLongMapToCoords = latLongMap => {
   return coordinates;
 };
 
+// latLongObj :- { longitude, latitude }
+export const pointLatLongMapToCoords = latLongObj => {
+  return [latLongObj.longitude, latLongObj.latitude];
+};
+
 export const convertWorkOrderData = workOrder => {
   let convertedWorkOrder = {...workOrder};
   let {area_pocket, work_orders} = convertedWorkOrder;

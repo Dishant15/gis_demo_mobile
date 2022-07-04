@@ -9,6 +9,7 @@ import {
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {isNull, get, size, differenceBy, join, split} from 'lodash';
+import {polygon, point, booleanPointInPolygon} from '@turf/turf';
 import * as Animatable from 'react-native-animatable';
 
 import BackHeader from '~Common/components/Header/BackHeader';
@@ -37,6 +38,7 @@ import DefaultMapImg from '~assets/img/map_default.png';
 import SatelliteMapImg from '~assets/img/map_satellite.png';
 import {toggleMapType} from '~Common/data/appstate.reducer';
 import FastImage from 'react-native-fast-image';
+import {latLongMapToCoords, pointLatLongMapToCoords} from '~utils/map.utils';
 
 /**
  * Parent:
@@ -114,6 +116,18 @@ const UnitMap = ({navigation}) => {
       showToast('Tap on the map to select unit location', TOAST_TYPE.ERROR);
       return;
     }
+
+    const surveyPoly = polygon([latLongMapToCoords(surveyCoords)]);
+    const unitPoint = point(pointLatLongMapToCoords(coordinate));
+
+    if (!booleanPointInPolygon(unitPoint, surveyPoly)) {
+      showToast(
+        'Unit location can not be outside survey boundary',
+        TOAST_TYPE.ERROR,
+      );
+      return;
+    }
+
     let newData = {...unitData, coordinates: coordinate};
     if (isAdd) {
       // update redux with map coordinates
