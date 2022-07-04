@@ -15,7 +15,8 @@ import * as Animatable from 'react-native-animatable';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {size, join} from 'lodash';
+import {size} from 'lodash';
+import {polygon, booleanContains} from '@turf/turf';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 import CustomMarker from '~Common/CustomMarker';
@@ -141,6 +142,17 @@ const SurveyMap = ({navigation}) => {
       showToast('Please create a valid polygon', TOAST_TYPE.ERROR);
       return;
     }
+    const parentPoly = polygon([latLongMapToCoords(selectedArea.coordinates)]);
+    const childPoly = polygon([latLongMapToCoords(coordinates)]);
+
+    if (!booleanContains(parentPoly, childPoly)) {
+      showToast(
+        'Survey boundary polygon must be contained inside assigned area',
+        TOAST_TYPE.ERROR,
+      );
+      return;
+    }
+
     if (surveyId) {
       handleUpdatePolygon();
     } else {

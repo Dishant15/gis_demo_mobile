@@ -6,7 +6,8 @@ import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useForm, Controller} from 'react-hook-form';
 import {Button, HelperText, Chip, Caption, Text} from 'react-native-paper';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {groupBy, map, get, join, split, size} from 'lodash';
+import {groupBy, get, join, split, size} from 'lodash';
+import {polygon, centroid} from '@turf/turf';
 
 import Input from '~Common/Input';
 import BackHeader from '~Common/components/Header/BackHeader';
@@ -21,7 +22,6 @@ import {
 import {
   getGeoSurveyFormData,
   getIsReviewed,
-  getParentId,
   getTicketId,
 } from '~GeoServey/data/geoSurvey.selectors';
 import Api from '~utils/api.utils';
@@ -38,8 +38,6 @@ import {
   SURVEY_TAG_LIST,
   TVProviders,
 } from '~constants/constants';
-
-var turf = require('@turf/turf');
 
 /**
  * Parent:
@@ -91,7 +89,6 @@ const SurveyForm = props => {
   const {
     control,
     handleSubmit,
-    setError,
     setFocus,
     setValue,
     formState: {errors},
@@ -114,13 +111,13 @@ const SurveyForm = props => {
   });
 
   useEffect(() => {
-    const polygonPoint = map(formData.coordinates, point => [
-      point.latitude,
-      point.longitude,
-    ]);
-    const turfPoint = turf.points(polygonPoint);
-    const centerRes = turf.center(turfPoint);
-    const center = centerRes.geometry.coordinates; // [lat, lng]
+    const polygonPoint = latLongMapToCoords(formData.coordinates);
+
+    const turfPoint = polygon([polygonPoint]);
+    const centerRes = centroid(turfPoint);
+    // center: [longitude, latitude]
+    const center = centerRes.geometry.coordinates;
+
     Api.get(getGoogleAddress(center[0], center[1]))
       .then(res => {
         const data = res.data;
