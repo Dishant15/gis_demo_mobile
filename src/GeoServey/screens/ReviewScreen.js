@@ -43,6 +43,8 @@ const ReviewScreen = ({navigation}) => {
   const unitList = get(formData, 'units', []);
   const ticketId = useSelector(getTicketId);
 
+  const enableActions = get(formData, 'status') !== 'V';
+
   const [deletingUnitId, setDeletingUnitId] = useState(null);
   const dispatch = useDispatch();
 
@@ -216,31 +218,35 @@ const ReviewScreen = ({navigation}) => {
                 {get(formData, 'state')}, {get(formData, 'pincode')}
               </Paragraph>
             </Card.Content>
-            <Card.Actions style={styles.cardActionWrapper}>
-              <Button
-                loading={isSurveyDeleting}
-                icon="trash-can-outline"
-                color={colors.error}
-                style={styles.deleteBtnBg}
-                onPress={() => mutate(formData.id)}
-              />
-              <View style={styles.cardRightAction}>
+            {enableActions ? (
+              <Card.Actions style={styles.cardActionWrapper}>
                 <Button
-                  icon="map-marker-path"
-                  color={colors.secondaryMain}
-                  style={styles.buttonBg}
-                  onPress={navigateToSurveyMap}>
-                  Map
-                </Button>
-                <Button
-                  icon="form-select"
-                  color={colors.secondaryMain}
-                  style={styles.buttonBg}
-                  onPress={navigateToSurveyForm}>
-                  Details
-                </Button>
-              </View>
-            </Card.Actions>
+                  loading={isSurveyDeleting}
+                  icon="trash-can-outline"
+                  color={colors.error}
+                  style={styles.deleteBtnBg}
+                  onPress={() => mutate(formData.id)}
+                />
+                <View style={styles.cardRightAction}>
+                  <Button
+                    icon="map-marker-path"
+                    color={colors.secondaryMain}
+                    style={styles.buttonBg}
+                    onPress={navigateToSurveyMap}>
+                    Map
+                  </Button>
+                  <Button
+                    icon="form-select"
+                    color={colors.secondaryMain}
+                    style={styles.buttonBg}
+                    onPress={navigateToSurveyForm}>
+                    Details
+                  </Button>
+                </View>
+              </Card.Actions>
+            ) : (
+              <View style={styles.padTop26} />
+            )}
           </Card>
           {size(unitList) ? (
             <>
@@ -273,59 +279,65 @@ const ReviewScreen = ({navigation}) => {
                         </Paragraph>
                       )}
                     </Card.Content>
-                    <Card.Actions style={styles.cardActionWrapper}>
-                      <Button
-                        loading={deleting}
-                        icon="trash-can-outline"
-                        color={colors.error}
-                        style={styles.deleteBtnBg}
-                        onPress={() => {
-                          setDeletingUnitId(unit.id);
-                          handleUnitDetele(unit.id);
-                        }}
-                      />
-                      <View style={styles.cardRightAction}>
+                    {enableActions ? (
+                      <Card.Actions style={styles.cardActionWrapper}>
                         <Button
-                          icon="map-marker-path"
-                          color={colors.secondaryMain}
-                          style={styles.buttonBg}
-                          onPress={navigateToUnitMap(index)}>
-                          Map
-                        </Button>
-                        <Button
-                          icon="form-select"
-                          color={colors.secondaryMain}
-                          style={styles.buttonBg}
-                          onPress={navigateToUnitForm(index)}>
-                          Details
-                        </Button>
-                      </View>
-                    </Card.Actions>
+                          loading={deleting}
+                          icon="trash-can-outline"
+                          color={colors.error}
+                          style={styles.deleteBtnBg}
+                          onPress={() => {
+                            setDeletingUnitId(unit.id);
+                            handleUnitDetele(unit.id);
+                          }}
+                        />
+                        <View style={styles.cardRightAction}>
+                          <Button
+                            icon="map-marker-path"
+                            color={colors.secondaryMain}
+                            style={styles.buttonBg}
+                            onPress={navigateToUnitMap(index)}>
+                            Map
+                          </Button>
+                          <Button
+                            icon="form-select"
+                            color={colors.secondaryMain}
+                            style={styles.buttonBg}
+                            onPress={navigateToUnitForm(index)}>
+                            Details
+                          </Button>
+                        </View>
+                      </Card.Actions>
+                    ) : (
+                      <View style={styles.padTop22} />
+                    )}
                   </Card>
                 );
               })}
             </>
           ) : null}
-          <View style={styles.buttonWrapper}>
-            <Button
-              style={styles.submitBtn}
-              contentStyle={layout.button}
-              color={colors.black}
-              uppercase
-              mode="outlined"
-              onPress={resetReviewAndnavigateToUnitMap(-1)}>
-              Add Unit
-            </Button>
-            <Button
-              style={styles.submitBtn}
-              contentStyle={layout.button}
-              color={colors.black}
-              uppercase
-              mode="contained"
-              onPress={navigateToSurveyList}>
-              Complete
-            </Button>
-          </View>
+          {enableActions ? (
+            <View style={styles.buttonWrapper}>
+              <Button
+                style={styles.submitBtn}
+                contentStyle={layout.button}
+                color={colors.black}
+                uppercase
+                mode="outlined"
+                onPress={resetReviewAndnavigateToUnitMap(-1)}>
+                Add Unit
+              </Button>
+              <Button
+                style={styles.submitBtn}
+                contentStyle={layout.button}
+                color={colors.black}
+                uppercase
+                mode="contained"
+                onPress={navigateToSurveyList}>
+                Complete
+              </Button>
+            </View>
+          ) : null}
         </View>
       </ScrollView>
     </View>
@@ -387,6 +399,12 @@ const styles = StyleSheet.create({
   deleteBtnBg: {
     backgroundColor: colors.error + '29',
     flex: 1,
+  },
+  padTop26: {
+    paddingTop: 26,
+  },
+  padTop22: {
+    paddingTop: 22,
   },
 });
 
