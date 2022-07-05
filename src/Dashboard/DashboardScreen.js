@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, FlatList, StyleSheet, Pressable} from 'react-native';
+import {View, FlatList, StyleSheet, Dimensions} from 'react-native';
 import {
   Title,
   Subheading,
@@ -8,6 +8,7 @@ import {
   Chip,
   Divider,
   Headline,
+  Button,
 } from 'react-native-paper';
 import {useQuery} from 'react-query';
 import {get, size} from 'lodash';
@@ -16,20 +17,40 @@ import {format} from 'date-fns';
 import Loader from '~Common/Loader';
 import {colors, layout, screens} from '~constants/constants';
 
-import {fetchTicketList} from './data/services';
+import {fetchDashboardData, fetchTicketList} from './data/services';
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 
+const {width} = Dimensions.get('screen');
+const CARD_WIDTH = width / 2 - 18;
 /**
  * Parent:
  *    drawer.navigation
  */
 const DashboardScreen = ({navigation}) => {
   const {isLoading, data, refetch} = useQuery('ticketList', fetchTicketList);
+  const {
+    isLoading: loadingDashboard,
+    data: dashboardData,
+    refetch: refetchDashboardData,
+  } = useQuery('dashboardData', fetchDashboardData);
 
   useRefreshOnFocus(refetch);
+  useRefreshOnFocus(refetchDashboardData);
 
   const navigateToWorkorder = id => () => {
     navigation.navigate(screens.workorderScreen, {ticketId: id});
+  };
+
+  const navigateSurveyTicketList = () => {
+    navigation.navigate(screens.surveyTicketList);
+  };
+
+  const navigateNetworkList = () => {
+    navigation.navigate(screens.networkScreen);
+  };
+
+  const navigateClientList = () => {
+    navigation.navigate(screens.clientScreen);
   };
 
   return (
@@ -39,7 +60,61 @@ const DashboardScreen = ({navigation}) => {
         data={data}
         keyExtractor={item => item.id}
         ListHeaderComponent={() => (
-          <Headline style={styles.listHeaderStyle}>My Tickets</Headline>
+          <>
+            <View style={styles.squreCardContainer}>
+              <Card
+                elevation={2}
+                onPress={navigateSurveyTicketList}
+                style={styles.squreCard}>
+                <Card.Content style={styles.content}>
+                  <View style={styles.squreCardWrapper}>
+                    <Subheading>Survey Tickets</Subheading>
+                    <Headline style={styles.headline}>
+                      {get(dashboardData, 'survey_ticket_count', 0)}
+                    </Headline>
+                  </View>
+                </Card.Content>
+                <Card.Actions>
+                  <Button>View All</Button>
+                </Card.Actions>
+              </Card>
+              <Card
+                elevation={2}
+                onPress={navigateNetworkList}
+                style={styles.squreCard}>
+                <Card.Content style={styles.content}>
+                  <View style={styles.squreCardWrapper}>
+                    <Subheading>Network Tickets</Subheading>
+                    <Headline style={styles.headline}>
+                      {get(dashboardData, 'network_ticket_count', 0)}
+                    </Headline>
+                  </View>
+                </Card.Content>
+                <Card.Actions>
+                  <Button>View All</Button>
+                </Card.Actions>
+              </Card>
+            </View>
+            <View style={styles.squreCardContainer}>
+              <Card
+                elevation={2}
+                onPress={navigateClientList}
+                style={styles.squreCard}>
+                <Card.Content style={styles.content}>
+                  <View style={styles.squreCardWrapper}>
+                    <Subheading>Client Tickets</Subheading>
+                    <Headline style={styles.headline}>
+                      {get(dashboardData, 'client_ticket_count', 0)}
+                    </Headline>
+                  </View>
+                </Card.Content>
+                <Card.Actions>
+                  <Button>View All</Button>
+                </Card.Actions>
+              </Card>
+            </View>
+            <Headline style={styles.listHeaderStyle}>My Tickets</Headline>
+          </>
         )}
         renderItem={({item}) => {
           const {
@@ -146,7 +221,7 @@ const DashboardScreen = ({navigation}) => {
           )
         }
       />
-      {isLoading ? <Loader /> : null}
+      {isLoading || loadingDashboard ? <Loader /> : null}
     </View>
   );
 };
@@ -224,6 +299,20 @@ const styles = StyleSheet.create({
   listHeaderStyle: {
     paddingBottom: 12,
     paddingLeft: 12,
+  },
+  squreCard: {
+    width: CARD_WIDTH,
+    height: CARD_WIDTH * 0.8,
+  },
+  squreCardContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: 12,
+  },
+  squreCardWrapper: {},
+  headline: {
+    fontSize: 42,
+    lineHeight: 56,
   },
 });
 

@@ -26,3 +26,5 @@ export const apiDeleteUnit = (unitId = ':unit_id') =>
 export const apiGetTicketList = () => '/api/ticket/list/';
 export const apiGetTicketWorkorders = ticketId =>
   `/api/ticket/${ticketId}/workorders/`;
+
+export const apiGetDashboardData = () => '/api/dashboard/';
