@@ -24,7 +24,10 @@ export const postGeoServey = async data => {
 // handle add / edti survey
 export const updateGeoServey = async data => {
   if (data.id) {
-    const res = await Api.put(apiGetSurveyEditBoundary(data.id), data);
+    const res = await Api.put(apiGetSurveyEditBoundary(data.id), {
+      ...data,
+      status: 'S',
+    });
     return res.data;
   } else {
     const res = await Api.post(apiGetSurveyAddBoundary(), data);
