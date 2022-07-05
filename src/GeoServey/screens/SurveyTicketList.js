@@ -16,6 +16,8 @@ import Loader from '~Common/Loader';
 import {colors, layout, screens} from '~constants/constants';
 import {fetchTicketList} from '~Dashboard/data/services';
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
+import {useDispatch} from 'react-redux';
+import {setFilteredSurveyList} from '~GeoServey/data/geoSurvey.reducer';
 
 /**
  * Renders survey ticket list
@@ -26,6 +28,7 @@ import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
  *    drawer.navigation
  */
 const SurveyTicketList = props => {
+  const dispatch = useDispatch();
   const {navigation} = props;
   const {isLoading, data, refetch} = useQuery('ticketList', fetchTicketList, {
     select: queryData => {
@@ -36,6 +39,7 @@ const SurveyTicketList = props => {
   useRefreshOnFocus(refetch);
 
   const navigateToWorkorder = id => () => {
+    dispatch(setFilteredSurveyList(null));
     navigation.navigate(screens.workorderScreen, {ticketId: id});
   };
 

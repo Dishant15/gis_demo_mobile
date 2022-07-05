@@ -1,4 +1,4 @@
-import {differenceBy, isNull, orderBy} from 'lodash';
+import {differenceBy, filter, isNull, orderBy} from 'lodash';
 import {createSlice} from '@reduxjs/toolkit';
 import {convertWorkOrderData} from '~utils/map.utils';
 
@@ -36,6 +36,8 @@ const initialState = {
   selectedTicketId: null,
   selectedAreaData: {},
   surveyList: [],
+  filteredSurveyList: [],
+  statusFilter: null,
   // all data bellow is for form edit / add purpose
   selectedSurveyIndex: null,
   selectedSurvey: {},
@@ -56,6 +58,7 @@ const geoSurveyReducer = createSlice({
       state.selectedTicketId = id;
       state.selectedAreaData = {...area_pocket};
       state.surveyList = orderBy(work_orders, ['updated_on'], ['desc']);
+      state.filteredSurveyList = [...state.surveyList];
     },
     // when user clicks one of the survey from taskList -> surveyList
     // payload shape: {surveyIndex, surveyData: {...surveyData, units: [ {...unit1, ...}]}
@@ -152,6 +155,12 @@ const geoSurveyReducer = createSlice({
       state.selectedUnitData = {};
       state.isReview = false;
     },
+    setFilteredSurveyList: (state, {payload}) => {
+      state.statusFilter = payload;
+      state.filteredSurveyList = isNull(payload)
+        ? [...state.surveyList]
+        : filter(state.surveyList, ['status', payload]);
+    },
     resetAllData: () => {
       return initialState;
     },
@@ -171,5 +180,6 @@ export const {
   resetAllData,
   deleteSurveyData,
   deleteUnitData,
+  setFilteredSurveyList,
 } = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;

@@ -45,6 +45,7 @@ export const colors = {
 
   primaryMain: '#1976d2',
   primaryMainDark: '#1565c0',
+  primaryMainLight: '#75ade4',
   secondaryMain: '#b98919',
   accentTextColor: '#ffffff',
   textColor: '#212121',

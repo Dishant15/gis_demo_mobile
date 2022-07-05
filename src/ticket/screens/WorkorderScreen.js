@@ -1,10 +1,13 @@
-import {get} from 'lodash';
+import {get, noop} from 'lodash';
 import React, {useEffect, useCallback} from 'react';
 import {useQuery} from 'react-query';
-import {setTaskData} from '~GeoServey/data/geoSurvey.reducer';
+import {
+  setFilteredSurveyList,
+  setTaskData,
+} from '~GeoServey/data/geoSurvey.reducer';
 import {fetchTicketWorkorders} from '~ticket/data/services';
 
-import {View, FlatList, StyleSheet, Pressable} from 'react-native';
+import {View, FlatList, StyleSheet, Pressable, Switch} from 'react-native';
 import {
   Card,
   Title,
@@ -23,7 +26,10 @@ import BackHeader from '~Common/components/Header/BackHeader';
 import {setReview, setSurveyData} from '~GeoServey/data/geoSurvey.reducer';
 import {layout, screens, colors} from '~constants/constants';
 
-import {getSurveyBoundaryList} from '~GeoServey/data/geoSurvey.selectors';
+import {
+  getAppliedStatusFilter,
+  getFilteredSurveyList,
+} from '~GeoServey/data/geoSurvey.selectors';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 import Loader from '~Common/Loader';
@@ -58,7 +64,8 @@ const WorkorderScreen = props => {
   useRefreshOnFocus(refetch);
 
   // get survey list from redux store
-  const surveyList = useSelector(getSurveyBoundaryList);
+  const surveyList = useSelector(getFilteredSurveyList);
+  const statusFilter = useSelector(getAppliedStatusFilter);
 
   useEffect(() => {
     dispatch(setReview(false));
@@ -70,9 +77,60 @@ const WorkorderScreen = props => {
     navigation.navigate(screens.surveyMap);
   }, []);
 
+  const toggleStatus = useCallback(
+    (isActive, newStatus) => () => {
+      dispatch(setFilteredSurveyList(isActive ? null : newStatus));
+    },
+    [],
+  );
+
   return (
     <View style={[layout.container, layout.relative]}>
       <BackHeader title="Workorders" onGoBack={navigation.goBack} />
+      <View style={styles.filterWrapper}>
+        <Pressable
+          style={styles.filterblock}
+          onPress={toggleStatus(statusFilter === 'S', 'S')}>
+          <Paragraph>Submited</Paragraph>
+          <Switch
+            trackColor={{
+              true: colors.primaryMain,
+              false: colors.grey1,
+            }}
+            thumbColor={colors.primaryMainLight}
+            value={statusFilter === 'S'}
+            onValueChange={toggleStatus(statusFilter === 'S', 'S')}
+          />
+        </Pressable>
+        <Pressable
+          style={styles.filterblock}
+          onPress={toggleStatus(statusFilter === 'V', 'V')}>
+          <Paragraph>Verified</Paragraph>
+          <Switch
+            trackColor={{
+              true: colors.primaryMain,
+              false: colors.grey1,
+            }}
+            thumbColor={colors.primaryMainLight}
+            value={statusFilter === 'V'}
+            onValueChange={toggleStatus(statusFilter === 'V', 'V')}
+          />
+        </Pressable>
+        <Pressable
+          style={styles.filterblock}
+          onPress={toggleStatus(statusFilter === 'R', 'R')}>
+          <Paragraph>Rejected</Paragraph>
+          <Switch
+            trackColor={{
+              true: colors.primaryMain,
+              false: colors.grey1,
+            }}
+            thumbColor={colors.primaryMainLight}
+            value={statusFilter === 'R'}
+            onValueChange={toggleStatus(statusFilter === 'R', 'R')}
+          />
+        </Pressable>
+      </View>
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
         data={surveyList}
@@ -182,7 +240,7 @@ const styles = StyleSheet.create({
     // borderRadius: 4,
   },
   contentContainerStyle: {
-    padding: 12,
+    paddingHorizontal: 12,
     paddingBottom: 40,
     flexGrow: 1,
   },
@@ -203,6 +261,16 @@ const styles = StyleSheet.create({
   //   marginRight: 0,
   //   paddingHorizontal: 3,
   // },
+  filterWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 12,
+  },
+  filterblock: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default WorkorderScreen;

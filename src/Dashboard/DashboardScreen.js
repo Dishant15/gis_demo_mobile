@@ -19,6 +19,8 @@ import {colors, layout, screens} from '~constants/constants';
 
 import {fetchDashboardData, fetchTicketList} from './data/services';
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
+import {useDispatch} from 'react-redux';
+import {setFilteredSurveyList} from '~GeoServey/data/geoSurvey.reducer';
 
 const {width} = Dimensions.get('screen');
 const CARD_WIDTH = width / 2 - 18;
@@ -27,6 +29,7 @@ const CARD_WIDTH = width / 2 - 18;
  *    drawer.navigation
  */
 const DashboardScreen = ({navigation}) => {
+  const dispatch = useDispatch();
   const {isLoading, data, refetch} = useQuery('ticketList', fetchTicketList);
   const {
     isLoading: loadingDashboard,
@@ -38,6 +41,7 @@ const DashboardScreen = ({navigation}) => {
   useRefreshOnFocus(refetchDashboardData);
 
   const navigateToWorkorder = id => () => {
+    dispatch(setFilteredSurveyList(null));
     navigation.navigate(screens.workorderScreen, {ticketId: id});
   };
 

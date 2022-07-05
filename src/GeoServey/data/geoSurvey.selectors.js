@@ -6,6 +6,9 @@ export const getSelectedArea = store => store.geoSurvey.selectedAreaData;
 
 // survey related selectors
 export const getSurveyBoundaryList = store => store.geoSurvey.surveyList;
+export const getFilteredSurveyList = store =>
+  store.geoSurvey.filteredSurveyList;
+export const getAppliedStatusFilter = store => store.geoSurvey.statusFilter;
 
 export const getSelectedSurveyId = store => store.geoSurvey.selectedSurvey.id;
 export const getSelectedSurveyIndex = store =>
