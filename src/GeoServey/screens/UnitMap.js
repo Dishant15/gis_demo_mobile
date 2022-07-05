@@ -223,7 +223,8 @@ const UnitMap = ({navigation}) => {
               }}
               provider={PROVIDER_GOOGLE}
               onPress={handleMapClick}
-              onLayout={onMapLayout}>
+              onLayout={onMapLayout}
+              showsPointsOfInterest={false}>
               {existingMarkers.map((marker, index) => {
                 return (
                   <Marker

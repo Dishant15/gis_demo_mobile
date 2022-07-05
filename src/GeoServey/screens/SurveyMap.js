@@ -261,7 +261,8 @@ const SurveyMap = ({navigation}) => {
               onMapReady={onMapReady}
               provider={PROVIDER_GOOGLE}
               onPress={handleMapClick}
-              onPoiClick={handleMapPoiClick}>
+              onPoiClick={handleMapPoiClick}
+              showsPointsOfInterest={false}>
               {coordinates.map((marker, i) => (
                 <CustomMarker
                   coordinate={marker}
