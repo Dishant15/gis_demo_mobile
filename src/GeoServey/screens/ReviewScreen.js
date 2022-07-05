@@ -1,16 +1,13 @@
 import React, {useMemo, useRef, useCallback, useEffect, useState} from 'react';
-import {
-  View,
-  Dimensions,
-  StyleSheet,
-  ScrollView,
-  BackHandler,
-} from 'react-native';
+import {View, Dimensions, StyleSheet, BackHandler} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {useDispatch, useSelector} from 'react-redux';
 import {size, get} from 'lodash';
 import {Card, Button, Paragraph, Subheading, Title} from 'react-native-paper';
+import {useForm, Controller} from 'react-hook-form';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
+import Input from '~Common/Input';
 import BackHeader from '~Common/components/Header/BackHeader';
 import {layout, screens, colors} from '~constants/constants';
 import {
@@ -26,7 +23,11 @@ import {
 } from '~GeoServey/data/geoSurvey.reducer';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useMutation} from 'react-query';
-import {deleteSurvey, deleteUnit} from '~GeoServey/data/geoSurvey.service';
+import {
+  deleteSurvey,
+  deleteUnit,
+  updateGeoServey,
+} from '~GeoServey/data/geoSurvey.service';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {surveyDeleteSuccess, unitDeleteSuccess} from '~constants/messages';
 
@@ -47,6 +48,16 @@ const ReviewScreen = ({navigation}) => {
 
   const [deletingUnitId, setDeletingUnitId] = useState(null);
   const dispatch = useDispatch();
+
+  const {
+    control,
+    handleSubmit,
+    formState: {errors, isDirty},
+  } = useForm({
+    defaultValues: {
+      remark: get(formData, 'remark', ''),
+    },
+  });
 
   useEffect(() => {
     dispatch(setReview(true));
@@ -89,6 +100,20 @@ const ReviewScreen = ({navigation}) => {
       },
     },
   );
+
+  const {mutate: updateRemark, isLoading} = useMutation(updateGeoServey, {
+    onSuccess: res => {
+      navigateToSurveyList();
+      showToast('Survey remark updated successfully.', TOAST_TYPE.SUCCESS);
+    },
+    onError: err => {
+      console.log(
+        '🚀 ~ file: ReviewScreen.js ~ line 106 ~ ReviewScreen ~ err',
+        err,
+      );
+      showToast('Input Error', TOAST_TYPE.ERROR);
+    },
+  });
 
   const unitMarkerList = useMemo(() => {
     const newList = [];
@@ -151,6 +176,14 @@ const ReviewScreen = ({navigation}) => {
     });
   };
 
+  const onSubmit = data => {
+    if (isDirty) {
+      updateRemark({id: formData.id, remark: data.remark});
+    } else {
+      navigateToSurveyList();
+    }
+  };
+
   if (!isFocused) return null;
 
   const status = get(formData, 'status');
@@ -167,7 +200,9 @@ const ReviewScreen = ({navigation}) => {
         title={`${get(formData, 'name')}`}
         onGoBack={navigateToSurveyList}
       />
-      <ScrollView contentContainerStyle={{paddingBottom: 40}}>
+      <KeyboardAwareScrollView
+        keyboardShouldPersistTaps="always"
+        contentContainerStyle={styles.contentContainerStyle}>
         <MapView
           ref={mapRef}
           provider={PROVIDER_GOOGLE}
@@ -316,6 +351,52 @@ const ReviewScreen = ({navigation}) => {
               })}
             </>
           ) : null}
+
+          <Button
+            style={[styles.submitBtn, styles.noMr]}
+            contentStyle={layout.button}
+            color={colors.black}
+            uppercase
+            mode="outlined"
+            onPress={resetReviewAndnavigateToUnitMap(-1)}>
+            Add Unit
+          </Button>
+
+          <Subheading style={styles.title}>Remark</Subheading>
+
+          <Card elevation={0} style={[styles.cardBorder, styles.unitCard]}>
+            <Card.Content style={styles.cardContent}>
+              {enableActions ? (
+                <Controller
+                  control={control}
+                  name="remark"
+                  render={({field: {ref, onChange, onBlur, value}}) => (
+                    <Input
+                      ref={ref}
+                      label="Remark"
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      value={value}
+                      error={errors.address?.message}
+                      underlineColorAndroid="transparent"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      returnKeyType="next"
+                      blurOnSubmit={false}
+                      multiline={true}
+                      numberOfLines={5}
+                    />
+                  )}
+                />
+              ) : (
+                <>
+                  <Title>Remark</Title>
+                  <Paragraph>{get(formData, 'remark', '')}</Paragraph>
+                </>
+              )}
+            </Card.Content>
+          </Card>
+
           {enableActions ? (
             <View style={styles.buttonWrapper}>
               <Button
@@ -323,23 +404,15 @@ const ReviewScreen = ({navigation}) => {
                 contentStyle={layout.button}
                 color={colors.black}
                 uppercase
-                mode="outlined"
-                onPress={resetReviewAndnavigateToUnitMap(-1)}>
-                Add Unit
-              </Button>
-              <Button
-                style={styles.submitBtn}
-                contentStyle={layout.button}
-                color={colors.black}
-                uppercase
                 mode="contained"
-                onPress={navigateToSurveyList}>
+                loading={isLoading}
+                onPress={handleSubmit(onSubmit)}>
                 Complete
               </Button>
             </View>
           ) : null}
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </View>
   );
 };
@@ -405,6 +478,12 @@ const styles = StyleSheet.create({
   },
   padTop22: {
     paddingTop: 22,
+  },
+  noMr: {
+    marginBottom: 0,
+  },
+  contentContainerStyle: {
+    paddingBottom: 40,
   },
 });
 

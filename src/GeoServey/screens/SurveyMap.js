@@ -174,6 +174,7 @@ const SurveyMap = ({navigation}) => {
   };
 
   const handleMapPoiClick = e => {
+    if (!startEditing) return;
     if (!e.nativeEvent.coordinate) return;
     const updatedCoords = e.nativeEvent.coordinate;
     setCoordinates([...coordinates, updatedCoords]);
