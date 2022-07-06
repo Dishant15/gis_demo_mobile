@@ -16,6 +16,7 @@ import {
   Chip,
   Button,
   Avatar,
+  Text,
 } from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {replace, size} from 'lodash';
@@ -84,51 +85,38 @@ const WorkorderScreen = props => {
     [],
   );
 
+  const isSubmitted = statusFilter === 'S';
+  const isVerified = statusFilter === 'V';
+  const isRejected = statusFilter === 'R';
   return (
     <View style={[layout.container, layout.relative]}>
       <BackHeader title="Workorders" onGoBack={navigation.goBack} />
       <View style={styles.filterWrapper}>
         <Pressable
-          style={styles.filterblock}
-          onPress={toggleStatus(statusFilter === 'S', 'S')}>
-          <Paragraph>Submited</Paragraph>
-          <Switch
-            trackColor={{
-              true: colors.primaryMain,
-              false: colors.grey1,
-            }}
-            thumbColor={colors.primaryMainLight}
-            value={statusFilter === 'S'}
-            onValueChange={toggleStatus(statusFilter === 'S', 'S')}
-          />
+          style={[styles.filterblock, isSubmitted && styles.filterSubmited]}
+          onPress={toggleStatus(isSubmitted, 'S')}>
+          <Paragraph
+            style={[styles.filterblockText, isSubmitted && styles.filterWhite]}>
+            Submited
+          </Paragraph>
         </Pressable>
+        <View style={styles.filterDivider} />
         <Pressable
-          style={styles.filterblock}
-          onPress={toggleStatus(statusFilter === 'V', 'V')}>
-          <Paragraph>Verified</Paragraph>
-          <Switch
-            trackColor={{
-              true: colors.primaryMain,
-              false: colors.grey1,
-            }}
-            thumbColor={colors.primaryMainLight}
-            value={statusFilter === 'V'}
-            onValueChange={toggleStatus(statusFilter === 'V', 'V')}
-          />
+          style={[styles.filterblock, isVerified && styles.filterVerified]}
+          onPress={toggleStatus(isVerified, 'V')}>
+          <Paragraph
+            style={[styles.filterblockText, isVerified && styles.filterWhite]}>
+            Verified
+          </Paragraph>
         </Pressable>
+        <View style={styles.filterDivider} />
         <Pressable
-          style={styles.filterblock}
-          onPress={toggleStatus(statusFilter === 'R', 'R')}>
-          <Paragraph>Rejected</Paragraph>
-          <Switch
-            trackColor={{
-              true: colors.primaryMain,
-              false: colors.grey1,
-            }}
-            thumbColor={colors.primaryMainLight}
-            value={statusFilter === 'R'}
-            onValueChange={toggleStatus(statusFilter === 'R', 'R')}
-          />
+          style={[styles.filterblock, isRejected && styles.filterRejected]}
+          onPress={toggleStatus(isRejected, 'R')}>
+          <Paragraph
+            style={[styles.filterblockText, isRejected && styles.filterWhite]}>
+            Rejected
+          </Paragraph>
         </Pressable>
       </View>
       <FlatList
@@ -255,21 +243,55 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // chipTextStyle: {
-  //   marginVertical: 0,
-  //   marginLeft: 0,
-  //   marginRight: 0,
-  //   paddingHorizontal: 3,
-  // },
   filterWrapper: {
+    padding: 12,
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 12,
+    backgroundColor: colors.white,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+    marginBottom: 2,
   },
   filterblock: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    flex: 1,
+    backgroundColor: '#f3f3f3',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1,
+  },
+  filterblockText: {
+    color: 'rgba(0,0,0,.57)',
+    paddingVertical: 10,
+  },
+  filterSubmited: {
+    backgroundColor: colors.warning,
+  },
+  filterRejected: {
+    backgroundColor: colors.error,
+  },
+  filterVerified: {
+    backgroundColor: colors.success,
+  },
+  filterWhite: {
+    color: colors.white,
+  },
+  filterDivider: {
+    width: 1.1,
+    height: '100%',
+    backgroundColor: '#e0e0e0',
   },
 });
 
