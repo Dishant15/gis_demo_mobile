@@ -32,6 +32,7 @@ import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {
   BroadbandProviders,
   colors,
+  getRequiredFieldMessage,
   layout,
   LOCALITY_OPTS,
   screens,
@@ -416,24 +417,29 @@ const SurveyForm = props => {
         <Controller
           control={control}
           name="locality_status"
+          rules={{
+            required: getRequiredFieldMessage('Locality'),
+          }}
           render={({field: {ref, onChange, onBlur, value}}) => {
             return (
-              <View style={styles.categoryWrapper}>
-                <Caption>Locality</Caption>
-                <View style={styles.chipWrapper}>
-                  {LOCALITY_OPTS.map(opt => {
-                    const selected = opt.value === value;
-                    return (
-                      <Chip
-                        key={opt.value}
-                        style={[styles.chip, selected && styles.chipActive]}
-                        selected={selected}
-                        selectedColor={selected ? colors.white : null}
-                        onPress={() => onChange(opt.value)}>
-                        {opt.label}
-                      </Chip>
-                    );
-                  })}
+              <>
+                <View style={styles.categoryWrapper}>
+                  <Caption>Locality</Caption>
+                  <View style={styles.chipWrapper}>
+                    {LOCALITY_OPTS.map(opt => {
+                      const selected = opt.value === value;
+                      return (
+                        <Chip
+                          key={opt.value}
+                          style={[styles.chip, selected && styles.chipActive]}
+                          selected={selected}
+                          selectedColor={selected ? colors.white : null}
+                          onPress={() => onChange(opt.value)}>
+                          {opt.label}
+                        </Chip>
+                      );
+                    })}
+                  </View>
                 </View>
                 {!!errors.locality_status?.message ? (
                   <HelperText
@@ -442,7 +448,7 @@ const SurveyForm = props => {
                     {errors.locality_status?.message}
                   </HelperText>
                 ) : null}
-              </View>
+              </>
             );
           }}
         />
@@ -554,7 +560,8 @@ const styles = StyleSheet.create({
     paddingBottom: 36,
   },
   categoryWrapper: {
-    paddingVertical: 8,
+    paddingTop: 8,
+    paddingBottom: 4,
     paddingHorizontal: 10,
   },
   chipWrapper: {
