@@ -44,7 +44,8 @@ const ReviewScreen = ({navigation}) => {
   const unitList = get(formData, 'units', []);
   const ticketId = useSelector(getTicketId);
 
-  const enableActions = get(formData, 'status') !== 'V';
+  const isVerified = get(formData, 'status') === 'V';
+  const remark = get(formData, 'remark', '');
 
   const [deletingUnitId, setDeletingUnitId] = useState(null);
   const dispatch = useDispatch();
@@ -180,6 +181,7 @@ const ReviewScreen = ({navigation}) => {
     if (isDirty) {
       updateRemark({id: formData.id, remark: data.remark});
     } else {
+      // go to workorders
       navigateToSurveyList();
     }
   };
@@ -253,7 +255,7 @@ const ReviewScreen = ({navigation}) => {
                 {get(formData, 'state')}, {get(formData, 'pincode')}
               </Paragraph>
             </Card.Content>
-            {enableActions ? (
+            {!isVerified ? (
               <Card.Actions style={styles.cardActionWrapper}>
                 <Button
                   loading={isSurveyDeleting}
@@ -314,7 +316,7 @@ const ReviewScreen = ({navigation}) => {
                         </Paragraph>
                       )}
                     </Card.Content>
-                    {enableActions ? (
+                    {!isVerified ? (
                       <Card.Actions style={styles.cardActionWrapper}>
                         <Button
                           loading={deleting}
@@ -352,65 +354,75 @@ const ReviewScreen = ({navigation}) => {
             </>
           ) : null}
 
-          <Button
-            style={[styles.submitBtn, styles.noMr]}
-            contentStyle={layout.button}
-            color={colors.black}
-            uppercase
-            mode="outlined"
-            onPress={resetReviewAndnavigateToUnitMap(-1)}>
-            Add Unit
-          </Button>
-
-          <Subheading style={styles.title}>Remark</Subheading>
-
-          <Card elevation={0} style={[styles.cardBorder, styles.unitCard]}>
-            <Card.Content style={styles.cardContent}>
-              {enableActions ? (
-                <Controller
-                  control={control}
-                  name="remark"
-                  render={({field: {ref, onChange, onBlur, value}}) => (
-                    <Input
-                      ref={ref}
-                      label="Remark"
-                      onChangeText={onChange}
-                      onBlur={onBlur}
-                      value={value}
-                      error={errors.address?.message}
-                      underlineColorAndroid="transparent"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      returnKeyType="next"
-                      blurOnSubmit={false}
-                      multiline={true}
-                      numberOfLines={5}
-                    />
-                  )}
-                />
-              ) : (
-                <>
-                  <Title>Remark</Title>
-                  <Paragraph>{get(formData, 'remark', '')}</Paragraph>
-                </>
-              )}
-            </Card.Content>
-          </Card>
-
-          {enableActions ? (
-            <View style={styles.buttonWrapper}>
-              <Button
-                style={styles.submitBtn}
-                contentStyle={layout.button}
-                color={colors.black}
-                uppercase
-                mode="contained"
-                loading={isLoading}
-                onPress={handleSubmit(onSubmit)}>
-                Complete
-              </Button>
-            </View>
+          {!isVerified ? (
+            <Button
+              style={[styles.submitBtn, styles.noMr]}
+              contentStyle={layout.button}
+              color={colors.black}
+              uppercase
+              mode="outlined"
+              onPress={resetReviewAndnavigateToUnitMap(-1)}>
+              Add Unit
+            </Button>
           ) : null}
+
+          {isVerified ? (
+            remark ? (
+              <>
+                <Subheading style={styles.title}>Remark</Subheading>
+                <Card
+                  elevation={0}
+                  style={[styles.cardBorder, styles.unitCard]}>
+                  <Card.Content style={styles.cardContent}>
+                    <Title>Remark</Title>
+                    <Paragraph>{get(formData, 'remark', '')}</Paragraph>
+                  </Card.Content>
+                </Card>
+              </>
+            ) : null
+          ) : (
+            <>
+              <Subheading style={styles.title}>Remark</Subheading>
+              <Card elevation={0} style={[styles.cardBorder, styles.unitCard]}>
+                <Card.Content style={styles.cardContent}>
+                  <Controller
+                    control={control}
+                    name="remark"
+                    render={({field: {ref, onChange, onBlur, value}}) => (
+                      <Input
+                        ref={ref}
+                        label="Remark"
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        value={value}
+                        error={errors.address?.message}
+                        underlineColorAndroid="transparent"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        returnKeyType="next"
+                        blurOnSubmit={false}
+                        multiline={true}
+                        numberOfLines={5}
+                      />
+                    )}
+                  />
+                </Card.Content>
+              </Card>
+            </>
+          )}
+
+          <View style={styles.buttonWrapper}>
+            <Button
+              style={styles.submitBtn}
+              contentStyle={layout.button}
+              color={colors.black}
+              uppercase
+              mode="contained"
+              loading={isLoading}
+              onPress={handleSubmit(onSubmit)}>
+              {isVerified ? 'Go To Workorders' : 'Complete'}
+            </Button>
+          </View>
         </View>
       </KeyboardAwareScrollView>
     </View>

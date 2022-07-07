@@ -155,3 +155,9 @@ export const LOCALITY_OPTS = [
   {label: 'Average', value: '3'},
   {label: 'Poor', value: '4'},
 ];
+
+/**
+ * Common message over the app
+ */
+
+export const getRequiredFieldMessage = field => `${field} is required.`;
