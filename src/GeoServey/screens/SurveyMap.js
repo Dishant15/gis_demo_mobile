@@ -29,6 +29,7 @@ import {
   getSelectedSurveyId,
   getSurveyBoundaryList,
   getGeoSurveyFormData,
+  getTicketStatus,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {
   updateSurveyFormData,
@@ -72,6 +73,7 @@ const SurveyMap = ({navigation}) => {
   const formData = useSelector(getGeoSurveyFormData);
   // surveyId indicate that survey is add or edit
   const surveyId = useSelector(getSelectedSurveyId);
+  const ticketStatus = useSelector(getTicketStatus);
 
   // location
   const locationPermType = useSelector(getLocationPermissionType);
@@ -328,24 +330,26 @@ const SurveyMap = ({navigation}) => {
             />
           </TouchableOpacity>
         </View>
-        <View
-          style={[
-            styles.content,
-            {
-              marginBottom: Math.max(insets.bottom, 16),
-            },
-          ]}>
-          <TouchableOpacity
-            activeOpacity={0.6}
+        {ticketStatus === 'A' ? (
+          <View
             style={[
-              layout.button,
-              styles.drawBtn,
-              !isPolygonValid || (!startEditing && styles.disableBtn),
-            ]}
-            onPress={handleBtnPress}>
-            <Text style={styles.drawBtnTxt}>{btnText}</Text>
-          </TouchableOpacity>
-        </View>
+              styles.content,
+              {
+                marginBottom: Math.max(insets.bottom, 16),
+              },
+            ]}>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              style={[
+                layout.button,
+                styles.drawBtn,
+                !isPolygonValid || (!startEditing && styles.disableBtn),
+              ]}
+              onPress={handleBtnPress}>
+              <Text style={styles.drawBtnTxt}>{btnText}</Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
       </View>
     </View>
   );

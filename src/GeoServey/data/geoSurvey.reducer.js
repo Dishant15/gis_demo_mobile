@@ -54,8 +54,10 @@ const geoSurveyReducer = createSlice({
     // when user click on one of the task on task list screen
     // payload shape: {...taskData, area_pocket: {}, work_orders: [{...survey1, survey2}] }
     setTaskData: (state, {payload}) => {
-      const {id, area_pocket, work_orders} = convertWorkOrderData(payload);
+      const {id, area_pocket, work_orders, status} =
+        convertWorkOrderData(payload);
       state.selectedTicketId = id;
+      state.selectedTicketStatus = status;
       state.selectedAreaData = {...area_pocket};
       state.surveyList = orderBy(work_orders, ['updated_on'], ['desc']);
       state.filteredSurveyList = isNull(state.statusFilter)
