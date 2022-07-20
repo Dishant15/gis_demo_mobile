@@ -247,62 +247,51 @@ const SurveyMap = ({navigation}) => {
         }}
       /> */}
       {ticketStatus === 'A' ? (
-        <FloatingCard>
+        <FloatingCard
+          title={startEditing ? 'Finalise polygon' : 'Create Polygon'}
+          subtitle={
+            startEditing
+              ? 'Long press and drag points on polygon edges to fine tune polygon shape'
+              : 'Create polygon inside boundary area'
+          }>
           {startEditing ? (
-            <>
-              <Card.Content>
-                <Title style={styles.cartTitle}>Finalise polygon</Title>
-                <Paragraph style={styles.paragraph}>
-                  Long press and drag points on polygon edges to fine tune
-                  polygon shape
-                </Paragraph>
-              </Card.Content>
-              <Card.Actions>
-                <Button
-                  mode="contained"
-                  icon="keyboard-backspace"
-                  color={THEME_COLORS.error.main}
-                  style={[layout.smallButton, layout.smallButtonMR]}
-                  onPress={handleCustomBack}>
-                  Go Back
-                </Button>
-                <Button
-                  mode="contained"
-                  icon="check"
-                  color={THEME_COLORS.primary.main}
-                  onPress={handleBtnPress}
-                  style={layout.smallButton}>
-                  Complete
-                </Button>
-              </Card.Actions>
-            </>
+            <Card.Actions>
+              <Button
+                mode="contained"
+                icon="keyboard-backspace"
+                color={THEME_COLORS.error.main}
+                style={[layout.smallButton, layout.smallButtonMR]}
+                onPress={handleCustomBack}>
+                Go Back
+              </Button>
+              <Button
+                mode="contained"
+                icon="check"
+                color={THEME_COLORS.primary.main}
+                onPress={handleBtnPress}
+                style={layout.smallButton}>
+                Complete
+              </Button>
+            </Card.Actions>
           ) : (
-            <>
-              <Card.Content>
-                <Title style={styles.cartTitle}>Create Polygon</Title>
-                <Paragraph style={styles.paragraph}>
-                  Create polygon inside boundary area
-                </Paragraph>
-              </Card.Content>
-              <Card.Actions>
-                <Button
-                  mode="contained"
-                  icon="keyboard-backspace"
-                  color={THEME_COLORS.error.main}
-                  style={[layout.smallButton, layout.smallButtonMR]}
-                  onPress={handleCustomBack}>
-                  Go Back
-                </Button>
-                <Button
-                  mode="contained"
-                  icon="check"
-                  color={THEME_COLORS.primary.main}
-                  onPress={handleBtnPress}
-                  style={layout.smallButton}>
-                  Start Drawing
-                </Button>
-              </Card.Actions>
-            </>
+            <Card.Actions>
+              <Button
+                mode="contained"
+                icon="keyboard-backspace"
+                color={THEME_COLORS.error.main}
+                style={[layout.smallButton, layout.smallButtonMR]}
+                onPress={handleCustomBack}>
+                Go Back
+              </Button>
+              <Button
+                mode="contained"
+                icon="check"
+                color={THEME_COLORS.primary.main}
+                onPress={handleBtnPress}
+                style={layout.smallButton}>
+                Start Drawing
+              </Button>
+            </Card.Actions>
           )}
         </FloatingCard>
       ) : null}

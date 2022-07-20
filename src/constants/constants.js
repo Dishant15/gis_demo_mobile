@@ -181,6 +181,7 @@ export const THEME_COLORS = {
   },
   secondary: {
     main: '#b98919',
+    contrastText: '#fff',
   },
   background: {
     default: '#efefef',

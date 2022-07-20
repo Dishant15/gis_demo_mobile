@@ -11,9 +11,10 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {isNull, get, size, differenceBy, join, split} from 'lodash';
 import {polygon, point, booleanPointInPolygon} from '@turf/turf';
 import * as Animatable from 'react-native-animatable';
+import {Button, Card, Title, Paragraph} from 'react-native-paper';
 
 import BackHeader from '~Common/components/Header/BackHeader';
-import {colors, layout, screens} from '~constants/constants';
+import {colors, layout, screens, THEME_COLORS} from '~constants/constants';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   getGeoSurveyUnitFormData,
@@ -39,6 +40,7 @@ import SatelliteMapImg from '~assets/img/map_satellite.png';
 import {toggleMapType} from '~Common/data/appstate.reducer';
 import FastImage from 'react-native-fast-image';
 import {latLongMapToCoords, pointLatLongMapToCoords} from '~utils/map.utils';
+import FloatingCard from '~Common/components/FloatingCard';
 
 /**
  * Parent:
@@ -203,11 +205,33 @@ const UnitMap = ({navigation}) => {
 
   return (
     <View style={layout.container}>
-      <BackHeader
+      {/* <BackHeader
         title="Add Marker"
         subtitle="Add marker within boundary"
         onGoBack={handleCustomBack}
-      />
+      /> */}
+      <FloatingCard title="Add Marker" subtitle="Add marker within boundary">
+        <Card.Actions>
+          <Button
+            mode="contained"
+            icon="keyboard-backspace"
+            color={THEME_COLORS.error.main}
+            style={[layout.smallButton, layout.smallButtonMR]}
+            onPress={handleCustomBack}>
+            Go Back
+          </Button>
+          <Button
+            mode="contained"
+            icon="check"
+            color={THEME_COLORS.primary.main}
+            style={layout.smallButton}
+            loading={isLoading}
+            disabled={!isMarker}
+            onPress={handleButtonPress}>
+            {isAdd ? 'Save' : 'Update'} Location
+          </Button>
+        </Card.Actions>
+      </FloatingCard>
       <View style={[layout.container, layout.relative]}>
         {showMap ? (
           <Animatable.View animation="fadeIn" style={layout.container}>
@@ -268,7 +292,7 @@ const UnitMap = ({navigation}) => {
             />
           </TouchableOpacity>
         </View>
-        <View
+        {/* <View
           pointerEvents="box-none"
           style={[
             styles.content,
@@ -291,7 +315,7 @@ const UnitMap = ({navigation}) => {
                 : `${isAdd ? 'Save' : 'Update'} Location`}
             </Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     </View>
   );
@@ -340,6 +364,13 @@ const styles = StyleSheet.create({
   mapTypeImage: {
     width: 44,
     height: 44,
+  },
+  // card design
+  cartTitle: {
+    color: colors.white,
+  },
+  paragraph: {
+    fontSize: 15,
   },
 });
 
