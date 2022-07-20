@@ -2,7 +2,7 @@ import React, {useMemo, useRef, useCallback, useEffect, useState} from 'react';
 import {View, Dimensions, StyleSheet, BackHandler} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import {useDispatch, useSelector} from 'react-redux';
-import {size, get} from 'lodash';
+import {size, get, lastIndexOf} from 'lodash';
 import {Card, Button, Paragraph, Subheading, Title} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -43,6 +43,11 @@ const ReviewScreen = ({navigation}) => {
   const formData = useSelector(getGeoSurveyFormData);
   const unitList = get(formData, 'units', []);
   const ticketId = useSelector(getTicketId);
+  const lastUnitIndex = lastIndexOf(unitList);
+  console.log(
+    '🚀 ~ file: ReviewScreen.js ~ line 47 ~ ReviewScreen ~ lastUnitIndex',
+    lastUnitIndex,
+  );
 
   const isVerified = get(formData, 'status') === 'V';
   const remark = get(formData, 'remark', '');
@@ -296,7 +301,10 @@ const ReviewScreen = ({navigation}) => {
                   <Card
                     elevation={0}
                     key={index}
-                    style={[styles.cardBorder, styles.unitCard]}>
+                    style={[
+                      styles.cardBorder,
+                      lastUnitIndex === index + 1 ? {} : styles.unitCard,
+                    ]}>
                     <Card.Content style={styles.cardContent}>
                       <Title>{get(unit, 'name')}</Title>
                       <Paragraph>
@@ -356,7 +364,7 @@ const ReviewScreen = ({navigation}) => {
 
           {!isVerified ? (
             <Button
-              style={[styles.submitBtn, styles.noMr]}
+              style={[styles.submitBtn, styles.unitAddBtn]}
               contentStyle={layout.button}
               color={colors.black}
               uppercase
@@ -463,6 +471,10 @@ const styles = StyleSheet.create({
   },
   unitCard: {
     marginBottom: 28,
+  },
+  unitAddBtn: {
+    marginTop: 28,
+    marginBottom: 0,
   },
   cardContent: {
     paddingTop: 8,

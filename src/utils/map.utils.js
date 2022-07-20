@@ -1,4 +1,4 @@
-import {orderBy, size} from 'lodash';
+import {countBy, orderBy, size} from 'lodash';
 
 // coordinates :- [ [latitude, longitude], ...]
 export const coordsToLatLongMap = coordinates => {
@@ -40,6 +40,8 @@ export const convertWorkOrderData = workOrder => {
   let {area_pocket, work_orders} = convertedWorkOrder;
 
   convertedWorkOrder.survey_count = size(work_orders);
+  // get counts
+  convertedWorkOrder.countByStatus = countBy(work_orders, 'status');
   // convert area coordinate data
   area_pocket.coordinates = coordsToLatLongMap(area_pocket.coordinates);
   // convert work_orders coordinate, tags data

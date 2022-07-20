@@ -29,6 +29,7 @@ import {layout, screens, colors} from '~constants/constants';
 
 import {
   getAppliedStatusFilter,
+  getCountByStatus,
   getFilteredSurveyList,
 } from '~GeoServey/data/geoSurvey.selectors';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -67,6 +68,7 @@ const WorkorderScreen = props => {
   // get survey list from redux store
   const surveyList = useSelector(getFilteredSurveyList);
   const statusFilter = useSelector(getAppliedStatusFilter);
+  const countByStatus = useSelector(getCountByStatus);
 
   useEffect(() => {
     dispatch(setReview(false));
@@ -97,7 +99,7 @@ const WorkorderScreen = props => {
           onPress={toggleStatus(isSubmitted, 'S')}>
           <Paragraph
             style={[styles.filterblockText, isSubmitted && styles.filterWhite]}>
-            Submited
+            Submited ({get(countByStatus, 'S', 0)})
           </Paragraph>
         </Pressable>
         <View style={styles.filterDivider} />
@@ -106,7 +108,7 @@ const WorkorderScreen = props => {
           onPress={toggleStatus(isVerified, 'V')}>
           <Paragraph
             style={[styles.filterblockText, isVerified && styles.filterWhite]}>
-            Verified
+            Verified ({get(countByStatus, 'V', 0)})
           </Paragraph>
         </Pressable>
         <View style={styles.filterDivider} />
@@ -115,7 +117,7 @@ const WorkorderScreen = props => {
           onPress={toggleStatus(isRejected, 'R')}>
           <Paragraph
             style={[styles.filterblockText, isRejected && styles.filterWhite]}>
-            Rejected
+            Rejected ({get(countByStatus, 'R', 0)})
           </Paragraph>
         </Pressable>
       </View>
