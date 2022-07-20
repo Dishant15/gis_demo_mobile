@@ -44,10 +44,6 @@ const ReviewScreen = ({navigation}) => {
   const unitList = get(formData, 'units', []);
   const ticketId = useSelector(getTicketId);
   const lastUnitIndex = lastIndexOf(unitList);
-  console.log(
-    '🚀 ~ file: ReviewScreen.js ~ line 47 ~ ReviewScreen ~ lastUnitIndex',
-    lastUnitIndex,
-  );
 
   const isVerified = get(formData, 'status') === 'V';
   const remark = get(formData, 'remark', '');
