@@ -71,6 +71,15 @@ export const layout = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  smallButton: {
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 130,
+  },
+  smallButtonMR: {
+    marginRight: 6,
+  },
   textInput: {
     marginBottom: 8,
     backgroundColor: 'transparent',
@@ -161,3 +170,31 @@ export const LOCALITY_OPTS = [
  */
 
 export const getRequiredFieldMessage = field => `${field} is required.`;
+
+export const Z_INDEX = {
+  FLOATING_CARDS: 1,
+};
+
+export const THEME_COLORS = {
+  primary: {
+    main: '#1881bc',
+  },
+  secondary: {
+    main: '#b98919',
+  },
+  background: {
+    default: '#efefef',
+  },
+  error: {
+    main: '#e24c4b',
+    contrastText: '#fff',
+  },
+  warning: {
+    main: '#ffc005',
+    contrastText: '#fff',
+  },
+  success: {
+    main: '#4bae4f',
+    contrastText: '#fff',
+  },
+};

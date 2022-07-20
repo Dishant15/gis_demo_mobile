@@ -9,6 +9,7 @@ import {
   InteractionManager,
   Dimensions,
 } from 'react-native';
+import {Button, Card, Title, Paragraph} from 'react-native-paper';
 
 import MapView, {PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
 import * as Animatable from 'react-native-animatable';
@@ -21,7 +22,7 @@ import {polygon, booleanContains} from '@turf/turf';
 import BackHeader from '~Common/components/Header/BackHeader';
 import CustomMarker from '~Common/CustomMarker';
 
-import {colors, layout, screens} from '~constants/constants';
+import {colors, layout, screens, THEME_COLORS} from '~constants/constants';
 import {
   getSurveyCoordinates,
   getIsReviewed,
@@ -49,12 +50,20 @@ import FastImage from 'react-native-fast-image';
 
 import DefaultMapImg from '~assets/img/map_default.png';
 import SatelliteMapImg from '~assets/img/map_satellite.png';
+import FloatingCard from '~Common/components/FloatingCard';
 
 let {width, height} = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 
 const LATITUDE_DELTA = 0.00444;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+
+const EDGE_PADDING = {
+  top: 150,
+  right: 0,
+  bottom: 20,
+  left: 12,
+};
 
 /**
  * render maps with survey points
@@ -184,12 +193,7 @@ const SurveyMap = ({navigation}) => {
 
   const onMapReady = () => {
     mapRef.current.fitToCoordinates(selectedArea.coordinates, {
-      edgePadding: {
-        top: 20,
-        right: 20,
-        bottom: 20,
-        left: 12,
-      },
+      edgePadding: EDGE_PADDING,
       animated: true,
     });
   };
@@ -226,7 +230,7 @@ const SurveyMap = ({navigation}) => {
     : 'Create Polygon';
   return (
     <View style={layout.container}>
-      <BackHeader
+      {/* <BackHeader
         title={startEditing ? 'Tap on Map' : 'Create Polygon'}
         subtitle={
           startEditing ? 'put marker by tapping, long press for move' : ''
@@ -241,7 +245,67 @@ const SurveyMap = ({navigation}) => {
         subtitleStyle={{
           fontSize: 16,
         }}
-      />
+      /> */}
+      {ticketStatus === 'A' ? (
+        <FloatingCard>
+          {startEditing ? (
+            <>
+              <Card.Content>
+                <Title style={styles.cartTitle}>Finalise polygon</Title>
+                <Paragraph style={styles.paragraph}>
+                  Long press and drag points on polygon edges to fine tune
+                  polygon shape
+                </Paragraph>
+              </Card.Content>
+              <Card.Actions>
+                <Button
+                  mode="contained"
+                  icon="keyboard-backspace"
+                  color={THEME_COLORS.error.main}
+                  style={[layout.smallButton, layout.smallButtonMR]}
+                  onPress={handleCustomBack}>
+                  Go Back
+                </Button>
+                <Button
+                  mode="contained"
+                  icon="check"
+                  color={THEME_COLORS.primary.main}
+                  onPress={handleBtnPress}
+                  style={layout.smallButton}>
+                  Complete
+                </Button>
+              </Card.Actions>
+            </>
+          ) : (
+            <>
+              <Card.Content>
+                <Title style={styles.cartTitle}>Create Polygon</Title>
+                <Paragraph style={styles.paragraph}>
+                  Create polygon inside boundary area
+                </Paragraph>
+              </Card.Content>
+              <Card.Actions>
+                <Button
+                  mode="contained"
+                  icon="keyboard-backspace"
+                  color={THEME_COLORS.error.main}
+                  style={[layout.smallButton, layout.smallButtonMR]}
+                  onPress={handleCustomBack}>
+                  Go Back
+                </Button>
+                <Button
+                  mode="contained"
+                  icon="check"
+                  color={THEME_COLORS.primary.main}
+                  onPress={handleBtnPress}
+                  style={layout.smallButton}>
+                  Start Drawing
+                </Button>
+              </Card.Actions>
+            </>
+          )}
+        </FloatingCard>
+      ) : null}
       <View style={[layout.container, layout.relative]}>
         {showMap ? (
           <Animatable.View animation="fadeIn" style={layout.container}>
@@ -265,7 +329,8 @@ const SurveyMap = ({navigation}) => {
               provider={PROVIDER_GOOGLE}
               onPress={handleMapClick}
               onPoiClick={handleMapPoiClick}
-              showsPointsOfInterest={false}>
+              showsPointsOfInterest={false}
+              mapPadding={EDGE_PADDING}>
               {coordinates.map((marker, i) => (
                 <CustomMarker
                   coordinate={marker}
@@ -330,7 +395,7 @@ const SurveyMap = ({navigation}) => {
             />
           </TouchableOpacity>
         </View>
-        {ticketStatus === 'A' ? (
+        {/* {ticketStatus === 'A' ? (
           <View
             style={[
               styles.content,
@@ -349,7 +414,7 @@ const SurveyMap = ({navigation}) => {
               <Text style={styles.drawBtnTxt}>{btnText}</Text>
             </TouchableOpacity>
           </View>
-        ) : null}
+        ) : null} */}
       </View>
     </View>
   );
@@ -443,6 +508,13 @@ const styles = StyleSheet.create({
   mapTypeImage: {
     width: 44,
     height: 44,
+  },
+  // card design
+  cartTitle: {
+    color: colors.white,
+  },
+  paragraph: {
+    fontSize: 15,
   },
 });
 
