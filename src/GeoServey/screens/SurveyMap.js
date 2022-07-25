@@ -90,6 +90,8 @@ const SurveyMap = ({navigation}) => {
   const mapType = useSelector(getMapType);
 
   const [showMap, setMapVisibility] = useState(false);
+  // render polygons after map loaded
+  const [showMapRender, setMapRender] = useState(false);
   const [coordinates, setCoordinates] = useState(coords);
   const [startEditing, setStartEditing] = useState(!!surveyId);
 
@@ -319,7 +321,13 @@ const SurveyMap = ({navigation}) => {
               onPress={handleMapClick}
               onPoiClick={handleMapPoiClick}
               showsPointsOfInterest={false}
-              mapPadding={EDGE_PADDING}>
+              mapPadding={EDGE_PADDING}
+              onMapLoaded={() => {
+                setTimeout(() => {
+                  console.log('map is loaded');
+                  setMapRender(true);
+                }, 10);
+              }}>
               {coordinates.map((marker, i) => (
                 <CustomMarker
                   coordinate={marker}
@@ -343,7 +351,7 @@ const SurveyMap = ({navigation}) => {
                   fillColor="#3895D326"
                 />
               ) : null}
-              {size(surveyList)
+              {size(surveyList) && showMapRender
                 ? surveyList.map(survey => {
                     const {id, coordinates, status} = survey;
                     if (id === surveyId) return null;
@@ -364,7 +372,7 @@ const SurveyMap = ({navigation}) => {
                     );
                   })
                 : null}
-              {size(selectedArea.coordinates) ? (
+              {size(selectedArea.coordinates) && showMapRender ? (
                 <Polygon
                   coordinates={selectedArea.coordinates}
                   strokeWidth={2}
