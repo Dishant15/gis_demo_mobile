@@ -2,12 +2,14 @@ import React from 'react';
 import {StyleSheet, Text} from 'react-native';
 
 import {Card} from 'react-native-paper';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {colors, THEME_COLORS, Z_INDEX} from '~constants/constants';
 
 const FloatingCard = props => {
   const {children, title, subtitle} = props;
+  const {top} = useSafeAreaInsets();
   return (
-    <Card elevation={3} style={styles.card}>
+    <Card elevation={3} style={[styles.card, {top: Math.max(top + 14, 14)}]}>
       <Card.Title
         title={title}
         titleStyle={styles.titleStyle}

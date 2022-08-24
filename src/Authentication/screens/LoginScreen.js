@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, Dimensions, StatusBar} from 'react-native';
-import {TextInput, Button, HelperText} from 'react-native-paper';
+import {TextInput, Button} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
@@ -30,7 +30,7 @@ const LoginScreen = () => {
 
   const {mutate, isLoading} = useMutation(postLogin, {
     onSuccess: res => {
-      // {token, user}
+      // {token, user, permissions}
       dispatch(login(res));
     },
     onError: err => {

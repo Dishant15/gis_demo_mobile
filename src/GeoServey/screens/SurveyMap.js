@@ -8,6 +8,7 @@ import {
   BackHandler,
   InteractionManager,
   Dimensions,
+  StatusBar,
 } from 'react-native';
 import {Button, Card, Title, Paragraph} from 'react-native-paper';
 
@@ -230,6 +231,7 @@ const SurveyMap = ({navigation}) => {
     : 'Create Polygon';
   return (
     <View style={layout.container}>
+      <StatusBar barStyle="dark-content" />
       {/* <BackHeader
         title={startEditing ? 'Tap on Map' : 'Create Polygon'}
         subtitle={
