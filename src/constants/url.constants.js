@@ -28,3 +28,13 @@ export const apiGetTicketWorkorders = ticketId =>
   `/api/ticket/${ticketId}/workorders/`;
 
 export const apiGetDashboardData = () => '/api/dashboard/';
+
+// region apis
+
+// query_type = detail | data
+export const apiGetRegionList = (query_type = 'detail') =>
+  `/api/region/${query_type}/list/`;
+
+// planning apis
+export const apiGetPlanningConfigs = () => '/api/planning/configs/';
+export const apiGetPlanningLayerData = () => '/api/planning/layer/';

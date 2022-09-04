@@ -99,6 +99,9 @@ export const layout = StyleSheet.create({
   relative: {
     position: 'relative',
   },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
 });
 
 // AHMEDABAD CENTER
