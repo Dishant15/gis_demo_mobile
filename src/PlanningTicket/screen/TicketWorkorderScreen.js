@@ -19,12 +19,12 @@ import {fetchTicketWorkorders} from '~ticket/data/services';
 import {
   setFilteredworkorderList,
   setWorkorderData,
-} from './data/planningTicket.reducer';
+} from '../data/planningTicket.reducer';
 import {
   getFilteredworkorderList,
   getAppliedStatusFilter,
   getCountByStatus,
-} from './data/planningTicket.selector';
+} from '../data/planningTicket.selector';
 
 import {layout, screens, colors} from '~constants/constants';
 
@@ -38,13 +38,9 @@ import InprogressImg from '~assets/img/inprogress.png';
  *
  * called on ticket click
  */
-const TicketWorkorder = props => {
+const TicketWorkorderScreen = props => {
   const {navigation} = props;
   const ticketId = get(props, 'route.params.ticketId');
-  console.log(
-    '🚀 ~ file: TicketWorkorder.js ~ line 53 ~ TicketWorkorder ~ ticketId',
-    ticketId,
-  );
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
 
@@ -54,10 +50,6 @@ const TicketWorkorder = props => {
     {
       initialData: {},
       onSuccess: res => {
-        console.log(
-          '🚀 ~ file: TicketWorkorder.js ~ line 62 ~ TicketWorkorder ~ res',
-          res,
-        );
         dispatch(setWorkorderData(res));
       },
     },
@@ -70,9 +62,16 @@ const TicketWorkorder = props => {
   const statusFilter = useSelector(getAppliedStatusFilter);
   const countByStatus = useSelector(getCountByStatus);
 
-  const navigateToMap = useCallback(() => {}, []);
+  const navigateToMap = useCallback(() => {
+    navigation.navigate(screens.planningTicketMap);
+  }, []);
 
-  const navigateToEditMap = useCallback((index, item) => () => {}, []);
+  const navigateToEditMap = useCallback(
+    (index, item) => () => {
+      navigation.navigate(screens.planningTicketMap);
+    },
+    [],
+  );
 
   const toggleStatus = useCallback(
     (isActive, newStatus) => () => {
@@ -271,4 +270,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TicketWorkorder;
+export default TicketWorkorderScreen;

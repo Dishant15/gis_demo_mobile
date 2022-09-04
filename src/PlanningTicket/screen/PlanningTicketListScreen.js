@@ -18,10 +18,11 @@ import Loader from '~Common/Loader';
 
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 import {fetchTicketList} from '~Dashboard/data/services';
-import {colors, layout, screens} from '~constants/constants';
-import {setTicketId} from './data/planningTicket.reducer';
+import {setTicketId} from '~planningTicket/data/planningTicket.reducer';
 
-const PlanningTicket = props => {
+import {colors, layout, screens} from '~constants/constants';
+
+const PlanningTicketListScreen = props => {
   const dispatch = useDispatch();
   const {navigation} = props;
 
@@ -225,4 +226,4 @@ const styles = StyleSheet.create({
     color: colors.primeFontColor,
   },
 });
-export default PlanningTicket;
+export default PlanningTicketListScreen;

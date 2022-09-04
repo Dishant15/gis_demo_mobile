@@ -17,12 +17,13 @@ import ReviewScreen from '~GeoServey/screens/ReviewScreen';
 import SurveyForm from '~GeoServey/screens/SurveyForm';
 import SurveyList from '~GeoServey/screens/SurveyList';
 import WorkorderScreen from '~ticket/screens/WorkorderScreen';
+import PlanningTicket from '~planningTicket/screen/PlanningTicketListScreen';
+import TicketWorkorder from '~planningTicket/screen/TicketWorkorderScreen';
+import PlanningScreen from '~planning/screens/PlanningScreen';
 
 import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';
 import {screens} from '~constants/constants';
 import LocationProvider from '~Common/LocationProvider';
-import PlanningTicket from '~PlanningTicket/PlanningTicket';
-import TicketWorkorder from '~PlanningTicket/TicketWorkorder';
 
 const Stack = createStackNavigator();
 
@@ -120,6 +121,11 @@ const RootNavigation = () => {
             <Stack.Screen
               name={screens.planningTicketWorkorder}
               component={TicketWorkorder}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.planningTicketMap}
+              component={PlanningScreen}
               options={options}
             />
           </Stack.Navigator>

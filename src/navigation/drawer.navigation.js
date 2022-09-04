@@ -8,13 +8,13 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {DrawerButton} from '~Common/components/Header/ActionButtons';
 import ComingSoon from '~Common/components/ComingSoon';
-
 import DashboardScreen from '~Dashboard/DashboardScreen';
 import SurveyTicketList from '~GeoServey/screens/SurveyTicketList';
+import PlanningTicket from '~planningTicket/screen/PlanningTicketListScreen';
+import PlanningScreen from '~planning/screens/PlanningScreen';
 
 import {colors, layout, screens} from '~constants/constants';
 import {logout} from '~Authentication/data/auth.reducer';
-import PlanningTicket from '~PlanningTicket/PlanningTicket';
 
 const Drawer = createDrawerNavigator();
 
@@ -175,7 +175,7 @@ const DrawerNavigation = () => {
       />
       <Drawer.Screen
         name={screens.planningScreen}
-        component={ComingSoon}
+        component={PlanningScreen}
         options={{
           headerShown: true,
           headerTitleAlign: 'center',

@@ -21,6 +21,7 @@ export const screens = {
 
   planningTicketList: 'planningTicketList',
   planningTicketWorkorder: 'planningTicketWorkorder',
+  planningTicketMap: 'planningTicketMap',
 
   networkScreen: 'networkScreen',
   clientScreen: 'clientScreen',
