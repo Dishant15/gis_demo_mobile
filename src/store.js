@@ -15,11 +15,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import appStateReducer from '~Common/data/appstate.reducer';
 import authReducer from '~Authentication/data/auth.reducer';
 import geoSurveyReducer from '~GeoServey/data/geoSurvey.reducer';
+import planningTicketReducer from '~PlanningTicket/data/planningTicket.reducer';
 
 const rootReducer = combineReducers({
   appState: appStateReducer,
   auth: authReducer,
   geoSurvey: geoSurveyReducer,
+  planningTicket: planningTicketReducer,
 });
 
 const persistConfig = {

@@ -21,6 +21,8 @@ import WorkorderScreen from '~ticket/screens/WorkorderScreen';
 import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';
 import {screens} from '~constants/constants';
 import LocationProvider from '~Common/LocationProvider';
+import PlanningTicket from '~PlanningTicket/PlanningTicket';
+import TicketWorkorder from '~PlanningTicket/TicketWorkorder';
 
 const Stack = createStackNavigator();
 
@@ -108,6 +110,16 @@ const RootNavigation = () => {
             <Stack.Screen
               name={screens.reviewScreen}
               component={ReviewScreen}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.planningTicketList}
+              component={PlanningTicket}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.planningTicketWorkorder}
+              component={TicketWorkorder}
               options={options}
             />
           </Stack.Navigator>

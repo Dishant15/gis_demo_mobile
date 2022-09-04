@@ -14,6 +14,7 @@ import SurveyTicketList from '~GeoServey/screens/SurveyTicketList';
 
 import {colors, layout, screens} from '~constants/constants';
 import {logout} from '~Authentication/data/auth.reducer';
+import PlanningTicket from '~PlanningTicket/PlanningTicket';
 
 const Drawer = createDrawerNavigator();
 
@@ -63,10 +64,10 @@ const DrawerContent = props => {
             }}
           />
           <List.Item
-            title="Network"
+            title="Planning"
             onPress={() => {
               props.navigation.closeDrawer();
-              props.navigation.navigate(screens.networkScreen);
+              props.navigation.navigate(screens.planningTicketList);
             }}
           />
           <List.Item
@@ -147,12 +148,12 @@ const DrawerNavigation = () => {
       />
 
       <Drawer.Screen
-        name={screens.networkScreen}
-        component={ComingSoon}
+        name={screens.planningTicketList}
+        component={PlanningTicket}
         options={{
           headerShown: true,
           headerTitleAlign: 'center',
-          headerTitle: () => <Title style={styles.headerText}>Network</Title>,
+          headerTitle: () => <Title style={styles.headerText}>Planning</Title>,
           headerLeft: () => <DrawerButton />,
           headerStyle: {
             backgroundColor: colors.primaryMain,

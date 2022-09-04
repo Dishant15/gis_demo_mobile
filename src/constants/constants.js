@@ -19,6 +19,9 @@ export const screens = {
   unitForm: 'unitForm',
   reviewScreen: 'reviewScreen',
 
+  planningTicketList: 'planningTicketList',
+  planningTicketWorkorder: 'planningTicketWorkorder',
+
   networkScreen: 'networkScreen',
   clientScreen: 'clientScreen',
   planningScreen: 'planningScreen',

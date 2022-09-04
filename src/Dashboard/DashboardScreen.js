@@ -30,7 +30,7 @@ const DashboardScreen = ({navigation}) => {
   };
 
   const navigateNetworkList = () => {
-    navigation.navigate(screens.networkScreen);
+    navigation.navigate(screens.planningTicketList);
   };
 
   const navigateClientList = () => {
@@ -63,7 +63,7 @@ const DashboardScreen = ({navigation}) => {
             style={styles.squreCard}>
             <Card.Content style={styles.content}>
               <View style={styles.squreCardWrapper}>
-                <Subheading>Network Tickets</Subheading>
+                <Subheading>Planning Tickets</Subheading>
                 <Headline style={styles.headline}>
                   {get(dashboardData, 'network_ticket_count', 0)}
                 </Headline>
