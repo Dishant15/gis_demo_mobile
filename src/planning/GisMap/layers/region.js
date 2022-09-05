@@ -27,18 +27,9 @@ export const ViewLayer = () => {
           return (
             <Polygon
               key={ind}
-              options={{
-                fillOpacity: 0,
-                strokeColor: color,
-                strokeOpacity: 1,
-                strokeWeight: 2,
-                clickable: false,
-                draggable: false,
-                editable: false,
-                geodesic: false,
-                zIndex: 1,
-              }}
-              paths={polyCoord}
+              coordinates={polyCoord}
+              strokeColor={color}
+              strokeWidth={2}
             />
           );
         });

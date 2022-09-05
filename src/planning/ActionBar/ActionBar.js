@@ -22,10 +22,6 @@ const ActionBar = () => {
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const activeTab = useSelector(getActiveTab);
-  console.log(
-    '🚀 ~ file: ActionBar.js ~ line 24 ~ ActionBar ~ activeTab',
-    activeTab,
-  );
 
   const handleTabChange = useCallback(
     newValue => () => {
@@ -35,7 +31,6 @@ const ActionBar = () => {
   );
 
   const hideModal = useCallback(() => {
-    console.log('am i ?');
     dispatch(setActiveTab(null));
   }, []);
 

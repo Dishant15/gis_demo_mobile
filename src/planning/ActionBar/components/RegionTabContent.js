@@ -103,8 +103,7 @@ const RegionTabContent = () => {
         dispatch(fetchLayerDataThunk({regionIdList, layerKey: currLayerKey}));
       }
     }
-    // change tab to layers
-    dispatch(setActiveTab(1));
+    dispatch(setActiveTab(null));
   }, [selectedRegionSet, selectedRegionIds, selectedLayerKeys]);
 
   return (

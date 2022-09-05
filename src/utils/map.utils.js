@@ -1,16 +1,27 @@
 import {countBy, orderBy, size, get} from 'lodash';
 
-// coordinates :- [ [latitude, longitude], ...]
-export const coordsToLatLongMap = coordinates => {
-  const latLongMap = [];
-  for (let cInd = 0; cInd < coordinates.length; cInd++) {
-    const coord = coordinates[cInd];
-    latLongMap.push({
-      latitude: Number(coord[1]),
-      longitude: Number(coord[0]),
-    });
+// coordinates :- isMulti ? [ [ [lng, lat] ] ] : [ [lng, lat], ...]
+export const coordsToLatLongMap = (coordinates, isMulti = false) => {
+  const inputCoords = isMulti ? coordinates : [coordinates];
+  let resultPolyData = [];
+
+  for (let mInd = 0; mInd < inputCoords.length; mInd++) {
+    const polyCoords = inputCoords[mInd];
+
+    const latLongMap = [];
+    for (let cInd = 0; cInd < polyCoords.length; cInd++) {
+      const coord = polyCoords[cInd];
+      latLongMap.push({
+        latitude: Number(coord[1]),
+        longitude: Number(coord[0]),
+      });
+    }
+    resultPolyData.push(latLongMap);
   }
-  return latLongMap;
+
+  if (isMulti) return resultPolyData;
+  // return single polygon coords if not multi
+  return resultPolyData[0];
 };
 
 // latLongMap :- [ {latitude, longitude}, ...]

@@ -1,9 +1,13 @@
-import React, {useState, forwardRef, useEffect} from 'react';
+import React, {useState, forwardRef, useEffect, useMemo} from 'react';
 import {View, InteractionManager} from 'react-native';
+import {useSelector} from 'react-redux';
 
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Animatable from 'react-native-animatable';
 import {useIsFocused} from '@react-navigation/native';
+
+import {getSelectedLayerKeys} from '~planning/data/planningState.selectors';
+import {getLayerCompFromKey} from './utils';
 
 import {layout} from '~constants/constants';
 
@@ -11,17 +15,20 @@ const GisMap = forwardRef((props, ref) => {
   const [showMap, setMapVisibility] = useState(false);
   const isFocused = useIsFocused();
 
+  // get list of selected layer-keys
+  const mapLayers = useSelector(getSelectedLayerKeys);
+
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       setMapVisibility(true);
     });
   }, []);
 
-  // const Layers = useMemo(() => {
-  //   return mapLayers.map(layerKey => {
-  //     return getLayerCompFromKey(layerKey);
-  //   });
-  // }, [mapLayers]);
+  const Layers = useMemo(() => {
+    return mapLayers.map(layerKey => {
+      return getLayerCompFromKey(layerKey);
+    });
+  }, [mapLayers]);
 
   if (!isFocused) return null;
 
@@ -45,7 +52,7 @@ const GisMap = forwardRef((props, ref) => {
             // onPress={handleMapClick}
             // onPoiClick={handleMapPoiClick}
             showsPointsOfInterest={false}>
-            {/* {Layers} */}
+            {Layers}
           </MapView>
         </Animatable.View>
       ) : null}
