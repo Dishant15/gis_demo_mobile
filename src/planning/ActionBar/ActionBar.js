@@ -12,11 +12,11 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import RegionTabContent from './components/RegionTabContent';
 import LayersTabContent from './components/LayersTabContent';
 import AddElementContent from './components/AddElementContent';
+import CustomModal from '~Common/CustomModal';
 
 import {getActiveTab} from '~planning/data/planningState.selectors';
 import {setActiveTab} from '~planning/data/planningState.reducer';
 import {colors} from '~constants/constants';
-import CustomModal from '~Common/CustomModal';
 
 const ActionBar = () => {
   const insets = useSafeAreaInsets();
