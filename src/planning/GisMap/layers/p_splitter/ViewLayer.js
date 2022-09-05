@@ -4,6 +4,8 @@ import {Marker} from 'react-native-maps';
 
 import {getLayerViewData} from '~planning/data/planningGis.selectors';
 
+import SpliterIcon from '~assets/markers/spliter_view.svg';
+
 export const LAYER_KEY = 'p_splitter';
 
 export const ViewLayer = () => {
@@ -24,8 +26,9 @@ export const ViewLayer = () => {
             coordinate={coordinates}
             stopPropagation
             flat
-            tracksInfoWindowChanges={false}
-          />
+            tracksInfoWindowChanges={false}>
+            <SpliterIcon />
+          </Marker>
         );
       })}
     </>

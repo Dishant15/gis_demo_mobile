@@ -29,7 +29,6 @@ export const fetchLayerData = async ({regionIdList, layerKey}) => {
       layer_key: layerKey,
     });
   }
-  console.log('🚀 ~ file: fetchLayerData ~ res.data', res.data);
   return res.data;
 };
 

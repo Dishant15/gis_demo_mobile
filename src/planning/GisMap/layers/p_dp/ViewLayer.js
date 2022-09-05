@@ -3,6 +3,8 @@ import {useSelector} from 'react-redux';
 
 import {Marker} from 'react-native-maps';
 
+import PDPIcon from '~assets/markers/p_dp_view.svg';
+
 import {getLayerViewData} from '~planning/data/planningGis.selectors';
 import {LAYER_KEY} from './configurations';
 
@@ -22,8 +24,9 @@ export const ViewLayer = () => {
         coordinate={coordinates}
         stopPropagation
         flat
-        tracksInfoWindowChanges={false}
-      />
+        tracksInfoWindowChanges={false}>
+        <PDPIcon />
+      </Marker>
     );
   });
 };
