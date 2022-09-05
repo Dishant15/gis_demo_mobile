@@ -1,22 +1,31 @@
 import React, {useCallback, useMemo, useState} from 'react';
-import {View, Text, FlatList, Pressable} from 'react-native';
+import {View, FlatList, Pressable, StyleSheet} from 'react-native';
 import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 
 import {get, difference, noop, groupBy, map, xor, orderBy, size} from 'lodash';
 
-import {Button} from 'react-native-paper';
+import {Button, Title, Divider, Subheading} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import {fetchRegionList} from '~planning/data/actionBar.services';
+import {
+  fetchRegionList,
+  fetchLayerDataThunk,
+} from '~planning/data/actionBar.services';
 import {
   getExpandedRegionIds,
   getSelectedLayerKeys,
   getSelectedRegionIds,
 } from '~planning/data/planningState.selectors';
+import {
+  handleLayerSelect,
+  handleRegionSelect,
+  setActiveTab,
+} from '~planning/data/planningState.reducer';
 
 import {getFillColor} from '~utils/map.utils';
-import {colors} from '~constants/constants';
+import {colors, layout} from '~constants/constants';
+import Loader from '~Common/Loader';
 
 const RegionTabContent = () => {
   /**
@@ -74,23 +83,50 @@ const RegionTabContent = () => {
     });
   }, []);
 
+  const handleRegionSelectionComplete = useCallback(() => {
+    const regionIdList = Array.from(selectedRegionSet);
+    // can not go forward if region list empty
+    if (!size(regionIdList)) return;
+    // check if regions changed
+    if (size(xor(regionIdList, selectedRegionIds))) {
+      // set selected regions
+      dispatch(handleRegionSelect(regionIdList));
+      // add region in selectedLayerKeys if not
+      if (selectedLayerKeys.indexOf('region') === -1) {
+        dispatch(handleLayerSelect('region'));
+      }
+      // fetch data gis data for all region polygons
+      dispatch(fetchLayerDataThunk({regionIdList, layerKey: 'region'}));
+      // re fetch data for each selected layers
+      for (let l_ind = 0; l_ind < selectedLayerKeys.length; l_ind++) {
+        const currLayerKey = selectedLayerKeys[l_ind];
+        dispatch(fetchLayerDataThunk({regionIdList, layerKey: currLayerKey}));
+      }
+    }
+    // change tab to layers
+    dispatch(setActiveTab(1));
+  }, [selectedRegionSet, selectedRegionIds, selectedLayerKeys]);
+
   return (
-    <View>
-      <View>
-        <Text>Select Regions</Text>
+    <View style={styles.container}>
+      {isLoading ? <Loader /> : null}
+      <View style={styles.titleWrapper}>
+        <Title style={styles.title}>Select Regions</Title>
         <Button
-          // loading={isLoading}
-          // contentStyle={layout.button}
           color={colors.success}
           mode="outlined"
-          // onPress={handleSubmit(mutate)}
-        >
+          disabled={!size(selectedRegionSet)}
+          onPress={handleRegionSelectionComplete}
+          icon="check">
           Done
         </Button>
       </View>
       <FlatList
+        style={styles.list}
         data={regionList}
         keyExtractor={item => item.id}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         renderItem={({item, index}) => {
           return (
             <RegionListItem
@@ -104,6 +140,13 @@ const RegionTabContent = () => {
             />
           );
         }}
+        ListEmptyComponent={
+          isLoading ? null : (
+            <View style={[layout.container, layout.center]}>
+              <Subheading>No region data found.</Subheading>
+            </View>
+          )
+        }
       />
     </View>
   );
@@ -123,16 +166,50 @@ const RegionListItem = ({
 
   return (
     <Pressable onPress={() => handleRegionClick(id)}>
-      <Text>{name}</Text>
-      {isActive ? (
-        <MaterialIcons
-          size={14}
-          name={'check-box'}
-          color={colors.secondaryMain}
-        />
-      ) : null}
+      <View style={styles.itemWrapper}>
+        <Subheading style={[styles.itemText, {color}]}>{name}</Subheading>
+        {isActive ? (
+          <MaterialIcons
+            size={22}
+            name={'check-box'}
+            color={colors.secondaryMain}
+            style={styles.itemIcon}
+          />
+        ) : null}
+      </View>
+      <Divider />
     </Pressable>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 12,
+    height: '100%',
+  },
+  titleWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+  },
+  list: {
+    height: '80%',
+  },
+  title: {
+    color: colors.primaryMain,
+  },
+  itemWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  itemText: {
+    flex: 1,
+    paddingVertical: 8,
+  },
+  itemIcon: {
+    width: 20,
+  },
+});
 
 export default RegionTabContent;

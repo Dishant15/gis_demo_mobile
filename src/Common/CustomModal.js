@@ -17,8 +17,8 @@ const CustomModal = ({children, handleClose = noop}) => {
       animationOut="slideInDown"
       isVisible={true}
       hideModalContentWhileAnimating
-      onSwipeComplete={handleClose}
-      swipeDirection="down"
+      // onSwipeComplete={handleClose}
+      // swipeDirection="down"
       // Flexs to the bottom. Commented out so it centers
       style={styles.modalWrapper}
       onBackButtonPress={handleClose}
@@ -38,8 +38,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     backgroundColor: colors.white,
-    justifyContent: 'center',
-    alignContent: 'center',
+    maxHeight: '83%',
   },
 });
 export default CustomModal;

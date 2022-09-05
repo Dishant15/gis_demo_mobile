@@ -102,6 +102,9 @@ export const layout = StyleSheet.create({
   map: {
     ...StyleSheet.absoluteFillObject,
   },
+  box: {
+    flex: 1,
+  },
 });
 
 // AHMEDABAD CENTER
