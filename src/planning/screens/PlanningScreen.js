@@ -4,7 +4,7 @@ import {View, StatusBar} from 'react-native';
 
 import {layout} from '~constants/constants';
 
-import GisMap from '~planning/GisMap/GisMap';
+import GisMap from '~planning/GisMap';
 import ActionBar from '~planning/ActionBar';
 
 const PlanningScreen = () => {
