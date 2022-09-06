@@ -2,13 +2,21 @@ import React from 'react';
 import {View, StyleSheet, Dimensions, ScrollView} from 'react-native';
 import {Subheading, Card, Headline, Button} from 'react-native-paper';
 import {useQuery} from 'react-query';
-import {get} from 'lodash';
+
+import {get, noop} from 'lodash';
 
 import Loader from '~Common/Loader';
-import {layout, screens} from '~constants/constants';
+import DynamicForm from '~Common/DynamicForm';
 
 import {fetchDashboardData} from './data/services';
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
+
+import {layout, screens} from '~constants/constants';
+import {
+  FORM_CONFIGS,
+  INITIAL_DATA,
+  onSubmit,
+} from '~planning/GisMap/layers/p_dp';
 
 const {width} = Dimensions.get('screen');
 const CARD_WIDTH = width / 2 - 18;
@@ -92,6 +100,13 @@ const DashboardScreen = ({navigation}) => {
             </Card.Actions>
           </Card>
         </View>
+        {/* <DynamicForm
+          formConfigs={FORM_CONFIGS}
+          data={INITIAL_DATA}
+          onSubmit={data => console.log(data)}
+          onClose={noop}
+          isLoading={false}
+        /> */}
       </ScrollView>
       {loadingDashboard ? <Loader /> : null}
     </View>
