@@ -5,7 +5,12 @@ import {
   ViewLayer as RegionViewLayer,
   LAYER_KEY as RegionKey,
 } from './layers/region';
-import {ViewLayer as DPViewLayer, LAYER_KEY as DpKey} from './layers/p_dp';
+import {
+  ViewLayer as DPViewLayer,
+  LAYER_KEY as DpKey,
+  InfoCard as DpInfoCard,
+  MapElement as DpMapElement,
+} from './layers/p_dp';
 import {
   ViewLayer as SplitterLayer,
   LAYER_KEY as SplitterKey,
@@ -24,6 +29,24 @@ export const getLayerCompFromKey = layerKey => {
     case SplitterKey:
       return <SplitterLayer key={layerKey} />;
 
+    default:
+      return null;
+  }
+};
+
+export const getInfoCompFromKey = layerKey => {
+  switch (layerKey) {
+    case DpKey:
+      return <DpInfoCard key={layerKey} />;
+    default:
+      return null;
+  }
+};
+
+export const getMapElementCompFromKey = layerKey => {
+  switch (layerKey) {
+    case DpKey:
+      return <DpMapElement key={layerKey} />;
     default:
       return null;
   }

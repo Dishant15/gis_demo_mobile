@@ -1,6 +1,7 @@
 import React, {useMemo} from 'react';
-import {View, StyleSheet, Dimensions} from 'react-native';
+import {View, StyleSheet, Dimensions, Pressable} from 'react-native';
 import {useQuery} from 'react-query';
+import {useDispatch} from 'react-redux';
 
 import {filter, isNull} from 'lodash';
 import {Subheading, Paragraph, Title} from 'react-native-paper';
@@ -8,6 +9,8 @@ import {Subheading, Paragraph, Title} from 'react-native-paper';
 import Loader from '~Common/Loader';
 
 import {fetchLayerList} from '~planning/data/actionBar.services';
+import {updateMapState} from '~planning/data/planningGis.reducer';
+import {setActiveTab} from '~planning/data/planningState.reducer';
 
 import {colors, layout} from '~constants/constants';
 import {ICONS} from '~utils/icons';
@@ -19,6 +22,8 @@ const AddElementContent = () => {
   const {isLoading, data} = useQuery('planningLayerConfigs', fetchLayerList, {
     staleTime: Infinity,
   });
+
+  const dispatch = useDispatch();
 
   const layerCofigs = useMemo(() => {
     return filter(data, ['can_add', true]);
@@ -35,14 +40,23 @@ const AddElementContent = () => {
             let SvgComp = ICONS(config.layer_key);
             SvgComp = isNull(SvgComp) ? <></> : <SvgComp width={30} />;
             return (
-              <View
+              <Pressable
                 style={[{width: itemWidth, height: itemWidth, padding: 8}]}
-                key={config.layer_key}>
+                key={config.layer_key}
+                onPress={() => {
+                  dispatch(setActiveTab(null));
+                  dispatch(
+                    updateMapState({
+                      state: 'A',
+                      layerKey: config.layer_key,
+                    }),
+                  );
+                }}>
                 <View style={styles.gridItem}>
                   {SvgComp}
                   <Paragraph style={layout.textCenter}>{config.name}</Paragraph>
                 </View>
-              </View>
+              </Pressable>
             );
           })}
         </View>

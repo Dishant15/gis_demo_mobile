@@ -6,17 +6,11 @@ import {useQuery} from 'react-query';
 import {get, noop} from 'lodash';
 
 import Loader from '~Common/Loader';
-import DynamicForm from '~Common/DynamicForm';
 
 import {fetchDashboardData} from './data/services';
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 
 import {layout, screens} from '~constants/constants';
-import {
-  FORM_CONFIGS,
-  INITIAL_DATA,
-  onSubmit,
-} from '~planning/GisMap/layers/p_dp';
 
 const {width} = Dimensions.get('screen');
 const CARD_WIDTH = width / 2 - 18;

@@ -2,9 +2,10 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 
 import {useForm, Controller} from 'react-hook-form';
-import {Caption, Title} from 'react-native-paper';
+import {Button, Caption, Title} from 'react-native-paper';
 
 import Input from '~Common/Input';
+import {colors} from '~constants/constants';
 
 /**
  * Render dynamicall generated formConfig based forms
@@ -94,6 +95,16 @@ const DynamicForm = ({formConfigs, data, onSubmit, onClose, isLoading}) => {
                       return <Caption key={field_key}>{label}</Caption>;
                   }
                 })}
+                <Button
+                  // loading={isLoading}
+                  // contentStyle={layout.button}
+                  color={colors.black}
+                  uppercase
+                  mode="contained"
+                  // onPress={handleSubmit(onSubmit)}
+                >
+                  Save
+                </Button>
               </View>
             ) : null}
           </View>

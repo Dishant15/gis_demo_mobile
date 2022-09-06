@@ -1,11 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
-import get from "lodash/get";
-import has from "lodash/has";
-import size from "lodash/size";
+import {createSlice} from '@reduxjs/toolkit';
+import get from 'lodash/get';
+import has from 'lodash/has';
+import size from 'lodash/size';
 
-import { fetchLayerDataThunk } from "./actionBar.services";
-import { handleLayerSelect, removeLayerSelect } from "./planningState.reducer";
-import { covertLayerServerData } from "../GisMap/utils";
+import {fetchLayerDataThunk} from './actionBar.services';
+import {handleLayerSelect, removeLayerSelect} from './planningState.reducer';
+import {covertLayerServerData} from '../GisMap/utils';
 
 const defaultLayerNetworkState = {
   isLoading: false,
@@ -20,28 +20,40 @@ const initialState = {
   layerNetworkState: {},
   // shape : { layer-key: { viewData: [], editData: {} } }
   layerData: {},
+  // shape: { state: "A", "E", "D", layerKey, geometry : {latitude, longitude}}
+  mapState: {},
 };
 
 const planningGisSlice = createSlice({
-  name: "planningGis",
+  name: 'planningGis',
   initialState,
-  reducers: {},
+  reducers: {
+    updateMapState: (state, {payload}) => {
+      state.mapState = {...state.mapState, ...payload};
+    },
+    resetMapState: state => {
+      state.mapState = {};
+    },
+    updateMapStateCoordinates: (state, {payload}) => {
+      state.mapState.geometry = payload;
+    },
+  },
   extraReducers: {
     // payload : layerKey
-    [handleLayerSelect]: (state, { payload }) => {
-      if (has(state, ["layerNetworkState", payload])) {
+    [handleLayerSelect]: (state, {payload}) => {
+      if (has(state, ['layerNetworkState', payload])) {
         state.layerNetworkState[payload].isSelected = true;
       }
     },
-    [removeLayerSelect]: (state, { payload }) => {
-      if (has(state, ["layerNetworkState", payload])) {
+    [removeLayerSelect]: (state, {payload}) => {
+      if (has(state, ['layerNetworkState', payload])) {
         state.layerNetworkState[payload].isSelected = false;
       }
     },
     // start loading
     [fetchLayerDataThunk.pending]: (state, action) => {
-      const layerKey = get(action, "meta.arg.layerKey", "");
-      if (has(state, ["layerNetworkState", layerKey])) {
+      const layerKey = get(action, 'meta.arg.layerKey', '');
+      if (has(state, ['layerNetworkState', layerKey])) {
         state.layerNetworkState[layerKey].isLoading = true;
         state.layerNetworkState[layerKey].isSelected = true;
       } else {
@@ -63,22 +75,24 @@ const planningGisSlice = createSlice({
     },
     // fetch success
     [fetchLayerDataThunk.fulfilled]: (state, action) => {
-      const layerKey = get(action, "meta.arg.layerKey", "");
+      const layerKey = get(action, 'meta.arg.layerKey', '');
       state.layerNetworkState[layerKey].isLoading = false;
       state.layerNetworkState[layerKey].isFetched = true;
       state.layerNetworkState[layerKey].count = size(action.payload);
       // convert payload coordinates into google coordinates data
       state.layerData[layerKey].viewData = covertLayerServerData(
         layerKey,
-        action.payload
+        action.payload,
       );
     },
     // handle error
     [fetchLayerDataThunk.rejected]: (state, action) => {
-      const layerKey = get(action, "meta.arg.layerKey", "");
+      const layerKey = get(action, 'meta.arg.layerKey', '');
       state.layerNetworkState[layerKey].isError = true;
     },
   },
 });
 
+export const {updateMapState, resetMapState, updateMapStateCoordinates} =
+  planningGisSlice.actions;
 export default planningGisSlice.reducer;
