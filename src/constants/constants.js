@@ -105,6 +105,9 @@ export const layout = StyleSheet.create({
   box: {
     flex: 1,
   },
+  textCenter: {
+    textAlign: 'center',
+  },
 });
 
 // AHMEDABAD CENTER
