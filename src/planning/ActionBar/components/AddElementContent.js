@@ -35,7 +35,9 @@ const AddElementContent = () => {
             let SvgComp = ICONS(config.layer_key);
             SvgComp = isNull(SvgComp) ? <></> : <SvgComp width={30} />;
             return (
-              <View style={[{width: itemWidth, height: itemWidth, padding: 8}]}>
+              <View
+                style={[{width: itemWidth, height: itemWidth, padding: 8}]}
+                key={config.layer_key}>
                 <View style={styles.gridItem}>
                   {SvgComp}
                   <Paragraph style={layout.textCenter}>{config.name}</Paragraph>
