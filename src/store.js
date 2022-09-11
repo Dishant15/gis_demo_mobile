@@ -15,7 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import appStateReducer from '~Common/data/appstate.reducer';
 import authReducer from '~Authentication/data/auth.reducer';
 import geoSurveyReducer from '~GeoServey/data/geoSurvey.reducer';
-import planningTicketReducer from '~OldplanningTicket/data/planningTicket.reducer';
+import planningTicketReducer from '~planningTicket/data/planningTicket.reducer';
 import planningStateReducer from '~planning/data/planningState.reducer';
 import planningGisReducer from '~planning/data/planningGis.reducer';
 

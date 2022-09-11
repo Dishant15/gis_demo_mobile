@@ -17,8 +17,8 @@ import ReviewScreen from '~GeoServey/screens/ReviewScreen';
 import SurveyForm from '~GeoServey/screens/SurveyForm';
 import SurveyList from '~GeoServey/screens/SurveyList';
 import WorkorderScreen from '~ticket/screens/WorkorderScreen';
-import PlanningTicket from '~OldplanningTicket/screen/PlanningTicketListScreen';
-import TicketWorkorder from '~OldplanningTicket/screen/TicketWorkorderScreen';
+import PlanningTicket from '~planningTicket/screen/PlanningTicketListScreen';
+import TicketWorkorder from '~planningTicket/screen/TicketWorkorderScreen';
 import PlanningScreen from '~planning/screens/PlanningScreen';
 
 import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';

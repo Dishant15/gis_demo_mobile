@@ -10,7 +10,7 @@ import {DrawerButton} from '~Common/components/Header/ActionButtons';
 import ComingSoon from '~Common/components/ComingSoon';
 import DashboardScreen from '~Dashboard/DashboardScreen';
 import SurveyTicketList from '~GeoServey/screens/SurveyTicketList';
-import PlanningTicket from '~OldplanningTicket/screen/PlanningTicketListScreen';
+import PlanningTicket from '~planningTicket/screen/PlanningTicketListScreen';
 import PlanningScreen from '~planning/screens/PlanningScreen';
 
 import {colors, layout, screens} from '~constants/constants';
