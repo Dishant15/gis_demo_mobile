@@ -20,7 +20,7 @@ const initialState = {
   layerNetworkState: {},
   // shape : { layer-key: { viewData: [], editData: {} } }
   layerData: {},
-  // shape: { state: "A", "E", "D", layerKey, geometry : {latitude, longitude}}
+  // shape: { event: "addElement" | "editElement", data: { **Edit / init form data }, layerKey }
   mapState: {},
 };
 
@@ -28,6 +28,9 @@ const planningGisSlice = createSlice({
   name: 'planningGis',
   initialState,
   reducers: {
+    setMapState: (state, {payload}) => {
+      state.mapState = {...payload};
+    },
     updateMapState: (state, {payload}) => {
       state.mapState = {...state.mapState, ...payload};
     },
@@ -36,6 +39,10 @@ const planningGisSlice = createSlice({
     },
     updateMapStateCoordinates: (state, {payload}) => {
       state.mapState.geometry = payload;
+    },
+    updateMapStateData: (state, {payload}) => {
+      const mapStateData = get(state.mapState, 'data', {});
+      state.mapState.data = {...mapStateData, ...payload};
     },
   },
   extraReducers: {
@@ -93,6 +100,10 @@ const planningGisSlice = createSlice({
   },
 });
 
-export const {updateMapState, resetMapState, updateMapStateCoordinates} =
-  planningGisSlice.actions;
+export const {
+  setMapState,
+  updateMapState,
+  resetMapState,
+  updateMapStateCoordinates,
+} = planningGisSlice.actions;
 export default planningGisSlice.reducer;

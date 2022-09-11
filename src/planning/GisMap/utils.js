@@ -72,3 +72,10 @@ export const covertLayerServerData = (layerKey, serverData) => {
     return resultData;
   }
 };
+
+// possible events that can happen on map
+export const PLANNING_EVENT = {
+  addElement: 'A',
+  editElement: 'E',
+  showElementForm: 'F',
+};

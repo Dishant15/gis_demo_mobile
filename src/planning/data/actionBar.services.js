@@ -16,6 +16,11 @@ export const fetchLayerList = async () => {
   return res.data;
 };
 
+export const fetchLayerListDetails = async () => {
+  const res = await Api.get(apiGetPlanningConfigsDetails());
+  return res.data;
+};
+
 // get layer gis data only for regions given
 export const fetchLayerData = async ({regionIdList, layerKey}) => {
   let res;

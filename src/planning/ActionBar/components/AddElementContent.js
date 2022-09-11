@@ -8,26 +8,109 @@ import {Subheading, Paragraph, Title} from 'react-native-paper';
 
 import Loader from '~Common/Loader';
 
-import {fetchLayerList} from '~planning/data/actionBar.services';
+import {fetchLayerListDetails} from '~planning/data/actionBar.services';
 import {updateMapState} from '~planning/data/planningGis.reducer';
 import {setActiveTab} from '~planning/data/planningState.reducer';
+import {
+  selectConfiguration,
+  setLayerConfigurations,
+} from '~planning/data/planningState.reducer';
+import {
+  getPlanningMapState,
+  getSelectedConfigurations,
+} from '~planning/data/planningGis.selectors';
+import {PLANNING_EVENT} from '~planning/GisMap/utils';
 
 import {colors, layout} from '~constants/constants';
 import {ICONS} from '~utils/icons';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
 const {width} = Dimensions.get('window');
 const itemWidth = (width - 24) / 3;
 
+/**
+ * Parent:
+ *    ActionBar
+ */
 const AddElementContent = () => {
-  const {isLoading, data} = useQuery('planningLayerConfigs', fetchLayerList, {
-    staleTime: Infinity,
-  });
+  const {isLoading, data} = useQuery(
+    'planningLayerConfigsDetails',
+    fetchLayerListDetails,
+    {
+      staleTime: Infinity,
+      onSuccess: layerConfData => {
+        // res shape same as layerConfigs bellow
+        if (!!size(layerConfData)) {
+          for (let lc_ind = 0; lc_ind < layerConfData.length; lc_ind++) {
+            const {layer_key, is_configurable, configuration} =
+              layerConfData[lc_ind];
+            if (is_configurable) {
+              // if layerConfData is there set layer configs in redux
+              dispatch(
+                setLayerConfigurations({
+                  layerKey: layer_key,
+                  configurationList: configuration,
+                }),
+              );
+              // select default configs to show first
+              dispatch(
+                selectConfiguration({
+                  layerKey: layer_key,
+                  configuration: configuration[0],
+                }),
+              );
+            }
+          }
+        }
+      },
+    },
+  );
 
   const dispatch = useDispatch();
+  // if popup open : layerKey of selected configs, null if closed
+  const [layerConfigPopup, setLayerConfigPopup] = useState(null);
+  const {event} = useSelector(getPlanningMapState);
+  const selectedConfigurations = useSelector(getSelectedConfigurations);
 
+  // shape: [ { layer_key, name, is_configurable, can_add, can_edit,
+  //              configuration: [ **list of layer wise configs] }, ... ]
   const layerCofigs = useMemo(() => {
     return filter(data, ['can_add', true]);
   }, [data]);
+
+  const handleAddElementClick = useCallback(
+    layerKey => () => {
+      // show error if one event already running
+      if (event) {
+        showToast(
+          'Please complete current operation before starting new',
+          TOAST_TYPE.INFO,
+        );
+        return;
+      }
+      // start event if no other event running
+      dispatch(
+        setMapState({
+          event: PLANNING_EVENT.addElement,
+          layerKey,
+        }),
+      );
+    },
+    [event],
+  );
+
+  const handleLayerConfigPopupShow = useCallback(
+    layerKey => e => {
+      // if (e) e.stopPropagation();
+      // show popover for selected layer
+      setLayerConfigPopup(layerKey);
+    },
+    [],
+  );
+
+  const handleLayerConfigPopupHide = useCallback(() => {
+    setLayerConfigPopup(null);
+  }, []);
 
   if (layerCofigs.length) {
     return (
@@ -37,24 +120,18 @@ const AddElementContent = () => {
 
         <View style={styles.grid}>
           {layerCofigs.map(config => {
+            const {layer_key, name, is_configurable, configuration} = config;
+
             let SvgComp = ICONS(config.layer_key);
             SvgComp = isNull(SvgComp) ? <></> : <SvgComp width={30} />;
             return (
               <Pressable
                 style={[{width: itemWidth, height: itemWidth, padding: 8}]}
-                key={config.layer_key}
-                onPress={() => {
-                  dispatch(setActiveTab(null));
-                  dispatch(
-                    updateMapState({
-                      state: 'A',
-                      layerKey: config.layer_key,
-                    }),
-                  );
-                }}>
+                key={layer_key}
+                onPress={handleAddElementClick}>
                 <View style={styles.gridItem}>
                   {SvgComp}
-                  <Paragraph style={layout.textCenter}>{config.name}</Paragraph>
+                  <Paragraph style={layout.textCenter}>{name}</Paragraph>
                 </View>
               </Pressable>
             );

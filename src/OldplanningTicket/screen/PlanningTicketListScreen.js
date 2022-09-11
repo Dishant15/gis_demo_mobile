@@ -18,7 +18,7 @@ import Loader from '~Common/Loader';
 
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 import {fetchTicketList} from '~Dashboard/data/services';
-import {setTicketId} from '~planningTicket/data/planningTicket.reducer';
+import {setTicketId} from '~OldplanningTicket/data/planningTicket.reducer';
 
 import {colors, layout, screens} from '~constants/constants';
 
