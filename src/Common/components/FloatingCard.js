@@ -16,6 +16,7 @@ const FloatingCard = props => {
         subtitle={subtitle}
         subtitleStyle={styles.subtitleStyle}
         subtitleNumberOfLines={3}
+        titleNumberOfLines={3}
       />
       {children}
     </Card>

@@ -19,13 +19,13 @@ export const getGisMapStateLayerKey = store =>
 export const getGisMapStateGeometry = store =>
   store.planningGis.mapState.geometry;
 
-export const getGisMapInterectionEnable = createSelector(
-  getGisMapState,
-  getGisMapStateLayerKey,
-  (mapState, layerKey) => Boolean(mapState && layerKey),
-);
+export const getGisMapInterectionEnable = store =>
+  store.planningGis.mapState.enableMapInterection;
 
 // Gis Map Event selectors
 export const getPlanningMapState = store => store.planningGis.mapState;
 export const getPlanningMapStateData = store =>
   store.planningGis.mapState.data || {};
+
+export const getSelectedConfigurations = store =>
+  store.planningState.selectedConfigurations;

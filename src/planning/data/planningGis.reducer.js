@@ -20,7 +20,14 @@ const initialState = {
   layerNetworkState: {},
   // shape : { layer-key: { viewData: [], editData: {} } }
   layerData: {},
-  // shape: { event: "addElement" | "editElement", data: { **Edit / init form data }, layerKey }
+  /**
+   * shape: {
+   *    event: "addElement" | "editElement",
+   *    data: { **Edit / init form data },
+   *    layerKey, enableMapInterection,
+   *    geometry: null | {} | [{},{},...]
+   * }
+   */
   mapState: {},
 };
 

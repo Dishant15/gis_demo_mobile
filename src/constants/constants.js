@@ -67,6 +67,12 @@ export const layout = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
+  flex1: {
+    flex: 1,
+  },
+  flex2: {
+    flex: 2,
+  },
   listContainer: {
     backgroundColor: colors.grey1,
   },

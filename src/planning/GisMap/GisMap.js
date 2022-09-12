@@ -7,11 +7,6 @@ import * as Animatable from 'react-native-animatable';
 import {useIsFocused} from '@react-navigation/native';
 
 import {getSelectedLayerKeys} from '~planning/data/planningState.selectors';
-import {
-  getInfoCompFromKey,
-  getLayerCompFromKey,
-  getMapElementCompFromKey,
-} from './utils';
 
 import {layout} from '~constants/constants';
 import {
@@ -21,7 +16,12 @@ import {
 import {
   getGisMapInterectionEnable,
   getGisMapStateLayerKey,
+  getPlanningMapState,
 } from '~planning/data/planningGis.selectors';
+import GisMapEventLayer, {
+  GisMapElementLayer,
+} from './components/GisMapEventLayer';
+import {LayerKeyMappings} from './utils';
 
 const GisMap = forwardRef((props, ref) => {
   const [showMap, setMapVisibility] = useState(false);
@@ -31,11 +31,7 @@ const GisMap = forwardRef((props, ref) => {
   // get list of selected layer-keys
   const mapLayers = useSelector(getSelectedLayerKeys);
   const enableInterection = useSelector(getGisMapInterectionEnable);
-  const mapStateLayerKey = useSelector(getGisMapStateLayerKey);
-  console.log(
-    '🚀 ~ file: GisMap.js ~ line 27 ~ GisMap ~ enableInterection',
-    enableInterection,
-  );
+  const mapState = useSelector(getPlanningMapState);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -46,29 +42,23 @@ const GisMap = forwardRef((props, ref) => {
   const handleMapClick = e => {
     if (!enableInterection) return;
     if (!e.nativeEvent.coordinate) return;
-    const coords = e.nativeEvent.coordinate;
+    let coords = e.nativeEvent.coordinate;
+    coords = LayerKeyMappings[mapState.layerKey]['onMapClick'](coords);
     dispatch(updateMapStateCoordinates(coords));
   };
 
   const Layers = useMemo(() => {
     return mapLayers.map(layerKey => {
-      return getLayerCompFromKey(layerKey);
+      const ViewLayerComponent = LayerKeyMappings[layerKey]['ViewLayer'];
+      return <ViewLayerComponent key={layerKey} />;
     });
   }, [mapLayers]);
-
-  const InfoCard = useMemo(() => {
-    return getInfoCompFromKey(mapStateLayerKey);
-  }, [mapStateLayerKey]);
-
-  const MapElement = useMemo(() => {
-    return getMapElementCompFromKey(mapStateLayerKey);
-  }, [mapStateLayerKey]);
 
   if (!isFocused) return null;
 
   return (
     <View style={[layout.container, layout.relative]}>
-      {InfoCard}
+      {/* <GisMapEventLayer /> */}
       {showMap ? (
         <Animatable.View animation="fadeIn" style={layout.container}>
           <MapView
@@ -88,7 +78,7 @@ const GisMap = forwardRef((props, ref) => {
             onPoiClick={handleMapClick}
             showsPointsOfInterest={false}>
             {Layers}
-            {MapElement}
+            <GisMapElementLayer />
           </MapView>
         </Animatable.View>
       ) : null}

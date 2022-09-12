@@ -1,15 +1,16 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useState, useCallback} from 'react';
 import {View, StyleSheet, Dimensions, Pressable} from 'react-native';
 import {useQuery} from 'react-query';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
-import {filter, isNull} from 'lodash';
+import {filter, isNull, size} from 'lodash';
 import {Subheading, Paragraph, Title} from 'react-native-paper';
 
 import Loader from '~Common/Loader';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import {fetchLayerListDetails} from '~planning/data/actionBar.services';
-import {updateMapState} from '~planning/data/planningGis.reducer';
+import {setMapState} from '~planning/data/planningGis.reducer';
 import {setActiveTab} from '~planning/data/planningState.reducer';
 import {
   selectConfiguration,
@@ -93,8 +94,10 @@ const AddElementContent = () => {
         setMapState({
           event: PLANNING_EVENT.addElement,
           layerKey,
+          enableMapInterection: true,
         }),
       );
+      dispatch(setActiveTab(null));
     },
     [event],
   );
@@ -126,13 +129,27 @@ const AddElementContent = () => {
             SvgComp = isNull(SvgComp) ? <></> : <SvgComp width={30} />;
             return (
               <Pressable
-                style={[{width: itemWidth, height: itemWidth, padding: 8}]}
+                style={[
+                  layout.relative,
+                  {width: itemWidth, height: itemWidth, padding: 8},
+                ]}
                 key={layer_key}
-                onPress={handleAddElementClick}>
+                onPress={handleAddElementClick(layer_key)}>
                 <View style={styles.gridItem}>
                   {SvgComp}
                   <Paragraph style={layout.textCenter}>{name}</Paragraph>
                 </View>
+                {is_configurable ? (
+                  <Pressable
+                    style={styles.setting}
+                    onPress={handleLayerConfigPopupShow(layer_key)}>
+                    <MaterialIcons
+                      size={22}
+                      name={'settings'}
+                      color={colors.primaryFontColor}
+                    />
+                  </Pressable>
+                ) : null}
               </Pressable>
             );
           })}
@@ -172,6 +189,12 @@ const styles = StyleSheet.create({
   title: {
     color: colors.primaryMain,
     textAlign: 'center',
+  },
+  setting: {
+    padding: 8,
+    position: 'absolute',
+    right: 8,
+    top: 8,
   },
 });
 

@@ -12,7 +12,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import RegionTabContent from './components/RegionTabContent';
 import LayersTabContent from './components/LayersTabContent';
 import AddElementContent from './components/AddElementContent';
-import CustomModal from '~Common/CustomModal';
+import {CustomBottomPopup} from '~Common/CustomPopup';
 
 import {getActiveTab} from '~planning/data/planningState.selectors';
 import {setActiveTab} from '~planning/data/planningState.reducer';
@@ -77,19 +77,15 @@ const ActionBar = () => {
         </TouchableOpacity>
       </View>
       {!isNull(activeTab) ? (
-        <CustomModal handleClose={hideModal}>{tabContent}</CustomModal>
+        <CustomBottomPopup justifyContent="flex-end" handleClose={hideModal}>
+          {tabContent}
+        </CustomBottomPopup>
       ) : null}
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  relative: {
-    position: 'relative',
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
   actionWrapper: {
     position: 'absolute',
     right: 16,

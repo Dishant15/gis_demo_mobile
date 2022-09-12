@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
@@ -6,6 +6,8 @@ import {Marker} from 'react-native-maps';
 import {Button, Card} from 'react-native-paper';
 
 import FloatingCard from '~Common/components/FloatingCard';
+import AddMarkerLayer from '~planning/GisMap/components/AddMarkerLayer';
+import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
 
 import {
   getGisMapState,
@@ -14,36 +16,23 @@ import {
 } from '~planning/data/planningGis.selectors';
 import {
   resetMapState,
+  setMapState,
   updateMapStateCoordinates,
 } from '~planning/data/planningGis.reducer';
 
-import {LAYER_KEY} from './configurations';
+import {
+  ELEMENT_FORM_TEMPLATE,
+  INITIAL_ELEMENT_DATA,
+  LAYER_KEY,
+} from './configurations';
 import {layout, THEME_COLORS} from '~constants/constants';
 
-import PDPIcon from '~assets/markers/p_dp_view.svg';
-
-export const ViewLayer = () => {
-  /**
-   * Parent:
-   *  GisMap > utils > getLayerCompFromKey
-   */
-  const layerData = useSelector(getLayerViewData(LAYER_KEY));
-  const data = layerData.viewData;
-
-  return data.map(dp => {
-    const {id, coordinates} = dp;
-    return (
-      <Marker
-        key={id}
-        coordinate={coordinates}
-        stopPropagation
-        flat
-        tracksInfoWindowChanges={false}>
-        <PDPIcon />
-      </Marker>
-    );
-  });
-};
+import Icon from '~assets/markers/p_dp_view.svg';
+import {noop} from 'lodash';
+import {PLANNING_EVENT} from '~planning/GisMap/utils';
+import {CustomBottomPopup} from '~Common/CustomPopup';
+import {latLongMapToCoords} from '~utils/map.utils';
+import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
 
 export const InfoCard = () => {
   const actionState = useSelector(getGisMapState);
@@ -121,3 +110,122 @@ export const MapElement = () => {
 };
 
 // export EditLayer
+
+export const Geometry = ({coordinates, handleMarkerDrag = noop}) => {
+  if (coordinates) {
+    return (
+      <Marker
+        coordinate={coordinates}
+        onDragEnd={handleMarkerDrag}
+        tappable
+        draggable
+        stopPropagation
+        flat
+        tracksInfoWindowChanges={false}>
+        <Icon />
+      </Marker>
+    );
+  }
+  return null;
+};
+
+export const ViewLayer = () => {
+  /**
+   * Parent:
+   *  GisMap > utils > LayerKeyMaping.layerKey.ViewLayer
+   */
+  const layerData = useSelector(getLayerViewData(LAYER_KEY));
+  const data = layerData.viewData;
+
+  return (
+    <>
+      {data.map(dp => {
+        const {id, coordinates} = dp;
+        return <Geometry key={id} coordinates={coordinates} />;
+      })}
+    </>
+  );
+};
+
+export const AddLayer = () => {
+  const coordinates = useSelector(getGisMapStateGeometry);
+
+  return (
+    <AddMarkerLayer
+      helpText="Click on map to add new Distribution Point location"
+      nextEvent={{
+        event: PLANNING_EVENT.showElementForm, // event for "layerForm"
+        layerKey: LAYER_KEY,
+        // init data
+        data: INITIAL_ELEMENT_DATA,
+      }}
+      markerCoords={coordinates}
+    />
+  );
+};
+
+// mapper fucntion for map click, return coords after map click
+export const getElementCoordinates = (newCoordinates, existingCoordinates) => {
+  return newCoordinates;
+};
+
+export const ElementLayer = () => {
+  const coordinates = useSelector(getGisMapStateGeometry);
+  const dispatch = useDispatch();
+
+  const handleMarkerDrag = e => {
+    const coords = e.nativeEvent.coordinate;
+    dispatch(updateMapStateCoordinates(coords));
+  };
+
+  return (
+    <Geometry coordinates={coordinates} handleMarkerDrag={handleMarkerDrag} />
+  );
+};
+
+export const ElementForm = () => {
+  const ticketId = useSelector(getSelectedPlanningTicket);
+  const transformAndValidateData = useCallback(
+    formData => {
+      return {
+        workOrder: {
+          work_order_type: 'A',
+          layer_key: LAYER_KEY,
+          remark: formData.remark,
+        },
+        element: {
+          ...formData,
+          // remove coordinates and add geometry
+          coordinates: undefined,
+          remark: undefined,
+          geometry: latLongMapToCoords([formData.coordinates])[0],
+          // convert select fields to simple values
+          status: formData.status.value,
+        },
+      };
+    },
+    [ticketId],
+  );
+
+  const dispatch = useDispatch();
+
+  const handleClose = useCallback(() => {
+    dispatch(setMapState({}));
+  }, []);
+
+  return (
+    <CustomBottomPopup
+      wrapperStyle={{
+        height: '100%',
+        maxHeight: '100%',
+      }}
+      handleClose={handleClose}>
+      <GisLayerForm
+        layerKey={LAYER_KEY}
+        ticketId={ticketId}
+        formConfig={ELEMENT_FORM_TEMPLATE}
+        transformAndValidateData={transformAndValidateData}
+      />
+    </CustomBottomPopup>
+  );
+};

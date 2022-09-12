@@ -4,6 +4,7 @@ import {
   apiGetRegionList,
   apiGetPlanningConfigs,
   apiGetPlanningLayerData,
+  apiGetPlanningConfigsDetails,
 } from '~constants/url.constants';
 
 export const fetchRegionList = async () => {

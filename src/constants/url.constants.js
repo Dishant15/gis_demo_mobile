@@ -40,3 +40,9 @@ export const apiGetPlanningConfigs = () => '/api/planning/configs/';
 export const apiGetPlanningConfigsDetails = () =>
   '/api/planning/configs/details/';
 export const apiGetPlanningLayerData = () => '/api/planning/layer/';
+
+export const apiPostAddElement = layerKey =>
+  `/api/planning/layer/${layerKey}/add/`;
+
+export const apiPostAddTicketWorkorder = ticketId =>
+  `/api/ticket/${ticketId}/workorder/add/`;

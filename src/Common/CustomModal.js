@@ -41,4 +41,5 @@ const styles = StyleSheet.create({
     maxHeight: '83%',
   },
 });
+
 export default CustomModal;

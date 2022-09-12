@@ -3,7 +3,7 @@ import {View, FlatList, Pressable, StyleSheet} from 'react-native';
 import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {get, difference, noop, groupBy, map, xor, orderBy, size} from 'lodash';
+import {difference, noop, groupBy, map, xor, orderBy, size} from 'lodash';
 
 import {Button, Title, Divider, Subheading} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
