@@ -21,7 +21,7 @@ import {
 import GisMapEventLayer, {
   GisMapElementLayer,
 } from './components/GisMapEventLayer';
-import {LayerKeyMappings} from './utils';
+import {getElementCoordinates, LayerKeyMappings} from './utils';
 
 const GisMap = forwardRef((props, ref) => {
   const [showMap, setMapVisibility] = useState(false);
@@ -43,7 +43,7 @@ const GisMap = forwardRef((props, ref) => {
     if (!enableInterection) return;
     if (!e.nativeEvent.coordinate) return;
     let coords = e.nativeEvent.coordinate;
-    coords = LayerKeyMappings[mapState.layerKey]['onMapClick'](coords);
+    coords = getElementCoordinates(coords, [], mapState.layerKey);
     dispatch(updateMapStateCoordinates(coords));
   };
 

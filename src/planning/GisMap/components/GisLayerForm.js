@@ -15,6 +15,7 @@ import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {fetchLayerDataThunk} from '~planning/data/actionBar.services';
 import {View} from 'react-native';
+import {CustomBottomPopup} from '~Common/CustomPopup';
 
 export const GisLayerForm = ({
   formConfig,
@@ -81,13 +82,20 @@ export const GisLayerForm = ({
   };
 
   return (
-    <DynamicForm
-      ref={formRef}
-      formConfigs={formConfig}
-      data={data}
-      onSubmit={onSubmit}
-      onCancel={onClose}
-      isLoading={isLoading}
-    />
+    <CustomBottomPopup
+      wrapperStyle={{
+        height: '100%',
+        maxHeight: '100%',
+      }}
+      handleClose={onClose}>
+      <DynamicForm
+        ref={formRef}
+        formConfigs={formConfig}
+        data={data}
+        onSubmit={onSubmit}
+        onCancel={onClose}
+        isLoading={isLoading}
+      />
+    </CustomBottomPopup>
   );
 };

@@ -1,14 +1,54 @@
-import React from 'react';
-import {useSelector} from 'react-redux';
+import React, {useCallback} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import {Marker} from 'react-native-maps';
-
-import {getLayerViewData} from '~planning/data/planningGis.selectors';
 
 import SecondarySpliterIcon from '~assets/markers/spliter_view.svg';
 import PrimarySpliterIcon from '~assets/markers/spliter_view_primary.svg';
+import {noop} from 'lodash';
+import {PLANNING_EVENT} from '~planning/GisMap/utils';
+import {
+  ELEMENT_FORM_TEMPLATE,
+  INITIAL_ELEMENT_DATA,
+  LAYER_KEY,
+} from './configurations';
 
-export const LAYER_KEY = 'p_splitter';
+import {
+  getGisMapStateGeometry,
+  getLayerViewData,
+} from '~planning/data/planningGis.selectors';
 
+import {latLongMapToCoords} from '~utils/map.utils';
+import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
+import AddMarkerLayer from '~planning/GisMap/components/AddMarkerLayer';
+import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
+
+import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
+import {getLayerSelectedConfiguration} from '~planning/data/planningState.selectors';
+
+export const getIcon = ({splitter_type}) =>
+  splitter_type === 'P' ? <PrimarySpliterIcon /> : <SecondarySpliterIcon />;
+
+export const Geometry = ({
+  coordinates,
+  splitter_type,
+  handleMarkerDrag = noop,
+}) => {
+  if (coordinates) {
+    return (
+      <Marker
+        coordinate={coordinates}
+        onDragEnd={handleMarkerDrag}
+        tappable
+        draggable
+        stopPropagation
+        flat
+        tracksInfoWindowChanges={false}>
+        {getIcon({splitter_type})}
+      </Marker>
+    );
+  }
+  return null;
+};
 export const ViewLayer = () => {
   /**
    * Parent:
@@ -22,35 +62,86 @@ export const ViewLayer = () => {
       {data.map(dp => {
         const {id, coordinates, splitter_type} = dp;
         return (
-          <Marker
+          <Geometry
             key={id}
-            coordinate={coordinates}
-            stopPropagation
-            flat
-            tracksInfoWindowChanges={false}>
-            {splitter_type === 'P' ? (
-              <PrimarySpliterIcon />
-            ) : (
-              <SecondarySpliterIcon />
-            )}
-          </Marker>
+            splitter_type={splitter_type}
+            coordinates={coordinates}
+          />
         );
       })}
     </>
   );
 };
 
-// export EditLayer
+export const AddLayer = () => {
+  const coordinates = useSelector(getGisMapStateGeometry);
 
-// export detailsPopup = {
-//   "name" : "String"
-// }
+  return (
+    <AddMarkerLayer
+      helpText="Click on map to add new Splitter"
+      nextEvent={{
+        event: PLANNING_EVENT.showElementForm, // event for "layerForm"
+        layerKey: LAYER_KEY,
+        // init data
+        data: INITIAL_ELEMENT_DATA,
+      }}
+      markerCoords={coordinates}
+    />
+  );
+};
 
-// export addForm
+export const ElementLayer = () => {
+  const coordinates = useSelector(getGisMapStateGeometry);
+  const configuration = useSelector(getLayerSelectedConfiguration(LAYER_KEY));
+  const dispatch = useDispatch();
 
-// export editForm = {
-//   "name" : "String"
-//   "multi sel": {
-//     options :
-//   }
-// }
+  const handleMarkerDrag = e => {
+    const coords = e.nativeEvent.coordinate;
+    dispatch(updateMapStateCoordinates(coords));
+  };
+
+  return (
+    <Geometry
+      coordinates={coordinates}
+      handleMarkerDrag={handleMarkerDrag}
+      splitter_type={configuration.splitter_type}
+    />
+  );
+};
+
+export const ElementForm = () => {
+  const ticketId = useSelector(getSelectedPlanningTicket);
+  const configuration = useSelector(getLayerSelectedConfiguration(LAYER_KEY));
+
+  const transformAndValidateData = useCallback(
+    formData => {
+      return {
+        workOrder: {
+          work_order_type: 'A',
+          layer_key: LAYER_KEY,
+          remark: formData.remark,
+        },
+        element: {
+          ...formData,
+          // remove coordinates and add geometry
+          coordinates: undefined,
+          remark: undefined,
+          geometry: latLongMapToCoords([formData.coordinates])[0],
+          // convert select fields to simple values
+          status: formData.status.value,
+          configuration: configuration.id,
+        },
+      };
+    },
+    [ticketId],
+  );
+
+  return (
+    <GisLayerForm
+      layerKey={LAYER_KEY}
+      ticketId={ticketId}
+      formConfig={ELEMENT_FORM_TEMPLATE}
+      transformAndValidateData={transformAndValidateData}
+    />
+  );
+};

@@ -13,19 +13,16 @@ import {
   ElementForm as DpForm,
   Icon as DpIcon,
   ElementLayer as DpElement,
-  getElementCoordinates as handleDpMapClick,
 } from './layers/p_dp';
-// import {
-//   LAYER_KEY as SplitterKey,
-//   ViewLayer as SplitterLayer,
-//   Geometry as SplitterGeometry,
-//   AddLayer as SplitterAddLayer,
-//   ElementForm as SplitterForm,
-//   getIcon as SplitterGetIcon,
-//   ELEMENT_CONFIG_TEMPLATE as SplitterConfigFormTemplate,
-//   INITIAL_CONFIG_DATA as SplitterConfigInitData,
-//   transformAndValidateConfigData as spConfigTransformData,
-// } from './layers/p_splitter';
+import {
+  LAYER_KEY as SplitterKey,
+  ViewLayer as SplitterLayer,
+  Geometry as SplitterGeometry,
+  AddLayer as SplitterAddLayer,
+  ElementForm as SplitterForm,
+  getIcon as SplitterGetIcon,
+  ElementLayer as SplitterElement,
+} from './layers/p_splitter';
 // import {
 //   LAYER_KEY as CableKey,
 //   ViewLayer as CableLayer,
@@ -47,6 +44,12 @@ export const PLANNING_EVENT = {
   showElementForm: 'F',
 };
 
+export const TICKET_WORKORDER_TYPE = {
+  ADD: 'A',
+  EDIT: 'E',
+  DELETE: 'D',
+};
+
 export const LayerKeyMappings = {
   [RegionKey]: {
     ViewLayer: RegionViewLayer,
@@ -58,18 +61,15 @@ export const LayerKeyMappings = {
     ViewLayer: DPViewLayer,
     Geometry: DPGeometry,
     Icon: DpIcon,
-    onMapClick: handleDpMapClick,
   },
-  // [SplitterKey]: {
-  //   [PLANNING_EVENT.addElement]: <SplitterAddLayer />,
-  //   [PLANNING_EVENT.showElementForm]: <SplitterForm />,
-  //   ViewLayer: SplitterLayer,
-  //   Geometry: SplitterGeometry,
-  //   Icon: SplitterGetIcon,
-  //   ConfigFormTemplate: SplitterConfigFormTemplate,
-  //   ConfigInitData: SplitterConfigInitData,
-  //   configTransformData: spConfigTransformData,
-  // },
+  [SplitterKey]: {
+    [PLANNING_EVENT.addElement]: <SplitterAddLayer />,
+    [PLANNING_EVENT.showElementForm]: <SplitterForm />,
+    ElementLayer: SplitterElement,
+    ViewLayer: SplitterLayer,
+    Geometry: SplitterGeometry,
+    Icon: SplitterGetIcon,
+  },
   // [CableKey]: {
   //   [PLANNING_EVENT.addElement]: <CableAddLayer />,
   //   [PLANNING_EVENT.showElementForm]: <CableForm />,
@@ -107,4 +107,12 @@ export const covertLayerServerData = (layerKey, serverData) => {
     });
     return resultData;
   }
+};
+
+export const getElementCoordinates = (
+  newCoordinates,
+  existingCoordinates,
+  layerKey,
+) => {
+  return newCoordinates;
 };

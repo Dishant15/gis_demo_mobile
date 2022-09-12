@@ -4,7 +4,6 @@ export {
   ElementForm,
   Geometry,
   ElementLayer,
-  getElementCoordinates,
 } from './ViewLayer';
 
 export {default as Icon} from '~assets/markers/p_dp_view.svg';

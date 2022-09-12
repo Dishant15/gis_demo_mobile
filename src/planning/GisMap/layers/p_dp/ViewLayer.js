@@ -164,11 +164,6 @@ export const AddLayer = () => {
   );
 };
 
-// mapper fucntion for map click, return coords after map click
-export const getElementCoordinates = (newCoordinates, existingCoordinates) => {
-  return newCoordinates;
-};
-
 export const ElementLayer = () => {
   const coordinates = useSelector(getGisMapStateGeometry);
   const dispatch = useDispatch();
@@ -207,25 +202,12 @@ export const ElementForm = () => {
     [ticketId],
   );
 
-  const dispatch = useDispatch();
-
-  const handleClose = useCallback(() => {
-    dispatch(setMapState({}));
-  }, []);
-
   return (
-    <CustomBottomPopup
-      wrapperStyle={{
-        height: '100%',
-        maxHeight: '100%',
-      }}
-      handleClose={handleClose}>
-      <GisLayerForm
-        layerKey={LAYER_KEY}
-        ticketId={ticketId}
-        formConfig={ELEMENT_FORM_TEMPLATE}
-        transformAndValidateData={transformAndValidateData}
-      />
-    </CustomBottomPopup>
+    <GisLayerForm
+      layerKey={LAYER_KEY}
+      ticketId={ticketId}
+      formConfig={ELEMENT_FORM_TEMPLATE}
+      transformAndValidateData={transformAndValidateData}
+    />
   );
 };
