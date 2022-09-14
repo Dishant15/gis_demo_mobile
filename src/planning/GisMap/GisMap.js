@@ -9,18 +9,12 @@ import {useIsFocused} from '@react-navigation/native';
 import {getSelectedLayerKeys} from '~planning/data/planningState.selectors';
 
 import {layout} from '~constants/constants';
-import {
-  updateMapState,
-  updateMapStateCoordinates,
-} from '~planning/data/planningGis.reducer';
+import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 import {
   getGisMapInterectionEnable,
-  getGisMapStateLayerKey,
   getPlanningMapState,
 } from '~planning/data/planningGis.selectors';
-import GisMapEventLayer, {
-  GisMapElementLayer,
-} from './components/GisMapEventLayer';
+import {GisMapElementLayer} from './components/GisMapEventLayer';
 import {getElementCoordinates, LayerKeyMappings} from './utils';
 
 /**

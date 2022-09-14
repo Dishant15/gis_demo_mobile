@@ -4,30 +4,27 @@ import {useDispatch, useSelector} from 'react-redux';
 import {get} from 'lodash';
 
 import DynamicForm from '~Common/DynamicForm';
+import {CustomBottomPopup} from '~Common/CustomPopup';
 
-import {
-  addNewElement,
-  addNewTicketWorkorder,
-} from '~planning/data/layer.services';
+import {addNewTicketWorkorder} from '~planning/data/layer.services';
 import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
 import {getPlanningMapStateData} from '~planning/data/planningGis.selectors';
-import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {fetchLayerDataThunk} from '~planning/data/actionBar.services';
-import {View} from 'react-native';
-import {CustomBottomPopup} from '~Common/CustomPopup';
+import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
 export const GisLayerForm = ({
   formConfig,
   isConfigurable,
   layerKey,
-  ticketId,
   transformAndValidateData,
 }) => {
   const dispatch = useDispatch();
   const formRef = useRef();
   const data = useSelector(getPlanningMapStateData);
   const selectedRegionIds = useSelector(getSelectedRegionIds);
+  const ticketId = useSelector(getSelectedPlanningTicket);
 
   const {mutate: addElement, isLoading} = useMutation(
     mutationData => addNewTicketWorkorder({data: mutationData, ticketId}),

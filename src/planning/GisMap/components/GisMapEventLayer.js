@@ -28,6 +28,13 @@ const GisMapEventLayer = React.memo(() => {
   return null;
 });
 
+/**
+ * render marker / polygon / polyline based on layer key and event on google map
+ * should be direct child of map component
+ *
+ * Renders
+ *  {LayerKey} -> ElementLayer (export from layers folder)
+ */
 export const GisMapElementLayer = React.memo(() => {
   const mapState = useSelector(getPlanningMapState);
 

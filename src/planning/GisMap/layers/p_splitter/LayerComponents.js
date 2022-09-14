@@ -18,7 +18,6 @@ import {
 } from '~planning/data/planningGis.selectors';
 
 import {latLongMapToCoords} from '~utils/map.utils';
-import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
 import AddMarkerLayer from '~planning/GisMap/components/AddMarkerLayer';
 import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
 
@@ -110,36 +109,31 @@ export const ElementLayer = () => {
 };
 
 export const ElementForm = () => {
-  const ticketId = useSelector(getSelectedPlanningTicket);
   const configuration = useSelector(getLayerSelectedConfiguration(LAYER_KEY));
 
-  const transformAndValidateData = useCallback(
-    formData => {
-      return {
-        workOrder: {
-          work_order_type: 'A',
-          layer_key: LAYER_KEY,
-          remark: formData.remark,
-        },
-        element: {
-          ...formData,
-          // remove coordinates and add geometry
-          coordinates: undefined,
-          remark: undefined,
-          geometry: latLongMapToCoords([formData.coordinates])[0],
-          // convert select fields to simple values
-          status: formData.status.value,
-          configuration: configuration.id,
-        },
-      };
-    },
-    [ticketId],
-  );
+  const transformAndValidateData = useCallback(formData => {
+    return {
+      workOrder: {
+        work_order_type: 'A',
+        layer_key: LAYER_KEY,
+        remark: formData.remark,
+      },
+      element: {
+        ...formData,
+        // remove coordinates and add geometry
+        coordinates: undefined,
+        remark: undefined,
+        geometry: latLongMapToCoords([formData.coordinates])[0],
+        // convert select fields to simple values
+        status: formData.status.value,
+        configuration: configuration.id,
+      },
+    };
+  }, []);
 
   return (
     <GisLayerForm
       layerKey={LAYER_KEY}
-      ticketId={ticketId}
       formConfig={ELEMENT_FORM_TEMPLATE}
       transformAndValidateData={transformAndValidateData}
     />
