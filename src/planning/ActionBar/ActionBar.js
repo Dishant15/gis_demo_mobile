@@ -37,13 +37,13 @@ const ActionBar = () => {
   const tabContent = useMemo(() => {
     switch (activeTab) {
       case 0:
-        return <RegionTabContent />;
+        return <RegionTabContent hideModal={hideModal} />;
 
       case 1:
-        return <LayersTabContent />;
+        return <LayersTabContent hideModal={hideModal} />;
 
       case 2:
-        return <AddElementContent />;
+        return <AddElementContent hideModal={hideModal} />;
 
       default:
         return <Text>Invalid Tab Selection</Text>;

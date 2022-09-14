@@ -6,9 +6,10 @@ import {useDispatch, useSelector} from 'react-redux';
 
 import {get, noop} from 'lodash';
 
-import {Button, Text, Title, Divider, Subheading} from 'react-native-paper';
+import {Button, Text, Divider, Subheading} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Loader from '~Common/Loader';
+import Header from './Header';
 
 import {
   fetchLayerDataThunk,
@@ -32,7 +33,7 @@ const regionLayerConfig = {
   can_add: false,
 };
 
-const LayersTabContent = () => {
+const LayersTabContent = ({hideModal}) => {
   /**
    * Render list of elements user can view on map
    * User can click and get data of layers
@@ -57,16 +58,18 @@ const LayersTabContent = () => {
   return (
     <View style={styles.container}>
       {isLoading ? <Loader /> : null}
-      <Title style={styles.title}>GIS Layers</Title>
-      {layerCofigs.map(layer => {
-        return (
-          <LayerTab
-            key={layer.layer_key}
-            layerConfig={layer}
-            regionIdList={regionIdList}
-          />
-        );
-      })}
+      <Header text="GIS LAYERS" icon="layers" onClose={hideModal} />
+      <View style={styles.wrapper}>
+        {layerCofigs.map(layer => {
+          return (
+            <LayerTab
+              key={layer.layer_key}
+              layerConfig={layer}
+              regionIdList={regionIdList}
+            />
+          );
+        })}
+      </View>
     </View>
   );
 };
@@ -166,8 +169,10 @@ const ElementList = ({layerKey}) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 12,
     height: '100%',
+  },
+  wrapper: {
+    paddingHorizontal: 12,
   },
   itemWrapper: {
     flexDirection: 'row',

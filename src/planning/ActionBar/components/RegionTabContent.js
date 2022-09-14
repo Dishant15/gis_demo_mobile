@@ -7,6 +7,8 @@ import {difference, noop, groupBy, map, xor, orderBy, size} from 'lodash';
 
 import {Button, Title, Divider, Subheading} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Loader from '~Common/Loader';
+import Header from './Header';
 
 import {
   fetchRegionList,
@@ -22,13 +24,12 @@ import {
   handleRegionSelect,
   setActiveTab,
 } from '~planning/data/planningState.reducer';
+import {resetUnselectedLayerGisData} from '~planning/data/planningGis.reducer';
 
 import {getFillColor} from '~utils/map.utils';
 import {colors, layout} from '~constants/constants';
-import Loader from '~Common/Loader';
-import {resetUnselectedLayerGisData} from '~planning/data/planningGis.reducer';
 
-const RegionTabContent = () => {
+const RegionTabContent = ({hideModal}) => {
   /**
    * Parent
    *  ActionBar
@@ -111,6 +112,7 @@ const RegionTabContent = () => {
   return (
     <View style={styles.container}>
       {isLoading ? <Loader /> : null}
+      <Header text="ADD ELEMENT" icon="attractions" onClose={hideModal} />
       <View style={styles.titleWrapper}>
         <Title style={styles.title}>Select Regions</Title>
         <Button
@@ -185,16 +187,17 @@ const RegionListItem = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 12,
     height: '100%',
   },
   titleWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 12,
+    paddingHorizontal: 12,
   },
   list: {
     height: '80%',
+    paddingHorizontal: 12,
   },
   title: {
     color: colors.primaryMain,

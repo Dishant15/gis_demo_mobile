@@ -4,10 +4,11 @@ import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 
 import {filter, isNull, size} from 'lodash';
-import {Subheading, Paragraph, Title} from 'react-native-paper';
+import {Subheading, Paragraph} from 'react-native-paper';
 
-import Loader from '~Common/Loader';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Loader from '~Common/Loader';
+import Header from './Header';
 
 import {fetchLayerListDetails} from '~planning/data/actionBar.services';
 import {setMapState} from '~planning/data/planningGis.reducer';
@@ -22,9 +23,9 @@ import {
 } from '~planning/data/planningGis.selectors';
 import {PLANNING_EVENT} from '~planning/GisMap/utils';
 
-import {colors, layout} from '~constants/constants';
 import {ICONS} from '~utils/icons';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {colors, layout} from '~constants/constants';
 
 const {width} = Dimensions.get('window');
 const itemWidth = (width - 24) / 3;
@@ -33,7 +34,7 @@ const itemWidth = (width - 24) / 3;
  * Parent:
  *    ActionBar
  */
-const AddElementContent = () => {
+const AddElementContent = ({hideModal}) => {
   const {isLoading, data} = useQuery(
     'planningLayerConfigsDetails',
     fetchLayerListDetails,
@@ -117,53 +118,58 @@ const AddElementContent = () => {
 
   if (layerCofigs.length) {
     return (
-      <View style={styles.container}>
+      <View>
         {isLoading ? <Loader /> : null}
-        <Title style={styles.title}>GIS Layers</Title>
+        <Header text="ADD ELEMENT" icon="add-location" onClose={hideModal} />
+        <View style={styles.container}>
+          <View style={styles.grid}>
+            {layerCofigs.map(config => {
+              const {layer_key, name, is_configurable, configuration} = config;
 
-        <View style={styles.grid}>
-          {layerCofigs.map(config => {
-            const {layer_key, name, is_configurable, configuration} = config;
-
-            let SvgComp = ICONS(config.layer_key);
-            SvgComp = isNull(SvgComp) ? <></> : <SvgComp width={30} />;
-            return (
-              <Pressable
-                style={[
-                  layout.relative,
-                  {width: itemWidth, height: itemWidth, padding: 8},
-                ]}
-                key={layer_key}
-                onPress={handleAddElementClick(layer_key)}>
-                <View style={styles.gridItem}>
-                  {SvgComp}
-                  <Paragraph style={layout.textCenter}>{name}</Paragraph>
-                </View>
-                {is_configurable ? (
-                  <Pressable
-                    style={styles.setting}
-                    onPress={handleLayerConfigPopupShow(layer_key)}>
-                    <MaterialIcons
-                      size={22}
-                      name={'settings'}
-                      color={colors.primaryFontColor}
-                    />
-                  </Pressable>
-                ) : null}
-              </Pressable>
-            );
-          })}
+              let SvgComp = ICONS(config.layer_key);
+              SvgComp = isNull(SvgComp) ? <></> : <SvgComp width={30} />;
+              return (
+                <Pressable
+                  style={[
+                    layout.relative,
+                    {width: itemWidth, height: itemWidth, padding: 8},
+                  ]}
+                  key={layer_key}
+                  onPress={handleAddElementClick(layer_key)}>
+                  <View style={styles.gridItem}>
+                    {SvgComp}
+                    <Paragraph style={layout.textCenter}>{name}</Paragraph>
+                  </View>
+                  {is_configurable ? (
+                    <Pressable
+                      style={styles.setting}
+                      onPress={handleLayerConfigPopupShow(layer_key)}>
+                      <MaterialIcons
+                        size={22}
+                        name={'settings'}
+                        color={colors.primaryFontColor}
+                      />
+                    </Pressable>
+                  ) : null}
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
       </View>
     );
   } else {
     return (
-      <View style={styles.container}>
+      <View>
         {isLoading ? <Loader /> : null}
-        <Title style={styles.title}>GIS Layers</Title>
-        <Subheading style={layout.textCenter}>
-          No elements created yet.
-        </Subheading>
+        <Header text="ADD ELEMENT" icon="add-location" onClose={hideModal} />
+        <View style={styles.container}>
+          {isLoading ? null : (
+            <Subheading style={layout.textCenter}>
+              No elements created yet.
+            </Subheading>
+          )}
+        </View>
       </View>
     );
   }
