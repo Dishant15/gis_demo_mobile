@@ -30,8 +30,10 @@ import {LAYER_KEY as CableKey} from './layers/p_cable';
 // possible events that can happen on map
 export const PLANNING_EVENT = {
   addElement: 'A',
-  // editElement: 'E',
-  showElementForm: 'F',
+  addElementForm: 'F',
+  showElementDetails: 'D',
+  editElementDetails: 'EF',
+  editElementLocation: 'E',
 };
 
 export const TICKET_WORKORDER_TYPE = {
@@ -46,21 +48,21 @@ export const LayerKeyMappings = {
   },
   [DpKey]: {
     [PLANNING_EVENT.addElement]: <DPAddLayer />,
-    [PLANNING_EVENT.showElementForm]: <DpForm />,
+    [PLANNING_EVENT.addElementForm]: <DpForm />,
     ViewLayer: DPViewLayer,
     Geometry: DPGeometry,
     Icon: DpIcon,
   },
   [SplitterKey]: {
     [PLANNING_EVENT.addElement]: <SplitterAddLayer />,
-    [PLANNING_EVENT.showElementForm]: <SplitterForm />,
+    [PLANNING_EVENT.addElementForm]: <SplitterForm />,
     ViewLayer: SplitterLayer,
     Geometry: SplitterGeometry,
     Icon: SplitterGetIcon,
   },
   // [CableKey]: {
   //   [PLANNING_EVENT.addElement]: <CableAddLayer />,
-  //   [PLANNING_EVENT.showElementForm]: <CableForm />,
+  //   [PLANNING_EVENT.addElementForm]: <CableForm />,
   //   ViewLayer: CableLayer,
   //   Geometry: CableGeometry,
   //   Icon: CableGetIcon,

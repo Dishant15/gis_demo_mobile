@@ -93,7 +93,7 @@ export const AddLayer = () => {
     <AddMarkerLayer
       helpText="Click on map to add new Distribution Point location"
       nextEvent={{
-        event: PLANNING_EVENT.showElementForm, // event for "layerForm"
+        event: PLANNING_EVENT.addElementForm, // event for "layerForm"
         layerKey: LAYER_KEY,
         // init data
         data: INITIAL_ELEMENT_DATA,
