@@ -1,11 +1,10 @@
 import React, {useEffect} from 'react';
-import {useDispatch} from 'react-redux';
-
 import {View, StatusBar} from 'react-native';
+import {useDispatch} from 'react-redux';
 
 import GisMap from '~planning/GisMap';
 import ActionBar from '~planning/ActionBar';
-import GisMapEventLayer from '~planning/GisMap/components/GisMapEventLayer';
+import {LayerEventComponent} from '~planning/GisMap/components/LayerToComponentMap';
 
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {layout} from '~constants/constants';
@@ -22,7 +21,7 @@ const PlanningScreen = () => {
   return (
     <View style={[layout.container, layout.relative]}>
       <StatusBar barStyle="dark-content" />
-      <GisMapEventLayer />
+      <LayerEventComponent />
       <ActionBar />
       <GisMap />
     </View>

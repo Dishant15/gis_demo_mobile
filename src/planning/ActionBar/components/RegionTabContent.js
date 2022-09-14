@@ -26,6 +26,7 @@ import {
 import {getFillColor} from '~utils/map.utils';
 import {colors, layout} from '~constants/constants';
 import Loader from '~Common/Loader';
+import {resetUnselectedLayerGisData} from '~planning/data/planningGis.reducer';
 
 const RegionTabContent = () => {
   /**
@@ -102,6 +103,7 @@ const RegionTabContent = () => {
         const currLayerKey = selectedLayerKeys[l_ind];
         dispatch(fetchLayerDataThunk({regionIdList, layerKey: currLayerKey}));
       }
+      dispatch(resetUnselectedLayerGisData(selectedLayerKeys));
     }
     dispatch(setActiveTab(null));
   }, [selectedRegionSet, selectedRegionIds, selectedLayerKeys]);

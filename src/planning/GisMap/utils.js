@@ -25,22 +25,12 @@ import {
   getIcon as SplitterGetIcon,
   ElementLayer as SplitterElement,
 } from './layers/p_splitter';
-// import {
-//   LAYER_KEY as CableKey,
-//   ViewLayer as CableLayer,
-//   Geometry as CableGeometry,
-//   AddLayer as CableAddLayer,
-//   ElementForm as CableForm,
-//   getIcon as CableGetIcon,
-//   ELEMENT_CONFIG_TEMPLATE as CableConfigFormTemplate,
-//   INITIAL_CONFIG_DATA as CableConfigInitData,
-//   transformAndValidateConfigData as cblConfigTransformData,
-// } from './layers/p_cable';
+import {LAYER_KEY as CableKey} from './layers/p_cable';
 
 // possible events that can happen on map
 export const PLANNING_EVENT = {
   addElement: 'A',
-  editElement: 'E',
+  // editElement: 'E',
   showElementForm: 'F',
 };
 
@@ -57,7 +47,6 @@ export const LayerKeyMappings = {
   [DpKey]: {
     [PLANNING_EVENT.addElement]: <DPAddLayer />,
     [PLANNING_EVENT.showElementForm]: <DpForm />,
-    ElementLayer: DpElement,
     ViewLayer: DPViewLayer,
     Geometry: DPGeometry,
     Icon: DpIcon,
@@ -65,7 +54,6 @@ export const LayerKeyMappings = {
   [SplitterKey]: {
     [PLANNING_EVENT.addElement]: <SplitterAddLayer />,
     [PLANNING_EVENT.showElementForm]: <SplitterForm />,
-    ElementLayer: SplitterElement,
     ViewLayer: SplitterLayer,
     Geometry: SplitterGeometry,
     Icon: SplitterGetIcon,
@@ -82,9 +70,13 @@ export const LayerKeyMappings = {
   // },
 };
 
-export const InfoLayerKeyMappings = {
+// on Gis event handle with gis mapping
+export const LayerKeyGisMapping = {
   [DpKey]: {
-    [PLANNING_EVENT.addElement]: <DPAddLayer />,
+    [PLANNING_EVENT.addElement]: DpElement,
+  },
+  [SplitterKey]: {
+    [PLANNING_EVENT.addElement]: SplitterElement,
   },
 };
 

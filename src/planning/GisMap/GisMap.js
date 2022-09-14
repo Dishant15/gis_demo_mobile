@@ -1,27 +1,26 @@
 import React, {useState, forwardRef, useEffect, useMemo} from 'react';
 import {View, InteractionManager} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import * as Animatable from 'react-native-animatable';
 import {useIsFocused} from '@react-navigation/native';
 
-import {getSelectedLayerKeys} from '~planning/data/planningState.selectors';
-
+import {LayerGisEventComponent} from './components/LayerToComponentMap';
 import {layout} from '~constants/constants';
+
+import {getSelectedLayerKeys} from '~planning/data/planningState.selectors';
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 import {
   getGisMapInterectionEnable,
   getPlanningMapState,
 } from '~planning/data/planningGis.selectors';
-import {GisMapElementLayer} from './components/GisMapEventLayer';
 import {getElementCoordinates, LayerKeyMappings} from './utils';
 
 /**
  * Parent
  *    PlanningScreen
  */
-const GisMap = forwardRef((props, ref) => {
+const GisMap = props => {
   const [showMap, setMapVisibility] = useState(false);
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
@@ -60,7 +59,6 @@ const GisMap = forwardRef((props, ref) => {
         <Animatable.View animation="fadeIn" style={layout.container}>
           <MapView
             showsIndoorLevelPicker
-            ref={ref}
             style={layout.map}
             initialRegion={{
               longitudeDelta: 0.06032254546880722,
@@ -75,12 +73,12 @@ const GisMap = forwardRef((props, ref) => {
             onPoiClick={handleMapClick}
             showsPointsOfInterest={false}>
             {Layers}
-            <GisMapElementLayer />
+            <LayerGisEventComponent />
           </MapView>
         </Animatable.View>
       ) : null}
     </View>
   );
-});
+};
 
 export default GisMap;
