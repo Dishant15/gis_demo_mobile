@@ -30,7 +30,6 @@ import {layout, THEME_COLORS} from '~constants/constants';
 import Icon from '~assets/markers/p_dp_view.svg';
 import {noop} from 'lodash';
 import {PLANNING_EVENT} from '~planning/GisMap/utils';
-import {CustomBottomPopup} from '~Common/CustomPopup';
 import {latLongMapToCoords} from '~utils/map.utils';
 import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
 
@@ -108,8 +107,6 @@ export const MapElement = () => {
     return null;
   }
 };
-
-// export EditLayer
 
 export const Geometry = ({coordinates, handleMarkerDrag = noop}) => {
   if (coordinates) {

@@ -1,6 +1,8 @@
 import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 
+import {coordsToLatLongMap} from '~utils/map.utils';
+
 import {
   ViewLayer as RegionViewLayer,
   LAYER_KEY as RegionKey,
@@ -34,8 +36,6 @@ import {
 //   INITIAL_CONFIG_DATA as CableConfigInitData,
 //   transformAndValidateConfigData as cblConfigTransformData,
 // } from './layers/p_cable';
-
-import {coordsToLatLongMap} from '~utils/map.utils';
 
 // possible events that can happen on map
 export const PLANNING_EVENT = {
@@ -88,14 +88,14 @@ export const InfoLayerKeyMappings = {
   },
 };
 
-export const covertLayerServerData = (layerKey, serverData) => {
+export const convertLayerServerData = (layerKey, serverData) => {
   let resultData = cloneDeep(serverData) || [];
 
-  // hard coded layers
-  if (layerKey === RegionKey) {
+  // PolyLine
+  if (layerKey === CableKey) {
     resultData.map(d => {
       // [ [lat, lng], ...] -> [{lat, lng}, ...]
-      d.coordinates = coordsToLatLongMap(d.coordinates, true);
+      d.coordinates = coordsToLatLongMap(d.coordinates);
       d.center = coordsToLatLongMap([d.center])[0];
     });
     return resultData;
@@ -104,6 +104,15 @@ export const covertLayerServerData = (layerKey, serverData) => {
   else if (layerKey === DpKey || layerKey === SplitterKey) {
     resultData.map(d => {
       d.coordinates = coordsToLatLongMap([d.coordinates])[0];
+    });
+    return resultData;
+  }
+  // Multi polygon - regions
+  else if (layerKey === RegionKey) {
+    resultData.map(d => {
+      // [ [lat, lng], ...] -> [{lat, lng}, ...]
+      d.coordinates = coordsToLatLongMap(d.coordinates, true);
+      d.center = coordsToLatLongMap([d.center])[0];
     });
     return resultData;
   }

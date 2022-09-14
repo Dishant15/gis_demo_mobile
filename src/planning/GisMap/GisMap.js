@@ -23,6 +23,10 @@ import GisMapEventLayer, {
 } from './components/GisMapEventLayer';
 import {getElementCoordinates, LayerKeyMappings} from './utils';
 
+/**
+ * Parent
+ *    PlanningScreen
+ */
 const GisMap = forwardRef((props, ref) => {
   const [showMap, setMapVisibility] = useState(false);
   const isFocused = useIsFocused();
@@ -58,7 +62,6 @@ const GisMap = forwardRef((props, ref) => {
 
   return (
     <View style={[layout.container, layout.relative]}>
-      {/* <GisMapEventLayer /> */}
       {showMap ? (
         <Animatable.View animation="fadeIn" style={layout.container}>
           <MapView

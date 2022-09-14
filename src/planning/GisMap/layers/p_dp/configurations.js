@@ -1,3 +1,5 @@
+import {LAYER_STATUS_OPTIONS} from '../common/configuration';
+
 export const LAYER_KEY = 'p_dp';
 
 export const INITIAL_ELEMENT_DATA = {
@@ -35,11 +37,7 @@ export const ELEMENT_FORM_TEMPLATE = {
           field_key: 'status',
           label: 'Status',
           field_type: 'chipSelect',
-          options: [
-            {value: 'T', label: 'Ticket Open'},
-            {value: 'P', label: 'Planned'},
-            {value: 'V', label: 'Verified'},
-          ],
+          options: LAYER_STATUS_OPTIONS,
         },
         {
           field_key: 'remark',

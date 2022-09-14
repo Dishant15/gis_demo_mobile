@@ -1,6 +1,4 @@
 import React, {useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-
 import {
   View,
   Text,
@@ -10,17 +8,18 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
-import {Button, Card, Title, Paragraph} from 'react-native-paper';
+import {useDispatch, useSelector} from 'react-redux';
+import size from 'lodash/size';
 
 import MapView, {PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
+import {Button, Card} from 'react-native-paper';
+
 import * as Animatable from 'react-native-animatable';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {size} from 'lodash';
+
 import {polygon, booleanContains} from '@turf/turf';
 
-import BackHeader from '~Common/components/Header/BackHeader';
 import CustomMarker from '~Common/CustomMarker';
 
 import {colors, layout, screens, THEME_COLORS} from '~constants/constants';
@@ -73,7 +72,6 @@ const EDGE_PADDING = {
  *    root.navigation
  */
 const SurveyMap = ({navigation}) => {
-  const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
 
   const coords = useSelector(getSurveyCoordinates);
@@ -187,13 +185,6 @@ const SurveyMap = ({navigation}) => {
     setCoordinates([...coordinates, updatedCoords]);
   };
 
-  const handleMapPoiClick = e => {
-    if (!startEditing) return;
-    if (!e.nativeEvent.coordinate) return;
-    const updatedCoords = e.nativeEvent.coordinate;
-    setCoordinates([...coordinates, updatedCoords]);
-  };
-
   const onMapReady = () => {
     mapRef.current.fitToCoordinates(selectedArea.coordinates, {
       edgePadding: EDGE_PADDING,
@@ -234,22 +225,6 @@ const SurveyMap = ({navigation}) => {
   return (
     <View style={layout.container}>
       <StatusBar barStyle="dark-content" />
-      {/* <BackHeader
-        title={startEditing ? 'Tap on Map' : 'Create Polygon'}
-        subtitle={
-          startEditing ? 'put marker by tapping, long press for move' : ''
-        }
-        onGoBack={handleCustomBack}
-        style={{
-          height: 80,
-        }}
-        titleStyle={{
-          fontSize: 22,
-        }}
-        subtitleStyle={{
-          fontSize: 16,
-        }}
-      /> */}
       {ticketStatus === 'A' ? (
         <FloatingCard
           title={startEditing ? 'Finalise polygon' : 'Create Polygon'}
@@ -321,7 +296,7 @@ const SurveyMap = ({navigation}) => {
               onMapReady={onMapReady}
               provider={PROVIDER_GOOGLE}
               onPress={handleMapClick}
-              onPoiClick={handleMapPoiClick}
+              onPoiClick={handleMapClick}
               showsPointsOfInterest={false}
               mapPadding={EDGE_PADDING}
               onMapLoaded={() => {
@@ -394,26 +369,6 @@ const SurveyMap = ({navigation}) => {
             />
           </TouchableOpacity>
         </View>
-        {/* {ticketStatus === 'A' ? (
-          <View
-            style={[
-              styles.content,
-              {
-                marginBottom: Math.max(insets.bottom, 16),
-              },
-            ]}>
-            <TouchableOpacity
-              activeOpacity={0.6}
-              style={[
-                layout.button,
-                styles.drawBtn,
-                !isPolygonValid || (!startEditing && styles.disableBtn),
-              ]}
-              onPress={handleBtnPress}>
-              <Text style={styles.drawBtnTxt}>{btnText}</Text>
-            </TouchableOpacity>
-          </View>
-        ) : null} */}
       </View>
     </View>
   );
