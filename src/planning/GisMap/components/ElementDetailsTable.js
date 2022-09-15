@@ -4,6 +4,7 @@ import {useQuery} from 'react-query';
 import {useDispatch} from 'react-redux';
 
 import get from 'lodash/get';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {fetchElementDetails} from '~planning/data/layer.services';
 import {setMapState} from '~planning/data/planningGis.reducer';
@@ -19,6 +20,7 @@ const ElementDetailsTable = ({
   elementId,
   onEditDataConverter,
 }) => {
+  const {top} = useSafeAreaInsets();
   const dispatch = useDispatch();
   const {data: elemData, isLoading} = useQuery(
     ['elementDetails', layerKey, elementId],
@@ -40,6 +42,7 @@ const ElementDetailsTable = ({
       wrapperStyle={{
         height: '100%',
         maxHeight: '100%',
+        paddingTop: Math.max(top, 0),
       }}
       handleClose={handleCloseDetails}>
       <Header text="Element Details" onClose={handleCloseDetails} />
