@@ -26,6 +26,8 @@ export const getGisMapInterectionEnable = store =>
 export const getPlanningMapState = store => store.planningGis.mapState;
 export const getPlanningMapStateData = store =>
   store.planningGis.mapState.data || {};
+export const getPlanningTicketWorkOrderId = store =>
+  store.planningGis.workOrderId;
 
 export const getSelectedConfigurations = store =>
   store.planningState.selectedConfigurations;

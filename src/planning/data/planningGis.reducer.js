@@ -41,6 +41,7 @@ const initialState = {
   },
   // list of elements that can be shown on map with converted data
   ticketGisData: [],
+  workOrderId: null,
 };
 
 const planningGisSlice = createSlice({
@@ -62,6 +63,9 @@ const planningGisSlice = createSlice({
     updateMapStateData: (state, {payload}) => {
       const mapStateData = get(state.mapState, 'data', {});
       state.mapState.data = {...mapStateData, ...payload};
+    },
+    setTicketWorkOrderId: (state, {payload}) => {
+      state.workOrderId = payload;
     },
     // payload => list of selected layerKey
     // when region changes remove data for all inactive layers, so user can fetch fresh on click
@@ -172,5 +176,6 @@ export const {
   resetMapState,
   updateMapStateCoordinates,
   resetUnselectedLayerGisData,
+  setTicketWorkOrderId,
 } = planningGisSlice.actions;
 export default planningGisSlice.reducer;

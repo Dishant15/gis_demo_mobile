@@ -118,21 +118,14 @@ export const ElementForm = () => {
 
   const transformAndValidateData = useCallback(formData => {
     return {
-      workOrder: {
-        work_order_type: 'A',
-        layer_key: LAYER_KEY,
-        remark: formData.remark,
-      },
-      element: {
-        ...formData,
-        // remove coordinates and add geometry
-        coordinates: undefined,
-        remark: undefined,
-        geometry: latLongMapToCoords([formData.coordinates])[0],
-        // convert select fields to simple values
-        status: formData.status.value,
-        configuration: configuration.id,
-      },
+      ...formData,
+      // remove coordinates and add geometry
+      coordinates: undefined,
+      remark: undefined,
+      geometry: latLongMapToCoords([formData.coordinates])[0],
+      // convert select fields to simple values
+      status: formData.status.value,
+      configuration: configuration.id,
     };
   }, []);
 

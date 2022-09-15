@@ -124,20 +124,12 @@ export const ElementForm = () => {
   // SUGGESTED_UPDATES ---- remove workOrder object from this
   const transformAndValidateData = useCallback(formData => {
     return {
-      workOrder: {
-        work_order_type: 'A',
-        layer_key: LAYER_KEY,
-        remark: formData.remark,
-      },
-      element: {
-        ...formData,
-        // remove coordinates and add geometry
-        coordinates: undefined,
-        remark: undefined,
-        geometry: latLongMapToCoords([formData.coordinates])[0],
-        // convert select fields to simple values
-        status: formData.status.value,
-      },
+      ...formData,
+      // remove coordinates and add geometry
+      coordinates: undefined,
+      geometry: latLongMapToCoords([formData.coordinates])[0],
+      // convert select fields to simple values
+      status: formData.status.value,
     };
   }, []);
 

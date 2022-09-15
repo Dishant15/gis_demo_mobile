@@ -1,8 +1,7 @@
 import React, {useEffect} from 'react';
-import {View, StatusBar, Pressable, StyleSheet} from 'react-native';
+import {View, StatusBar, StyleSheet} from 'react-native';
 import {useDispatch} from 'react-redux';
 
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import GisMap from '~planning/GisMap';
@@ -11,6 +10,7 @@ import {LayerEventComponent} from '~planning/GisMap/components/LayerToComponentM
 
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {colors, layout} from '~constants/constants';
+import MapTitleBox from '~planning/GisMap/components/MapTitleBox';
 
 const PlanningScreen = props => {
   const dispatch = useDispatch();
@@ -28,15 +28,7 @@ const PlanningScreen = props => {
       <ActionBar />
       <GisMap />
       <LayerEventComponent />
-      <View style={[styles.backWrapper, {top: Math.max(top, 14)}]}>
-        <Pressable style={styles.iconWrapper} onPress={props.navigation.goBack}>
-          <MaterialIcons
-            size={26}
-            name={'arrow-back'}
-            color={colors.primaryFontColor}
-          />
-        </Pressable>
-      </View>
+      <MapTitleBox />
     </View>
   );
 };

@@ -11,7 +11,10 @@ import Loader from '~Common/Loader';
 import Header from './Header';
 
 import {fetchLayerListDetails} from '~planning/data/actionBar.services';
-import {setMapState} from '~planning/data/planningGis.reducer';
+import {
+  setMapState,
+  setTicketWorkOrderId,
+} from '~planning/data/planningGis.reducer';
 import {setActiveTab} from '~planning/data/planningState.reducer';
 import {
   selectConfiguration,
@@ -24,11 +27,13 @@ import {
 import {
   getElementTypeFromLayerKey,
   PLANNING_EVENT,
+  TICKET_WORKORDER_TYPE,
 } from '~planning/GisMap/utils';
 
 import {ICONS} from '~utils/icons';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {colors, layout} from '~constants/constants';
+import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
 
 const {width} = Dimensions.get('window');
 const itemWidth = (width - 24) / 3;
@@ -76,6 +81,7 @@ const AddElementContent = ({hideModal}) => {
   const [layerConfigPopup, setLayerConfigPopup] = useState(null);
   const {event} = useSelector(getPlanningMapState);
   const selectedConfigurations = useSelector(getSelectedConfigurations);
+  const ticketId = useSelector(getSelectedPlanningTicket);
 
   // shape: [ { layer_key, name, is_configurable, can_add, can_edit,
   //              configuration: [ **list of layer wise configs] }, ... ]
@@ -102,10 +108,12 @@ const AddElementContent = ({hideModal}) => {
           elementType: getElementTypeFromLayerKey(layerKey),
         }),
       );
-      // SUGGESTED_UPDATES ---- check ticket id, if ticket id is there, add work_order_type="A" into mapState.data
+      if (ticketId) {
+        dispatch(setTicketWorkOrderId(TICKET_WORKORDER_TYPE.ADD));
+      }
       dispatch(setActiveTab(null));
     },
-    [event],
+    [event, ticketId],
   );
 
   const handleLayerConfigPopupShow = useCallback(
