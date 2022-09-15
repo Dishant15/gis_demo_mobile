@@ -28,7 +28,7 @@ const PlanningScreen = props => {
       <ActionBar />
       <GisMap />
       <LayerEventComponent />
-      <View style={[styles.backWrapper, {top: Math.max(top, 0)}]}>
+      <View style={[styles.backWrapper, {top: Math.max(top, 14)}]}>
         <Pressable style={styles.iconWrapper} onPress={props.navigation.goBack}>
           <MaterialIcons
             size={26}
@@ -43,7 +43,6 @@ const PlanningScreen = props => {
 
 const styles = StyleSheet.create({
   backWrapper: {
-    paddingTop: 14,
     paddingLeft: 14,
     position: 'absolute',
     top: 0,

@@ -41,6 +41,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   function (error) {
+    console.log('🚀 ~ file: api.utils.js ~ line 44 ~ error', error?.response);
     // dispatch logout action if request unauthorised.
     const status = get(error, 'response.status');
     if (status === 401) {

@@ -25,7 +25,15 @@ import {
   getIcon as SplitterGetIcon,
   ElementLayer as SplitterElement,
 } from './layers/p_splitter';
-import {LAYER_KEY as CableKey} from './layers/p_cable';
+import {
+  LAYER_KEY as CableKey,
+  ViewLayer as CableLayer,
+  Geometry as CableGeometry,
+  getIcon as CableGetIcon,
+  AddLayer as CableAddLayer,
+  ElementLayer as CableElement,
+  ElementForm as CableForm,
+} from './layers/p_cable';
 
 // possible events that can happen on map
 export const PLANNING_EVENT = {
@@ -40,6 +48,20 @@ export const TICKET_WORKORDER_TYPE = {
   ADD: 'A',
   EDIT: 'E',
   DELETE: 'D',
+};
+
+export const ELEMENT_TYPE = {
+  MARKER: 'marker',
+  POLYLINE: 'polyline',
+  POLYGON: 'polygon',
+};
+
+export const getElementTypeFromLayerKey = layerKey => {
+  if (layerKey === SplitterKey || layerKey === DpKey) {
+    return ELEMENT_TYPE.MARKER;
+  } else if (layerKey === CableKey) {
+    return ELEMENT_TYPE.POLYLINE;
+  }
 };
 
 export const LayerKeyMappings = {
@@ -60,16 +82,13 @@ export const LayerKeyMappings = {
     Geometry: SplitterGeometry,
     Icon: SplitterGetIcon,
   },
-  // [CableKey]: {
-  //   [PLANNING_EVENT.addElement]: <CableAddLayer />,
-  //   [PLANNING_EVENT.addElementForm]: <CableForm />,
-  //   ViewLayer: CableLayer,
-  //   Geometry: CableGeometry,
-  //   Icon: CableGetIcon,
-  //   ConfigFormTemplate: CableConfigFormTemplate,
-  //   ConfigInitData: CableConfigInitData,
-  //   configTransformData: cblConfigTransformData,
-  // },
+  [CableKey]: {
+    [PLANNING_EVENT.addElement]: <CableAddLayer />,
+    [PLANNING_EVENT.addElementForm]: <CableForm />,
+    ViewLayer: CableLayer,
+    Geometry: CableGeometry,
+    Icon: CableGetIcon,
+  },
 };
 
 // on Gis event handle with gis mapping
@@ -79,6 +98,9 @@ export const LayerKeyGisMapping = {
   },
   [SplitterKey]: {
     [PLANNING_EVENT.addElement]: SplitterElement,
+  },
+  [CableKey]: {
+    [PLANNING_EVENT.addElement]: CableElement,
   },
 };
 
@@ -115,7 +137,13 @@ export const convertLayerServerData = (layerKey, serverData) => {
 export const getElementCoordinates = (
   newCoordinates,
   existingCoordinates,
-  layerKey,
+  elementType,
 ) => {
+  if (
+    elementType === ELEMENT_TYPE.POLYGON ||
+    elementType === ELEMENT_TYPE.POLYLINE
+  ) {
+    return [...(existingCoordinates || []), newCoordinates];
+  }
   return newCoordinates;
 };

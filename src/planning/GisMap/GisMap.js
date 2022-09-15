@@ -40,7 +40,11 @@ const GisMap = props => {
     if (!enableInterection) return;
     if (!e.nativeEvent.coordinate) return;
     let coords = e.nativeEvent.coordinate;
-    coords = getElementCoordinates(coords, [], mapState.layerKey);
+    coords = getElementCoordinates(
+      coords,
+      mapState.geometry,
+      mapState.elementType,
+    );
     dispatch(updateMapStateCoordinates(coords));
   };
 

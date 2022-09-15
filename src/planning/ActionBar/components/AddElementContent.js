@@ -21,7 +21,10 @@ import {
   getPlanningMapState,
   getSelectedConfigurations,
 } from '~planning/data/planningGis.selectors';
-import {PLANNING_EVENT} from '~planning/GisMap/utils';
+import {
+  getElementTypeFromLayerKey,
+  PLANNING_EVENT,
+} from '~planning/GisMap/utils';
 
 import {ICONS} from '~utils/icons';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
@@ -96,6 +99,7 @@ const AddElementContent = ({hideModal}) => {
           event: PLANNING_EVENT.addElement,
           layerKey,
           enableMapInterection: true,
+          elementType: getElementTypeFromLayerKey(layerKey),
         }),
       );
       dispatch(setActiveTab(null));

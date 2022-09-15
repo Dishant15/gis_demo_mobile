@@ -1,26 +1,41 @@
 import React, {useCallback} from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {View, StyleSheet} from 'react-native';
 
 import {Button, Card} from 'react-native-paper';
 import FloatingCard from '~Common/components/FloatingCard';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {lineString, length} from '@turf/turf';
+import {size, round} from 'lodash';
 
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {layout, THEME_COLORS} from '~constants/constants';
+import {getGisMapStateGeometry} from '~planning/data/planningGis.selectors';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {latLongMapToCoords} from '~utils/map.utils';
 
-const AddMarkerLayer = ({markerCoords, helpText, nextEvent = {}}) => {
+const AddPolyLineLayer = ({helpText, nextEvent = {}}) => {
   const dispatch = useDispatch();
   const {top} = useSafeAreaInsets();
+
+  const coordinates = useSelector(getGisMapStateGeometry);
+
   const handleAddComplete = useCallback(() => {
+    if (size(coordinates) < 2) {
+      showToast('Invalid line', TOAST_TYPE.ERROR);
+      return;
+    }
+    const gis_len = length(lineString(latLongMapToCoords(coordinates, true)));
     // set marker coords to form data
     nextEvent.data = {
       ...nextEvent.data,
-      coordinates: markerCoords,
+      // get gis_len
+      gis_len: String(round(gis_len, 4)),
+      coordinates: coordinates,
     };
     // complete current event -> fire next event
     dispatch(setMapState(nextEvent));
-  }, [markerCoords]);
+  }, [coordinates]);
 
   const handleCancel = useCallback(() => {
     dispatch(setMapState({}));
@@ -69,4 +84,4 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
 });
-export default AddMarkerLayer;
+export default AddPolyLineLayer;

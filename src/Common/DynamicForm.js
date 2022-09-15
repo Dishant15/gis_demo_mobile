@@ -4,6 +4,7 @@ import {View, StyleSheet} from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {Button, Caption, Title, Chip, HelperText} from 'react-native-paper';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import Input from '~Common/Input';
 import TagSelect from './TagSelect';
@@ -20,6 +21,7 @@ import {get} from 'lodash';
 const DynamicForm = forwardRef(
   ({formConfigs, data, onSubmit, onCancel, isLoading}, ref) => {
     const {sections} = formConfigs;
+    const {top} = useSafeAreaInsets();
 
     const {
       formState: {errors},
@@ -45,7 +47,7 @@ const DynamicForm = forwardRef(
     return (
       <KeyboardAwareScrollView
         keyboardShouldPersistTaps="always"
-        style={styles.container}>
+        style={[styles.container, {paddingTop: Math.max(top, 0)}]}>
         {sections.map((section, s_id) => {
           const {title, fieldConfigs, showCloseIcon} = section;
           return (
