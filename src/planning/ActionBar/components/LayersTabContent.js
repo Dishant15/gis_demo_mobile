@@ -6,7 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 
 import {get, noop} from 'lodash';
 
-import {Button, Text, Divider, Subheading} from 'react-native-paper';
+import {Button, Text, Divider, Subheading, Title} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Loader from '~Common/Loader';
 import Header from './Header';
@@ -23,7 +23,10 @@ import {
   handleLayerSelect,
   removeLayerSelect,
 } from '~planning/data/planningState.reducer';
-import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
+import {
+  getSelectedLayerKeys,
+  getSelectedRegionIds,
+} from '~planning/data/planningState.selectors';
 import {colors} from '~constants/constants';
 
 const regionLayerConfig = {
@@ -54,11 +57,29 @@ const LayersTabContent = ({hideModal}) => {
     },
   );
   const regionIdList = useSelector(getSelectedRegionIds);
+  const selectedLayerKeys = useSelector(getSelectedLayerKeys);
+
+  const handleFullDataRefresh = useCallback(() => {
+    for (let l_ind = 0; l_ind < selectedLayerKeys.length; l_ind++) {
+      const currLayerKey = selectedLayerKeys[l_ind];
+      dispatch(fetchLayerDataThunk({regionIdList, layerKey: currLayerKey}));
+    }
+  }, [regionIdList, selectedLayerKeys]);
 
   return (
     <View style={styles.container}>
       {isLoading ? <Loader /> : null}
       <Header text="GIS LAYERS" icon="layers" onClose={hideModal} />
+      <View style={styles.titleWrapper}>
+        <Title style={styles.title}>Select Layers</Title>
+        <Button
+          color={colors.success}
+          mode="outlined"
+          onPress={handleFullDataRefresh}
+          icon="sync">
+          Refresh
+        </Button>
+      </View>
       <View style={styles.wrapper}>
         {layerCofigs.map(layer => {
           return (
@@ -192,6 +213,12 @@ const styles = StyleSheet.create({
   icon: {
     width: 30,
     justifyContent: 'center',
+  },
+  titleWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
   },
   title: {
     color: colors.primaryMain,
