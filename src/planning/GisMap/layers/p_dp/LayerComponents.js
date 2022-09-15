@@ -121,6 +121,7 @@ export const ElementLayer = () => {
 };
 
 export const ElementForm = () => {
+  // SUGGESTED_UPDATES ---- remove workOrder object from this
   const transformAndValidateData = useCallback(formData => {
     return {
       workOrder: {

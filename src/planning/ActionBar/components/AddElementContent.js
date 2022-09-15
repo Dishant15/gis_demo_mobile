@@ -102,6 +102,7 @@ const AddElementContent = ({hideModal}) => {
           elementType: getElementTypeFromLayerKey(layerKey),
         }),
       );
+      // SUGGESTED_UPDATES ---- check ticket id, if ticket id is there, add work_order_type="A" into mapState.data
       dispatch(setActiveTab(null));
     },
     [event],

@@ -122,7 +122,7 @@ export const ElementLayer = () => {
 
 export const ElementForm = () => {
   const configuration = useSelector(getLayerSelectedConfiguration(LAYER_KEY));
-
+  // SUGGESTED_UPDATES ---- remove workOrder object from this
   const transformAndValidateData = useCallback(formData => {
     return {
       workOrder: {

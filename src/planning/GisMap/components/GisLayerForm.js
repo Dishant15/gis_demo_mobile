@@ -71,6 +71,11 @@ export const GisLayerForm = ({
     clearErrors();
     // convert data to server friendly form
     const validatedData = transformAndValidateData(data, setError);
+    // SUGGESTED_UPDATES ---- Get ticket id here,
+    // const isWorkOrderUpdate = // check if ticket id is there
+    // create workOrder data if isWorkOrderUpdate
+    // add workorder data to validatedData
+    // call addWorkOrder api if isWorkOrderUpdate, addElement api if not
     addElement(validatedData);
   };
 
