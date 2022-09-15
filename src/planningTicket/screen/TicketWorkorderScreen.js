@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {View, FlatList, StyleSheet, Pressable} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
@@ -6,24 +6,12 @@ import {Card, Subheading, Paragraph, Button, Avatar} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {get} from 'lodash';
+import {filter, get} from 'lodash';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 import Loader from '~Common/Loader';
 
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
-
-import {fetchTicketWorkorders} from '~ticket/data/services';
-
-import {
-  setFilteredworkorderList,
-  setWorkorderData,
-} from '../data/planningTicket.reducer';
-import {
-  getFilteredworkorderList,
-  getAppliedStatusFilter,
-  getCountByStatus,
-} from '../data/planningTicket.selector';
 
 import {layout, screens, colors} from '~constants/constants';
 
@@ -48,7 +36,9 @@ const TicketWorkorderScreen = props => {
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const ticketData = useSelector(getPlanningTicketData);
-  const {isLoading, isError, name, work_orders} = ticketData;
+  const {isLoading, work_orders, countByStatus} = ticketData;
+
+  const [statusFilter, setStatusFilter] = useState(null);
 
   // fetch ticket details
   useEffect(() => {
@@ -60,9 +50,6 @@ const TicketWorkorderScreen = props => {
   }, []);
 
   useRefreshOnFocus(refetch);
-
-  const statusFilter = useSelector(getAppliedStatusFilter);
-  const countByStatus = useSelector(getCountByStatus);
 
   const navigateToMap = useCallback(() => {
     navigation.navigate(screens.planningTicketMap);
@@ -84,10 +71,19 @@ const TicketWorkorderScreen = props => {
 
   const toggleStatus = useCallback(
     (isActive, newStatus) => () => {
-      dispatch(setFilteredworkorderList(isActive ? null : newStatus));
+      setStatusFilter(isActive ? null : newStatus);
+      // dispatch(setFilteredworkorderList(isActive ? null : newStatus));
     },
     [],
   );
+
+  const filteredList = useMemo(() => {
+    if (statusFilter) {
+      return filter(work_orders, ['status', statusFilter]);
+    } else {
+      return work_orders;
+    }
+  }, [work_orders, statusFilter]);
 
   const isSubmitted = statusFilter === 'S';
   const isVerified = statusFilter === 'V';
@@ -126,7 +122,7 @@ const TicketWorkorderScreen = props => {
       </View>
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
-        data={work_orders}
+        data={filteredList}
         keyExtractor={item => item.id}
         renderItem={({item, index}) => {
           const {layer_key, status, remark, work_order_type} = item;

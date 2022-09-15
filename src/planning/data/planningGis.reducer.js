@@ -4,6 +4,7 @@ import has from 'lodash/has';
 import size from 'lodash/size';
 import difference from 'lodash/difference';
 import cloneDeep from 'lodash/cloneDeep';
+import countBy from 'lodash/countBy';
 
 import {fetchLayerDataThunk} from './actionBar.services';
 import {handleLayerSelect, removeLayerSelect} from './planningState.reducer';
@@ -171,6 +172,10 @@ const planningGisSlice = createSlice({
       state.ticketData.isFetched = true;
       state.ticketData.isError = false;
       state.ticketData.isHidden = true;
+      state.ticketData.countByStatus = countBy(
+        ticketGisData.work_orders,
+        'status',
+      );
     },
   },
 });
