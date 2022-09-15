@@ -1,15 +1,22 @@
 import React from 'react';
-import {StyleSheet, Text} from 'react-native';
+import {StyleSheet} from 'react-native';
 
 import {Card} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {colors, THEME_COLORS, Z_INDEX} from '~constants/constants';
+
+import {THEME_COLORS, Z_INDEX} from '~constants/constants';
 
 const FloatingCard = props => {
-  const {children, title, subtitle} = props;
+  const {children, title, subtitle, isAbsolute = true} = props;
   const {top} = useSafeAreaInsets();
   return (
-    <Card elevation={3} style={[styles.card, {top: Math.max(top + 14, 14)}]}>
+    <Card
+      elevation={3}
+      style={
+        isAbsolute
+          ? [styles.card, styles.cartContent, {top: Math.max(top + 14, 14)}]
+          : styles.cartContent
+      }>
       <Card.Title
         title={title}
         titleStyle={styles.titleStyle}
@@ -31,6 +38,8 @@ const styles = StyleSheet.create({
     top: 14,
     left: 14,
     right: 14,
+  },
+  cartContent: {
     backgroundColor: THEME_COLORS.secondary.main,
   },
   titleStyle: {
