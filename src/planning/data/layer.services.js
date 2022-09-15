@@ -1,5 +1,6 @@
 import Api from '~utils/api.utils';
 import {
+  apiGetElementDetails,
   apiPostAddElement,
   apiPostAddTicketWorkorder,
 } from '~constants/url.constants';
@@ -10,15 +11,12 @@ export const addNewElement = async ({data, layerKey}) => {
 };
 
 export const addNewTicketWorkorder = async ({data, ticketId}) => {
-  console.log(
-    '🚀 ~ file: layer.services.js ~ line 13 ~ addNewTicketWorkorder ~ data',
-    data,
-    ticketId,
-  );
   const res = await Api.post(apiPostAddTicketWorkorder(ticketId), data);
-  console.log(
-    '🚀 ~ file: layer.services.js ~ line 15 ~ addNewTicketWorkorder ~ res',
-    res,
-  );
+  return res.data;
+};
+
+export const fetchElementDetails = async ({queryKey}) => {
+  const [_key, layerKey, elementId] = queryKey;
+  const res = await Api.get(apiGetElementDetails(layerKey, elementId));
   return res.data;
 };

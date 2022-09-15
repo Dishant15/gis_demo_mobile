@@ -18,7 +18,9 @@ const Header = ({text, icon, onClose = noop}) => {
   return (
     <View style={styles.wrapper}>
       <View style={styles.title}>
-        <MaterialIcons size={26} name={icon} color={colors.white} />
+        {icon ? (
+          <MaterialIcons size={26} name={icon} color={colors.white} />
+        ) : null}
         <Title style={styles.text}>{text}</Title>
       </View>
       <Pressable style={styles.icon} onPress={onClose}>

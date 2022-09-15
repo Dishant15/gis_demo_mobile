@@ -4,7 +4,7 @@ import {Marker} from 'react-native-maps';
 
 import SecondarySpliterIcon from '~assets/markers/spliter_view.svg';
 import PrimarySpliterIcon from '~assets/markers/spliter_view_primary.svg';
-import {noop} from 'lodash';
+import {find, noop} from 'lodash';
 import {PLANNING_EVENT} from '~planning/GisMap/utils';
 import {
   ELEMENT_FORM_TEMPLATE,
@@ -15,6 +15,7 @@ import {
 import {
   getGisMapStateGeometry,
   getLayerViewData,
+  getPlanningMapStateData,
 } from '~planning/data/planningGis.selectors';
 
 import {latLongMapToCoords} from '~utils/map.utils';
@@ -23,6 +24,8 @@ import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
 
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 import {getLayerSelectedConfiguration} from '~planning/data/planningState.selectors';
+import {LAYER_STATUS_OPTIONS} from '../common/configuration';
+import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
 
 export const getIcon = ({splitter_type}) =>
   splitter_type === 'P' ? <PrimarySpliterIcon /> : <SecondarySpliterIcon />;
@@ -137,6 +140,38 @@ export const ElementForm = () => {
       layerKey={LAYER_KEY}
       formConfig={ELEMENT_FORM_TEMPLATE}
       transformAndValidateData={transformAndValidateData}
+    />
+  );
+};
+
+const ELEMENT_TABLE_FIELDS = [
+  {label: 'Name', field: 'name', type: 'simple'},
+  {label: 'Unique Id', field: 'unique_id', type: 'simple'},
+  {label: 'Reff Code', field: 'ref_code', type: 'simple'},
+  {label: 'Splitter Type', field: 'splitter_type_display', type: 'simple'},
+  {label: 'Address', field: 'address', type: 'simple'},
+  {label: 'Ratio', field: 'ratio', type: 'simple'},
+  {label: 'Specification', field: 'specification', type: 'simple'},
+  {label: 'Vendor', field: 'vendor', type: 'simple'},
+  {label: 'Status', field: 'status', type: 'status'},
+];
+
+const convertDataBeforeForm = data => {
+  return {
+    ...data,
+    // convert status to select format
+    status: find(LAYER_STATUS_OPTIONS, ['value', data.status]),
+  };
+};
+
+export const ElementDetails = () => {
+  const {elementId} = useSelector(getPlanningMapStateData);
+  return (
+    <ElementDetailsTable
+      rowDefs={ELEMENT_TABLE_FIELDS}
+      layerKey={LAYER_KEY}
+      elementId={elementId}
+      onEditDataConverter={convertDataBeforeForm}
     />
   );
 };

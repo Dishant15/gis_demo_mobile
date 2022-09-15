@@ -15,6 +15,7 @@ import {
   ElementForm as DpForm,
   Icon as DpIcon,
   ElementLayer as DpElement,
+  ElementDetails as DpDetails,
 } from './layers/p_dp';
 import {
   LAYER_KEY as SplitterKey,
@@ -24,6 +25,7 @@ import {
   ElementForm as SplitterForm,
   getIcon as SplitterGetIcon,
   ElementLayer as SplitterElement,
+  ElementDetails as SplitterDetails,
 } from './layers/p_splitter';
 import {
   LAYER_KEY as CableKey,
@@ -33,6 +35,7 @@ import {
   AddLayer as CableAddLayer,
   ElementLayer as CableElement,
   ElementForm as CableForm,
+  ElementDetails as CableDetails,
 } from './layers/p_cable';
 
 // possible events that can happen on map
@@ -71,6 +74,7 @@ export const LayerKeyMappings = {
   [DpKey]: {
     [PLANNING_EVENT.addElement]: <DPAddLayer />,
     [PLANNING_EVENT.addElementForm]: <DpForm />,
+    [PLANNING_EVENT.showElementDetails]: <DpDetails />,
     ViewLayer: DPViewLayer,
     Geometry: DPGeometry,
     Icon: DpIcon,
@@ -78,6 +82,7 @@ export const LayerKeyMappings = {
   [SplitterKey]: {
     [PLANNING_EVENT.addElement]: <SplitterAddLayer />,
     [PLANNING_EVENT.addElementForm]: <SplitterForm />,
+    [PLANNING_EVENT.showElementDetails]: <SplitterDetails />,
     ViewLayer: SplitterLayer,
     Geometry: SplitterGeometry,
     Icon: SplitterGetIcon,
@@ -85,6 +90,7 @@ export const LayerKeyMappings = {
   [CableKey]: {
     [PLANNING_EVENT.addElement]: <CableAddLayer />,
     [PLANNING_EVENT.addElementForm]: <CableForm />,
+    [PLANNING_EVENT.showElementDetails]: <CableDetails />,
     ViewLayer: CableLayer,
     Geometry: CableGeometry,
     Icon: CableGetIcon,

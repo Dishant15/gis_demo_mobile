@@ -29,3 +29,5 @@ export const getPlanningMapStateData = store =>
 
 export const getSelectedConfigurations = store =>
   store.planningState.selectedConfigurations;
+
+export const getPlanningTicketData = store => store.planningGis.ticketData;

@@ -1,6 +1,5 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {View, FlatList, StyleSheet, Pressable} from 'react-native';
-import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 
 import {Card, Subheading, Paragraph, Button, Avatar} from 'react-native-paper';
@@ -31,6 +30,10 @@ import {layout, screens, colors} from '~constants/constants';
 import AcceptImg from '~assets/img/accept.png';
 import CancelImg from '~assets/img/cancel.png';
 import InprogressImg from '~assets/img/inprogress.png';
+import {setMapState} from '~planning/data/planningGis.reducer';
+import {PLANNING_EVENT} from '~planning/GisMap/utils';
+import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
+import {getPlanningTicketData} from '~planning/data/planningGis.selectors';
 
 /**
  * Parent:
@@ -41,24 +44,23 @@ import InprogressImg from '~assets/img/inprogress.png';
 const TicketWorkorderScreen = props => {
   const {navigation} = props;
   const ticketId = get(props, 'route.params.ticketId');
+
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
+  const ticketData = useSelector(getPlanningTicketData);
+  const {isLoading, isError, name, work_orders} = ticketData;
 
-  const {isLoading, data, refetch} = useQuery(
-    ['ticketWorkOrderList', ticketId],
-    fetchTicketWorkorders,
-    {
-      initialData: {},
-      onSuccess: res => {
-        dispatch(setWorkorderData(res));
-      },
-    },
-  );
+  // fetch ticket details
+  useEffect(() => {
+    dispatch(fetchTicketWorkorderDataThunk(ticketId));
+  }, [ticketId]);
+
+  const refetch = useCallback(() => {
+    dispatch(fetchTicketWorkorderDataThunk(ticketId));
+  }, []);
 
   useRefreshOnFocus(refetch);
 
-  // get workorderList list from redux store
-  const workorderList = useSelector(getFilteredworkorderList);
   const statusFilter = useSelector(getAppliedStatusFilter);
   const countByStatus = useSelector(getCountByStatus);
 
@@ -68,6 +70,13 @@ const TicketWorkorderScreen = props => {
 
   const navigateToEditMap = useCallback(
     (index, item) => () => {
+      dispatch(
+        setMapState({
+          event: PLANNING_EVENT.showElementDetails,
+          layerKey: item.layer_key,
+          data: {elementId: item.element.id},
+        }),
+      );
       navigation.navigate(screens.planningTicketMap);
     },
     [],
@@ -117,7 +126,7 @@ const TicketWorkorderScreen = props => {
       </View>
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
-        data={workorderList}
+        data={work_orders}
         keyExtractor={item => item.id}
         renderItem={({item, index}) => {
           const {layer_key, status, remark, work_order_type} = item;
