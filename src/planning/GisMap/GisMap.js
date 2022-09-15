@@ -15,6 +15,7 @@ import {
   getPlanningMapState,
 } from '~planning/data/planningGis.selectors';
 import {getElementCoordinates, LayerKeyMappings} from './utils';
+import TicketMapLayers from './components/TicketMapLayers';
 
 /**
  * Parent
@@ -78,6 +79,7 @@ const GisMap = props => {
             showsPointsOfInterest={false}>
             {Layers}
             <LayerGisEventComponent />
+            <TicketMapLayers />
           </MapView>
         </Animatable.View>
       ) : null}

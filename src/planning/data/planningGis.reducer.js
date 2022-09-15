@@ -38,6 +38,7 @@ const initialState = {
     isLoading: false,
     isFetched: false,
     isError: false,
+    isHidden: true,
   },
   // list of elements that can be shown on map with converted data
   ticketGisData: [],
@@ -66,6 +67,9 @@ const planningGisSlice = createSlice({
     },
     setTicketWorkOrderId: (state, {payload}) => {
       state.workOrderId = payload;
+    },
+    toggleTicketElements: state => {
+      state.ticketData.isHidden = !state.ticketData.isHidden;
     },
     // payload => list of selected layerKey
     // when region changes remove data for all inactive layers, so user can fetch fresh on click
@@ -166,6 +170,7 @@ const planningGisSlice = createSlice({
       state.ticketData.isLoading = false;
       state.ticketData.isFetched = true;
       state.ticketData.isError = false;
+      state.ticketData.isHidden = true;
     },
   },
 });
@@ -177,5 +182,6 @@ export const {
   updateMapStateCoordinates,
   resetUnselectedLayerGisData,
   setTicketWorkOrderId,
+  toggleTicketElements,
 } = planningGisSlice.actions;
 export default planningGisSlice.reducer;

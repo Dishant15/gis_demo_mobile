@@ -2,8 +2,6 @@ import React, {useEffect} from 'react';
 import {View, StatusBar, StyleSheet} from 'react-native';
 import {useDispatch} from 'react-redux';
 
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-
 import GisMap from '~planning/GisMap';
 import ActionBar from '~planning/ActionBar';
 import {LayerEventComponent} from '~planning/GisMap/components/LayerToComponentMap';
@@ -14,7 +12,6 @@ import MapTitleBox from '~planning/GisMap/components/MapTitleBox';
 
 const PlanningScreen = props => {
   const dispatch = useDispatch();
-  const {top} = useSafeAreaInsets();
 
   useEffect(() => {
     return () => {
@@ -27,8 +24,8 @@ const PlanningScreen = props => {
       <StatusBar barStyle="dark-content" />
       <ActionBar />
       <GisMap />
-      <LayerEventComponent />
       <MapTitleBox />
+      <LayerEventComponent />
     </View>
   );
 };

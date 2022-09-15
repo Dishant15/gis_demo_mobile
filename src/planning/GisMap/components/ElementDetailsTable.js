@@ -51,10 +51,6 @@ const ElementDetailsTable = ({
         data={rowDefs}
         keyExtractor={item => item.field}
         renderItem={({item, index}) => {
-          console.log(
-            '🚀 ~ file: ElementDetailsTable.js ~ line 49 ~ item',
-            item,
-          );
           const {label, field, type} = item;
           let ValueCell;
 

@@ -176,8 +176,11 @@ const DrawerNavigation = () => {
       <Drawer.Screen
         name={screens.planningScreen}
         component={PlanningScreen}
+        initialParams={{
+          fromPlanning: true,
+        }}
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTitleAlign: 'center',
           headerTitle: () => <Title style={styles.headerText}>Planning</Title>,
           headerLeft: () => <DrawerButton />,
