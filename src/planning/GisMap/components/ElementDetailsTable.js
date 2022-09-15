@@ -5,6 +5,7 @@ import {useDispatch} from 'react-redux';
 
 import get from 'lodash/get';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useNavigation} from '@react-navigation/native';
 
 import {fetchElementDetails} from '~planning/data/layer.services';
 import {setMapState} from '~planning/data/planningGis.reducer';
@@ -20,6 +21,7 @@ const ElementDetailsTable = ({
   elementId,
   onEditDataConverter,
 }) => {
+  const navigation = useNavigation();
   const {top} = useSafeAreaInsets();
   const dispatch = useDispatch();
   const {data: elemData, isLoading} = useQuery(
@@ -29,6 +31,8 @@ const ElementDetailsTable = ({
 
   const handleCloseDetails = useCallback(() => {
     dispatch(setMapState({}));
+    // temparary fix
+    navigation.goBack();
   }, [dispatch]);
 
   const handleEditDetails = useCallback(() => {
