@@ -4,7 +4,7 @@ export const LAYER_KEY = 'p_cable';
 
 export const INITIAL_ELEMENT_DATA = {
   name: '',
-  unique_id: 'REG_SP_P_',
+  unique_id: 'REG_CBL_',
   ref_code: '',
   status: {value: 'P', label: 'Planned'},
   coordinates: [],
