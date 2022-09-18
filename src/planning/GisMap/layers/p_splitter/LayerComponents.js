@@ -28,7 +28,7 @@ import {LAYER_STATUS_OPTIONS} from '../common/configuration';
 import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
 
 export const getIcon = ({splitter_type}) =>
-  splitter_type === 'P' ? <PrimarySpliterIcon /> : <SecondarySpliterIcon />;
+  splitter_type === 'P' ? PrimarySpliterIcon : SecondarySpliterIcon;
 
 export const Geometry = ({
   coordinates,
@@ -36,6 +36,7 @@ export const Geometry = ({
   handleMarkerDrag = noop,
 }) => {
   if (coordinates) {
+    const Icon = getIcon({splitter_type});
     return (
       <Marker
         coordinate={coordinates}
@@ -45,7 +46,7 @@ export const Geometry = ({
         stopPropagation
         flat
         tracksInfoWindowChanges={false}>
-        {getIcon({splitter_type})}
+        <Icon />
       </Marker>
     );
   }

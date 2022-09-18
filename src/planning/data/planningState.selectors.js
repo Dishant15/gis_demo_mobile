@@ -18,3 +18,11 @@ export const getLayerSelectedConfiguration = layerKey =>
   createSelector(getSelectedConfigurations, selectedConfigs =>
     get(selectedConfigs, layerKey, {}),
   );
+
+export const getLayerConfigurations = store =>
+  store.planningState.layerConfigurations;
+
+export const getSingleLayerConfigurationList = layerKey =>
+  createSelector(getLayerConfigurations, layerConfigList =>
+    get(layerConfigList, layerKey, []),
+  );

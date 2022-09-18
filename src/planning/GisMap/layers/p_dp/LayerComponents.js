@@ -6,6 +6,7 @@ import {find, noop} from 'lodash';
 
 import AddMarkerLayer from '~planning/GisMap/components/AddMarkerLayer';
 import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
+import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
 
 import {
   getGisMapStateGeometry,
@@ -20,38 +21,13 @@ import {
   LAYER_KEY,
 } from './configurations';
 
-import Icon from '~assets/markers/p_dp_view.svg';
 import {PLANNING_EVENT} from '~planning/GisMap/utils';
 import {latLongMapToCoords} from '~utils/map.utils';
 import {LAYER_STATUS_OPTIONS} from '../common/configuration';
-import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
 
-export const MapElement = () => {
-  const coords = useSelector(getGisMapStateGeometry);
-  const dispatch = useDispatch();
+import Icon from '~assets/markers/p_dp_view.svg';
 
-  const handleMarkerDrag = e => {
-    const coords = e.nativeEvent.coordinate;
-    dispatch(updateMapStateCoordinates(coords));
-  };
-
-  if (coords) {
-    return (
-      <Marker
-        coordinate={coords}
-        onDragEnd={handleMarkerDrag}
-        tappable
-        draggable
-        stopPropagation
-        flat
-        tracksInfoWindowChanges={false}>
-        <PDPIcon />
-      </Marker>
-    );
-  } else {
-    return null;
-  }
-};
+export const getIcon = () => Icon;
 
 export const Geometry = ({coordinates, handleMarkerDrag = noop}) => {
   if (coordinates) {

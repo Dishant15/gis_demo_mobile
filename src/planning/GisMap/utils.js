@@ -13,7 +13,7 @@ import {
   Geometry as DPGeometry,
   LAYER_KEY as DpKey,
   ElementForm as DpForm,
-  Icon as DpIcon,
+  getIcon as DpGetIcon,
   ElementLayer as DpElement,
   ElementDetails as DpDetails,
 } from './layers/p_dp';
@@ -77,7 +77,7 @@ export const LayerKeyMappings = {
     [PLANNING_EVENT.showElementDetails]: <DpDetails />,
     ViewLayer: DPViewLayer,
     Geometry: DPGeometry,
-    Icon: DpIcon,
+    Icon: DpGetIcon,
   },
   [SplitterKey]: {
     [PLANNING_EVENT.addElement]: <SplitterAddLayer />,

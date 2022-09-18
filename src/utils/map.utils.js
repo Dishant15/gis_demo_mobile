@@ -41,6 +41,16 @@ export const latLongMapToCoords = latLongMap => {
   return coordinates;
 };
 
+// latLongMap :- [ {lat, lng}, ...]
+export const latLongMapToLineCoords = latLongMap => {
+  const coordinates = [];
+  for (let lInd = 0; lInd < latLongMap.length; lInd++) {
+    const currLatLong = latLongMap[lInd];
+    coordinates.push([currLatLong.longitude, currLatLong.latitude]);
+  }
+  return coordinates;
+};
+
 // latLongObj :- { longitude, latitude }
 export const pointLatLongMapToCoords = latLongObj => {
   return [latLongObj.longitude, latLongObj.latitude];

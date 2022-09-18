@@ -1,14 +1,21 @@
 import React, {useMemo, useState, useCallback} from 'react';
-import {View, StyleSheet, Dimensions, Pressable} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {filter, isNull, size} from 'lodash';
-import {Subheading, Paragraph} from 'react-native-paper';
+import {filter, get, size} from 'lodash';
+import {Subheading, Divider} from 'react-native-paper';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Loader from '~Common/Loader';
 import Header from './Header';
+import ElementConfigList from './ElementConfigList';
 
 import {fetchLayerListDetails} from '~planning/data/actionBar.services';
 import {
@@ -26,6 +33,7 @@ import {
 } from '~planning/data/planningGis.selectors';
 import {
   getElementTypeFromLayerKey,
+  LayerKeyMappings,
   PLANNING_EVENT,
   TICKET_WORKORDER_TYPE,
 } from '~planning/GisMap/utils';
@@ -34,9 +42,6 @@ import {ICONS} from '~utils/icons';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {colors, layout} from '~constants/constants';
 import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
-
-const {width} = Dimensions.get('window');
-const itemWidth = (width - 24) / 3;
 
 /**
  * Parent:
@@ -78,7 +83,7 @@ const AddElementContent = ({hideModal}) => {
 
   const dispatch = useDispatch();
   // if popup open : layerKey of selected configs, null if closed
-  const [layerConfigPopup, setLayerConfigPopup] = useState(null);
+  const [layerConfigKey, setLayerConfigKey] = useState(null);
   const {event} = useSelector(getPlanningMapState);
   const selectedConfigurations = useSelector(getSelectedConfigurations);
   const ticketId = useSelector(getSelectedPlanningTicket);
@@ -116,17 +121,15 @@ const AddElementContent = ({hideModal}) => {
     [event, ticketId],
   );
 
-  const handleLayerConfigPopupShow = useCallback(
-    layerKey => e => {
-      // if (e) e.stopPropagation();
-      // show popover for selected layer
-      setLayerConfigPopup(layerKey);
+  const handleLayerConfigShow = useCallback(
+    layerKey => () => {
+      setLayerConfigKey(layerKey);
     },
     [],
   );
 
-  const handleLayerConfigPopupHide = useCallback(() => {
-    setLayerConfigPopup(null);
+  const handleLayerConfigHide = useCallback(() => {
+    setLayerConfigKey(null);
   }, []);
 
   if (layerCofigs.length) {
@@ -134,29 +137,33 @@ const AddElementContent = ({hideModal}) => {
       <View>
         {isLoading ? <Loader /> : null}
         <Header text="ADD ELEMENT" icon="add-location" onClose={hideModal} />
-        <View style={styles.container}>
-          <View style={styles.grid}>
-            {layerCofigs.map(config => {
-              const {layer_key, name, is_configurable, configuration} = config;
+        <ScrollView style={styles.container}>
+          {layerCofigs.map(config => {
+            const {layer_key, name, is_configurable, configuration} = config;
+            // get icon
+            let Icon;
+            if (is_configurable) {
+              let currConfig = get(selectedConfigurations, layer_key, false);
+              if (!currConfig) currConfig = configuration[0];
+              // configurable layers will have getIcon function
+              Icon = LayerKeyMappings[layer_key]['Icon'](currConfig);
+            } else {
+              Icon = LayerKeyMappings[layer_key]['Icon']();
+            }
 
-              let SvgComp = ICONS(config.layer_key);
-              SvgComp = isNull(SvgComp) ? <></> : <SvgComp width={30} />;
-              return (
-                <Pressable
-                  style={[
-                    layout.relative,
-                    {width: itemWidth, height: itemWidth, padding: 8},
-                  ]}
-                  key={layer_key}
-                  onPress={handleAddElementClick(layer_key)}>
-                  <View style={styles.gridItem}>
-                    {SvgComp}
-                    <Paragraph style={layout.textCenter}>{name}</Paragraph>
-                  </View>
+            return (
+              <View key={layer_key}>
+                <View style={styles.elementContent}>
+                  <Pressable
+                    style={styles.elementTitleContent}
+                    onPress={handleAddElementClick(layer_key)}>
+                    <Icon width={26} />
+                    <Subheading style={styles.title}>{name}</Subheading>
+                  </Pressable>
                   {is_configurable ? (
                     <Pressable
-                      style={styles.setting}
-                      onPress={handleLayerConfigPopupShow(layer_key)}>
+                      style={styles.iconWrap}
+                      onPress={handleLayerConfigShow(layer_key)}>
                       <MaterialIcons
                         size={22}
                         name={'settings'}
@@ -164,11 +171,19 @@ const AddElementContent = ({hideModal}) => {
                       />
                     </Pressable>
                   ) : null}
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
+                </View>
+                <Divider />
+
+                {layer_key === layerConfigKey ? (
+                  <ElementConfigList
+                    onClose={handleLayerConfigHide}
+                    layerKey={layerConfigKey}
+                  />
+                ) : null}
+              </View>
+            );
+          })}
+        </ScrollView>
       </View>
     );
   } else {
@@ -192,28 +207,23 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 12,
   },
-  grid: {
+  elementContent: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingVertical: 4,
-  },
-  gridItem: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.12)',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 4,
+  },
+  elementTitleContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   title: {
-    color: colors.primaryMain,
-    textAlign: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 12,
   },
-  setting: {
-    padding: 8,
-    position: 'absolute',
-    right: 8,
-    top: 8,
+  iconWrap: {
+    width: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

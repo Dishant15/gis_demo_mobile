@@ -12,7 +12,7 @@ import {setMapState} from '~planning/data/planningGis.reducer';
 import {layout, THEME_COLORS} from '~constants/constants';
 import {getGisMapStateGeometry} from '~planning/data/planningGis.selectors';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import {latLongMapToCoords} from '~utils/map.utils';
+import {latLongMapToLineCoords} from '~utils/map.utils';
 
 const AddPolyLineLayer = ({helpText, nextEvent = {}}) => {
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ const AddPolyLineLayer = ({helpText, nextEvent = {}}) => {
       showToast('Invalid line', TOAST_TYPE.ERROR);
       return;
     }
-    const gis_len = length(lineString(latLongMapToCoords(coordinates, true)));
+    const gis_len = length(lineString(latLongMapToLineCoords(coordinates)));
     // set marker coords to form data
     nextEvent.data = {
       ...nextEvent.data,
