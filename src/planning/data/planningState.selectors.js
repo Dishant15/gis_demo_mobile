@@ -26,3 +26,6 @@ export const getSingleLayerConfigurationList = layerKey =>
   createSelector(getLayerConfigurations, layerConfigList =>
     get(layerConfigList, layerKey, []),
   );
+
+export const getPlanningMapStateEvent = store =>
+  store.planningGis.mapState.event || '';

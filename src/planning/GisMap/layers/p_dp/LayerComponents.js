@@ -26,10 +26,13 @@ import {latLongMapToCoords} from '~utils/map.utils';
 import {LAYER_STATUS_OPTIONS} from '../common/configuration';
 
 import Icon from '~assets/markers/p_dp_view.svg';
+import EditIcon from '~assets/markers/p_dp_edit.svg';
+import {getPlanningMapStateEvent} from '~planning/data/planningState.selectors';
+import EditMarkerLayer from '~planning/GisMap/components/EditMarkerLayer';
 
 export const getIcon = () => Icon;
 
-export const Geometry = ({coordinates, handleMarkerDrag = noop}) => {
+export const Geometry = ({coordinates, isEdit, handleMarkerDrag = noop}) => {
   if (coordinates) {
     return (
       <Marker
@@ -40,7 +43,7 @@ export const Geometry = ({coordinates, handleMarkerDrag = noop}) => {
         stopPropagation
         flat
         tracksInfoWindowChanges={false}>
-        <Icon />
+        {isEdit ? <EditIcon /> : <Icon />}
       </Marker>
     );
   }
@@ -82,9 +85,22 @@ export const AddLayer = () => {
   );
 };
 
+export const EditMapLayer = () => {
+  return (
+    <EditMarkerLayer
+      helpText="Click or drag and drop marker to new location"
+      layerKey={LAYER_KEY}
+    />
+  );
+};
+
 export const ElementLayer = () => {
-  const coordinates = useSelector(getGisMapStateGeometry);
   const dispatch = useDispatch();
+  const coordinates = useSelector(getGisMapStateGeometry);
+  // get map state event
+  const currEvent = useSelector(getPlanningMapStateEvent);
+  // check if add or edit event
+  const isEdit = currEvent === PLANNING_EVENT.editElementLocation;
 
   const handleMarkerDrag = e => {
     const coords = e.nativeEvent.coordinate;
@@ -92,25 +108,47 @@ export const ElementLayer = () => {
   };
 
   return (
-    <Geometry coordinates={coordinates} handleMarkerDrag={handleMarkerDrag} />
+    <Geometry
+      coordinates={coordinates}
+      handleMarkerDrag={handleMarkerDrag}
+      isEdit={isEdit}
+    />
   );
 };
 
 export const ElementForm = () => {
-  // SUGGESTED_UPDATES ---- remove workOrder object from this
-  const transformAndValidateData = useCallback(formData => {
-    return {
-      ...formData,
-      // remove coordinates and add geometry
-      coordinates: undefined,
-      geometry: latLongMapToCoords([formData.coordinates])[0],
-      // convert select fields to simple values
-      status: formData.status.value,
-    };
-  }, []);
+  // get map state event
+  const currEvent = useSelector(getPlanningMapStateEvent);
+  // check if add or edit event
+  const isEdit = currEvent === PLANNING_EVENT.editElementDetails;
+
+  const transformAndValidateData = useCallback(
+    formData => {
+      if (isEdit) {
+        return {
+          ...formData,
+          // remove geometry
+          geometry: undefined,
+          // convert select fields to simple values
+          status: formData.status.value,
+        };
+      } else {
+        return {
+          ...formData,
+          // remove coordinates and add geometry
+          coordinates: undefined,
+          geometry: latLongMapToCoords([formData.coordinates])[0],
+          // convert select fields to simple values
+          status: formData.status.value,
+        };
+      }
+    },
+    [isEdit],
+  );
 
   return (
     <GisLayerForm
+      isEdit={isEdit}
       layerKey={LAYER_KEY}
       formConfig={ELEMENT_FORM_TEMPLATE}
       transformAndValidateData={transformAndValidateData}

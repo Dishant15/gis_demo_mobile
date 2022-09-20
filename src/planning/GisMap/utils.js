@@ -16,6 +16,7 @@ import {
   getIcon as DpGetIcon,
   ElementLayer as DpElement,
   ElementDetails as DpDetails,
+  EditMapLayer as DpEditMapLayer,
 } from './layers/p_dp';
 import {
   LAYER_KEY as SplitterKey,
@@ -73,8 +74,10 @@ export const LayerKeyMappings = {
   },
   [DpKey]: {
     [PLANNING_EVENT.addElement]: <DPAddLayer />,
+    [PLANNING_EVENT.editElementLocation]: <DpEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <DpForm />,
     [PLANNING_EVENT.showElementDetails]: <DpDetails />,
+    [PLANNING_EVENT.editElementDetails]: <DpForm />,
     ViewLayer: DPViewLayer,
     Geometry: DPGeometry,
     Icon: DpGetIcon,
@@ -83,6 +86,7 @@ export const LayerKeyMappings = {
     [PLANNING_EVENT.addElement]: <SplitterAddLayer />,
     [PLANNING_EVENT.addElementForm]: <SplitterForm />,
     [PLANNING_EVENT.showElementDetails]: <SplitterDetails />,
+    [PLANNING_EVENT.editElementDetails]: <SplitterForm />,
     ViewLayer: SplitterLayer,
     Geometry: SplitterGeometry,
     Icon: SplitterGetIcon,
@@ -91,6 +95,7 @@ export const LayerKeyMappings = {
     [PLANNING_EVENT.addElement]: <CableAddLayer />,
     [PLANNING_EVENT.addElementForm]: <CableForm />,
     [PLANNING_EVENT.showElementDetails]: <CableDetails />,
+    [PLANNING_EVENT.editElementDetails]: <CableForm />,
     ViewLayer: CableLayer,
     Geometry: CableGeometry,
     Icon: CableGetIcon,
@@ -101,6 +106,7 @@ export const LayerKeyMappings = {
 export const LayerKeyGisMapping = {
   [DpKey]: {
     [PLANNING_EVENT.addElement]: DpElement,
+    [PLANNING_EVENT.editElementLocation]: DpElement,
   },
   [SplitterKey]: {
     [PLANNING_EVENT.addElement]: SplitterElement,

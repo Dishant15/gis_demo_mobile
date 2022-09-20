@@ -58,6 +58,7 @@ const LayersTabContent = ({hideModal}) => {
   );
   const regionIdList = useSelector(getSelectedRegionIds);
   const selectedLayerKeys = useSelector(getSelectedLayerKeys);
+  const dispatch = useDispatch();
 
   const handleFullDataRefresh = useCallback(() => {
     for (let l_ind = 0; l_ind < selectedLayerKeys.length; l_ind++) {

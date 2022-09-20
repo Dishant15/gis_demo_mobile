@@ -14,7 +14,10 @@ import {
   getLayerViewData,
   getPlanningMapStateData,
 } from '~planning/data/planningGis.selectors';
-import {getLayerSelectedConfiguration} from '~planning/data/planningState.selectors';
+import {
+  getLayerSelectedConfiguration,
+  getPlanningMapStateEvent,
+} from '~planning/data/planningState.selectors';
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 
 import CableIcon from '~assets/markers/line_pin.svg';
@@ -122,23 +125,42 @@ export const ElementLayer = () => {
 
 export const ElementForm = () => {
   const configuration = useSelector(getLayerSelectedConfiguration(LAYER_KEY));
-  // SUGGESTED_UPDATES ---- remove workOrder object from this
-  const transformAndValidateData = useCallback(formData => {
-    return {
-      ...formData,
-      // remove coordinates and add geometry
-      coordinates: undefined,
-      remark: undefined,
-      geometry: latLongMapToCoords(formData.coordinates),
-      // convert select fields to simple values
-      status: formData.status.value,
-      cable_type: formData.cable_type.value,
-      configuration: configuration.id,
-    };
-  }, []);
+  // get map state event
+  const currEvent = useSelector(getPlanningMapStateEvent);
+  // check if add or edit event
+  const isEdit = currEvent === PLANNING_EVENT.editElementDetails;
+
+  const transformAndValidateData = useCallback(
+    formData => {
+      if (isEdit) {
+        return {
+          ...formData,
+          // remove geometry
+          geometry: undefined,
+          // convert select fields to simple values
+          status: formData.status.value,
+          cable_type: formData.cable_type.value,
+        };
+      } else {
+        return {
+          ...formData,
+          // remove coordinates and add geometry
+          coordinates: undefined,
+          remark: undefined,
+          geometry: latLongMapToCoords(formData.coordinates),
+          // convert select fields to simple values
+          status: formData.status.value,
+          cable_type: formData.cable_type.value,
+          configuration: configuration.id,
+        };
+      }
+    },
+    [isEdit],
+  );
 
   return (
     <GisLayerForm
+      isEdit={isEdit}
       layerKey={LAYER_KEY}
       formConfig={ELEMENT_FORM_TEMPLATE}
       transformAndValidateData={transformAndValidateData}

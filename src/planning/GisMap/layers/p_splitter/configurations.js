@@ -41,6 +41,7 @@ export const ELEMENT_FORM_TEMPLATE = {
           field_key: 'remark',
           label: 'Remark',
           field_type: 'textArea',
+          required: false,
         },
       ],
     },

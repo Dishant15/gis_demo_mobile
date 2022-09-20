@@ -14,6 +14,8 @@ import Header from '~planning/ActionBar/components/Header';
 import {Button, Chip, Divider, Subheading} from 'react-native-paper';
 import {colors, layout} from '~constants/constants';
 import Loader from '~Common/Loader';
+import {PLANNING_EVENT} from '../utils';
+import {coordsToLatLongMap} from '~utils/map.utils';
 
 const ElementDetailsTable = ({
   rowDefs,
@@ -24,6 +26,7 @@ const ElementDetailsTable = ({
   const navigation = useNavigation();
   const {top} = useSafeAreaInsets();
   const dispatch = useDispatch();
+
   const {data: elemData, isLoading} = useQuery(
     ['elementDetails', layerKey, elementId],
     fetchElementDetails,
@@ -36,10 +39,30 @@ const ElementDetailsTable = ({
   }, [dispatch]);
 
   const handleEditDetails = useCallback(() => {
-    console.log('press');
-  }, []);
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.editElementDetails,
+        layerKey,
+        data: onEditDataConverter(elemData),
+      }),
+    );
+  }, [dispatch, layerKey, elemData, onEditDataConverter]);
 
-  const handleEditLocation = useCallback(() => {}, []);
+  const handleEditLocation = useCallback(() => {
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.editElementLocation,
+        layerKey,
+        // pass elem data to update edit icon / style based on configs
+        data: {
+          ...elemData,
+          elementId: elemData.id,
+          coordinates: elemData.coordinates,
+        },
+        geometry: coordsToLatLongMap([elemData.coordinates])[0],
+      }),
+    );
+  }, [dispatch, layerKey, elemData]);
 
   return (
     <CustomBottomPopup

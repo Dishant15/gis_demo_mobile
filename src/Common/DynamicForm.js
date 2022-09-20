@@ -56,8 +56,16 @@ const DynamicForm = forwardRef(
               {!!fieldConfigs ? (
                 <View>
                   {fieldConfigs.map(config => {
-                    const {field_key, label, field_type} = config;
-
+                    const {
+                      field_key,
+                      label,
+                      field_type,
+                      required = true,
+                    } = config;
+                    let rules = {};
+                    if (required) {
+                      rules.required = `${label} is required.`;
+                    }
                     switch (field_type) {
                       case 'input':
                         return (
@@ -65,9 +73,7 @@ const DynamicForm = forwardRef(
                             key={field_key}
                             control={control}
                             name={field_key}
-                            rules={{
-                              required: `${label} is required.`,
-                            }}
+                            rules={rules}
                             render={({
                               field: {ref, onChange, onBlur, value},
                             }) => (
@@ -93,9 +99,7 @@ const DynamicForm = forwardRef(
                             key={field_key}
                             control={control}
                             name={field_key}
-                            rules={{
-                              required: `${label} is required.`,
-                            }}
+                            rules={rules}
                             render={({
                               field: {ref, onChange, onBlur, value},
                             }) => (
@@ -126,9 +130,7 @@ const DynamicForm = forwardRef(
                             key={field_key}
                             control={control}
                             name={field_key}
-                            rules={{
-                              required: `${label} is required.`,
-                            }}
+                            rules={rules}
                             render={({
                               field: {ref, onChange, onBlur, value},
                             }) => {
@@ -180,9 +182,7 @@ const DynamicForm = forwardRef(
                             key={field_key}
                             control={control}
                             name={field_key}
-                            rules={{
-                              required: `${label} is required.`,
-                            }}
+                            rules={rules}
                             render={({
                               field: {ref, onChange, onBlur, value},
                             }) => (

@@ -23,7 +23,10 @@ import AddMarkerLayer from '~planning/GisMap/components/AddMarkerLayer';
 import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
 
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
-import {getLayerSelectedConfiguration} from '~planning/data/planningState.selectors';
+import {
+  getLayerSelectedConfiguration,
+  getPlanningMapStateEvent,
+} from '~planning/data/planningState.selectors';
 import {LAYER_STATUS_OPTIONS} from '../common/configuration';
 import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
 
@@ -115,23 +118,39 @@ export const ElementLayer = () => {
 
 export const ElementForm = () => {
   const configuration = useSelector(getLayerSelectedConfiguration(LAYER_KEY));
-  // SUGGESTED_UPDATES ---- remove workOrder object from this
+  // get map state event
+  const currEvent = useSelector(getPlanningMapStateEvent);
+  // check if add or edit event
+  const isEdit = currEvent === PLANNING_EVENT.editElementDetails;
 
-  const transformAndValidateData = useCallback(formData => {
-    return {
-      ...formData,
-      // remove coordinates and add geometry
-      coordinates: undefined,
-      remark: undefined,
-      geometry: latLongMapToCoords([formData.coordinates])[0],
-      // convert select fields to simple values
-      status: formData.status.value,
-      configuration: configuration.id,
-    };
-  }, []);
+  const transformAndValidateData = useCallback(
+    formData => {
+      if (isEdit) {
+        return {
+          ...formData,
+          // remove geometry
+          geometry: undefined,
+          status: formData.status.value,
+        };
+      } else {
+        return {
+          ...formData,
+          // remove coordinates and add geometry
+          coordinates: undefined,
+          remark: undefined,
+          geometry: latLongMapToCoords([formData.coordinates])[0],
+          // convert select fields to simple values
+          status: formData.status.value,
+          configuration: configuration.id,
+        };
+      }
+    },
+    [isEdit],
+  );
 
   return (
     <GisLayerForm
+      isEdit={isEdit}
       layerKey={LAYER_KEY}
       formConfig={ELEMENT_FORM_TEMPLATE}
       transformAndValidateData={transformAndValidateData}

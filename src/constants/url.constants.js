@@ -44,6 +44,9 @@ export const apiGetPlanningLayerData = () => '/api/planning/layer/';
 export const apiPostAddElement = layerKey =>
   `/api/planning/layer/${layerKey}/add/`;
 
+export const apiPutEditElement = (layerKey, elementId) =>
+  `/api/planning/layer/${layerKey}/${elementId}/edit/`;
+
 export const apiPostAddTicketWorkorder = ticketId =>
   `/api/ticket/${ticketId}/workorder/add/`;
 
@@ -55,3 +58,6 @@ export const apiGetTicketWorkorderElements = (ticketId = ':ticketId') =>
 
 export const apiPutTicketWorkorderEdit = workOrderId =>
   `/api/ticket/workorder/${workOrderId}/edit/`;
+
+export const apiPutTicketWorkorderElementEdit = workOrderId =>
+  `/api/ticket/workorder/${workOrderId}/edit/element/`;

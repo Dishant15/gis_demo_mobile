@@ -9,6 +9,8 @@ import {CustomBottomPopup} from '~Common/CustomPopup';
 import {
   addNewElement,
   addNewTicketWorkorder,
+  editElementDetails,
+  editTicketWorkorderElement,
 } from '~planning/data/layer.services';
 import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
 import {
@@ -29,6 +31,7 @@ export const GisLayerForm = ({
 }) => {
   const dispatch = useDispatch();
   const formRef = useRef();
+
   const data = useSelector(getPlanningMapStateData);
   const selectedRegionIds = useSelector(getSelectedRegionIds);
   const ticketId = useSelector(getSelectedPlanningTicket);
@@ -87,6 +90,28 @@ export const GisLayerForm = ({
     },
   );
 
+  const {mutate: editElement, isLoading: isEditLoading} = useMutation(
+    mutationData =>
+      editElementDetails({data: mutationData, layerKey, elementId: data.id}),
+    {
+      onSuccess: onSuccessHandler,
+      onError: onErrorHandler,
+    },
+  );
+
+  const {mutate: editTicketElement, isLoading: isEditTicketLoading} =
+    useMutation(
+      mutationData =>
+        editTicketWorkorderElement({
+          data: mutationData,
+          workOrderId,
+        }),
+      {
+        onSuccess: onSuccessHandler,
+        onError: onErrorHandler,
+      },
+    );
+
   const onSubmit = (data, setError, clearErrors) => {
     clearErrors();
     // remove remark from data and pass in workorder data
@@ -98,7 +123,8 @@ export const GisLayerForm = ({
     // call addWorkOrder api if isWorkOrderUpdate, addElement api if not
     if (isWorkOrderUpdate) {
       if (isEdit) {
-        // --- call edit work order element api
+        // edit work order element api
+        editTicketElement(validatedData);
       } else {
         // create workOrder data if isWorkOrderUpdate
         const workOrderData = {
@@ -114,7 +140,7 @@ export const GisLayerForm = ({
       }
     } else {
       if (isEdit) {
-        // editElement(validatedData);
+        editElement(validatedData);
       } else {
         addElement(validatedData);
       }
@@ -138,7 +164,7 @@ export const GisLayerForm = ({
         data={data}
         onSubmit={onSubmit}
         onCancel={onClose}
-        isLoading={isLoading}
+        isLoading={isLoading || isAddLoading || isEditLoading}
       />
     </CustomBottomPopup>
   );

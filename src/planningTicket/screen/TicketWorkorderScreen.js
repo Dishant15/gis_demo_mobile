@@ -18,7 +18,10 @@ import {layout, screens, colors} from '~constants/constants';
 import AcceptImg from '~assets/img/accept.png';
 import CancelImg from '~assets/img/cancel.png';
 import InprogressImg from '~assets/img/inprogress.png';
-import {setMapState} from '~planning/data/planningGis.reducer';
+import {
+  setMapState,
+  setTicketWorkOrderId,
+} from '~planning/data/planningGis.reducer';
 import {PLANNING_EVENT} from '~planning/GisMap/utils';
 import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
 import {getPlanningTicketData} from '~planning/data/planningGis.selectors';
@@ -64,6 +67,7 @@ const TicketWorkorderScreen = props => {
           data: {elementId: item.element.id},
         }),
       );
+      dispatch(setTicketWorkOrderId(item.id));
       navigation.navigate(screens.planningTicketMap);
     },
     [],
