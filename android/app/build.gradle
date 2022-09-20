@@ -134,7 +134,7 @@ android {
         applicationId "com.networkgis"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1013
+        versionCode 1014
         versionName "1.0"
     }
     splits {
