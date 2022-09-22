@@ -23,7 +23,7 @@ import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 import CableIcon from '~assets/markers/line_pin.svg';
 import AddPolyLineLayer from '~planning/GisMap/components/AddPolyLineLayer';
 import CustomMarker from '~Common/CustomMarker';
-import {latLongMapToCoords} from '~utils/map.utils';
+import {latLongMapToLineCoords} from '~utils/map.utils';
 import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
 import {LAYER_STATUS_OPTIONS} from '../common/configuration';
 import {find} from 'lodash';
@@ -147,7 +147,7 @@ export const ElementForm = () => {
           // remove coordinates and add geometry
           coordinates: undefined,
           remark: undefined,
-          geometry: latLongMapToCoords(formData.coordinates),
+          geometry: latLongMapToLineCoords(formData.coordinates),
           // convert select fields to simple values
           status: formData.status.value,
           cable_type: formData.cable_type.value,
