@@ -10,24 +10,16 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Loader from '~Common/Loader';
 import Header from './Header';
 
-import {
-  fetchRegionList,
-  fetchLayerDataThunk,
-} from '~planning/data/actionBar.services';
+import {fetchRegionList} from '~planning/data/actionBar.services';
 import {
   getExpandedRegionIds,
-  getSelectedLayerKeys,
   getSelectedRegionIds,
 } from '~planning/data/planningState.selectors';
-import {
-  handleLayerSelect,
-  handleRegionSelect,
-  setActiveTab,
-} from '~planning/data/planningState.reducer';
-import {resetUnselectedLayerGisData} from '~planning/data/planningGis.reducer';
+import {setActiveTab} from '~planning/data/planningState.reducer';
 
 import {getFillColor} from '~utils/map.utils';
 import {colors, layout} from '~constants/constants';
+import {onRegionSelectionUpdate} from '~planning/data/planning.actions';
 
 const RegionTabContent = ({hideModal}) => {
   /**
@@ -43,7 +35,6 @@ const RegionTabContent = ({hideModal}) => {
   const dispatch = useDispatch();
   const selectedRegionIds = useSelector(getSelectedRegionIds);
   const expandedRegionIds = useSelector(getExpandedRegionIds);
-  const selectedLayerKeys = useSelector(getSelectedLayerKeys);
   const [selectedRegionSet, setSelectedRegion] = useState(
     new Set(selectedRegionIds),
   );
@@ -91,23 +82,11 @@ const RegionTabContent = ({hideModal}) => {
     if (!size(regionIdList)) return;
     // check if regions changed
     if (size(xor(regionIdList, selectedRegionIds))) {
-      // set selected regions
-      dispatch(handleRegionSelect(regionIdList));
-      // add region in selectedLayerKeys if not
-      if (selectedLayerKeys.indexOf('region') === -1) {
-        dispatch(handleLayerSelect('region'));
-      }
-      // fetch data gis data for all region polygons
-      dispatch(fetchLayerDataThunk({regionIdList, layerKey: 'region'}));
-      // re fetch data for each selected layers
-      for (let l_ind = 0; l_ind < selectedLayerKeys.length; l_ind++) {
-        const currLayerKey = selectedLayerKeys[l_ind];
-        dispatch(fetchLayerDataThunk({regionIdList, layerKey: currLayerKey}));
-      }
-      dispatch(resetUnselectedLayerGisData(selectedLayerKeys));
+      dispatch(onRegionSelectionUpdate(regionIdList));
     }
-    dispatch(setActiveTab(null));
-  }, [selectedRegionSet, selectedRegionIds, selectedLayerKeys]);
+    // change tab to layers
+    dispatch(setActiveTab(1));
+  }, [selectedRegionSet, selectedRegionIds]);
 
   return (
     <View style={styles.container}>
