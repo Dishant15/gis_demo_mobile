@@ -60,6 +60,7 @@ const ElementDetailsTable = ({
           coordinates: elemData.coordinates,
         },
         geometry: coordsToLatLongMap([elemData.coordinates])[0],
+        enableMapInterection: true,
       }),
     );
   }, [dispatch, layerKey, elemData]);

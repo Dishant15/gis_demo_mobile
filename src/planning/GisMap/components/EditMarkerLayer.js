@@ -8,23 +8,37 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {layout, THEME_COLORS} from '~constants/constants';
-import {getGisMapStateGeometry} from '~planning/data/planningGis.selectors';
+import {
+  getGisMapStateGeometry,
+  getPlanningMapStateData,
+  getPlanningTicketWorkOrderId,
+} from '~planning/data/planningGis.selectors';
 import {useMutation} from 'react-query';
-import {editElementDetails} from '~planning/data/layer.services';
+import {
+  editElementDetails,
+  editTicketWorkorderElement,
+} from '~planning/data/layer.services';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {fetchLayerDataThunk} from '~planning/data/actionBar.services';
 import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
-import {PLANNING_EVENT} from '../utils';
 import {get} from 'lodash';
+import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
+import {latLongMapToCoords} from '~utils/map.utils';
 
 const EditMarkerLayer = ({helpText, layerKey}) => {
   const {top} = useSafeAreaInsets();
   const dispatch = useDispatch();
+
   const coordinates = useSelector(getGisMapStateGeometry);
   const selectedRegionIds = useSelector(getSelectedRegionIds);
+  const ticketId = useSelector(getSelectedPlanningTicket);
+  const workOrderId = useSelector(getPlanningTicketWorkOrderId);
+  const data = useSelector(getPlanningMapStateData);
 
   const onSuccessHandler = () => {
     showToast('Element location updated Successfully', TOAST_TYPE.SUCCESS);
+    // close form
+    dispatch(setMapState({}));
     // refetch layer
     dispatch(
       fetchLayerDataThunk({
@@ -70,7 +84,7 @@ const EditMarkerLayer = ({helpText, layerKey}) => {
 
   const {mutate: editElement, isLoading: isEditLoading} = useMutation(
     mutationData =>
-      editElementDetails({data: mutationData, layerKey, elementId}),
+      editElementDetails({data: mutationData, layerKey, elementId: data.id}),
     {
       onSuccess: onSuccessHandler,
       onError: onErrorHandler,
@@ -80,16 +94,32 @@ const EditMarkerLayer = ({helpText, layerKey}) => {
   const {mutate: editTicketElement, isLoading: isEditTicketLoading} =
     useMutation(
       mutationData =>
-        editElementDetails({data: mutationData, layerKey, elementId}),
+        editTicketWorkorderElement({
+          data: mutationData,
+          workOrderId,
+        }),
       {
         onSuccess: onSuccessHandler,
         onError: onErrorHandler,
       },
     );
 
-  const handleAddComplete = useCallback(() => {
+  const handleUpdate = useCallback(() => {
     console.log('coordinates', coordinates);
-  }, [coordinates]);
+    const isWorkOrderUpdate = !!ticketId;
+    const updatedData = {
+      geometry: latLongMapToCoords([coordinates])[0],
+    };
+    console.log(
+      '🚀 ~ file: EditMarkerLayer.js ~ line 101 ~ handleUpdate ~ updatedData',
+      updatedData,
+    );
+    if (isWorkOrderUpdate) {
+      editTicketElement(updatedData);
+    } else {
+      editElement(updatedData);
+    }
+  }, [coordinates, ticketId]);
 
   const handleCancel = useCallback(() => {
     dispatch(setMapState({}));
@@ -116,9 +146,10 @@ const EditMarkerLayer = ({helpText, layerKey}) => {
               mode="contained"
               icon="check"
               color={THEME_COLORS.primary.main}
-              onPress={handleAddComplete}
-              style={layout.smallButton}>
-              Complete
+              onPress={handleUpdate}
+              style={layout.smallButton}
+              loading={isEditLoading || isEditTicketLoading}>
+              Update
             </Button>
           </Card.Actions>
         </FloatingCard>
