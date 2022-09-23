@@ -2,8 +2,6 @@ import React, {useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Marker} from 'react-native-maps';
 
-import SecondarySpliterIcon from '~assets/markers/spliter_view.svg';
-import PrimarySpliterIcon from '~assets/markers/spliter_view_primary.svg';
 import {find, noop} from 'lodash';
 import {PLANNING_EVENT} from '~planning/GisMap/utils';
 import {
@@ -29,17 +27,31 @@ import {
 } from '~planning/data/planningState.selectors';
 import {LAYER_STATUS_OPTIONS} from '../common/configuration';
 import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
+import EditMarkerLayer from '~planning/GisMap/components/EditMarkerLayer';
 
-export const getIcon = ({splitter_type}) =>
-  splitter_type === 'P' ? PrimarySpliterIcon : SecondarySpliterIcon;
+import SecondarySpliterIcon from '~assets/markers/spliter_view.svg';
+import SecondarySpliterEditIcon from '~assets/markers/spliter_edit.svg';
+import PrimarySpliterIcon from '~assets/markers/spliter_view_primary.svg';
+import PrimarySpliterEditIcon from '~assets/markers/spliter_edit_primary.svg';
+
+export const getIcon = ({splitter_type, isEdit}) => {
+  if (isEdit) {
+    return splitter_type === 'P'
+      ? PrimarySpliterEditIcon
+      : SecondarySpliterEditIcon;
+  } else {
+    return splitter_type === 'P' ? PrimarySpliterIcon : SecondarySpliterIcon;
+  }
+};
 
 export const Geometry = ({
   coordinates,
   splitter_type,
+  isEdit,
   handleMarkerDrag = noop,
 }) => {
   if (coordinates) {
-    const Icon = getIcon({splitter_type});
+    const Icon = getIcon({splitter_type, isEdit});
     return (
       <Marker
         coordinate={coordinates}
@@ -97,10 +109,23 @@ export const AddLayer = () => {
   );
 };
 
+export const EditMapLayer = () => {
+  return (
+    <EditMarkerLayer
+      helpText="Click or drag and drop marker to new location"
+      layerKey={LAYER_KEY}
+    />
+  );
+};
+
 export const ElementLayer = () => {
+  const dispatch = useDispatch();
   const coordinates = useSelector(getGisMapStateGeometry);
   const configuration = useSelector(getLayerSelectedConfiguration(LAYER_KEY));
-  const dispatch = useDispatch();
+  // get map state event
+  const currEvent = useSelector(getPlanningMapStateEvent);
+  // check if add or edit event
+  const isEdit = currEvent === PLANNING_EVENT.editElementLocation;
 
   const handleMarkerDrag = e => {
     const coords = e.nativeEvent.coordinate;
@@ -112,6 +137,7 @@ export const ElementLayer = () => {
       coordinates={coordinates}
       handleMarkerDrag={handleMarkerDrag}
       splitter_type={configuration.splitter_type}
+      isEdit={isEdit}
     />
   );
 };

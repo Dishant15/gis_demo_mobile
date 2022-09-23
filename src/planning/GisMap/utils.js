@@ -27,6 +27,7 @@ import {
   getIcon as SplitterGetIcon,
   ElementLayer as SplitterElement,
   ElementDetails as SplitterDetails,
+  EditMapLayer as SplitterEditMapLayer,
 } from './layers/p_splitter';
 import {
   LAYER_KEY as CableKey,
@@ -84,6 +85,7 @@ export const LayerKeyMappings = {
   },
   [SplitterKey]: {
     [PLANNING_EVENT.addElement]: <SplitterAddLayer />,
+    [PLANNING_EVENT.editElementLocation]: <SplitterEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <SplitterForm />,
     [PLANNING_EVENT.showElementDetails]: <SplitterDetails />,
     [PLANNING_EVENT.editElementDetails]: <SplitterForm />,
@@ -110,6 +112,7 @@ export const LayerKeyGisMapping = {
   },
   [SplitterKey]: {
     [PLANNING_EVENT.addElement]: SplitterElement,
+    [PLANNING_EVENT.editElementLocation]: SplitterElement,
   },
   [CableKey]: {
     [PLANNING_EVENT.addElement]: CableElement,
