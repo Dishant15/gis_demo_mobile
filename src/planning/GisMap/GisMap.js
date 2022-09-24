@@ -14,7 +14,11 @@ import {
   getGisMapInterectionEnable,
   getPlanningMapState,
 } from '~planning/data/planningGis.selectors';
-import {getElementCoordinates, LayerKeyMappings} from './utils';
+import {
+  getElementCoordinates,
+  getElementTypeFromLayerKey,
+  LayerKeyMappings,
+} from './utils';
 import TicketMapLayers from './components/TicketMapLayers';
 
 /**
@@ -44,7 +48,7 @@ const GisMap = props => {
     coords = getElementCoordinates(
       coords,
       mapState.geometry,
-      mapState.elementType,
+      getElementTypeFromLayerKey(mapState.layerKey),
     );
     dispatch(updateMapStateCoordinates(coords));
   };

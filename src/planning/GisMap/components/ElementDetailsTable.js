@@ -4,6 +4,7 @@ import {useQuery} from 'react-query';
 import {useDispatch} from 'react-redux';
 
 import get from 'lodash/get';
+
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 
@@ -14,7 +15,7 @@ import Header from '~planning/ActionBar/components/Header';
 import {Button, Chip, Divider, Subheading} from 'react-native-paper';
 import {colors, layout} from '~constants/constants';
 import Loader from '~Common/Loader';
-import {PLANNING_EVENT} from '../utils';
+import {ELEMENT_TYPE, PLANNING_EVENT} from '../utils';
 import {coordsToLatLongMap} from '~utils/map.utils';
 
 const ElementDetailsTable = ({
@@ -22,6 +23,7 @@ const ElementDetailsTable = ({
   layerKey,
   elementId,
   onEditDataConverter,
+  featureType = ELEMENT_TYPE.MARKER,
 }) => {
   const navigation = useNavigation();
   const {top} = useSafeAreaInsets();
@@ -59,11 +61,14 @@ const ElementDetailsTable = ({
           elementId: elemData.id,
           coordinates: elemData.coordinates,
         },
-        geometry: coordsToLatLongMap([elemData.coordinates])[0],
+        geometry:
+          featureType === ELEMENT_TYPE.POLYLINE
+            ? coordsToLatLongMap(elemData.coordinates)
+            : coordsToLatLongMap([elemData.coordinates])[0],
         enableMapInterection: true,
       }),
     );
-  }, [dispatch, layerKey, elemData]);
+  }, [dispatch, layerKey, elemData, featureType]);
 
   return (
     <CustomBottomPopup

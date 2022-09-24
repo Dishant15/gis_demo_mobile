@@ -38,6 +38,7 @@ import {
   ElementLayer as CableElement,
   ElementForm as CableForm,
   ElementDetails as CableDetails,
+  EditMapLayer as CableEditMapLayer,
 } from './layers/p_cable';
 
 // possible events that can happen on map
@@ -95,6 +96,7 @@ export const LayerKeyMappings = {
   },
   [CableKey]: {
     [PLANNING_EVENT.addElement]: <CableAddLayer />,
+    [PLANNING_EVENT.editElementLocation]: <CableEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <CableForm />,
     [PLANNING_EVENT.showElementDetails]: <CableDetails />,
     [PLANNING_EVENT.editElementDetails]: <CableForm />,
@@ -116,6 +118,7 @@ export const LayerKeyGisMapping = {
   },
   [CableKey]: {
     [PLANNING_EVENT.addElement]: CableElement,
+    [PLANNING_EVENT.editElementLocation]: CableElement,
   },
 };
 

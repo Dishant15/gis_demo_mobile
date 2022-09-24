@@ -6,6 +6,9 @@ import {Button, Card} from 'react-native-paper';
 import FloatingCard from '~Common/components/FloatingCard';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
+import {get, round} from 'lodash';
+import {lineString, length} from '@turf/turf';
+
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {layout, THEME_COLORS} from '~constants/constants';
 import {
@@ -21,11 +24,15 @@ import {
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {fetchLayerDataThunk} from '~planning/data/actionBar.services';
 import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
-import {get} from 'lodash';
 import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
-import {latLongMapToCoords} from '~utils/map.utils';
+import {latLongMapToCoords, latLongMapToLineCoords} from '~utils/map.utils';
+import {ELEMENT_TYPE} from '../utils';
 
-const EditMarkerLayer = ({helpText, layerKey}) => {
+const EditGisLayer = ({
+  helpText,
+  layerKey,
+  featureType, // marker | polyline
+}) => {
   const {top} = useSafeAreaInsets();
   const dispatch = useDispatch();
 
@@ -46,20 +53,11 @@ const EditMarkerLayer = ({helpText, layerKey}) => {
         layerKey,
       }),
     );
-    // complete current event -> fire next event OR go to details by default
-    // dispatch(
-    //   setMapState({
-    //     event: PLANNING_EVENT.showElementDetails,
-    //     layerKey,
-    //     data: { elementId },
-    //     ...nextEvent,
-    //   })
-    // );
   };
 
   const onErrorHandler = err => {
     console.log(
-      '🚀 ~ file: EditMarkerLayer.js ~ line 46 ~ onErrorHandler ~ err',
+      '🚀 ~ file: EditGisLayer.js ~ line 46 ~ onErrorHandler ~ err',
       err,
     );
     const errStatus = get(err, 'response.status');
@@ -105,25 +103,31 @@ const EditMarkerLayer = ({helpText, layerKey}) => {
     );
 
   const handleUpdate = useCallback(() => {
-    console.log('coordinates', coordinates);
     const isWorkOrderUpdate = !!ticketId;
-    const updatedData = {
-      geometry: latLongMapToCoords([coordinates])[0],
-    };
-    console.log(
-      '🚀 ~ file: EditMarkerLayer.js ~ line 101 ~ handleUpdate ~ updatedData',
-      updatedData,
-    );
-    if (isWorkOrderUpdate) {
-      editTicketElement(updatedData);
+    // create submit data
+    let submitData = {};
+    if (featureType === ELEMENT_TYPE.POLYLINE) {
+      const geometry = latLongMapToLineCoords(coordinates);
+      submitData = {
+        geometry,
+        gis_len: round(length(lineString(geometry)), 4),
+      };
     } else {
-      editElement(updatedData);
+      submitData = {
+        geometry: latLongMapToCoords([coordinates])[0],
+      };
+    }
+    // hit api
+    if (isWorkOrderUpdate) {
+      editTicketElement(submitData);
+    } else {
+      editElement(submitData);
     }
   }, [coordinates, ticketId]);
 
   const handleCancel = useCallback(() => {
     dispatch(setMapState({}));
-  }, []);
+  }, [featureType]);
 
   return (
     <View style={[styles.contentWrapper, {top: Math.max(top, 14)}]}>
@@ -169,4 +173,4 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
 });
-export default EditMarkerLayer;
+export default EditGisLayer;

@@ -8,7 +8,7 @@ import {
   INITIAL_ELEMENT_DATA,
   LAYER_KEY,
 } from './configurations';
-import {PLANNING_EVENT} from '~planning/GisMap/utils';
+import {ELEMENT_TYPE, PLANNING_EVENT} from '~planning/GisMap/utils';
 import {
   getGisMapStateGeometry,
   getLayerViewData,
@@ -20,7 +20,6 @@ import {
 } from '~planning/data/planningState.selectors';
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 
-import CableIcon from '~assets/markers/line_pin.svg';
 import AddPolyLineLayer from '~planning/GisMap/components/AddPolyLineLayer';
 import CustomMarker from '~Common/CustomMarker';
 import {latLongMapToLineCoords} from '~utils/map.utils';
@@ -28,6 +27,9 @@ import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
 import {LAYER_STATUS_OPTIONS} from '../common/configuration';
 import {find} from 'lodash';
 import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
+import EditGisLayer from '~planning/GisMap/components/EditGisLayer';
+
+import CableIcon from '~assets/markers/line_pin.svg';
 
 export const getIcon = ({color_on_map}) => CableIcon;
 
@@ -79,6 +81,16 @@ export const AddLayer = () => {
         // init data
         data: INITIAL_ELEMENT_DATA,
       }}
+    />
+  );
+};
+
+export const EditMapLayer = () => {
+  return (
+    <EditGisLayer
+      helpText="Click on map to create line on map. Double click to complete."
+      layerKey={LAYER_KEY}
+      featureType={ELEMENT_TYPE.POLYLINE}
     />
   );
 };
@@ -202,6 +214,7 @@ export const ElementDetails = () => {
       layerKey={LAYER_KEY}
       elementId={elementId}
       onEditDataConverter={convertDataBeforeForm}
+      featureType={ELEMENT_TYPE.POLYLINE}
     />
   );
 };

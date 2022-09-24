@@ -27,7 +27,7 @@ import {
 } from '~planning/data/planningState.selectors';
 import {LAYER_STATUS_OPTIONS} from '../common/configuration';
 import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
-import EditMarkerLayer from '~planning/GisMap/components/EditMarkerLayer';
+import EditGisLayer from '~planning/GisMap/components/EditGisLayer';
 
 import SecondarySpliterIcon from '~assets/markers/spliter_view.svg';
 import SecondarySpliterEditIcon from '~assets/markers/spliter_edit.svg';
@@ -111,7 +111,7 @@ export const AddLayer = () => {
 
 export const EditMapLayer = () => {
   return (
-    <EditMarkerLayer
+    <EditGisLayer
       helpText="Click or drag and drop marker to new location"
       layerKey={LAYER_KEY}
     />

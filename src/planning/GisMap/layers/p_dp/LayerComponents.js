@@ -28,7 +28,7 @@ import {LAYER_STATUS_OPTIONS} from '../common/configuration';
 import Icon from '~assets/markers/p_dp_view.svg';
 import EditIcon from '~assets/markers/p_dp_edit.svg';
 import {getPlanningMapStateEvent} from '~planning/data/planningState.selectors';
-import EditMarkerLayer from '~planning/GisMap/components/EditMarkerLayer';
+import EditGisLayer from '~planning/GisMap/components/EditGisLayer';
 
 export const getIcon = () => Icon;
 
@@ -87,7 +87,7 @@ export const AddLayer = () => {
 
 export const EditMapLayer = () => {
   return (
-    <EditMarkerLayer
+    <EditGisLayer
       helpText="Click or drag and drop marker to new location"
       layerKey={LAYER_KEY}
     />
