@@ -10,6 +10,7 @@ import {fetchLayerDataThunk} from './actionBar.services';
 import {handleLayerSelect, removeLayerSelect} from './planningState.reducer';
 import {convertLayerServerData} from '../GisMap/utils';
 import {fetchTicketWorkorderDataThunk} from './ticket.services';
+import {coordsToLatLongMap} from '~utils/map.utils';
 
 const defaultLayerNetworkState = {
   isLoading: false,

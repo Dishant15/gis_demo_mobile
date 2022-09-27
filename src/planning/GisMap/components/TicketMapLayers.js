@@ -1,7 +1,11 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
+
+import {Polygon} from 'react-native-maps';
+
 import {getPlanningTicketData} from '~planning/data/planningGis.selectors';
 import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
+
 import {LayerKeyMappings} from '../utils';
 
 const TicketMapLayers = () => {
@@ -15,20 +19,12 @@ const TicketMapLayers = () => {
   if (ticketId && !isHidden) {
     return (
       <>
-        {/* <Polygon
-        path={area_pocket.coordinates}
-        options={{
-          strokeColor: "#88B14B",
-          strokeOpacity: 0.8,
-          strokeWeight: 2,
-          fillColor: "#88B14B",
-          fillOpacity: 0.3,
-          clickable: false,
-          draggable: false,
-          editable: false,
-          zIndex: 1,
-        }}
-      /> */}
+        <Polygon
+          coordinates={area_pocket.coordinates}
+          strokeWidth={2}
+          strokeColor="#88B14BCC"
+          fillColor="#88B14B4D"
+        />
         {work_orders.map(workOrder => {
           const {id, layer_key, element} = workOrder;
           if (element.id) {
