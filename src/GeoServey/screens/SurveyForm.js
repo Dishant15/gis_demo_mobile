@@ -122,6 +122,12 @@ const SurveyForm = props => {
     Api.get(getGoogleAddress(center[0], center[1]))
       .then(res => {
         const data = res.data;
+        const errorMessage = get(data, 'error_message');
+        if (errorMessage) {
+          showToast(errorMessage, TOAST_TYPE.ERROR);
+          setLoading(false);
+          return;
+        }
         const firstAddress = get(data, 'results.0.address_components', []);
         const address = get(data, 'results.0.formatted_address', '');
         // get country, state, pincode, city

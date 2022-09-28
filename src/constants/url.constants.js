@@ -1,10 +1,11 @@
-const GOOGLE_KEY = 'AIzaSyC4fchbQzIjIhCiuV-FqvuALteha7484ik';
+import {GOOGLE_API_KEY} from '@env';
+
 export const apiPostLogin = () => `/api/token/`;
 
 export const apiAddSurvey = () => `/api/geo/survey/add/`;
 
 export const getGoogleAddress = (long, lat) =>
-  `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GOOGLE_KEY}`;
+  `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GOOGLE_API_KEY}`;
 
 /* External server apis **/
 export const apiGetAreaPocketList = () => '/api/geo/survey/area-pocket/list/';
