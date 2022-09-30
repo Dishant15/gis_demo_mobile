@@ -12,7 +12,13 @@ import {fetchElementDetails} from '~planning/data/layer.services';
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {CustomBottomPopup} from '~Common/CustomPopup';
 import Header from '~planning/ActionBar/components/Header';
-import {Button, Chip, Divider, Subheading} from 'react-native-paper';
+import {
+  Button,
+  Chip,
+  Divider,
+  IconButton,
+  Subheading,
+} from 'react-native-paper';
 import {colors, layout} from '~constants/constants';
 import Loader from '~Common/Loader';
 import {ELEMENT_TYPE, PLANNING_EVENT} from '../utils';
@@ -107,6 +113,18 @@ const ElementDetailsTable = ({
                     selectedColor={colors.white}>
                     {get(elemData, `${field}_display`)}
                   </Chip>
+                </View>
+              );
+              break;
+            case 'boolean':
+              const elemBoolData = get(elemData, field);
+              ValueCell = (
+                <View style={styles.tableValue}>
+                  <IconButton
+                    icon={elemBoolData ? 'check' : 'close'}
+                    color={elemBoolData ? colors.success : colors.error}
+                    size={20}
+                  />
                 </View>
               );
               break;
