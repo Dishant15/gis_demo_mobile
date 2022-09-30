@@ -60,6 +60,7 @@ export const colors = {
   separator: '#CCCCCC',
 
   grey1: '#efefef',
+  transparent: 'transparent',
 };
 
 export const layout = StyleSheet.create({

@@ -3,7 +3,7 @@ import {View, FlatList, Pressable, StyleSheet} from 'react-native';
 import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {difference, noop, groupBy, map, xor, orderBy, size} from 'lodash';
+import {difference, noop, groupBy, map, xor, orderBy, size, get} from 'lodash';
 
 import {Button, Title, Divider, Subheading} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -15,7 +15,10 @@ import {
   getExpandedRegionIds,
   getSelectedRegionIds,
 } from '~planning/data/planningState.selectors';
-import {setActiveTab} from '~planning/data/planningState.reducer';
+import {
+  handleRegionExpand,
+  setActiveTab,
+} from '~planning/data/planningState.reducer';
 
 import {getFillColor} from '~utils/map.utils';
 import {colors, layout} from '~constants/constants';
@@ -88,6 +91,10 @@ const RegionTabContent = ({hideModal}) => {
     dispatch(setActiveTab(1));
   }, [selectedRegionSet, selectedRegionIds]);
 
+  const handleRegionExpandClick = useCallback(regionId => {
+    dispatch(handleRegionExpand(regionId));
+  }, []);
+
   return (
     <View style={styles.container}>
       {isLoading ? <Loader /> : null}
@@ -105,7 +112,7 @@ const RegionTabContent = ({hideModal}) => {
       </View>
       <FlatList
         style={styles.list}
-        data={regionList}
+        data={baseRegionList}
         keyExtractor={item => item.id}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -118,7 +125,7 @@ const RegionTabContent = ({hideModal}) => {
               selectedRegion={selectedRegionSet}
               expandedRegions={expandedRegionIds}
               handleRegionClick={handleRegionClick}
-              handleRegionExpandClick={noop}
+              handleRegionExpandClick={handleRegionExpandClick}
             />
           );
         }}
@@ -145,28 +152,71 @@ const RegionListItem = ({
   const {id, name, layer} = region;
   const color = getFillColor(layer);
   const isActive = selectedRegion.has(id);
+  // check if childs are open
+  const regionChilds = get(regionGroupData, id, []);
+  const hasChildren = !!size(regionChilds);
+  const isExpanded = hasChildren && expandedRegions.indexOf(id) > -1;
+  const borderColorLeft = isExpanded ? color : null;
 
   return (
-    <Pressable onPress={() => handleRegionClick(id)}>
-      <View style={styles.itemWrapper}>
-        <Subheading style={[styles.itemText, {color}]}>{name}</Subheading>
-        {isActive ? (
+    <View
+      style={{
+        borderLeftWidth: 1,
+        borderLeftColor: isExpanded ? borderColorLeft : colors.transparent,
+      }}>
+      <View style={styles.wrapper}>
+        <Pressable
+          style={[styles.expandIcon, {opacity: hasChildren ? 1 : 0.3}]}
+          onPress={hasChildren ? () => handleRegionExpandClick(id) : noop}>
           <MaterialIcons
-            size={22}
-            name={'check-box'}
-            color={colors.secondaryMain}
-            style={styles.itemIcon}
+            size={30}
+            name={isExpanded ? 'expand-less' : 'expand-more'}
+            color={colors.primaryFontColor}
           />
-        ) : null}
+        </Pressable>
+        <Pressable
+          style={styles.itemContent}
+          onPress={() => handleRegionClick(id)}>
+          <View style={styles.itemWrapper}>
+            <Subheading style={[styles.itemText, {color}]}>{name}</Subheading>
+            {isActive ? (
+              <MaterialIcons
+                size={22}
+                name={'check-box'}
+                color={colors.secondaryMain}
+                style={styles.itemIcon}
+              />
+            ) : null}
+          </View>
+        </Pressable>
       </View>
       <Divider />
-    </Pressable>
+      {isExpanded
+        ? regionChilds.map(regionChild => {
+            return (
+              <RegionListItem
+                key={regionChild.id}
+                region={regionChild}
+                regionGroupData={regionGroupData}
+                selectedRegion={selectedRegion}
+                expandedRegions={expandedRegions}
+                handleRegionClick={handleRegionClick}
+                handleRegionExpandClick={handleRegionExpandClick}
+              />
+            );
+          })
+        : null}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     height: '100%',
+  },
+  wrapper: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
   },
   titleWrapper: {
     flexDirection: 'row',
@@ -192,6 +242,13 @@ const styles = StyleSheet.create({
   },
   itemIcon: {
     width: 20,
+  },
+  expandIcon: {
+    justifyContent: 'center',
+    width: 34,
+  },
+  itemContent: {
+    flex: 1,
   },
 });
 
