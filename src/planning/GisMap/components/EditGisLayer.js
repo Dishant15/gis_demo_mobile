@@ -27,6 +27,7 @@ import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
 import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
 import {latLongMapToCoords, latLongMapToLineCoords} from '~utils/map.utils';
 import {ELEMENT_TYPE} from '../utils';
+import {zIndexMapping} from '../layers/common/configuration';
 
 const EditGisLayer = ({
   helpText,
@@ -130,7 +131,11 @@ const EditGisLayer = ({
   }, [featureType]);
 
   return (
-    <View style={[styles.contentWrapper, {top: Math.max(top, 14)}]}>
+    <View
+      style={[
+        styles.contentWrapper,
+        {top: Math.max(top, 14), zIndex: zIndexMapping.edit},
+      ]}>
       <View style={styles.content}>
         <FloatingCard
           title={helpText}

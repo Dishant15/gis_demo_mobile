@@ -1,10 +1,11 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
 
-import MapView, {Polygon} from 'react-native-maps';
+import {Polygon} from 'react-native-maps';
 
 import {getFillColor} from '~utils/map.utils';
 import {getLayerViewData} from '~planning/data/planningGis.selectors';
+import {zIndexMapping} from './common/configuration';
 
 export const LAYER_KEY = 'region';
 
@@ -30,6 +31,7 @@ export const ViewLayer = () => {
               coordinates={polyCoord}
               strokeColor={color}
               strokeWidth={2}
+              zIndex={zIndexMapping.region}
             />
           );
         });

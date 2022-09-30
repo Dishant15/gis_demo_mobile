@@ -8,6 +8,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {layout, THEME_COLORS} from '~constants/constants';
+import {zIndexMapping} from '../layers/common/configuration';
 
 const AddMarkerLayer = ({markerCoords, helpText, nextEvent = {}}) => {
   const dispatch = useDispatch();
@@ -27,7 +28,11 @@ const AddMarkerLayer = ({markerCoords, helpText, nextEvent = {}}) => {
   }, []);
 
   return (
-    <View style={[styles.contentWrapper, {top: Math.max(top, 14)}]}>
+    <View
+      style={[
+        styles.contentWrapper,
+        {top: Math.max(top, 14), zIndex: zIndexMapping.edit},
+      ]}>
       <View style={styles.content}>
         <FloatingCard
           title={helpText}

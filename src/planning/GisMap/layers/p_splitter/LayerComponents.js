@@ -25,7 +25,7 @@ import {
   getLayerSelectedConfiguration,
   getPlanningMapStateEvent,
 } from '~planning/data/planningState.selectors';
-import {LAYER_STATUS_OPTIONS} from '../common/configuration';
+import {LAYER_STATUS_OPTIONS, zIndexMapping} from '../common/configuration';
 import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
 import EditGisLayer from '~planning/GisMap/components/EditGisLayer';
 
@@ -60,7 +60,8 @@ export const Geometry = ({
         draggable
         stopPropagation
         flat
-        tracksInfoWindowChanges={false}>
+        tracksInfoWindowChanges={false}
+        zIndex={zIndexMapping[LAYER_KEY]}>
         <Icon />
       </Marker>
     );

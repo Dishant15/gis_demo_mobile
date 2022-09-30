@@ -23,7 +23,7 @@ import {
 
 import {PLANNING_EVENT} from '~planning/GisMap/utils';
 import {latLongMapToCoords} from '~utils/map.utils';
-import {LAYER_STATUS_OPTIONS} from '../common/configuration';
+import {LAYER_STATUS_OPTIONS, zIndexMapping} from '../common/configuration';
 
 import Icon from '~assets/markers/p_dp_view.svg';
 import EditIcon from '~assets/markers/p_dp_edit.svg';
@@ -42,7 +42,8 @@ export const Geometry = ({coordinates, isEdit, handleMarkerDrag = noop}) => {
         draggable
         stopPropagation
         flat
-        tracksInfoWindowChanges={false}>
+        tracksInfoWindowChanges={false}
+        zIndex={zIndexMapping[LAYER_KEY]}>
         {isEdit ? <EditIcon /> : <Icon />}
       </Marker>
     );

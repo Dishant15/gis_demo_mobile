@@ -24,7 +24,7 @@ import AddPolyLineLayer from '~planning/GisMap/components/AddPolyLineLayer';
 import CustomMarker from '~Common/CustomMarker';
 import {latLongMapToLineCoords} from '~utils/map.utils';
 import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
-import {LAYER_STATUS_OPTIONS} from '../common/configuration';
+import {LAYER_STATUS_OPTIONS, zIndexMapping} from '../common/configuration';
 import {find} from 'lodash';
 import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
 import EditGisLayer from '~planning/GisMap/components/EditGisLayer';
@@ -40,6 +40,7 @@ export const Geometry = ({coordinates, color_on_map}) => {
         coordinates={coordinates}
         strokeColor={color_on_map}
         strokeWidth={2}
+        zIndex={zIndexMapping[LAYER_KEY]}
       />
     );
   }
@@ -123,6 +124,7 @@ export const ElementLayer = () => {
                 stopPropagation
                 flat
                 tracksInfoWindowChanges={false}
+                zIndex={zIndexMapping[LAYER_KEY]}
               />
             );
           })
