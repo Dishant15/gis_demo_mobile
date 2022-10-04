@@ -54,29 +54,29 @@ const DrawerContent = props => {
           }}
         />
         <List.Accordion
-          title="Survey"
+          title="Ticket"
           left={props => <List.Icon {...props} icon="earth" />}>
           <List.Item
-            title="Geographic"
+            title="Survey"
             onPress={() => {
               props.navigation.closeDrawer();
               props.navigation.navigate(screens.surveyTicketList);
             }}
           />
           <List.Item
-            title="Planning"
+            title="Network"
             onPress={() => {
               props.navigation.closeDrawer();
               props.navigation.navigate(screens.planningTicketList);
             }}
           />
-          <List.Item
+          {/* <List.Item
             title="Client"
             onPress={() => {
               props.navigation.closeDrawer();
               props.navigation.navigate(screens.clientScreen);
             }}
-          />
+          /> */}
         </List.Accordion>
         <List.Item
           title="Planning"
