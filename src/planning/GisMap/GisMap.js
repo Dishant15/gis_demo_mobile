@@ -1,12 +1,14 @@
-import React, {useState, forwardRef, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {View, InteractionManager} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
-import * as Animatable from 'react-native-animatable';
 import {useIsFocused} from '@react-navigation/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+
+import * as Animatable from 'react-native-animatable';
 
 import {LayerGisEventComponent} from './components/LayerToComponentMap';
-import {layout} from '~constants/constants';
+import TicketMapLayers from './components/TicketMapLayers';
+import Map from '~Common/components/Map';
 
 import {getSelectedLayerKeys} from '~planning/data/planningState.selectors';
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
@@ -19,7 +21,8 @@ import {
   getElementTypeFromLayerKey,
   LayerKeyMappings,
 } from './utils';
-import TicketMapLayers from './components/TicketMapLayers';
+import {layout} from '~constants/constants';
+import {getMapType} from '~Common/data/appstate.selector';
 
 /**
  * Parent
@@ -29,11 +32,13 @@ const GisMap = props => {
   const [showMap, setMapVisibility] = useState(false);
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
+  const {top} = useSafeAreaInsets();
 
   // get list of selected layer-keys
   const mapLayers = useSelector(getSelectedLayerKeys);
   const enableInterection = useSelector(getGisMapInterectionEnable);
   const mapState = useSelector(getPlanningMapState);
+  const mapType = useSelector(getMapType);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -66,25 +71,16 @@ const GisMap = props => {
     <View style={[layout.container, layout.relative]}>
       {showMap ? (
         <Animatable.View animation="fadeIn" style={layout.container}>
-          <MapView
-            showsIndoorLevelPicker
-            style={layout.map}
-            initialRegion={{
-              longitudeDelta: 0.06032254546880722,
-              latitudeDelta: 0.0005546677,
-              longitude: 72.56051184609532,
-              latitude: 23.024334044995985,
-            }}
-            loadingEnabled
-            // onMapReady={onMapReady}
-            provider={PROVIDER_GOOGLE}
+          <Map
+            showMapType
+            mapType={mapType}
+            topPosition={top + 160}
             onPress={handleMapClick}
-            onPoiClick={handleMapClick}
-            showsPointsOfInterest={false}>
+            onPoiClick={handleMapClick}>
             {Layers}
             <LayerGisEventComponent />
             <TicketMapLayers />
-          </MapView>
+          </Map>
         </Animatable.View>
       ) : null}
     </View>

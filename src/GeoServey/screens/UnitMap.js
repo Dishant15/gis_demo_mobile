@@ -1,19 +1,13 @@
-import React, {useRef, useState, useCallback, useMemo, useEffect} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  InteractionManager,
-  BackHandler,
-} from 'react-native';
-import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
+import React, {useRef, useState, useCallback, useMemo} from 'react';
+import {View, StyleSheet, InteractionManager, BackHandler} from 'react-native';
+import {Marker, Polygon} from 'react-native-maps';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {isNull, get, size, differenceBy, join, split} from 'lodash';
 import {polygon, point, booleanPointInPolygon} from '@turf/turf';
 import * as Animatable from 'react-native-animatable';
-import {Button, Card, Title, Paragraph} from 'react-native-paper';
+import {Button, Card} from 'react-native-paper';
+import Map from '~Common/components/Map';
 
-import BackHeader from '~Common/components/Header/BackHeader';
 import {colors, layout, screens, THEME_COLORS} from '~constants/constants';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -48,8 +42,8 @@ import FloatingCard from '~Common/components/FloatingCard';
  */
 const UnitMap = ({navigation}) => {
   const [showMap, setMapVisibility] = useState(false);
+  const {top} = useSafeAreaInsets();
 
-  const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
   const isReviewed = useSelector(getIsReviewed);
   const unitList = useSelector(getGeoSurveyUnitList);
@@ -235,20 +229,13 @@ const UnitMap = ({navigation}) => {
       <View style={[layout.container, layout.relative]}>
         {showMap ? (
           <Animatable.View animation="fadeIn" style={layout.container}>
-            <MapView
+            <Map
               ref={mapRef}
+              showMapType
               mapType={mapType}
-              style={styles.map}
-              initialRegion={{
-                longitudeDelta: 0.06032254546880722,
-                latitudeDelta: 0.0005546677,
-                longitude: 72.56051184609532,
-                latitude: 23.024334044995985,
-              }}
-              provider={PROVIDER_GOOGLE}
+              topPosition={top + 154}
               onPress={handleMapClick}
-              onLayout={onMapLayout}
-              showsPointsOfInterest={false}>
+              onLayout={onMapLayout}>
               {existingMarkers.map((marker, index) => {
                 return (
                   <Marker
@@ -280,42 +267,9 @@ const UnitMap = ({navigation}) => {
                   fillColor={`${strokeColor}14`}
                 />
               ) : null}
-            </MapView>
+            </Map>
           </Animatable.View>
         ) : null}
-        <View style={styles.mapTypeWrapper}>
-          <TouchableOpacity onPress={handleMapType}>
-            <FastImage
-              style={styles.mapTypeImage}
-              resizeMode="cover"
-              source={mapType === 'standard' ? SatelliteMapImg : DefaultMapImg}
-            />
-          </TouchableOpacity>
-        </View>
-        {/* <View
-          pointerEvents="box-none"
-          style={[
-            styles.content,
-            {
-              marginBottom: Math.max(insets.bottom, 16),
-            },
-          ]}>
-          <TouchableOpacity
-            activeOpacity={0.6}
-            style={[
-              layout.button,
-              styles.drawBtn,
-              !markerSelected && styles.disableBtn,
-            ]}
-            disabled={!isMarker}
-            onPress={handleButtonPress}>
-            <Text style={styles.drawBtnTxt}>
-              {isLoading
-                ? 'Loading...'
-                : `${isAdd ? 'Save' : 'Update'} Location`}
-            </Text>
-          </TouchableOpacity>
-        </View> */}
       </View>
     </View>
   );

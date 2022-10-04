@@ -1,7 +1,6 @@
 import React, {useRef, useState} from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   BackHandler,
   InteractionManager,
@@ -11,12 +10,13 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import size from 'lodash/size';
 
-import MapView, {PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
+import {Polygon} from 'react-native-maps';
 import {Button, Card} from 'react-native-paper';
+import Map from '~Common/components/Map';
 
 import * as Animatable from 'react-native-animatable';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {polygon, booleanContains} from '@turf/turf';
 
@@ -45,11 +45,8 @@ import {
   getLocationPermissionType,
   getMapType,
 } from '~Common/data/appstate.selector';
-import {PERMISSIONS_TYPE, toggleMapType} from '~Common/data/appstate.reducer';
-import FastImage from 'react-native-fast-image';
+import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
 
-import DefaultMapImg from '~assets/img/map_default.png';
-import SatelliteMapImg from '~assets/img/map_satellite.png';
 import FloatingCard from '~Common/components/FloatingCard';
 
 let {width, height} = Dimensions.get('window');
@@ -73,6 +70,7 @@ const EDGE_PADDING = {
  */
 const SurveyMap = ({navigation}) => {
   const isFocused = useIsFocused();
+  const {top} = useSafeAreaInsets();
 
   const coords = useSelector(getSurveyCoordinates);
   const isReviewed = useSelector(getIsReviewed);
@@ -212,16 +210,8 @@ const SurveyMap = ({navigation}) => {
     }
   };
 
-  const handleMapType = () => {
-    dispatch(toggleMapType());
-  };
-
   if (!isFocused) return null;
-  const btnText = startEditing
-    ? isLoading
-      ? 'Loading...'
-      : `${surveyId ? 'Update' : 'Save'} Boundary`
-    : 'Create Polygon';
+
   return (
     <View style={layout.container}>
       <StatusBar barStyle="dark-content" />
@@ -277,27 +267,19 @@ const SurveyMap = ({navigation}) => {
       <View style={[layout.container, layout.relative]}>
         {showMap ? (
           <Animatable.View animation="fadeIn" style={layout.container}>
-            <MapView
+            <Map
               showsUserLocation={locationPermType === PERMISSIONS_TYPE.ALLOW}
               showsMyLocationButton={
                 locationPermType === PERMISSIONS_TYPE.ALLOW
               }
               showsIndoorLevelPicker
+              showMapType={true}
               mapType={mapType}
+              topPosition={top + 154}
               ref={mapRef}
-              style={styles.map}
-              initialRegion={{
-                longitudeDelta: 0.06032254546880722,
-                latitudeDelta: 0.0005546677,
-                longitude: 72.56051184609532,
-                latitude: 23.024334044995985,
-              }}
-              loadingEnabled
               onMapReady={onMapReady}
-              provider={PROVIDER_GOOGLE}
               onPress={handleMapClick}
               onPoiClick={handleMapClick}
-              showsPointsOfInterest={false}
               mapPadding={EDGE_PADDING}
               onMapLoaded={() => {
                 setTimeout(() => {
@@ -357,18 +339,9 @@ const SurveyMap = ({navigation}) => {
                   fillColor="transparent"
                 />
               ) : null}
-            </MapView>
+            </Map>
           </Animatable.View>
         ) : null}
-        <View style={styles.mapTypeWrapper}>
-          <TouchableOpacity onPress={handleMapType}>
-            <FastImage
-              style={styles.mapTypeImage}
-              resizeMode="cover"
-              source={mapType === 'standard' ? SatelliteMapImg : DefaultMapImg}
-            />
-          </TouchableOpacity>
-        </View>
       </View>
     </View>
   );
@@ -458,6 +431,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    borderWidth: 2,
   },
   mapTypeImage: {
     width: 44,

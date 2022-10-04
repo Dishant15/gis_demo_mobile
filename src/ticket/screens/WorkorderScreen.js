@@ -179,7 +179,7 @@ const WorkorderScreen = props => {
         }
       />
       <Button
-        style={[styles.buttonStyle, {paddingBottom: insets.bottom || 0}]}
+        style={[styles.buttonStyle, {marginBottom: insets.bottom || 12}]}
         contentStyle={layout.button}
         color={colors.black}
         uppercase
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   buttonStyle: {
-    borderRadius: 0,
+    marginHorizontal: 12,
   },
   content: {
     flex: 1,

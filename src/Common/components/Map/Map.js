@@ -1,0 +1,35 @@
+import React, {forwardRef} from 'react';
+
+import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import {useSelector} from 'react-redux';
+
+import MapType from './MapType';
+
+import {getMapType} from '../../data/appstate.selector';
+import {INIT_MAP_LOCATION, layout} from '~constants/constants';
+
+const Map = forwardRef((props, ref) => {
+  const {children, topPosition = 14, showMapType = false, ...rest} = props;
+
+  const mapType = useSelector(getMapType);
+
+  return (
+    <>
+      <MapView
+        ref={ref}
+        style={layout.map}
+        initialRegion={INIT_MAP_LOCATION}
+        provider={PROVIDER_GOOGLE}
+        mapType={showMapType ? mapType : undefined}
+        loadingEnabled
+        showsIndoorLevelPicker
+        showsPointsOfInterest={false}
+        {...rest}>
+        {children}
+      </MapView>
+      {showMapType ? <MapType topPosition={topPosition} /> : null}
+    </>
+  );
+});
+
+export default Map;

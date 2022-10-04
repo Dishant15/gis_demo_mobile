@@ -65,7 +65,7 @@ const DashboardScreen = ({navigation}) => {
             style={styles.squreCard}>
             <Card.Content style={styles.content}>
               <View style={styles.squreCardWrapper}>
-                <Subheading>Planning Tickets</Subheading>
+                <Subheading>Network Tickets</Subheading>
                 <Headline style={styles.headline}>
                   {get(dashboardData, 'network_ticket_count', 0)}
                 </Headline>

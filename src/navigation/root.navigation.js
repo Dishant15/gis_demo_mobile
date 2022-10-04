@@ -15,7 +15,6 @@ import UnitMap from '~GeoServey/screens/UnitMap';
 import UnitForm from '~GeoServey/screens/UnitForm';
 import ReviewScreen from '~GeoServey/screens/ReviewScreen';
 import SurveyForm from '~GeoServey/screens/SurveyForm';
-import SurveyList from '~GeoServey/screens/SurveyList';
 import WorkorderScreen from '~ticket/screens/WorkorderScreen';
 import PlanningTicket from '~planningTicket/screen/PlanningTicketListScreen';
 import TicketWorkorder from '~planningTicket/screen/TicketWorkorderScreen';
@@ -76,11 +75,6 @@ const RootNavigation = () => {
             <Stack.Screen
               name={screens.workorderScreen}
               component={WorkorderScreen}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.surveyList}
-              component={SurveyList}
               options={options}
             />
             <Stack.Screen

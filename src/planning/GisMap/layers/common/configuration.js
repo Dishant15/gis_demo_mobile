@@ -15,4 +15,5 @@ export const zIndexMapping = {
   p_splitter: 11,
 
   edit: 50,
+  mapType: 51,
 };
