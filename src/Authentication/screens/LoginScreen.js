@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, Dimensions, StatusBar} from 'react-native';
-import {TextInput, Button} from 'react-native-paper';
+import {TextInput, Button, HelperText} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
@@ -11,8 +11,9 @@ import Input from '~Common/Input';
 import {login} from '~Authentication/data/auth.reducer';
 import {postLogin} from '~Authentication/data/auth.service';
 import {colors, fonts, layout} from '~constants/constants';
-import {parseErrorMessage} from '~utils/app.utils';
+import {parseErrorMessagesWithFields} from '~utils/api.utils';
 import authBg from '~assets/img/authBg.png';
+import {get} from 'lodash';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -25,6 +26,7 @@ const LoginScreen = () => {
     handleSubmit,
     setError,
     setFocus,
+    clearErrors,
     formState: {errors},
   } = useForm();
 
@@ -34,8 +36,12 @@ const LoginScreen = () => {
       dispatch(login(res));
     },
     onError: err => {
-      const errorMessage = parseErrorMessage(err);
-      setError('password', {message: errorMessage});
+      const {fieldList, messageList} = parseErrorMessagesWithFields(err);
+      for (let index = 0; index < fieldList.length; index++) {
+        const field = fieldList[index];
+        const errorMessage = messageList[index];
+        setError(field, {message: errorMessage});
+      }
     },
   });
 
@@ -72,7 +78,10 @@ const LoginScreen = () => {
               <Input
                 ref={ref}
                 label="Username"
-                onChangeText={onChange}
+                onChangeText={text => {
+                  onChange(text);
+                  clearErrors();
+                }}
                 onBlur={onBlur}
                 value={value}
                 error={emaiError}
@@ -96,7 +105,10 @@ const LoginScreen = () => {
                 ref={ref}
                 label="Password"
                 secureTextEntry={!showPassword}
-                onChangeText={onChange}
+                onChangeText={text => {
+                  onChange(text);
+                  clearErrors();
+                }}
                 onBlur={onBlur}
                 value={value}
                 error={passwordError}
@@ -120,6 +132,12 @@ const LoginScreen = () => {
             onPress={() => {}}>
             Forgot Password
           </Text> */}
+
+          {!!errors.__all__ ? (
+            <HelperText type="error" visible={true}>
+              {get(errors, '__all__.message', '')}
+            </HelperText>
+          ) : null}
 
           <View style={styles.submitBtnWrapper}>
             <Button

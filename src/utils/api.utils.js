@@ -102,3 +102,30 @@ class Api {
 }
 
 export default Api;
+
+export const parseErrorMessagesWithFields = error => {
+  let msgList = ['Something Went Wrong'];
+  let fieldList = ['__all__'];
+  const status = get(error, 'response.status');
+
+  if (status) {
+    if (status === 400) {
+      const errorData = get(error, 'response.data', {});
+      fieldList = [];
+      msgList = [];
+      for (const key in errorData) {
+        if (Object.hasOwnProperty.call(errorData, key)) {
+          const errorList = errorData[key];
+          fieldList.push(key);
+          msgList.push(get(errorList, 0, 'Undefined Error'));
+        }
+      }
+    } else if (status === 403) {
+      msgList = ['Unauthorized'];
+    }
+  } else {
+    msgList = [error.message];
+  }
+
+  return {fieldList, messageList: msgList};
+};

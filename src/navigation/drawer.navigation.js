@@ -3,8 +3,9 @@ import {Dimensions, View, StyleSheet} from 'react-native';
 import {Title, List, Headline, Divider} from 'react-native-paper';
 
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {get} from 'lodash';
 
 import {DrawerButton} from '~Common/components/Header/ActionButtons';
 import ComingSoon from '~Common/components/ComingSoon';
@@ -15,6 +16,10 @@ import PlanningScreen from '~planning/screens/PlanningScreen';
 
 import {colors, layout, screens} from '~constants/constants';
 import {logout} from '~Authentication/data/auth.reducer';
+import {
+  getIsSuperAdminUser,
+  getUserPermissions,
+} from '~Authentication/data/auth.selectors';
 
 const Drawer = createDrawerNavigator();
 
@@ -33,6 +38,12 @@ const Drawer = createDrawerNavigator();
 const DrawerContent = props => {
   const {top} = useSafeAreaInsets();
   const dispatch = useDispatch();
+
+  const isSuperAdminUser = useSelector(getIsSuperAdminUser);
+  const permissions = useSelector(getUserPermissions);
+
+  const canPlanningView =
+    get(permissions, 'planning_view', false) || isSuperAdminUser;
 
   return (
     <View style={layout.container}>
@@ -78,14 +89,16 @@ const DrawerContent = props => {
             }}
           /> */}
         </List.Accordion>
-        <List.Item
-          title="Planning"
-          left={() => <List.Icon icon="vector-polyline" />}
-          onPress={() => {
-            props.navigation.closeDrawer();
-            props.navigation.navigate(screens.planningScreen);
-          }}
-        />
+        {canPlanningView ? (
+          <List.Item
+            title="Planning"
+            left={() => <List.Icon icon="vector-polyline" />}
+            onPress={() => {
+              props.navigation.closeDrawer();
+              props.navigation.navigate(screens.planningScreen);
+            }}
+          />
+        ) : null}
         <List.Item
           title="Logout"
           left={() => <List.Icon icon="logout" />}
