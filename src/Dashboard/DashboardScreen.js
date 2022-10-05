@@ -1,9 +1,15 @@
 import React from 'react';
-import {View, StyleSheet, Dimensions, ScrollView} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+  RefreshControl,
+} from 'react-native';
 import {Subheading, Card, Headline, Button} from 'react-native-paper';
 import {useQuery} from 'react-query';
 
-import {get, noop} from 'lodash';
+import {get, noop, size} from 'lodash';
 
 import Loader from '~Common/Loader';
 
@@ -39,9 +45,17 @@ const DashboardScreen = ({navigation}) => {
     navigation.navigate(screens.clientScreen);
   };
 
+  const refreshing = loadingDashboard && !size(dashboardData);
   return (
     <View style={[layout.container, layout.relative, layout.listContainer]}>
-      <ScrollView style={styles.contentContainerStyle}>
+      <ScrollView
+        style={styles.contentContainerStyle}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refetchDashboardData}
+          />
+        }>
         <View style={styles.squreCardContainer}>
           <Card
             elevation={2}
