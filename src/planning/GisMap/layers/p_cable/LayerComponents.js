@@ -114,10 +114,6 @@ export const ElementLayer = () => {
             return (
               <CustomMarker
                 coordinate={marker}
-                anchor={{
-                  x: 0.5,
-                  y: 0.5,
-                }}
                 key={i}
                 draggable
                 onDragEnd={handleMarkerDrag(i)}

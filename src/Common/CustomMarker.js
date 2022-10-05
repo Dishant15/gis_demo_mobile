@@ -1,10 +1,13 @@
 import React, {useCallback, useState} from 'react';
 import {StyleSheet} from 'react-native';
-import FastImage from 'react-native-fast-image';
 import {Marker} from 'react-native-maps';
 
-import Circle40 from '~assets/img/circle_40.png';
+import EditPin from '~assets/markers/survey_pin.svg';
+import {zIndexMapping} from '~planning/GisMap/layers/common/configuration';
 
+/**
+ * anchor can change based on svg
+ */
 const CustomMarker = props => {
   const [tracksViewChanges, setTracksViewChanges] = useState(true);
   const stopTrackingViewChanges = useCallback(() => {
@@ -12,13 +15,14 @@ const CustomMarker = props => {
   }, []);
 
   return (
-    <Marker {...props} tracksViewChanges={tracksViewChanges}>
-      <FastImage
-        source={Circle40}
-        onLoad={stopTrackingViewChanges}
-        fadeDuration={0}
-        style={styles.image}
-      />
+    <Marker
+      zIndex={zIndexMapping.edit}
+      {...props}
+      anchor={{
+        x: 0.5,
+        y: 0.9,
+      }}>
+      <EditPin />
     </Marker>
   );
 };

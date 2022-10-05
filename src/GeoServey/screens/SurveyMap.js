@@ -290,10 +290,6 @@ const SurveyMap = ({navigation}) => {
               {coordinates.map((marker, i) => (
                 <CustomMarker
                   coordinate={marker}
-                  anchor={{
-                    x: 0.5,
-                    y: 0.5,
-                  }}
                   key={i}
                   draggable
                   onDragEnd={handleMarkerDrag(i)}
