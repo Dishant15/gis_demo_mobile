@@ -11,21 +11,22 @@ import {colors} from '~constants/constants';
 import DefaultMapImg from '~assets/img/map_default.png';
 import SatelliteMapImg from '~assets/img/map_satellite.png';
 import {zIndexMapping} from '~planning/GisMap/layers/common/configuration';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 /**
  * Parent
  *    Map
  */
-const MapType = ({topPosition = 14}) => {
+const MapType = () => {
   const mapType = useSelector(getMapType);
   const dispatch = useDispatch();
-
+  const {bottom} = useSafeAreaInsets();
   const handleMapType = () => {
     dispatch(toggleMapType());
   };
 
   return (
-    <View style={[styles.mapTypeWrapper, {top: topPosition}]}>
+    <View style={[styles.mapTypeWrapper, {bottom: Math.max(bottom, 38)}]}>
       <TouchableOpacity onPress={handleMapType}>
         <FastImage
           style={styles.mapTypeImage}
@@ -40,9 +41,7 @@ const MapType = ({topPosition = 14}) => {
 const styles = StyleSheet.create({
   mapTypeWrapper: {
     position: 'absolute',
-    right: 0,
-    top: 65,
-    right: 14,
+    left: 14,
     backgroundColor: colors.white,
     borderRadius: 8,
     shadowColor: '#000',

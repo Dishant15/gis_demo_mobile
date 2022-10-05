@@ -64,9 +64,10 @@ const MapTitleBox = () => {
         </View>
       ) : null}
       {showPlanningTitle ? (
-        <View style={[styles.contentWrapper, {top: Math.max(top, 14)}]}>
+        <View
+          style={[styles.contentWrapper, {top: Math.max(top, 14), right: 4}]}>
           <View style={styles.content}>
-            <View style={styles.headerWrapper}>
+            <View style={[styles.headerWrapper, styles.planningTitle]}>
               <Headline
                 style={styles.headline}
                 numberOfLines={1}
@@ -129,6 +130,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     height: 44,
     justifyContent: 'center',
+  },
+  planningTitle: {
+    backgroundColor: colors.primaryMain,
   },
   headline: {
     color: THEME_COLORS.secondary.contrastText,

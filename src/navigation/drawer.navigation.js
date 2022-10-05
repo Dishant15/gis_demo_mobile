@@ -151,7 +151,7 @@ const DrawerNavigation = () => {
           headerShown: true,
           headerTitleAlign: 'center',
           headerTitle: () => (
-            <Title style={styles.headerText}>Geographic</Title>
+            <Title style={styles.headerText}>Survey Tickets</Title>
           ),
           headerLeft: () => <DrawerButton />,
           headerStyle: {
@@ -166,7 +166,9 @@ const DrawerNavigation = () => {
         options={{
           headerShown: true,
           headerTitleAlign: 'center',
-          headerTitle: () => <Title style={styles.headerText}>Planning</Title>,
+          headerTitle: () => (
+            <Title style={styles.headerText}>Network Tickets</Title>
+          ),
           headerLeft: () => <DrawerButton />,
           headerStyle: {
             backgroundColor: colors.primaryMain,

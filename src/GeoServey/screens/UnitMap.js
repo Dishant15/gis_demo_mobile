@@ -233,7 +233,6 @@ const UnitMap = ({navigation}) => {
               ref={mapRef}
               showMapType
               mapType={mapType}
-              topPosition={top + 154}
               onPress={handleMapClick}
               onLayout={onMapLayout}>
               {existingMarkers.map((marker, index) => {

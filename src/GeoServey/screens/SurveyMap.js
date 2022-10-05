@@ -58,8 +58,8 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const EDGE_PADDING = {
   top: 150,
   right: 0,
-  bottom: 20,
-  left: 12,
+  bottom: 0,
+  left: 0,
 };
 
 /**
@@ -217,11 +217,11 @@ const SurveyMap = ({navigation}) => {
       <StatusBar barStyle="dark-content" />
       {ticketStatus === 'A' ? (
         <FloatingCard
-          title={startEditing ? 'Finalise polygon' : 'Create Polygon'}
+          title={startEditing ? 'Finalise polygon' : 'Work Order Map'}
           subtitle={
             startEditing
               ? 'Long press and drag points on polygon edges to fine tune polygon shape'
-              : 'Create polygon inside boundary area'
+              : ''
           }>
           {startEditing ? (
             <Card.Actions>
@@ -254,11 +254,11 @@ const SurveyMap = ({navigation}) => {
               </Button>
               <Button
                 mode="contained"
-                icon="check"
-                color={THEME_COLORS.primary.main}
+                icon="plus"
+                color={THEME_COLORS.success.main}
                 onPress={handleBtnPress}
                 style={layout.smallButton}>
-                Start Drawing
+                Add Survey
               </Button>
             </Card.Actions>
           )}
@@ -275,7 +275,6 @@ const SurveyMap = ({navigation}) => {
               showsIndoorLevelPicker
               showMapType={true}
               mapType={mapType}
-              topPosition={top + 154}
               ref={mapRef}
               onMapReady={onMapReady}
               onPress={handleMapClick}

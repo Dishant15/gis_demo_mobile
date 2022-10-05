@@ -1,12 +1,12 @@
 import React, {useCallback} from 'react';
 import {View, FlatList, StyleSheet, Pressable} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {Card, Title, Paragraph, Button} from 'react-native-paper';
+import {Title, Paragraph, Button} from 'react-native-paper';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 
 import {getGeoSurveyUnitList} from '~GeoServey/data/geoSurvey.selectors';
-import {layout, screens, colors} from '~constants/constants';
+import {layout, screens, colors, THEME_COLORS} from '~constants/constants';
 import {selectUnit} from '~GeoServey/data/geoSurvey.reducer';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -68,9 +68,15 @@ const UnitList = props => {
       />
       <View style={styles.bottomWrapper}>
         <Button
-          style={[styles.btn, {paddingBottom: Math.max(insets.bottom, 0)}]}
+          style={[
+            styles.buttonStyle,
+            {marginBottom: Math.max(insets.bottom, 12)},
+          ]}
           contentStyle={layout.button}
-          color={colors.black}
+          color={THEME_COLORS.secondary.main}
+          labelStyle={{
+            color: THEME_COLORS.secondary.contrastText,
+          }}
           uppercase
           mode="contained"
           onPress={() => navigation.navigate(screens.reviewScreen)}>
@@ -92,9 +98,8 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-  btn: {
-    borderRadius: 0,
-    backgroundColor: colors.black,
+  buttonStyle: {
+    marginHorizontal: 12,
   },
   itemWrapper: {
     flexDirection: 'row',

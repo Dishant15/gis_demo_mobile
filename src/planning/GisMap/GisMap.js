@@ -74,7 +74,6 @@ const GisMap = props => {
           <Map
             showMapType
             mapType={mapType}
-            topPosition={top + 160}
             onPress={handleMapClick}
             onPoiClick={handleMapClick}>
             {Layers}

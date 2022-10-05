@@ -9,7 +9,7 @@ import {getMapType} from '../../data/appstate.selector';
 import {INIT_MAP_LOCATION, layout} from '~constants/constants';
 
 const Map = forwardRef((props, ref) => {
-  const {children, topPosition = 14, showMapType = false, ...rest} = props;
+  const {children, showMapType = false, ...rest} = props;
 
   const mapType = useSelector(getMapType);
 
@@ -27,7 +27,7 @@ const Map = forwardRef((props, ref) => {
         {...rest}>
         {children}
       </MapView>
-      {showMapType ? <MapType topPosition={topPosition} /> : null}
+      {showMapType ? <MapType /> : null}
     </>
   );
 });

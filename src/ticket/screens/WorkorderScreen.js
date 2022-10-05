@@ -25,7 +25,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import BackHeader from '~Common/components/Header/BackHeader';
 
 import {setReview, setSurveyData} from '~GeoServey/data/geoSurvey.reducer';
-import {layout, screens, colors} from '~constants/constants';
+import {layout, screens, colors, THEME_COLORS} from '~constants/constants';
 
 import {
   getAppliedStatusFilter,
@@ -181,7 +181,10 @@ const WorkorderScreen = props => {
       <Button
         style={[styles.buttonStyle, {marginBottom: insets.bottom || 12}]}
         contentStyle={layout.button}
-        color={colors.black}
+        color={THEME_COLORS.secondary.main}
+        labelStyle={{
+          color: THEME_COLORS.secondary.contrastText,
+        }}
         uppercase
         mode="contained"
         icon={'map-marker-path'}

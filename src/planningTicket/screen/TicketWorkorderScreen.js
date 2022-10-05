@@ -13,7 +13,7 @@ import Loader from '~Common/Loader';
 
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 
-import {layout, screens, colors} from '~constants/constants';
+import {layout, screens, colors, THEME_COLORS} from '~constants/constants';
 
 import AcceptImg from '~assets/img/accept.png';
 import CancelImg from '~assets/img/cancel.png';
@@ -163,7 +163,10 @@ const TicketWorkorderScreen = props => {
       <Button
         style={[styles.buttonStyle, {marginBottom: insets.bottom || 12}]}
         contentStyle={layout.button}
-        color={colors.black}
+        color={THEME_COLORS.secondary.main}
+        labelStyle={{
+          color: THEME_COLORS.secondary.contrastText,
+        }}
         uppercase
         mode="contained"
         icon={'map-marker-path'}
