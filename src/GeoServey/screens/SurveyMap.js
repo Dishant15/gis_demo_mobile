@@ -257,7 +257,10 @@ const SurveyMap = ({navigation}) => {
                 icon="plus"
                 color={THEME_COLORS.success.main}
                 onPress={handleBtnPress}
-                style={layout.smallButton}>
+                style={layout.smallButton}
+                labelStyle={{
+                  color: THEME_COLORS.success.contrastText,
+                }}>
                 Add Survey
               </Button>
             </Card.Actions>

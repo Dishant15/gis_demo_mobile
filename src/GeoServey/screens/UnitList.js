@@ -61,9 +61,16 @@ const UnitList = props => {
           }
         }}
         ListHeaderComponent={
-          <Pressable onPress={handleUnitSelect(-1)} style={styles.addWrapper}>
-            <Title style={{textAlign: 'center'}}>+ Add Unit</Title>
-          </Pressable>
+          <Button
+            style={styles.addBtn}
+            contentStyle={layout.button}
+            color={THEME_COLORS.success.main}
+            onPress={handleUnitSelect(-1)}
+            uppercase
+            mode="outlined"
+            icon="plus">
+            Add Unit
+          </Button>
         }
       />
       <View style={styles.bottomWrapper}>
@@ -116,10 +123,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  addWrapper: {
-    borderWidth: 1,
-    borderColor: colors.separator,
-    paddingVertical: 18,
+  addBtn: {
+    borderColor: THEME_COLORS.success.main,
   },
 });
 

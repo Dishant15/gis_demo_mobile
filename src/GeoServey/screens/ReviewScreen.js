@@ -9,7 +9,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import Input from '~Common/Input';
 import BackHeader from '~Common/components/Header/BackHeader';
-import {layout, screens, colors} from '~constants/constants';
+import {layout, screens, colors, THEME_COLORS} from '~constants/constants';
 import {
   getGeoSurveyFormData,
   getTicketId,
@@ -30,6 +30,7 @@ import {
 } from '~GeoServey/data/geoSurvey.service';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {surveyDeleteSuccess, unitDeleteSuccess} from '~constants/messages';
+import {percentToHex} from '~utils/app.utils';
 
 const {width, height} = Dimensions.get('window');
 
@@ -361,10 +362,10 @@ const ReviewScreen = ({navigation}) => {
           {!isVerified ? (
             <Button
               style={[styles.submitBtn, styles.unitAddBtn]}
+              color={THEME_COLORS.success.main}
               contentStyle={layout.button}
-              color={colors.black}
               uppercase
-              mode="outlined"
+              icon="plus"
               onPress={resetReviewAndnavigateToUnitMap(-1)}>
               Add Unit
             </Button>
@@ -419,7 +420,10 @@ const ReviewScreen = ({navigation}) => {
             <Button
               style={styles.submitBtn}
               contentStyle={layout.button}
-              color={colors.black}
+              color={THEME_COLORS.secondary.main}
+              labelStyle={{
+                color: THEME_COLORS.secondary.contrastText,
+              }}
               uppercase
               mode="contained"
               loading={isLoading}
@@ -471,6 +475,8 @@ const styles = StyleSheet.create({
   unitAddBtn: {
     marginTop: 28,
     marginBottom: 0,
+    backgroundColor: THEME_COLORS.success.main + percentToHex(16),
+    marginHorizontal: '20%',
   },
   cardContent: {
     paddingTop: 8,
