@@ -26,7 +26,6 @@ const LoginScreen = () => {
     handleSubmit,
     setError,
     setFocus,
-    clearErrors,
     formState: {errors},
   } = useForm();
 
@@ -78,10 +77,7 @@ const LoginScreen = () => {
               <Input
                 ref={ref}
                 label="Username"
-                onChangeText={text => {
-                  onChange(text);
-                  clearErrors();
-                }}
+                onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}
                 error={emaiError}
@@ -105,10 +101,7 @@ const LoginScreen = () => {
                 ref={ref}
                 label="Password"
                 secureTextEntry={!showPassword}
-                onChangeText={text => {
-                  onChange(text);
-                  clearErrors();
-                }}
+                onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}
                 error={passwordError}

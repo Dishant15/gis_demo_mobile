@@ -37,6 +37,7 @@ import {
   LOCALITY_OPTS,
   screens,
   SURVEY_TAG_LIST,
+  THEME_COLORS,
   TVProviders,
 } from '~constants/constants';
 
@@ -545,7 +546,10 @@ const SurveyForm = props => {
           <Button
             loading={isLoading}
             contentStyle={layout.button}
-            color={colors.black}
+            color={THEME_COLORS.secondary.main}
+            labelStyle={{
+              color: THEME_COLORS.secondary.contrastText,
+            }}
             uppercase
             mode="contained"
             onPress={handleSubmit(onSubmit)}>

@@ -93,15 +93,11 @@ const SurveyTicketList = props => {
               onPress={navigateToWorkorder(item.id)}
               style={styles.cardItem}>
               <Card.Content>
-                <View style={styles.cardWrapper}>
-                  <View>
-                    <Title style={styles.name}>{name}</Title>
-                    <Paragraph>Region: {get(region, 'name', '')}</Paragraph>
-                  </View>
-                  <Subheading style={styles.cardUniqueId}>
-                    #{unique_id}
-                  </Subheading>
-                </View>
+                <Title style={styles.name}>{name}</Title>
+                <Subheading style={styles.cardUniqueId}>
+                  #{unique_id}
+                </Subheading>
+                <Paragraph>Region: {get(region, 'name', '')}</Paragraph>
                 <View style={styles.cardRow}>
                   <Subheading style={styles.label}>Ticket Type</Subheading>
                   <Subheading>:</Subheading>
@@ -186,6 +182,7 @@ const styles = StyleSheet.create({
   cardUniqueId: {
     paddingStart: 4,
     flexShrink: 1,
+    alignSelf: 'flex-end',
     // textDecorationLine: 'underline',
   },
   cardRow: {

@@ -9,7 +9,13 @@ import BackHeader from '~Common/components/Header/BackHeader';
 import Input from '~Common/Input';
 import TagSelect from '~Common/TagSelect';
 
-import {layout, screens, colors, SURVEY_TAG_LIST} from '~constants/constants';
+import {
+  layout,
+  screens,
+  colors,
+  SURVEY_TAG_LIST,
+  THEME_COLORS,
+} from '~constants/constants';
 import {
   getGeoSurveySelectedUnitData,
   getGeoSurveySelectedUnitIndex,
@@ -333,7 +339,10 @@ const UnitForm = ({navigation}) => {
             <Button
               style={styles.reviewBtn}
               contentStyle={layout.button}
-              color={colors.black}
+              color={THEME_COLORS.secondary.main}
+              labelStyle={{
+                color: THEME_COLORS.secondary.contrastText,
+              }}
               uppercase
               mode="contained"
               loading={isLoading}
