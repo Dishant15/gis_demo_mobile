@@ -11,6 +11,7 @@ import {handleLayerSelect, removeLayerSelect} from './planningState.reducer';
 import {convertLayerServerData} from '../GisMap/utils';
 import {fetchTicketWorkorderDataThunk} from './ticket.services';
 import {coordsToLatLongMap} from '~utils/map.utils';
+import {logout} from '~Authentication/data/auth.reducer';
 
 const defaultLayerNetworkState = {
   isLoading: false,
@@ -185,6 +186,9 @@ const planningGisSlice = createSlice({
         ticketGisData.work_orders,
         'status',
       );
+    },
+    [logout]: () => {
+      return initialState;
     },
   },
 });

@@ -20,6 +20,7 @@ import {
   getIsSuperAdminUser,
   getUserPermissions,
 } from '~Authentication/data/auth.selectors';
+import {useQueryClient} from 'react-query';
 
 const Drawer = createDrawerNavigator();
 
@@ -37,6 +38,7 @@ const Drawer = createDrawerNavigator();
  */
 const DrawerContent = props => {
   const {top} = useSafeAreaInsets();
+  const queryClient = useQueryClient();
   const dispatch = useDispatch();
 
   const isSuperAdminUser = useSelector(getIsSuperAdminUser);
@@ -103,6 +105,7 @@ const DrawerContent = props => {
           title="Logout"
           left={() => <List.Icon icon="logout" />}
           onPress={() => {
+            queryClient.clear();
             dispatch(logout());
           }}
         />

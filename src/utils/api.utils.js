@@ -46,7 +46,7 @@ axiosInstance.interceptors.response.use(
     const status = get(error, 'response.status');
     if (status === 401) {
       store.dispatch(logout());
-      showToast(authRevoked(), TOAST_TYPE.INFO);
+      showToast(authRevoked(), TOAST_TYPE.ERROR, 10000);
     }
     return Promise.reject(error);
   },
@@ -104,8 +104,8 @@ class Api {
 export default Api;
 
 export const parseErrorMessagesWithFields = error => {
-  let msgList = ['Something Went Wrong'];
-  let fieldList = ['__all__'];
+  let msgList = [];
+  let fieldList = [];
   const status = get(error, 'response.status');
 
   if (status) {
@@ -116,15 +116,24 @@ export const parseErrorMessagesWithFields = error => {
       for (const key in errorData) {
         if (Object.hasOwnProperty.call(errorData, key)) {
           const errorList = errorData[key];
-          fieldList.push(key);
-          msgList.push(get(errorList, 0, 'Undefined Error'));
+          if (key === '__all__') {
+            showToast(
+              get(errorList, 0, 'Undefined Error'),
+              TOAST_TYPE.ERROR,
+              5000,
+            );
+          } else {
+            fieldList.push(key);
+            msgList.push(get(errorList, 0, 'Undefined Error'));
+          }
         }
       }
     } else if (status === 403) {
-      msgList = ['Unauthorized'];
+      store.dispatch(logout());
+      showToast(authRevoked(), TOAST_TYPE.ERROR, 10000);
     }
   } else {
-    msgList = [error.message];
+    showToast('Something Went Wrong', TOAST_TYPE.ERROR, 10000);
   }
 
   return {fieldList, messageList: msgList};

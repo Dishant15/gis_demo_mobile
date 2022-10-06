@@ -1,6 +1,7 @@
 export const unitAddSuccess = () => `Unit added successfully`;
 
-export const authRevoked = () => 'Authentication revoked. Please login again';
+export const authRevoked = () =>
+  'for security reasons you have been logged out. please login again';
 
 export const surveyDeleteSuccess = () => 'Survey Deleted successfully.';
 

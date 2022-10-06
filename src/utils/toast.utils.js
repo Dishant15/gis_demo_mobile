@@ -60,13 +60,13 @@ export const TOAST_TYPE = {
  * type => 'success | error | info'
  * @returns
  */
-export const showToast = (message, type = 'error') => {
+export const showToast = (message, type = 'error', timeout = 3000) => {
   if (size(message) === 0) return;
   if (Toast.show) {
     Toast.show({
       text1: typeof message !== 'string' ? JSON.stringify(message) : message,
       position: 'bottom',
-      visibilityTime: 3000,
+      visibilityTime: timeout,
       type,
     });
   }

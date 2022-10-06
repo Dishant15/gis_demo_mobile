@@ -66,29 +66,6 @@ const calcLongitudeDelta = zoom => {
   return Math.pow(2, power);
 };
 
-/**
- * Parse axios error and return simple error message
- */
-export const parseErrorMessage = error => {
-  let errorMessage = 'Something Went Wrong';
-  const status = get(error, 'response.status');
-  if (status) {
-    console.log('err', error.response);
-    if (status === 400) {
-      errorMessage = get(
-        error,
-        'response.data.non_field_errors.0',
-        'Bad request',
-      );
-    } else if (status === 403) {
-      errorMessage = 'Unauthorized';
-    }
-  } else {
-    errorMessage = error.message;
-  }
-  return errorMessage;
-};
-
 export const percentToHex = p => {
   const percent = Math.max(0, Math.min(100, p)); // bound percent from 0 to 100
   const intValue = Math.round((p / 100) * 255); // map percent to nearest integer (0 - 255)

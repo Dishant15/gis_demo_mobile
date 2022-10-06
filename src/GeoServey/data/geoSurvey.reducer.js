@@ -1,6 +1,7 @@
 import {differenceBy, filter, isNull, orderBy} from 'lodash';
 import {createSlice} from '@reduxjs/toolkit';
 import {convertWorkOrderData} from '~utils/map.utils';
+import {logout} from '~Authentication/data/auth.reducer';
 
 const defaultUnitData = {
   // coordinates in redux shape: {"latitude": 23.04, "longitude": 72.51}
@@ -174,6 +175,9 @@ const geoSurveyReducer = createSlice({
     resetAllData: () => {
       return initialState;
     },
+  },
+  extraReducers: builder => {
+    builder.addCase(logout, () => initialState);
   },
 });
 

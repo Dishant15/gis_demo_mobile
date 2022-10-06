@@ -1,5 +1,7 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSlice, createAction} from '@reduxjs/toolkit';
 import {get} from 'lodash';
+
+export const logout = createAction('auth/logout');
 
 const initialState = {
   token: '',
@@ -21,11 +23,11 @@ const authSlice = createSlice({
         get(payload, 'user.is_staff') || get(payload, 'user.is_superuser')
       );
     },
-    logout: state => {
-      return initialState;
-    },
+  },
+  extraReducers: builder => {
+    builder.addCase(logout, () => initialState);
   },
 });
 
-export const {login, logout} = authSlice.actions;
+export const {login} = authSlice.actions;
 export default authSlice.reducer;

@@ -1,4 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {logout} from '~Authentication/data/auth.reducer';
 
 const initialState = {
   // 0: region, 1: Layers, 2: Add Element, null : no one
@@ -59,6 +60,9 @@ const planningStateSlice = createSlice({
     selectConfiguration: (state, {payload}) => {
       state.selectedConfigurations[payload.layerKey] = payload.configuration;
     },
+  },
+  extraReducers: builder => {
+    builder.addCase(logout, () => initialState);
   },
 });
 

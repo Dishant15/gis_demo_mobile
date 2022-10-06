@@ -1,5 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {countBy, filter, get, isNull} from 'lodash';
+import {logout} from '~Authentication/data/auth.reducer';
 
 const initialState = {
   selectedTicketId: null,
@@ -32,6 +33,9 @@ const planningTicketReducer = createSlice({
         ? [...state.workorderList]
         : filter(state.workorderList, ['status', payload]);
     },
+  },
+  extraReducers: builder => {
+    builder.addCase(logout, () => initialState);
   },
 });
 
