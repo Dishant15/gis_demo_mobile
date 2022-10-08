@@ -13,6 +13,7 @@ import SatelliteMapImg from '~assets/img/map_satellite.png';
 import {zIndexMapping} from '~planning/GisMap/layers/common/configuration';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
+const BOTTOM_POSITION = 66;
 /**
  * Parent
  *    Map
@@ -26,7 +27,11 @@ const MapType = () => {
   };
 
   return (
-    <View style={[styles.mapTypeWrapper, {bottom: Math.max(bottom, 38)}]}>
+    <View
+      style={[
+        styles.mapTypeWrapper,
+        {bottom: Math.max(bottom + BOTTOM_POSITION, BOTTOM_POSITION)},
+      ]}>
       <TouchableOpacity onPress={handleMapType}>
         <FastImage
           style={styles.mapTypeImage}

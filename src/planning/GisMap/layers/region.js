@@ -31,6 +31,7 @@ export const ViewLayer = () => {
               coordinates={polyCoord}
               strokeColor={color}
               strokeWidth={2}
+              fillColor="transparent"
               zIndex={zIndexMapping.region}
             />
           );
