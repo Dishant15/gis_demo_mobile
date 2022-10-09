@@ -55,11 +55,13 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.00444;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-const EDGE_PADDING = {
-  top: 150,
-  right: 0,
-  bottom: 0,
-  left: 0,
+const getEdgePadding = (bottom = 50) => {
+  return {
+    top: 150,
+    right: 5,
+    bottom,
+    left: 5,
+  };
 };
 
 /**
@@ -70,7 +72,7 @@ const EDGE_PADDING = {
  */
 const SurveyMap = ({navigation}) => {
   const isFocused = useIsFocused();
-  const {top} = useSafeAreaInsets();
+  const {bottom} = useSafeAreaInsets();
 
   const coords = useSelector(getSurveyCoordinates);
   const isReviewed = useSelector(getIsReviewed);
@@ -185,21 +187,9 @@ const SurveyMap = ({navigation}) => {
 
   const onMapReady = () => {
     mapRef.current.fitToCoordinates(selectedArea.coordinates, {
-      edgePadding: EDGE_PADDING,
+      edgePadding: getEdgePadding(bottom),
       animated: true,
     });
-  };
-
-  const handleCurrentLocationPress = () => {
-    mapRef.current.animateToRegion(
-      {
-        latitude: currentLocation.latitude,
-        longitude: currentLocation.longitude,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
-      },
-      200,
-    );
   };
 
   const handleCustomBack = () => {
@@ -282,7 +272,7 @@ const SurveyMap = ({navigation}) => {
               onMapReady={onMapReady}
               onPress={handleMapClick}
               onPoiClick={handleMapClick}
-              mapPadding={EDGE_PADDING}
+              mapPadding={getEdgePadding(bottom)}
               onMapLoaded={() => {
                 setTimeout(() => {
                   console.log('map is loaded');
@@ -344,104 +334,5 @@ const SurveyMap = ({navigation}) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  relative: {
-    position: 'relative',
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  content: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 14,
-  },
-  drawBtn: {
-    backgroundColor: 'black',
-    alignSelf: 'flex-end',
-    paddingHorizontal: 15,
-    minWidth: 150,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    elevation: 5,
-  },
-  disableBtn: {
-    backgroundColor: '#A9A9A9',
-  },
-  drawBtnTxt: {
-    color: 'white',
-  },
-  markerWrapper: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.black,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  markerDot: {
-    width: 6,
-    height: 6,
-    backgroundColor: colors.black,
-    borderRadius: 3,
-  },
-  circleBtn: {
-    width: 48,
-    height: 48,
-    borderRadius: 40,
-    backgroundColor: colors.black,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-    marginBottom: 18,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    elevation: 5,
-  },
-  mapTypeWrapper: {
-    position: 'absolute',
-    right: 0,
-    top: 65,
-    right: 14,
-    backgroundColor: colors.white,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    borderWidth: 2,
-  },
-  mapTypeImage: {
-    width: 44,
-    height: 44,
-  },
-  // card design
-  cartTitle: {
-    color: colors.white,
-  },
-  paragraph: {
-    fontSize: 15,
-  },
-});
 
 export default SurveyMap;
