@@ -40,6 +40,29 @@ import {
   ElementDetails as CableDetails,
   EditMapLayer as CableEditMapLayer,
 } from './layers/p_cable';
+import {
+  LAYER_KEY as SAreaKey,
+  ViewLayer as SAreaViewLayer,
+  Geometry as SAreaGeometry,
+  getIcon as SAreaIcon,
+  AddLayer as SAreaAddLayer,
+  ElementLayer as SAreaElement,
+  ElementForm as SAreaForm,
+  ElementDetails as SAreaDetails,
+  EditMapLayer as SAreaEditMapLayer,
+} from './layers/p_survey_area';
+
+import {
+  LAYER_KEY as BuildingKey,
+  ViewLayer as BuildingViewLayer,
+  Geometry as BuildingGeometry,
+  getIcon as BuildingIcon,
+  AddLayer as BuildingAddLayer,
+  ElementLayer as BuildingElement,
+  ElementForm as BuildingForm,
+  ElementDetails as BuildingDetails,
+  EditMapLayer as BuildingEditMapLayer,
+} from './layers/p_survey_building';
 
 // possible events that can happen on map
 export const PLANNING_EVENT = {
@@ -67,6 +90,8 @@ export const getElementTypeFromLayerKey = layerKey => {
     return ELEMENT_TYPE.MARKER;
   } else if (layerKey === CableKey) {
     return ELEMENT_TYPE.POLYLINE;
+  } else if (layerKey === SAreaKey) {
+    return ELEMENT_TYPE.POLYGON;
   }
 };
 
@@ -104,6 +129,26 @@ export const LayerKeyMappings = {
     Geometry: CableGeometry,
     Icon: CableGetIcon,
   },
+  [SAreaKey]: {
+    [PLANNING_EVENT.addElement]: <SAreaAddLayer />,
+    [PLANNING_EVENT.editElementLocation]: <SAreaEditMapLayer />,
+    [PLANNING_EVENT.addElementForm]: <SAreaForm />,
+    [PLANNING_EVENT.showElementDetails]: <SAreaDetails />,
+    [PLANNING_EVENT.editElementDetails]: <SAreaForm />,
+    ViewLayer: SAreaViewLayer,
+    Geometry: SAreaGeometry,
+    Icon: SAreaIcon,
+  },
+  [BuildingKey]: {
+    [PLANNING_EVENT.addElement]: <BuildingAddLayer />,
+    [PLANNING_EVENT.editElementLocation]: <BuildingEditMapLayer />,
+    [PLANNING_EVENT.addElementForm]: <BuildingForm />,
+    [PLANNING_EVENT.showElementDetails]: <BuildingDetails />,
+    [PLANNING_EVENT.editElementDetails]: <BuildingForm />,
+    ViewLayer: BuildingViewLayer,
+    Geometry: BuildingGeometry,
+    Icon: BuildingIcon,
+  },
 };
 
 // on Gis event handle with gis mapping
@@ -120,13 +165,21 @@ export const LayerKeyGisMapping = {
     [PLANNING_EVENT.addElement]: CableElement,
     [PLANNING_EVENT.editElementLocation]: CableElement,
   },
+  [SAreaKey]: {
+    [PLANNING_EVENT.addElement]: SAreaElement,
+    [PLANNING_EVENT.editElementLocation]: SAreaElement,
+  },
+  [BuildingKey]: {
+    [PLANNING_EVENT.addElement]: BuildingElement,
+    [PLANNING_EVENT.editElementLocation]: BuildingElement,
+  },
 };
 
 export const convertLayerServerData = (layerKey, serverData) => {
   let resultData = cloneDeep(serverData) || [];
 
   // PolyLine
-  if (layerKey === CableKey) {
+  if (layerKey === CableKey || layerKey === SAreaKey) {
     resultData.map(d => {
       // [ [lat, lng], ...] -> [{lat, lng}, ...]
       d.coordinates = coordsToLatLongMap(d.coordinates);
@@ -135,7 +188,11 @@ export const convertLayerServerData = (layerKey, serverData) => {
     return resultData;
   }
   // Point gis layer
-  else if (layerKey === DpKey || layerKey === SplitterKey) {
+  else if (
+    layerKey === DpKey ||
+    layerKey === SplitterKey ||
+    layerKey === BuildingKey
+  ) {
     resultData.map(d => {
       d.coordinates = coordsToLatLongMap([d.coordinates])[0];
     });

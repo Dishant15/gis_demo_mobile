@@ -12,6 +12,17 @@ import TagSelect from './TagSelect';
 import {colors, layout} from '~constants/constants';
 import {get} from 'lodash';
 
+export const FIELD_TYPES = {
+  Input: 'input',
+  TextArea: 'textArea',
+  CheckBox: 'checkBox',
+  // single select
+  Select: 'select',
+  ChipSelect: 'chipSelect',
+  SelectMulti: 'selectMulti',
+  SelectCreatable: 'selectCreatable',
+};
+
 /**
  * Render dynamicall generated formConfig based forms
  *
@@ -56,6 +67,10 @@ const DynamicForm = forwardRef(
               {!!fieldConfigs ? (
                 <View>
                   {fieldConfigs.map(config => {
+                    console.log(
+                      '🚀 ~ file: DynamicForm.js ~ line 70 ~ {sections.map ~ config',
+                      config,
+                    );
                     const {
                       field_key,
                       label,
@@ -67,7 +82,7 @@ const DynamicForm = forwardRef(
                       rules.required = `${label} is required.`;
                     }
                     switch (field_type) {
-                      case 'input':
+                      case FIELD_TYPES.Input:
                         return (
                           <Controller
                             key={field_key}
@@ -93,7 +108,7 @@ const DynamicForm = forwardRef(
                             )}
                           />
                         );
-                      case 'textArea':
+                      case FIELD_TYPES.TextArea:
                         return (
                           <Controller
                             key={field_key}
@@ -124,7 +139,7 @@ const DynamicForm = forwardRef(
                             )}
                           />
                         );
-                      case 'chipSelect':
+                      case FIELD_TYPES.ChipSelect:
                         return (
                           <Controller
                             key={field_key}
@@ -176,7 +191,7 @@ const DynamicForm = forwardRef(
                             }}
                           />
                         );
-                      case 'select':
+                      case FIELD_TYPES.Select:
                         return (
                           <Controller
                             key={field_key}

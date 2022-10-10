@@ -32,7 +32,7 @@ import {zIndexMapping} from '../layers/common/configuration';
 const EditGisLayer = ({
   helpText,
   layerKey,
-  featureType, // marker | polyline
+  featureType, // marker | polyline | polygon
 }) => {
   const {top} = useSafeAreaInsets();
   const dispatch = useDispatch();
@@ -112,6 +112,10 @@ const EditGisLayer = ({
       submitData = {
         geometry,
         gis_len: round(length(lineString(geometry)), 4),
+      };
+    } else if (featureType === ELEMENT_TYPE.POLYLINE) {
+      submitData = {
+        geometry: latLongMapToCoords(coordinates),
       };
     } else {
       submitData = {

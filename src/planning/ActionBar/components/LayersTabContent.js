@@ -1,10 +1,10 @@
 import React, {useCallback, useState} from 'react';
-import {View, Pressable, StyleSheet} from 'react-native';
+import {View, Pressable, StyleSheet, ScrollView} from 'react-native';
 
 import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {get, noop} from 'lodash';
+import {get, noop, size} from 'lodash';
 
 import {Button, Text, Divider, Subheading, Title} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -22,12 +22,16 @@ import {
 import {
   handleLayerSelect,
   removeLayerSelect,
+  setActiveTab,
 } from '~planning/data/planningState.reducer';
 import {
   getSelectedLayerKeys,
   getSelectedRegionIds,
 } from '~planning/data/planningState.selectors';
 import {colors} from '~constants/constants';
+import {PLANNING_EVENT} from '~planning/GisMap/utils';
+import {setMapState} from '~planning/data/planningGis.reducer';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
 const regionLayerConfig = {
   layer_key: 'region',
@@ -81,7 +85,7 @@ const LayersTabContent = ({hideModal}) => {
           Refresh
         </Button>
       </View>
-      <View style={styles.wrapper}>
+      <ScrollView contentContainerStyle={styles.wrapper}>
         {layerCofigs.map(layer => {
           return (
             <LayerTab
@@ -91,7 +95,7 @@ const LayersTabContent = ({hideModal}) => {
             />
           );
         })}
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -114,6 +118,15 @@ const LayerTab = ({layerConfig, regionIdList}) => {
 
   const onLayerClick = () => {
     if (isLoading) return;
+    if (!size(regionIdList)) {
+      // show error notification to select regions first
+      showToast(
+        'Please select region to narrow down your search of elements.',
+        TOAST_TYPE.ERROR,
+      );
+      dispatch(setActiveTab(0));
+      return;
+    }
     // add / remove current layer to selectedLayers
     if (isSelected) {
       dispatch(removeLayerSelect(layer_key));
@@ -134,7 +147,7 @@ const LayerTab = ({layerConfig, regionIdList}) => {
           onPress={isFetched ? handleExpandToggle : noop}>
           <MaterialIcons
             size={30}
-            name={'expand-more'}
+            name={isExpanded ? 'expand-less' : 'expand-more'}
             color={colors.primaryFontColor}
           />
         </Pressable>
@@ -163,15 +176,30 @@ const LayerTab = ({layerConfig, regionIdList}) => {
 };
 
 const ElementList = ({layerKey}) => {
+  const dispatch = useDispatch();
   // get list of elements for current key
   const {viewData = []} = useSelector(getLayerViewData(layerKey));
+
+  const handleElementClick = useCallback(
+    elementId => () => {
+      dispatch(setActiveTab(null));
+      dispatch(
+        setMapState({
+          event: PLANNING_EVENT.showElementDetails,
+          layerKey,
+          data: {elementId},
+        }),
+      );
+    },
+    [layerKey],
+  );
 
   return (
     <>
       {viewData.map(element => {
         const {id, name} = element;
         return (
-          <View key={id}>
+          <Pressable key={id} onPress={handleElementClick(id)}>
             <View style={styles.subItemWrapper}>
               <Text>{name}</Text>
               <MaterialIcons
@@ -182,7 +210,7 @@ const ElementList = ({layerKey}) => {
               />
             </View>
             <Divider />
-          </View>
+          </Pressable>
         );
       })}
     </>
@@ -195,6 +223,7 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     paddingHorizontal: 12,
+    paddingBottom: 40,
   },
   itemWrapper: {
     flexDirection: 'row',
