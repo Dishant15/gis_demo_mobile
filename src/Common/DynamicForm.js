@@ -1,13 +1,21 @@
 import React, {forwardRef, useCallback, useImperativeHandle} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Pressable} from 'react-native';
 
 import {useForm, Controller} from 'react-hook-form';
-import {Button, Caption, Title, Chip, HelperText} from 'react-native-paper';
+import {
+  Button,
+  Caption,
+  Title,
+  Chip,
+  HelperText,
+  Text,
+} from 'react-native-paper';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import Input from '~Common/Input';
-import TagSelect from './TagSelect';
+import {FormSelect} from './components/FormFields';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {colors, layout} from '~constants/constants';
 import {get} from 'lodash';
@@ -32,6 +40,10 @@ export const FIELD_TYPES = {
 const DynamicForm = forwardRef(
   ({formConfigs, data, onSubmit, onCancel, isLoading}, ref) => {
     const {sections} = formConfigs;
+    console.log(
+      '🚀 ~ file: DynamicForm.js ~ line 35 ~ formConfigs',
+      formConfigs,
+    );
     const {top} = useSafeAreaInsets();
 
     const {
@@ -67,14 +79,11 @@ const DynamicForm = forwardRef(
               {!!fieldConfigs ? (
                 <View>
                   {fieldConfigs.map(config => {
-                    console.log(
-                      '🚀 ~ file: DynamicForm.js ~ line 70 ~ {sections.map ~ config',
-                      config,
-                    );
                     const {
                       field_key,
                       label,
                       field_type,
+                      type,
                       required = true,
                     } = config;
                     let rules = {};
@@ -97,13 +106,16 @@ const DynamicForm = forwardRef(
                                 label={label}
                                 onChangeText={onChange}
                                 onBlur={onBlur}
-                                value={value}
+                                value={!!value ? String(value) : ''}
                                 error={get(errors, [field_key, 'message'])}
                                 underlineColorAndroid="transparent"
                                 autoCapitalize="none"
                                 autoCorrect={false}
                                 returnKeyType="next"
                                 blurOnSubmit={false}
+                                keyboardType={
+                                  type === 'number' ? 'number-pad' : 'default'
+                                }
                               />
                             )}
                           />
@@ -123,7 +135,7 @@ const DynamicForm = forwardRef(
                                 label={label}
                                 onChangeText={onChange}
                                 onBlur={onBlur}
-                                value={value}
+                                value={!!value ? String(value) : ''}
                                 error={get(errors, [field_key, 'message'])}
                                 underlineColorAndroid="transparent"
                                 autoCapitalize="none"
@@ -135,8 +147,58 @@ const DynamicForm = forwardRef(
                                 inputStyle={{
                                   minHeight: 100,
                                 }}
+                                keyboardType={
+                                  type === 'number' ? 'number-pad' : 'default'
+                                }
                               />
                             )}
+                          />
+                        );
+                      case FIELD_TYPES.CheckBox:
+                        return (
+                          <Controller
+                            key={field_key}
+                            control={control}
+                            name={field_key}
+                            rules={rules}
+                            render={({field: {onChange, value}}) => {
+                              const errMessage = get(errors, [
+                                field_key,
+                                'message',
+                              ]);
+                              return (
+                                <>
+                                  <Pressable
+                                    style={styles.checkboxWrapper}
+                                    onPress={() => onChange(!value)}>
+                                    <MaterialCommunityIcons
+                                      size={26}
+                                      name={
+                                        value
+                                          ? 'checkbox-marked'
+                                          : 'checkbox-blank-outline'
+                                      }
+                                      color={
+                                        value
+                                          ? colors.primaryMain
+                                          : colors.primaryFontColor
+                                      }
+                                      style={{textAlign: 'center'}}
+                                    />
+                                    <Text style={styles.checkboxText}>
+                                      {label}
+                                    </Text>
+                                  </Pressable>
+                                  {!!errMessage ? (
+                                    <HelperText
+                                      type="error"
+                                      visible={!!errMessage}>
+                                      {errMessage}
+                                    </HelperText>
+                                  ) : null}
+                                </>
+                              );
+                            }}
                           />
                         );
                       case FIELD_TYPES.ChipSelect:
@@ -159,8 +221,7 @@ const DynamicForm = forwardRef(
                                     <Caption>{label}</Caption>
                                     <View style={styles.chipWrapper}>
                                       {get(config, 'options', []).map(opt => {
-                                        const selected =
-                                          opt.value === value.value;
+                                        const selected = opt.value === value;
                                         return (
                                           <Chip
                                             key={opt.value}
@@ -172,7 +233,7 @@ const DynamicForm = forwardRef(
                                             selectedColor={
                                               selected ? colors.white : null
                                             }
-                                            onPress={() => onChange(opt)}>
+                                            onPress={() => onChange(opt.value)}>
                                             {opt.label}
                                           </Chip>
                                         );
@@ -200,16 +261,104 @@ const DynamicForm = forwardRef(
                             rules={rules}
                             render={({
                               field: {ref, onChange, onBlur, value},
-                            }) => (
-                              <>
-                                <TagSelect
-                                  inputLabel={label}
-                                  tagList={config.options || []}
-                                  onSubmit={onChange}
-                                  selectedTags={value}
-                                />
-                              </>
-                            )}
+                            }) => {
+                              const errMessage = get(errors, [
+                                field_key,
+                                'message',
+                              ]);
+                              return (
+                                <>
+                                  <FormSelect
+                                    inputLabel={label}
+                                    tagList={config.options || []}
+                                    onSubmit={onChange}
+                                    selectedTags={value}
+                                    simpleValue
+                                  />
+                                  {!!errMessage ? (
+                                    <HelperText
+                                      type="error"
+                                      visible={!!errMessage}>
+                                      {errMessage}
+                                    </HelperText>
+                                  ) : null}
+                                </>
+                              );
+                            }}
+                          />
+                        );
+                      case FIELD_TYPES.SelectMulti:
+                        return (
+                          <Controller
+                            key={field_key}
+                            control={control}
+                            name={field_key}
+                            rules={rules}
+                            render={({
+                              field: {ref, onChange, onBlur, value},
+                            }) => {
+                              const errMessage = get(errors, [
+                                field_key,
+                                'message',
+                              ]);
+                              return (
+                                <>
+                                  <FormSelect
+                                    inputLabel={label}
+                                    tagList={config.options || []}
+                                    onSubmit={onChange}
+                                    selectedTags={value}
+                                    isMulti
+                                    simpleValue
+                                  />
+                                  {!!errMessage ? (
+                                    <HelperText
+                                      type="error"
+                                      visible={!!errMessage}>
+                                      {errMessage}
+                                    </HelperText>
+                                  ) : null}
+                                </>
+                              );
+                            }}
+                          />
+                        );
+
+                      case FIELD_TYPES.SelectCreatable:
+                        return (
+                          <Controller
+                            key={field_key}
+                            control={control}
+                            name={field_key}
+                            rules={rules}
+                            render={({
+                              field: {ref, onChange, onBlur, value},
+                            }) => {
+                              const errMessage = get(errors, [
+                                field_key,
+                                'message',
+                              ]);
+                              return (
+                                <>
+                                  <FormSelect
+                                    inputLabel={label}
+                                    tagList={config.options || []}
+                                    onSubmit={onChange}
+                                    selectedTags={value}
+                                    simpleValue
+                                    isMulti
+                                    creatable
+                                  />
+                                  {!!errMessage ? (
+                                    <HelperText
+                                      type="error"
+                                      visible={!!errMessage}>
+                                      {errMessage}
+                                    </HelperText>
+                                  ) : null}
+                                </>
+                              );
+                            }}
                           />
                         );
                       default:
@@ -266,6 +415,16 @@ const styles = StyleSheet.create({
   },
   chipActive: {
     backgroundColor: colors.primaryMain + 'cc',
+  },
+  checkboxWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingLeft: 8,
+  },
+  checkboxText: {
+    fontSize: 17,
+    paddingLeft: 8,
   },
   btnWrapper: {
     flexDirection: 'row',

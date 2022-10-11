@@ -12,7 +12,7 @@ import {setMapState} from '~planning/data/planningGis.reducer';
 import {layout, THEME_COLORS} from '~constants/constants';
 import {getGisMapStateGeometry} from '~planning/data/planningGis.selectors';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import {latLongMapToLineCoords} from '~utils/map.utils';
+import {latLongMapToCoords, latLongMapToLineCoords} from '~utils/map.utils';
 
 const AddGisMapLayer = ({helpText, featureType, nextEvent = {}}) => {
   const dispatch = useDispatch();
@@ -27,8 +27,11 @@ const AddGisMapLayer = ({helpText, featureType, nextEvent = {}}) => {
         showToast('Invalid line', TOAST_TYPE.ERROR);
         return;
       }
-      const gis_len = length(lineString(latLongMapToLineCoords(coordinates)));
+      submitData.geometry = latLongMapToLineCoords(coordinates);
+      const gis_len = length(lineString(submitData.geometry));
       submitData.gis_len = String(round(gis_len, 4));
+    } else if (featureType === 'polygon') {
+      submitData.geometry = latLongMapToCoords(coordinates);
     }
     // set marker coords to form data
     nextEvent.data = {

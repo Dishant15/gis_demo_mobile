@@ -107,7 +107,7 @@ const ElementDetailsTable = ({
                   <Chip
                     style={{
                       backgroundColor: color,
-                      width: 110,
+                      width: 140,
                     }}
                     selected
                     selectedColor={colors.white}>

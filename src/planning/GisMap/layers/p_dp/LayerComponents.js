@@ -130,8 +130,6 @@ export const ElementForm = () => {
           ...formData,
           // remove geometry
           geometry: undefined,
-          // convert select fields to simple values
-          status: formData.status.value,
         };
       } else {
         return {
@@ -139,8 +137,6 @@ export const ElementForm = () => {
           // remove coordinates and add geometry
           coordinates: undefined,
           geometry: latLongMapToCoords([formData.coordinates])[0],
-          // convert select fields to simple values
-          status: formData.status.value,
         };
       }
     },
@@ -166,11 +162,7 @@ const ELEMENT_TABLE_FIELDS = [
 ];
 
 const convertDataBeforeForm = data => {
-  return {
-    ...data,
-    // convert status to select format
-    status: find(LAYER_STATUS_OPTIONS, ['value', data.status]),
-  };
+  return data;
 };
 
 export const ElementDetails = () => {

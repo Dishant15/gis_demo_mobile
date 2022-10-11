@@ -157,7 +157,6 @@ export const ElementForm = () => {
           ...formData,
           // remove geometry
           geometry: undefined,
-          status: formData.status.value,
         };
       } else {
         return {
@@ -167,7 +166,6 @@ export const ElementForm = () => {
           remark: undefined,
           geometry: latLongMapToCoords([formData.coordinates])[0],
           // convert select fields to simple values
-          status: formData.status.value,
           configuration: configuration.id,
         };
       }
@@ -197,13 +195,7 @@ const ELEMENT_TABLE_FIELDS = [
   {label: 'Status', field: 'status', type: 'status'},
 ];
 
-const convertDataBeforeForm = data => {
-  return {
-    ...data,
-    // convert status to select format
-    status: find(LAYER_STATUS_OPTIONS, ['value', data.status]),
-  };
-};
+const convertDataBeforeForm = data => data;
 
 export const ElementDetails = () => {
   const {elementId} = useSelector(getPlanningMapStateData);

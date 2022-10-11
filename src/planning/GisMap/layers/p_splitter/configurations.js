@@ -7,7 +7,7 @@ export const INITIAL_ELEMENT_DATA = {
   address: '',
   unique_id: 'REG_SP_P_',
   ref_code: '',
-  status: {value: 'P', label: 'Planned'},
+  status: 'P',
   coordinates: {},
 };
 

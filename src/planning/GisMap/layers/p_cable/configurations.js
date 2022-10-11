@@ -6,10 +6,10 @@ export const INITIAL_ELEMENT_DATA = {
   name: '',
   unique_id: 'REG_CBL_',
   ref_code: '',
-  status: {value: 'P', label: 'Planned'},
+  status: 'P',
   coordinates: [],
   // editable
-  cable_type: {value: 'O', label: 'Overhead'},
+  cable_type: 'O',
   // gis_len ,actual_len, start_reading ,end_reading
 };
 
@@ -55,21 +55,25 @@ export const ELEMENT_FORM_TEMPLATE = {
           field_key: 'gis_len',
           label: 'Gis Length (Km)',
           field_type: 'input',
+          type: 'number',
         },
         {
           field_key: 'actual_len',
           label: 'Actual Length',
           field_type: 'input',
+          type: 'number',
         },
         {
           field_key: 'start_reading',
           label: 'Start Reading',
           field_type: 'input',
+          type: 'number',
         },
         {
           field_key: 'end_reading',
           label: 'End Reading',
           field_type: 'input',
+          type: 'number',
         },
       ],
     },

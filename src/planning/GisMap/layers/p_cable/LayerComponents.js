@@ -147,9 +147,6 @@ export const ElementForm = () => {
           ...formData,
           // remove geometry
           geometry: undefined,
-          // convert select fields to simple values
-          status: formData.status.value,
-          cable_type: formData.cable_type.value,
         };
       } else {
         return {
@@ -159,8 +156,6 @@ export const ElementForm = () => {
           remark: undefined,
           geometry: latLongMapToLineCoords(formData.coordinates),
           // convert select fields to simple values
-          status: formData.status.value,
-          cable_type: formData.cable_type.value,
           configuration: configuration.id,
         };
       }
@@ -194,14 +189,7 @@ const ELEMENT_TABLE_FIELDS = [
   {label: 'Status', field: 'status', type: 'status'},
 ];
 
-const convertDataBeforeForm = data => {
-  return {
-    ...data,
-    // convert status to select format
-    status: find(LAYER_STATUS_OPTIONS, ['value', data.status]),
-    cable_type: find(CABLE_TYPE_OPTIONS, ['value', data.cable_type]),
-  };
-};
+const convertDataBeforeForm = data => data;
 
 export const ElementDetails = () => {
   const {elementId} = useSelector(getPlanningMapStateData);
