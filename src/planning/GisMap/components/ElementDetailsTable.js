@@ -68,7 +68,8 @@ const ElementDetailsTable = ({
           coordinates: elemData.coordinates,
         },
         geometry:
-          featureType === ELEMENT_TYPE.POLYLINE
+          featureType === ELEMENT_TYPE.POLYLINE ||
+          featureType === ELEMENT_TYPE.POLYGON
             ? coordsToLatLongMap(elemData.coordinates)
             : coordsToLatLongMap([elemData.coordinates])[0],
         enableMapInterection: true,

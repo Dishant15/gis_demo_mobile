@@ -32,6 +32,9 @@ const AddGisMapLayer = ({helpText, featureType, nextEvent = {}}) => {
       submitData.gis_len = String(round(gis_len, 4));
     } else if (featureType === 'polygon') {
       submitData.geometry = latLongMapToCoords(coordinates);
+    } else {
+      // marker
+      submitData.geometry = latLongMapToCoords([coordinates])[0];
     }
     // set marker coords to form data
     nextEvent.data = {

@@ -113,7 +113,7 @@ const EditGisLayer = ({
         geometry,
         gis_len: round(length(lineString(geometry)), 4),
       };
-    } else if (featureType === ELEMENT_TYPE.POLYLINE) {
+    } else if (featureType === ELEMENT_TYPE.POLYGON) {
       submitData = {
         geometry: latLongMapToCoords(coordinates),
       };

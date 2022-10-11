@@ -26,7 +26,7 @@ import {
 } from './configurations';
 import {percentToHex} from '~utils/app.utils';
 import AddGisMapLayer from '~planning/GisMap/components/AddGisMapLayer';
-import {PLANNING_EVENT} from '~planning/GisMap/utils';
+import {ELEMENT_TYPE, PLANNING_EVENT} from '~planning/GisMap/utils';
 import AreaIcon from '~assets/markers/path.svg';
 
 const STROKE_COLOR = '#CE855A';
@@ -205,6 +205,7 @@ export const ElementDetails = () => {
       layerKey={LAYER_KEY}
       elementId={elementId}
       onEditDataConverter={convertDataBeforeForm}
+      featureType={ELEMENT_TYPE.POLYGON}
     />
   );
 };

@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Marker} from 'react-native-maps';
 
 import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
@@ -8,12 +8,23 @@ import {zIndexMapping} from '../common/configuration';
 import {
   getLayerViewData,
   getPlanningMapStateData,
+  getGisMapStateGeometry,
 } from '~planning/data/planningGis.selectors';
-import {LAYER_KEY} from './configurations';
+import {
+  INITIAL_ELEMENT_DATA,
+  LAYER_KEY,
+  ELEMENT_FORM_TEMPLATE,
+} from './configurations';
 import {noop} from 'lodash';
+import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 
 import BuildingViewIcon from '~assets/markers/building_view.svg';
 import BuildingEditIcon from '~assets/markers/building_pin.svg';
+import AddGisMapLayer from '~planning/GisMap/components/AddGisMapLayer';
+import {PLANNING_EVENT} from '~planning/GisMap/utils';
+import {getPlanningMapStateEvent} from '~planning/data/planningState.selectors';
+import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
+import EditGisLayer from '~planning/GisMap/components/EditGisLayer';
 
 export const getIcon = props =>
   props?.isEdit ? BuildingEditIcon : BuildingViewIcon;
@@ -53,6 +64,87 @@ export const ViewLayer = () => {
         return <Geometry key={id} coordinates={coordinates} />;
       })}
     </>
+  );
+};
+
+export const AddLayer = () => {
+  return (
+    <AddGisMapLayer
+      helpText="Click on map to add new Distribution Point location"
+      nextEvent={{
+        event: PLANNING_EVENT.addElementForm, // event for "layerForm"
+        layerKey: LAYER_KEY,
+        // init data
+        data: INITIAL_ELEMENT_DATA,
+      }}
+    />
+  );
+};
+
+export const ElementLayer = () => {
+  const dispatch = useDispatch();
+  const coordinates = useSelector(getGisMapStateGeometry);
+  // get map state event
+  const currEvent = useSelector(getPlanningMapStateEvent);
+  // check if add or edit event
+  const isEdit =
+    currEvent === PLANNING_EVENT.editElementLocation ||
+    currEvent === PLANNING_EVENT.addElement;
+
+  const handleMarkerDrag = e => {
+    const coords = e.nativeEvent.coordinate;
+    dispatch(updateMapStateCoordinates(coords));
+  };
+
+  return (
+    <Geometry
+      coordinates={coordinates}
+      handleMarkerDrag={handleMarkerDrag}
+      isEdit={isEdit}
+    />
+  );
+};
+
+export const EditMapLayer = () => {
+  return (
+    <EditGisLayer
+      helpText="Click or drag and drop marker to new location"
+      layerKey={LAYER_KEY}
+      featureType="marker"
+    />
+  );
+};
+
+export const ElementForm = () => {
+  // get map state event
+  const currEvent = useSelector(getPlanningMapStateEvent);
+  // check if add or edit event
+  const isEdit = currEvent === PLANNING_EVENT.editElementDetails;
+
+  const transformAndValidateData = useCallback(
+    formData => {
+      if (isEdit) {
+        return {
+          ...formData,
+          // remove geometry
+          geometry: undefined,
+        };
+      } else {
+        return {
+          ...formData,
+        };
+      }
+    },
+    [isEdit],
+  );
+
+  return (
+    <GisLayerForm
+      isEdit={isEdit}
+      layerKey={LAYER_KEY}
+      formConfig={ELEMENT_FORM_TEMPLATE}
+      transformAndValidateData={transformAndValidateData}
+    />
   );
 };
 
