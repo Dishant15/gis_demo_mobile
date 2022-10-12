@@ -1,7 +1,6 @@
 import React, {useCallback, useMemo} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {Modal} from 'react-native-paper';
 
 import {isNull} from 'lodash';
 

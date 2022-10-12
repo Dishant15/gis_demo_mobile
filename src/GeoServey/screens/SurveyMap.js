@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   InteractionManager,
   Dimensions,
   StatusBar,
+  Text,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import size from 'lodash/size';
@@ -48,21 +49,14 @@ import {
 import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
 
 import FloatingCard from '~Common/components/FloatingCard';
+import {getEdgePadding} from '~utils/app.utils';
+import {IconButton} from '~Common/components/Button';
 
 let {width, height} = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 
 const LATITUDE_DELTA = 0.00444;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-
-const getEdgePadding = (bottom = 50) => {
-  return {
-    top: 150,
-    right: 5,
-    bottom,
-    left: 5,
-  };
-};
 
 /**
  * render maps with survey points
@@ -200,6 +194,19 @@ const SurveyMap = ({navigation}) => {
     }
   };
 
+  const mayRenderBackButton = useMemo(() => {
+    return (
+      <IconButton
+        icon="keyboard-backspace"
+        color={THEME_COLORS.error.main}
+        textColor={THEME_COLORS.error.contrastText}
+        text="Go Back"
+        onPress={handleCustomBack}
+        style={[layout.smallButton, layout.smallButtonMR]}
+      />
+    );
+  }, []);
+
   if (!isFocused) return null;
 
   return (
@@ -213,48 +220,28 @@ const SurveyMap = ({navigation}) => {
               ? 'Long press and drag points on polygon edges to fine tune polygon shape'
               : ''
           }>
-          {startEditing ? (
-            <Card.Actions>
-              <Button
-                mode="contained"
-                icon="keyboard-backspace"
-                color={THEME_COLORS.error.main}
-                style={[layout.smallButton, layout.smallButtonMR]}
-                onPress={handleCustomBack}>
-                Go Back
-              </Button>
-              <Button
-                mode="contained"
+          <Card.Actions>
+            {mayRenderBackButton}
+            {startEditing ? (
+              <IconButton
                 icon="check"
                 color={THEME_COLORS.primary.main}
+                textColor={THEME_COLORS.error.contrastText}
+                text="Complete"
                 onPress={handleBtnPress}
-                style={layout.smallButton}>
-                Complete
-              </Button>
-            </Card.Actions>
-          ) : (
-            <Card.Actions>
-              <Button
-                mode="contained"
-                icon="keyboard-backspace"
-                color={THEME_COLORS.error.main}
                 style={[layout.smallButton, layout.smallButtonMR]}
-                onPress={handleCustomBack}>
-                Go Back
-              </Button>
-              <Button
-                mode="contained"
+              />
+            ) : (
+              <IconButton
                 icon="plus"
                 color={THEME_COLORS.success.main}
+                textColor={THEME_COLORS.success.contrastText}
+                text="Add Survey"
                 onPress={handleBtnPress}
-                style={layout.smallButton}
-                labelStyle={{
-                  color: THEME_COLORS.success.contrastText,
-                }}>
-                Add Survey
-              </Button>
-            </Card.Actions>
-          )}
+                style={[layout.smallButton, layout.smallButtonMR]}
+              />
+            )}
+          </Card.Actions>
         </FloatingCard>
       ) : null}
       <View style={[layout.container, layout.relative]}>
@@ -275,7 +262,6 @@ const SurveyMap = ({navigation}) => {
               mapPadding={getEdgePadding(bottom)}
               onMapLoaded={() => {
                 setTimeout(() => {
-                  console.log('map is loaded');
                   setMapRender(true);
                 }, 10);
               }}>

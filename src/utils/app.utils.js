@@ -72,3 +72,12 @@ export const percentToHex = p => {
   const hexValue = intValue.toString(16); // get hexadecimal representation
   return hexValue.padStart(2, '0').toUpperCase(); // format with leading 0 and upper case characters
 };
+
+export const getEdgePadding = (bottom = 50) => {
+  return {
+    top: 150,
+    right: 5,
+    bottom,
+    left: 5,
+  };
+};

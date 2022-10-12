@@ -1,7 +1,6 @@
 import React, {useRef, useState, useCallback, useMemo} from 'react';
-import {View, StyleSheet, InteractionManager, BackHandler} from 'react-native';
+import {View, InteractionManager, BackHandler} from 'react-native';
 import {Marker, Polygon} from 'react-native-maps';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import {isNull, get, size, differenceBy, join, split} from 'lodash';
 import {polygon, point, booleanPointInPolygon} from '@turf/turf';
 import * as Animatable from 'react-native-animatable';
@@ -28,11 +27,8 @@ import {upsertSurveyUnit} from '~GeoServey/data/geoSurvey.service';
 import {useMutation} from 'react-query';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {getMapType} from '~Common/data/appstate.selector';
+import {getEdgePadding} from '~utils/app.utils';
 
-import DefaultMapImg from '~assets/img/map_default.png';
-import SatelliteMapImg from '~assets/img/map_satellite.png';
-import {toggleMapType} from '~Common/data/appstate.reducer';
-import FastImage from 'react-native-fast-image';
 import {latLongMapToCoords, pointLatLongMapToCoords} from '~utils/map.utils';
 import FloatingCard from '~Common/components/FloatingCard';
 
@@ -41,8 +37,7 @@ import FloatingCard from '~Common/components/FloatingCard';
  *    root.navigation
  */
 const UnitMap = ({navigation}) => {
-  const [showMap, setMapVisibility] = useState(false);
-  const {top} = useSafeAreaInsets();
+  const {bottom} = useSafeAreaInsets();
 
   const isFocused = useIsFocused();
   const isReviewed = useSelector(getIsReviewed);
@@ -56,6 +51,9 @@ const UnitMap = ({navigation}) => {
   const dispatch = useDispatch();
 
   const mapRef = useRef();
+
+  const [showMap, setMapVisibility] = useState(false);
+  const [showMapRender, setMapRender] = useState(false);
   const [coordinate, setCoordinate] = useState(
     get(unitData, 'coordinates', null),
   );
@@ -157,14 +155,9 @@ const UnitMap = ({navigation}) => {
     return newList;
   }, [unitList, unitData]);
 
-  const onMapLayout = e => {
+  const onMapReady = e => {
     mapRef.current.fitToCoordinates(surveyCoords, {
-      edgePadding: {
-        top: 20,
-        right: 20,
-        bottom: 20,
-        left: 12,
-      },
+      edgePadding: getEdgePadding(bottom),
       animated: true,
     });
     setCoordinate(unitData.coordinates);
@@ -176,16 +169,18 @@ const UnitMap = ({navigation}) => {
     setCoordinate(coords);
   };
 
+  const onMapLoaded = () => {
+    setTimeout(() => {
+      setMapRender(true);
+    }, 10);
+  };
+
   const handleCustomBack = () => {
     if (isReviewed) {
       navigation.navigate(screens.reviewScreen);
     } else {
       navigation.goBack();
     }
-  };
-
-  const handleMapType = () => {
-    dispatch(toggleMapType());
   };
 
   if (!isFocused) return null;
@@ -233,8 +228,11 @@ const UnitMap = ({navigation}) => {
               ref={mapRef}
               showMapType
               mapType={mapType}
+              onMapReady={onMapReady}
+              onMapLoaded={onMapLoaded}
               onPress={handleMapClick}
-              onLayout={onMapLayout}>
+              onPoiClick={handleMapClick}
+              mapPadding={getEdgePadding(bottom)}>
               {existingMarkers.map((marker, index) => {
                 return (
                   <Marker
@@ -250,7 +248,6 @@ const UnitMap = ({navigation}) => {
                 <Marker
                   pinColor="green"
                   coordinate={coordinate}
-                  tappable
                   draggable
                   onDragEnd={handleMarkerDrag}
                   stopPropagation
@@ -258,7 +255,7 @@ const UnitMap = ({navigation}) => {
                   tracksInfoWindowChanges={false}
                 />
               ) : null}
-              {size(surveyCoords) ? (
+              {size(surveyCoords) && showMapRender ? (
                 <Polygon
                   coordinates={surveyCoords}
                   strokeWidth={2}
@@ -273,58 +270,5 @@ const UnitMap = ({navigation}) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  map: {
-    height: '100%',
-    width: '100%',
-  },
-  content: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 14,
-  },
-  drawBtn: {
-    backgroundColor: 'black',
-    alignSelf: 'flex-end',
-    paddingHorizontal: 15,
-    minWidth: 150,
-  },
-  drawBtnTxt: {
-    color: 'white',
-  },
-  disableBtn: {
-    backgroundColor: '#A9A9A9',
-  },
-  mapTypeWrapper: {
-    position: 'absolute',
-    right: 0,
-    top: 65,
-    right: 14,
-    backgroundColor: colors.white,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  mapTypeImage: {
-    width: 44,
-    height: 44,
-  },
-  // card design
-  cartTitle: {
-    color: colors.white,
-  },
-  paragraph: {
-    fontSize: 15,
-  },
-});
 
 export default UnitMap;

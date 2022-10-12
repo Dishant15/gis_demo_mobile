@@ -25,15 +25,7 @@ import {
 import {INIT_MAP_LOCATION, layout} from '~constants/constants';
 import {getMapType} from '~Common/data/appstate.selector';
 import {get} from 'lodash';
-
-const getEdgePadding = (bottom = 50) => {
-  return {
-    top: 150,
-    right: 5,
-    bottom,
-    left: 5,
-  };
-};
+import {getEdgePadding} from '~utils/app.utils';
 
 /**
  * Parent
