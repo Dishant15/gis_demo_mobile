@@ -1,5 +1,11 @@
 import React, {useState, useCallback, useRef} from 'react';
-import {View, StyleSheet, Pressable, Dimensions} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import {
   Button,
   Menu,
@@ -7,11 +13,10 @@ import {
   Chip,
   Paragraph,
   TextInput,
-  Modal,
   Portal,
   Title,
 } from 'react-native-paper';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import Modal from 'react-native-modal';
 
 import {difference, find, indexOf, map} from 'lodash';
 
@@ -91,7 +96,16 @@ const TagSelect = ({
       </Pressable>
       {visible ? (
         <Portal>
-          <Modal visible={visible} onDismiss={closeMenu}>
+          <Modal
+            useNativeDriver={true}
+            animationIn="slideInUp"
+            animationOut="slideInDown"
+            isVisible={true}
+            hideModalContentWhileAnimating
+            style={styles.modalWrapper}
+            onBackButtonPress={closeMenu}
+            onBackdropPress={closeMenu}
+            avoidKeyboard>
             <View
               style={[
                 styles.menuContentStyle,
@@ -108,9 +122,7 @@ const TagSelect = ({
                   <CloseIcon width={18} height={18} color="red" />
                 </Pressable>
               </View>
-              <KeyboardAwareScrollView
-                keyboardShouldPersistTaps="always"
-                ref={scrollRef}>
+              <ScrollView keyboardShouldPersistTaps="always" ref={scrollRef}>
                 {fullTagList.map(tag => {
                   const selected = tags.indexOf(tag.value) !== -1;
                   return (
@@ -131,7 +143,7 @@ const TagSelect = ({
                     />
                   );
                 })}
-              </KeyboardAwareScrollView>
+              </ScrollView>
               <View style={styles.actionsWrapper}>
                 {creatable ? (
                   <View style={styles.creatableWrapper}>
