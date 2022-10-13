@@ -42,6 +42,8 @@ export const colors = {
   white: '#fff',
   blackWithOp: 'rgba(0,0,0,0.3)',
   primeFontColor: 'rgba(0, 0, 0, 0.6)',
+  disabledBackground: '#d1d1d1',
+  disabledText: '#8f8f8f',
 
   mainBgColor: 'rgb(247, 247, 247)',
   primaryFontColor: '#404040',

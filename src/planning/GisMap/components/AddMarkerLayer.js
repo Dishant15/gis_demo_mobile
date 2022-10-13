@@ -9,6 +9,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {layout, THEME_COLORS} from '~constants/constants';
 import {zIndexMapping} from '../layers/common/configuration';
+import {IconButton} from '~Common/components/Button';
 
 const AddMarkerLayer = ({markerCoords, helpText, nextEvent = {}}) => {
   const dispatch = useDispatch();
@@ -40,22 +41,22 @@ const AddMarkerLayer = ({markerCoords, helpText, nextEvent = {}}) => {
           // subtitle="Tap on map to add element, long press and drag to change position"
         >
           <Card.Actions>
-            <Button
-              mode="contained"
+            <IconButton
               icon="close"
               color={THEME_COLORS.error.main}
               style={[layout.smallButton, layout.smallButtonMR]}
-              onPress={handleCancel}>
-              Cancel
-            </Button>
-            <Button
-              mode="contained"
+              textColor={THEME_COLORS.error.contrastText}
+              text="Cancel"
+              onPress={handleCancel}
+            />
+            <IconButton
               icon="check"
               color={THEME_COLORS.primary.main}
+              style={[layout.smallButton]}
+              textColor={THEME_COLORS.error.contrastText}
+              text="Complete"
               onPress={handleAddComplete}
-              style={layout.smallButton}>
-              Complete
-            </Button>
+            />
           </Card.Actions>
         </FloatingCard>
       </View>

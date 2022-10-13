@@ -33,6 +33,8 @@ import {getEdgePadding} from '~utils/app.utils';
  */
 const GisMap = props => {
   const [showMap, setMapVisibility] = useState(false);
+  const [showMapRender, setMapRender] = useState(false);
+
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const {bottom} = useSafeAreaInsets();
@@ -82,6 +84,9 @@ const GisMap = props => {
       // otherwise set to initial region
       mapRef.current.animateToRegion(INIT_MAP_LOCATION, 100);
     }
+    setTimeout(() => {
+      setMapRender(true);
+    }, 20);
   };
 
   if (!isFocused) return null;
@@ -97,9 +102,13 @@ const GisMap = props => {
             mapType={mapType}
             onPress={handleMapClick}
             onPoiClick={handleMapClick}>
-            {Layers}
-            <LayerGisEventComponent />
-            <TicketMapLayers />
+            {showMapRender ? (
+              <>
+                {Layers}
+                <LayerGisEventComponent />
+                <TicketMapLayers />
+              </>
+            ) : null}
           </Map>
         </Animatable.View>
       ) : null}

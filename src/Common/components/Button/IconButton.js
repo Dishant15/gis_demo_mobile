@@ -1,34 +1,59 @@
+import {noop} from 'lodash';
 import React from 'react';
 import {Text, StyleSheet} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {ActivityIndicator} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {THEME_COLORS} from '~constants/constants';
+import {colors, THEME_COLORS} from '~constants/constants';
 
 export const IconButton = ({
   icon = '',
   color = THEME_COLORS.primary.main,
-  textColor = '',
+  textColor = THEME_COLORS.error.contrastText,
   text = '',
+  loading = false,
+  disabled = false,
   style,
   onPress,
 }) => {
   return (
     <TouchableOpacity
-      style={[styles.contained, style, {backgroundColor: color}]}
-      onPress={onPress}>
-      <MaterialCommunityIcons
-        size={18}
-        name={icon}
-        color={textColor}
-        style={styles.iconStyle}
-      />
-      <Text
-        numberOfLines={1}
-        maxFontSizeMultiplier={1}
-        style={[styles.text, {color: textColor}]}>
-        {text}
-      </Text>
+      style={[
+        styles.contained,
+        style,
+        {backgroundColor: disabled ? colors.disabledBackground : color},
+      ]}
+      onPress={disabled ? noop : onPress}>
+      {loading ? (
+        <ActivityIndicator
+          animating
+          size={15}
+          color={disabled ? colors.disabledText : textColor}
+        />
+      ) : (
+        <>
+          {icon ? (
+            <MaterialCommunityIcons
+              size={18}
+              name={icon}
+              color={disabled ? colors.disabledText : textColor}
+              style={styles.iconStyle}
+            />
+          ) : null}
+          {text ? (
+            <Text
+              numberOfLines={1}
+              maxFontSizeMultiplier={1}
+              style={[
+                styles.text,
+                {color: disabled ? colors.disabledText : textColor},
+              ]}>
+              {text}
+            </Text>
+          ) : null}
+        </>
+      )}
     </TouchableOpacity>
   );
 };

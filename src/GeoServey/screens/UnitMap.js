@@ -31,6 +31,7 @@ import {getEdgePadding} from '~utils/app.utils';
 
 import {latLongMapToCoords, pointLatLongMapToCoords} from '~utils/map.utils';
 import FloatingCard from '~Common/components/FloatingCard';
+import {IconButton} from '~Common/components/Button';
 
 /**
  * Parent:
@@ -194,31 +195,26 @@ const UnitMap = ({navigation}) => {
 
   return (
     <View style={layout.container}>
-      {/* <BackHeader
-        title="Add Marker"
-        subtitle="Add marker within boundary"
-        onGoBack={handleCustomBack}
-      /> */}
       <FloatingCard title="Add Marker" subtitle="Add marker within boundary">
         <Card.Actions>
-          <Button
-            mode="contained"
+          <IconButton
             icon="keyboard-backspace"
             color={THEME_COLORS.error.main}
+            textColor={THEME_COLORS.error.contrastText}
+            text="Go Back"
+            onPress={handleCustomBack}
             style={[layout.smallButton, layout.smallButtonMR]}
-            onPress={handleCustomBack}>
-            Go Back
-          </Button>
-          <Button
-            mode="contained"
+          />
+          <IconButton
             icon="check"
             color={THEME_COLORS.primary.main}
-            style={layout.smallButton}
+            textColor={THEME_COLORS.error.contrastText}
+            text={isAdd ? 'Save Location' : 'Update Location'}
+            onPress={handleButtonPress}
             loading={isLoading}
             disabled={!isMarker}
-            onPress={handleButtonPress}>
-            {isAdd ? 'Save' : 'Update'} Location
-          </Button>
+            style={[layout.smallButton, layout.smallButtonMR]}
+          />
         </Card.Actions>
       </FloatingCard>
       <View style={[layout.container, layout.relative]}>

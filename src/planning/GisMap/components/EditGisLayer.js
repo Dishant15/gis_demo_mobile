@@ -28,6 +28,7 @@ import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.sel
 import {latLongMapToCoords, latLongMapToLineCoords} from '~utils/map.utils';
 import {ELEMENT_TYPE} from '../utils';
 import {zIndexMapping} from '../layers/common/configuration';
+import {IconButton} from '~Common/components/Button';
 
 const EditGisLayer = ({
   helpText,
@@ -147,23 +148,23 @@ const EditGisLayer = ({
           // subtitle="Tap on map to add element, long press and drag to change position"
         >
           <Card.Actions>
-            <Button
-              mode="contained"
+            <IconButton
               icon="close"
               color={THEME_COLORS.error.main}
               style={[layout.smallButton, layout.smallButtonMR]}
-              onPress={handleCancel}>
-              Cancel
-            </Button>
-            <Button
-              mode="contained"
+              textColor={THEME_COLORS.error.contrastText}
+              text="Cancel"
+              onPress={handleCancel}
+            />
+            <IconButton
               icon="check"
               color={THEME_COLORS.primary.main}
+              style={[layout.smallButton]}
+              textColor={THEME_COLORS.error.contrastText}
+              text="Update"
               onPress={handleUpdate}
-              style={layout.smallButton}
-              loading={isEditLoading || isEditTicketLoading}>
-              Update
-            </Button>
+              loading={isEditLoading || isEditTicketLoading}
+            />
           </Card.Actions>
         </FloatingCard>
       </View>
