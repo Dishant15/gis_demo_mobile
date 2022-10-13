@@ -79,8 +79,9 @@ const UnitMap = ({navigation}) => {
         }
       };
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
-      return () =>
+      return () => {
         BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
     }, [isReviewed]),
   );
 
@@ -96,7 +97,11 @@ const UnitMap = ({navigation}) => {
       };
       dispatch(updateUnitFormData(newData));
       dispatch(updateSurveyUnitList(newData));
-      navigation.navigate(screens.reviewScreen);
+      if (isReviewed) {
+        navigation.navigate(screens.reviewScreen);
+      } else {
+        navigation.navigate(screens.unitList);
+      }
       showToast('Marker cordinate updated successfully.', TOAST_TYPE.SUCCESS);
     },
     onError: err => {
@@ -225,6 +230,7 @@ const UnitMap = ({navigation}) => {
               showMapType
               mapType={mapType}
               onMapReady={onMapReady}
+              onLayout={onMapReady} // hack to set coordinate on map re-render
               onMapLoaded={onMapLoaded}
               onPress={handleMapClick}
               onPoiClick={handleMapClick}

@@ -1,18 +1,16 @@
 import React, {useMemo, useRef, useState} from 'react';
 import {
   View,
-  StyleSheet,
   BackHandler,
   InteractionManager,
   Dimensions,
   StatusBar,
-  Text,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import size from 'lodash/size';
 
 import {Polygon} from 'react-native-maps';
-import {Button, Card} from 'react-native-paper';
+import {Card} from 'react-native-paper';
 import Map from '~Common/components/Map';
 
 import * as Animatable from 'react-native-animatable';
@@ -186,6 +184,12 @@ const SurveyMap = ({navigation}) => {
     });
   };
 
+  const onMapLoaded = () => {
+    setTimeout(() => {
+      setMapRender(true);
+    }, 10);
+  };
+
   const handleCustomBack = () => {
     if (isReviewed) {
       navigation.navigate(screens.reviewScreen);
@@ -257,14 +261,11 @@ const SurveyMap = ({navigation}) => {
               mapType={mapType}
               ref={mapRef}
               onMapReady={onMapReady}
+              onLayout={onMapReady} // hack to set coordinate on map re-render
               onPress={handleMapClick}
               onPoiClick={handleMapClick}
               mapPadding={getEdgePadding(bottom)}
-              onMapLoaded={() => {
-                setTimeout(() => {
-                  setMapRender(true);
-                }, 10);
-              }}>
+              onMapLoaded={onMapLoaded}>
               {coordinates.map((marker, i) => (
                 <CustomMarker
                   coordinate={marker}
