@@ -235,35 +235,39 @@ const UnitMap = ({navigation}) => {
               onPress={handleMapClick}
               onPoiClick={handleMapClick}
               mapPadding={getEdgePadding(bottom)}>
-              {existingMarkers.map((marker, index) => {
-                return (
-                  <Marker
-                    key={index}
-                    coordinate={marker}
-                    stopPropagation
-                    flat
-                    tracksInfoWindowChanges={false}
-                  />
-                );
-              })}
-              {isMarker ? (
-                <Marker
-                  pinColor="green"
-                  coordinate={coordinate}
-                  draggable
-                  onDragEnd={handleMarkerDrag}
-                  stopPropagation
-                  flat
-                  tracksInfoWindowChanges={false}
-                />
-              ) : null}
-              {size(surveyCoords) && showMapRender ? (
-                <Polygon
-                  coordinates={surveyCoords}
-                  strokeWidth={2}
-                  strokeColor={strokeColor}
-                  fillColor={`${strokeColor}14`}
-                />
+              {showMapRender ? (
+                <>
+                  {existingMarkers.map((marker, index) => {
+                    return (
+                      <Marker
+                        key={index}
+                        coordinate={marker}
+                        stopPropagation
+                        flat
+                        tracksInfoWindowChanges={false}
+                      />
+                    );
+                  })}
+                  {isMarker ? (
+                    <Marker
+                      pinColor="green"
+                      coordinate={coordinate}
+                      draggable
+                      onDragEnd={handleMarkerDrag}
+                      stopPropagation
+                      flat
+                      tracksInfoWindowChanges={false}
+                    />
+                  ) : null}
+                  {size(surveyCoords) ? (
+                    <Polygon
+                      coordinates={surveyCoords}
+                      strokeWidth={2}
+                      strokeColor={strokeColor}
+                      fillColor={`${strokeColor}14`}
+                    />
+                  ) : null}
+                </>
               ) : null}
             </Map>
           </Animatable.View>

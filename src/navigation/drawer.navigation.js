@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {Dimensions, View, StyleSheet} from 'react-native';
 import {Title, List, Headline, Divider} from 'react-native-paper';
 
@@ -15,12 +15,11 @@ import PlanningTicket from '~planningTicket/screen/PlanningTicketListScreen';
 import PlanningScreen from '~planning/screens/PlanningScreen';
 
 import {colors, layout, screens} from '~constants/constants';
-import {logout} from '~Authentication/data/auth.reducer';
 import {
   getIsSuperAdminUser,
   getUserPermissions,
 } from '~Authentication/data/auth.selectors';
-import {useQueryClient} from 'react-query';
+import {handleLogoutUser} from '~Authentication/data/auth.actions';
 
 const Drawer = createDrawerNavigator();
 
@@ -38,7 +37,6 @@ const Drawer = createDrawerNavigator();
  */
 const DrawerContent = props => {
   const {top} = useSafeAreaInsets();
-  const queryClient = useQueryClient();
   const dispatch = useDispatch();
 
   const isSuperAdminUser = useSelector(getIsSuperAdminUser);
@@ -46,6 +44,10 @@ const DrawerContent = props => {
 
   const canPlanningView =
     get(permissions, 'planning_view', false) || isSuperAdminUser;
+
+  const handleLogout = useCallback(() => {
+    dispatch(handleLogoutUser);
+  }, []);
 
   return (
     <View style={layout.container}>
@@ -104,10 +106,7 @@ const DrawerContent = props => {
         <List.Item
           title="Logout"
           left={() => <List.Icon icon="logout" />}
-          onPress={() => {
-            queryClient.clear();
-            dispatch(logout());
-          }}
+          onPress={handleLogout}
         />
       </List.Section>
     </View>

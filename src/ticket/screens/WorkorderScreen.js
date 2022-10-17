@@ -174,7 +174,7 @@ const WorkorderScreen = props => {
         }}
         ListEmptyComponent={
           <View style={[layout.center, layout.container]}>
-            <Subheading>No work orders submitted yet !</Subheading>
+            <Subheading>Work order list empty</Subheading>
           </View>
         }
       />

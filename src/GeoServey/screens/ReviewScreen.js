@@ -50,6 +50,8 @@ const ReviewScreen = ({navigation}) => {
   const remark = get(formData, 'remark', '');
 
   const [deletingUnitId, setDeletingUnitId] = useState(null);
+  const [showMapRender, setMapRender] = useState(false);
+
   const dispatch = useDispatch();
 
   const {
@@ -188,6 +190,12 @@ const ReviewScreen = ({navigation}) => {
     }
   };
 
+  const onMapLoaded = () => {
+    setTimeout(() => {
+      setMapRender(true);
+    }, 10);
+  };
+
   if (!isFocused) return null;
 
   const status = get(formData, 'status');
@@ -220,30 +228,31 @@ const ReviewScreen = ({navigation}) => {
             longitude: 72.56051184609532,
             latitude: 23.024334044995985,
           }}
-          // zoomEnabled={false}
-          // scrollEnabled={false}
-          // pitchEnabled={false}
-          // rotateEnabled={false}
           onMapReady={onMapLayout}
-          onLayout={onMapLayout}>
-          {unitMarkerList.map((marker, index) => {
-            return (
-              <Marker
-                key={index}
-                coordinate={marker}
-                stopPropagation
-                flat
-                tracksInfoWindowChanges={false}
-              />
-            );
-          })}
-          {size(formData.coordinates) ? (
-            <Polygon
-              coordinates={formData.coordinates}
-              strokeWidth={2}
-              strokeColor={strokeColor}
-              fillColor={`${strokeColor}14`}
-            />
+          onLayout={onMapLayout}
+          onMapLoaded={onMapLoaded}>
+          {showMapRender ? (
+            <>
+              {unitMarkerList.map((marker, index) => {
+                return (
+                  <Marker
+                    key={index}
+                    coordinate={marker}
+                    stopPropagation
+                    flat
+                    tracksInfoWindowChanges={false}
+                  />
+                );
+              })}
+              {size(formData.coordinates) ? (
+                <Polygon
+                  coordinates={formData.coordinates}
+                  strokeWidth={2}
+                  strokeColor={strokeColor}
+                  fillColor={`${strokeColor}14`}
+                />
+              ) : null}
+            </>
           ) : null}
         </MapView>
         <View style={styles.contentWrapper}>

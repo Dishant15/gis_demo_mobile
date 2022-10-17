@@ -2,7 +2,7 @@ import {API_HOST} from '@env';
 console.log('🚀 ~ file: api.utils.js ~ line 2 ~ API_HOST', API_HOST);
 import axios from 'axios';
 import {isNil, map, keys, join, get} from 'lodash';
-import {logout} from '~Authentication/data/auth.reducer';
+import {handleLogoutUser} from '~Authentication/data/auth.actions';
 import {authRevoked} from '~constants/messages';
 import store from '~store';
 import {showToast, TOAST_TYPE} from './toast.utils';
@@ -45,7 +45,7 @@ axiosInstance.interceptors.response.use(
     // dispatch logout action if request unauthorised.
     const status = get(error, 'response.status');
     if (status === 401) {
-      store.dispatch(logout());
+      store.dispatch(handleLogoutUser);
       showToast(authRevoked(), TOAST_TYPE.ERROR, 10000);
     }
     return Promise.reject(error);
@@ -129,7 +129,7 @@ export const parseErrorMessagesWithFields = error => {
         }
       }
     } else if (status === 403) {
-      store.dispatch(logout());
+      store.dispatch(handleLogoutUser);
       showToast(authRevoked(), TOAST_TYPE.ERROR, 10000);
     }
   } else {
