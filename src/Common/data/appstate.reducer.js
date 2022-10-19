@@ -1,4 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {has} from 'lodash';
+import {REHYDRATE} from 'redux-persist';
+import {HOST_CONFIG} from '~constants/constants';
 
 export const PERMISSIONS_TYPE = {
   ALLOW: 'allow',
@@ -11,6 +14,7 @@ const initialState = {
   locationPermissionType: PERMISSIONS_TYPE.NONE,
   currentLocation: null,
   mapType: 'standard', // satellite
+  hostConfig: HOST_CONFIG.NETGIS,
 };
 
 const appstateReducer = createSlice({
@@ -30,9 +34,18 @@ const appstateReducer = createSlice({
       const {mapType} = state;
       state.mapType = mapType === 'standard' ? 'satellite' : 'standard';
     },
-    resetAppState: () => {
-      return initialState;
+    updateHostConfig: (state, {payload}) => {
+      state.hostConfig = payload;
     },
+    resetAppState: () => {
+      return {...initialState, hostConfig: state.hostConfig};
+    },
+  },
+  extraReducers: builder => {
+    builder.addCase(REHYDRATE, (state, {payload}) => {
+      if (!has(payload, 'hostConfig'))
+        [(state.hostConfig = HOST_CONFIG.NETGIS)];
+    });
   },
 });
 
@@ -42,5 +55,6 @@ export const {
   setLocationPermission,
   setCurrentLocation,
   toggleMapType,
+  updateHostConfig,
 } = appstateReducer.actions;
 export default appstateReducer.reducer;

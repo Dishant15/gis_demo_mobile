@@ -1,25 +1,48 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {View, Text, StyleSheet, Dimensions, StatusBar} from 'react-native';
 import {TextInput, Button, HelperText} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import FastImage from 'react-native-fast-image';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {useMutation} from 'react-query';
 
 import Input from '~Common/Input';
 import {login} from '~Authentication/data/auth.reducer';
 import {postLogin} from '~Authentication/data/auth.service';
-import {colors, fonts, layout} from '~constants/constants';
+import {colors, fonts, HOST_CONFIG, layout} from '~constants/constants';
 import {parseErrorMessagesWithFields} from '~utils/api.utils';
+import {find, get, noop} from 'lodash';
+import {getHostConfig} from '~Common/data/appstate.selector';
+import SelectModel from '~Common/components/SelectModel';
+import {updateHostConfig} from '~Common/data/appstate.reducer';
+
 import authBg from '~assets/img/authBg.png';
-import {get} from 'lodash';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
 const {width, height} = Dimensions.get('screen');
 
 const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [showPopup, setshowPopup] = useState(false);
+
+  const hostConfig = useSelector(getHostConfig);
   const dispatch = useDispatch();
+
+  const handleShowPopup = useCallback(() => {
+    setshowPopup(true);
+  }, []);
+
+  const handleHidePopup = useCallback(() => {
+    setshowPopup(false);
+  }, []);
+
+  const handleHostSubmit = useCallback(value => {
+    const valueList = Object.values(HOST_CONFIG);
+    const selectedObj = find(valueList, ['value', value]);
+    dispatch(updateHostConfig(selectedObj));
+    showToast(selectedObj.label, TOAST_TYPE.INFO);
+  }, []);
 
   const {
     control,
@@ -132,6 +155,19 @@ const LoginScreen = () => {
             </HelperText>
           ) : null}
 
+          <Input
+            label="Host"
+            onChangeText={noop}
+            onFocus={handleShowPopup}
+            value={hostConfig.label}
+            underlineColorAndroid="transparent"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="done"
+            editable={false}
+            right={<TextInput.Icon name="pencil" onPress={handleShowPopup} />}
+          />
+
           <View style={styles.submitBtnWrapper}>
             <Button
               loading={isLoading}
@@ -145,6 +181,16 @@ const LoginScreen = () => {
           </View>
         </View>
       </KeyboardAwareScrollView>
+      {showPopup ? (
+        <SelectModel
+          inputLabel="Host Config"
+          tagList={Object.values(HOST_CONFIG)}
+          onSubmit={handleHostSubmit}
+          closeMenu={handleHidePopup}
+          selectedTags={hostConfig.value}
+          simpleValue
+        />
+      ) : null}
     </View>
   );
 };

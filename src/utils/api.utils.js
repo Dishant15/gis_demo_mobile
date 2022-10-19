@@ -19,7 +19,10 @@ export function convertObjectToQueryParams(object) {
 }
 
 export const apiRequestConfig = {
-  baseURL: API_HOST,
+  // baseURL:
+  //   process.env.NODE_ENV !== 'production'
+  //     ? API_HOST
+  //     : store.getState().appState.hostConfig.value,
   timeout: 40000,
   headers: {
     'Content-Type': 'application/json',
@@ -33,6 +36,12 @@ axiosInstance.interceptors.request.use(function (config) {
   const token = store.getState().auth.token;
   if (config.headers)
     config.headers.Authorization = token ? `Bearer ${token}` : undefined;
+
+  config.baseURL =
+    process.env.NODE_ENV !== 'production'
+      ? API_HOST
+      : store.getState().appState.hostConfig.value;
+
   return config;
 });
 
