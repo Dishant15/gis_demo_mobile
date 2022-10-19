@@ -10,7 +10,13 @@ import {useMutation} from 'react-query';
 import Input from '~Common/Input';
 import {login} from '~Authentication/data/auth.reducer';
 import {postLogin} from '~Authentication/data/auth.service';
-import {colors, fonts, HOST_CONFIG, layout} from '~constants/constants';
+import {
+  colors,
+  fonts,
+  HOST_CONFIG,
+  layout,
+  THEME_COLORS,
+} from '~constants/constants';
 import {parseErrorMessagesWithFields} from '~utils/api.utils';
 import {find, get, noop} from 'lodash';
 import {getHostConfig} from '~Common/data/appstate.selector';
@@ -172,7 +178,10 @@ const LoginScreen = () => {
             <Button
               loading={isLoading}
               contentStyle={layout.button}
-              color={colors.black}
+              color={THEME_COLORS.secondary.main}
+              labelStyle={{
+                color: THEME_COLORS.secondary.contrastText,
+              }}
               uppercase
               mode="contained"
               onPress={handleSubmit(mutate)}>
