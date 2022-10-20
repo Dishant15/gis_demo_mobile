@@ -14,7 +14,7 @@ const initialState = {
   locationPermissionType: PERMISSIONS_TYPE.NONE,
   currentLocation: null,
   mapType: 'standard', // satellite
-  hostConfig: HOST_CONFIG.NETGIS,
+  hostConfig: HOST_CONFIG.GPSTECH,
 };
 
 const appstateReducer = createSlice({
@@ -44,7 +44,7 @@ const appstateReducer = createSlice({
   extraReducers: builder => {
     builder.addCase(REHYDRATE, (state, {payload}) => {
       if (!has(payload, 'hostConfig'))
-        [(state.hostConfig = HOST_CONFIG.NETGIS)];
+        [(state.hostConfig = HOST_CONFIG.GPSTECH)];
     });
   },
 });
