@@ -162,7 +162,7 @@ const LoginScreen = () => {
           ) : null}
 
           <Input
-            label="Host"
+            label="Server"
             onChangeText={noop}
             onFocus={handleShowPopup}
             value={hostConfig.label}
@@ -170,7 +170,6 @@ const LoginScreen = () => {
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="done"
-            editable={false}
             right={<TextInput.Icon name="pencil" onPress={handleShowPopup} />}
           />
 
@@ -192,7 +191,7 @@ const LoginScreen = () => {
       </KeyboardAwareScrollView>
       {showPopup ? (
         <SelectModel
-          inputLabel="Host Config"
+          inputLabel="Select Server"
           tagList={Object.values(HOST_CONFIG)}
           onSubmit={handleHostSubmit}
           closeMenu={handleHidePopup}
