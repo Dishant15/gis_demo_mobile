@@ -5,9 +5,12 @@ import {
   InteractionManager,
   Dimensions,
   StatusBar,
+  StyleSheet,
+  Pressable,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import size from 'lodash/size';
+import get from 'lodash/get';
 
 import {Polygon} from 'react-native-maps';
 import {Card} from 'react-native-paper';
@@ -20,8 +23,15 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {polygon, booleanContains} from '@turf/turf';
 
 import CustomMarker from '~Common/CustomMarker';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import {colors, layout, screens, THEME_COLORS} from '~constants/constants';
+import {
+  colors,
+  INIT_MAP_LOCATION,
+  layout,
+  screens,
+  THEME_COLORS,
+} from '~constants/constants';
 import {
   getSurveyCoordinates,
   getIsReviewed,
@@ -49,6 +59,7 @@ import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
 import FloatingCard from '~Common/components/FloatingCard';
 import {getEdgePadding} from '~utils/app.utils';
 import {IconButton} from '~Common/components/Button';
+import {zIndexMapping} from '~planning/GisMap/layers/common/configuration';
 
 let {width, height} = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
@@ -64,7 +75,7 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
  */
 const SurveyMap = ({navigation}) => {
   const isFocused = useIsFocused();
-  const {bottom} = useSafeAreaInsets();
+  const {bottom, top} = useSafeAreaInsets();
 
   const coords = useSelector(getSurveyCoordinates);
   const isReviewed = useSelector(getIsReviewed);
@@ -123,7 +134,6 @@ const SurveyMap = ({navigation}) => {
     },
     onError: err => {
       showToast('Input Error', TOAST_TYPE.ERROR);
-      console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err.response);
     },
   });
 
@@ -177,11 +187,13 @@ const SurveyMap = ({navigation}) => {
     setCoordinates([...coordinates, updatedCoords]);
   };
 
-  const onMapReady = () => {
-    mapRef.current.fitToCoordinates(selectedArea.coordinates, {
-      edgePadding: getEdgePadding(bottom),
-      animated: true,
-    });
+  const handleFitToCoordinates = () => {
+    if (mapRef?.current) {
+      mapRef.current.fitToCoordinates(selectedArea.coordinates, {
+        edgePadding: getEdgePadding(bottom),
+        animated: true,
+      });
+    }
   };
 
   const onMapLoaded = () => {
@@ -216,6 +228,17 @@ const SurveyMap = ({navigation}) => {
   return (
     <View style={layout.container}>
       <StatusBar barStyle="dark-content" />
+      {ticketStatus === 'C' ? (
+        <View style={[styles.backWrapper, {top: Math.max(top, 14)}]}>
+          <Pressable style={styles.iconWrapper} onPress={handleCustomBack}>
+            <MaterialIcons
+              size={26}
+              name={'arrow-back'}
+              color={colors.primaryFontColor}
+            />
+          </Pressable>
+        </View>
+      ) : null}
       {ticketStatus === 'A' ? (
         <FloatingCard
           title={startEditing ? 'Finalise polygon' : 'Work Order Map'}
@@ -260,59 +283,63 @@ const SurveyMap = ({navigation}) => {
               showMapType={true}
               mapType={mapType}
               ref={mapRef}
-              onMapReady={onMapReady}
-              onLayout={onMapReady} // hack to set coordinate on map re-render
+              onMapReady={handleFitToCoordinates}
+              onLayout={handleFitToCoordinates} // hack to set coordinate on map re-render
               onPress={handleMapClick}
               onPoiClick={handleMapClick}
               mapPadding={getEdgePadding(bottom)}
               onMapLoaded={onMapLoaded}>
-              {coordinates.map((marker, i) => (
-                <CustomMarker
-                  coordinate={marker}
-                  key={i}
-                  draggable
-                  onDragEnd={handleMarkerDrag(i)}
-                  stopPropagation
-                  flat
-                  tracksInfoWindowChanges={false}
-                />
-              ))}
-              {size(coordinates) ? (
-                <Polygon
-                  coordinates={coordinates}
-                  strokeWidth={2}
-                  strokeColor={'#3895D3'}
-                  fillColor="#3895D326"
-                />
-              ) : null}
-              {size(surveyList) && showMapRender
-                ? surveyList.map(survey => {
-                    const {id, coordinates, status} = survey;
-                    if (id === surveyId) return null;
-                    let strokeColor = colors.warning; // Submited, status "S"
-                    if (status === 'V') {
-                      strokeColor = colors.success;
-                    } else if (status === 'R') {
-                      strokeColor = colors.error;
-                    }
-                    return (
-                      <Polygon
-                        key={id}
-                        coordinates={coordinates}
-                        strokeWidth={2}
-                        strokeColor={strokeColor}
-                        fillColor={`${strokeColor}14`}
-                      />
-                    );
-                  })
-                : null}
-              {size(selectedArea.coordinates) && showMapRender ? (
-                <Polygon
-                  coordinates={selectedArea.coordinates}
-                  strokeWidth={2}
-                  strokeColor={colors.black}
-                  fillColor="transparent"
-                />
+              {showMapRender ? (
+                <>
+                  {coordinates.map((marker, i) => (
+                    <CustomMarker
+                      coordinate={marker}
+                      key={i}
+                      draggable
+                      onDragEnd={handleMarkerDrag(i)}
+                      stopPropagation
+                      flat
+                      tracksInfoWindowChanges={false}
+                    />
+                  ))}
+                  {size(coordinates) ? (
+                    <Polygon
+                      coordinates={coordinates}
+                      strokeWidth={2}
+                      strokeColor={'#3895D3'}
+                      fillColor="#3895D326"
+                    />
+                  ) : null}
+                  {size(surveyList)
+                    ? surveyList.map(survey => {
+                        const {id, coordinates, status} = survey;
+                        if (id === surveyId) return null;
+                        let strokeColor = colors.warning; // Submited, status "S"
+                        if (status === 'V') {
+                          strokeColor = colors.success;
+                        } else if (status === 'R') {
+                          strokeColor = colors.error;
+                        }
+                        return (
+                          <Polygon
+                            key={id}
+                            coordinates={coordinates}
+                            strokeWidth={2}
+                            strokeColor={strokeColor}
+                            fillColor={`${strokeColor}14`}
+                          />
+                        );
+                      })
+                    : null}
+                  {size(selectedArea.coordinates) ? (
+                    <Polygon
+                      coordinates={selectedArea.coordinates}
+                      strokeWidth={2}
+                      strokeColor={colors.black}
+                      fillColor="transparent"
+                    />
+                  ) : null}
+                </>
               ) : null}
             </Map>
           </Animatable.View>
@@ -321,5 +348,32 @@ const SurveyMap = ({navigation}) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  backWrapper: {
+    paddingLeft: 14,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: zIndexMapping.edit,
+  },
+  iconWrapper: {
+    height: 44,
+    width: 44,
+    backgroundColor: colors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+});
 
 export default SurveyMap;

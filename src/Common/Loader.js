@@ -1,12 +1,20 @@
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {ActivityIndicator, Colors} from 'react-native-paper';
-import {colors} from '~constants/constants';
+import {colors, layout} from '~constants/constants';
 
 const Loader = () => {
   return (
     <View style={styles.wrapper}>
       <ActivityIndicator animating={true} color={colors.white} size="large" />
+    </View>
+  );
+};
+
+export const FullScreenLoader = () => {
+  return (
+    <View style={[layout.container, layout.relative]}>
+      <Loader />
     </View>
   );
 };

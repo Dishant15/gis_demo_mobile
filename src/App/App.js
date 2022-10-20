@@ -22,8 +22,7 @@ const theme = {
   },
 };
 
-const queryClient = new QueryClient();
-// console.disableYellowBox = true;
+export const queryClient = new QueryClient();
 
 /**
  * Renders:

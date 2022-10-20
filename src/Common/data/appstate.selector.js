@@ -4,3 +4,5 @@ export const getLocationPermissionType = store =>
 export const getCurrentLocation = store => store.appState.currentLocation;
 
 export const getMapType = store => store.appState.mapType;
+
+export const getHostConfig = store => store.appState.hostConfig;

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import {View, Alert, Platform, StyleSheet, Dimensions} from 'react-native';
 import {
   PERMISSIONS,
@@ -8,6 +8,10 @@ import {
   RESULTS,
 } from 'react-native-permissions';
 import {useDispatch, useSelector} from 'react-redux';
+import {Button, Headline, Subheading} from 'react-native-paper';
+import Geolocation from 'react-native-geolocation-service';
+import FastImage from 'react-native-fast-image';
+
 import {colors, layout} from '~constants/constants';
 import {
   PERMISSIONS_TYPE,
@@ -15,13 +19,10 @@ import {
   setLocationPermission,
 } from './data/appstate.reducer';
 import {getLocationPermissionType} from './data/appstate.selector';
-import {Button, Headline, Subheading} from 'react-native-paper';
-import Geolocation from 'react-native-geolocation-service';
-import FastImage from 'react-native-fast-image';
-import LocationIcon from '~assets/img/location.png';
-import {isNull} from 'lodash';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import {logout} from '~Authentication/data/auth.reducer';
+import {handleLogoutUser} from '~Authentication/data/auth.actions';
+
+import LocationIcon from '~assets/img/location.png';
 
 /**
  * Hoc component
@@ -131,6 +132,10 @@ const LocationProvider = ({children}) => {
     );
   };
 
+  const handleLogout = useCallback(() => {
+    dispatch(handleLogoutUser);
+  }, []);
+
   if (locationPermissionType === PERMISSIONS_TYPE.ALLOW) {
     return children;
   } else {
@@ -171,7 +176,7 @@ const LocationProvider = ({children}) => {
           color={colors.primaryMain}
           uppercase
           mode="text"
-          onPress={() => dispatch(logout())}>
+          onPress={handleLogout}>
           Logout
         </Button>
       </View>
