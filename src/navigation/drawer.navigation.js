@@ -1,10 +1,11 @@
 import React, {useCallback} from 'react';
 import {Dimensions, View, StyleSheet} from 'react-native';
-import {Title, List, Headline, Divider} from 'react-native-paper';
+import {Title, List, Headline, Divider, Subheading} from 'react-native-paper';
 
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {useDispatch, useSelector} from 'react-redux';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import FastImage from 'react-native-fast-image';
 import {get} from 'lodash';
 
 import {DrawerButton} from '~Common/components/Header/ActionButtons';
@@ -21,6 +22,9 @@ import {
 } from '~Authentication/data/auth.selectors';
 import {handleLogoutUser} from '~Authentication/data/auth.actions';
 
+import GTPL_LOGO from '~assets/img/gtpl.jpeg';
+import GPSTEKLOGO from '~assets/svg/gpstek.svg';
+
 const Drawer = createDrawerNavigator();
 
 /**
@@ -36,7 +40,7 @@ const Drawer = createDrawerNavigator();
  *    PlanningScreen
  */
 const DrawerContent = props => {
-  const {top} = useSafeAreaInsets();
+  const {top, bottom} = useSafeAreaInsets();
   const dispatch = useDispatch();
 
   const isSuperAdminUser = useSelector(getIsSuperAdminUser);
@@ -50,65 +54,84 @@ const DrawerContent = props => {
   }, []);
 
   return (
-    <View style={layout.container}>
+    <View style={[layout.container, {borderWidth: 1}]}>
       <View
         style={[
           styles.headerContent,
           {paddingTop: top + 20, backgroundColor: colors.primaryMainDark},
         ]}>
         <Headline style={styles.headerText}>Network GIS</Headline>
+        <View style={{paddingTop: 8}}>
+          <FastImage
+            source={GTPL_LOGO}
+            style={{
+              height: 64,
+              width: 150,
+            }}
+          />
+        </View>
       </View>
       <Divider />
-      <List.Section>
-        <List.Item
-          title="Dashboard"
-          left={() => <List.Icon icon="home" />}
-          onPress={() => {
-            props.navigation.closeDrawer();
-            props.navigation.navigate(screens.dashboardScreen);
-          }}
-        />
-        <List.Accordion
-          title="Ticket"
-          left={props => <List.Icon {...props} icon="earth" />}>
+      <View style={{flex: 1}}>
+        <List.Section>
           <List.Item
-            title="Survey"
+            title="Dashboard"
+            left={() => <List.Icon icon="home" />}
             onPress={() => {
               props.navigation.closeDrawer();
-              props.navigation.navigate(screens.surveyTicketList);
+              props.navigation.navigate(screens.dashboardScreen);
             }}
           />
-          <List.Item
-            title="Network"
-            onPress={() => {
-              props.navigation.closeDrawer();
-              props.navigation.navigate(screens.planningTicketList);
-            }}
-          />
-          {/* <List.Item
+          <List.Accordion
+            title="Ticket"
+            left={props => <List.Icon {...props} icon="earth" />}>
+            <List.Item
+              title="Survey"
+              onPress={() => {
+                props.navigation.closeDrawer();
+                props.navigation.navigate(screens.surveyTicketList);
+              }}
+            />
+            <List.Item
+              title="Network"
+              onPress={() => {
+                props.navigation.closeDrawer();
+                props.navigation.navigate(screens.planningTicketList);
+              }}
+            />
+            {/* <List.Item
             title="Client"
             onPress={() => {
               props.navigation.closeDrawer();
               props.navigation.navigate(screens.clientScreen);
             }}
           /> */}
-        </List.Accordion>
-        {canPlanningView ? (
+          </List.Accordion>
+          {canPlanningView ? (
+            <List.Item
+              title="Planning"
+              left={() => <List.Icon icon="vector-polyline" />}
+              onPress={() => {
+                props.navigation.closeDrawer();
+                props.navigation.navigate(screens.planningScreen);
+              }}
+            />
+          ) : null}
           <List.Item
-            title="Planning"
-            left={() => <List.Icon icon="vector-polyline" />}
-            onPress={() => {
-              props.navigation.closeDrawer();
-              props.navigation.navigate(screens.planningScreen);
-            }}
+            title="Logout"
+            left={() => <List.Icon icon="logout" />}
+            onPress={handleLogout}
           />
-        ) : null}
-        <List.Item
-          title="Logout"
-          left={() => <List.Icon icon="logout" />}
-          onPress={handleLogout}
-        />
-      </List.Section>
+        </List.Section>
+      </View>
+      <View
+        style={{
+          alignItems: 'center',
+          paddingBottom: bottom + 20,
+        }}>
+        <Subheading>Powered by</Subheading>
+        <GPSTEKLOGO width={180} />
+      </View>
     </View>
   );
 };
