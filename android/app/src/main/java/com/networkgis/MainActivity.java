@@ -1,4 +1,4 @@
-package com.netgis.chavda;
+package in.gpstek.netgis;
 import android.os.Bundle; // here
 import com.facebook.react.ReactActivity;
 import org.devio.rn.splashscreen.SplashScreen; // here

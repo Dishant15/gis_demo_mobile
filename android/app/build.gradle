@@ -131,10 +131,10 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.netgis.chavda"
+        applicationId "in.gpstek.netgis"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1020
+        versionCode 1000
         versionName "1.0"
     }
     splits {
