@@ -3,7 +3,7 @@ import {View, StyleSheet, Pressable, Dimensions} from 'react-native';
 import {Button, Menu, Modal, Portal, Title} from 'react-native-paper';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-import {difference, join, map, split} from 'lodash';
+import {difference, map} from 'lodash';
 
 import {colors} from '~constants/constants';
 import {noop} from '~utils/app.utils';
@@ -20,23 +20,15 @@ const SelectModel = ({
   selectedTags = [],
   inputLabel = '',
   onSubmit = noop,
-  isMulti = false,
-  simpleValue = false,
 }) => {
   const [tags, setTags] = useState(selectedTags);
   const scrollRef = useRef();
   const isKeyboardVisible = useKeyboard();
 
-  const handleReset = useCallback(() => {
-    setTags([]);
-    onSubmit([]);
+  const handleSubmit = useCallback(() => {
+    onSubmit(tags);
     closeMenu();
   }, [onSubmit, closeMenu, tags]);
-
-  const handleSubmit = useCallback(() => {
-    onSubmit(simpleValue ? join(tags, ',') : tags);
-    closeMenu();
-  }, [onSubmit, closeMenu, tags, simpleValue]);
 
   // get extra options that user added and concat with input options
   const fullTagList = tagList.concat(
@@ -45,14 +37,6 @@ const SelectModel = ({
       label: opt,
     })),
   );
-
-  const convertedTags = useMemo(() => {
-    if (Array.isArray(selectedTags)) {
-      return selectedTags;
-    } else {
-      return selectedTags ? split(selectedTags, ',') : [];
-    }
-  }, [selectedTags]);
 
   return (
     <Portal>
@@ -85,9 +69,10 @@ const SelectModel = ({
                   }
                   key={tag.value}
                   onPress={() => {
-                    let newList = isMulti ? [...tags] : [];
+                    if (selected) return;
+                    let newList = [];
                     toggleFromList(newList, tag.value);
-                    setTags(newList);
+                    setTags(newList[0]);
                   }}
                   title={tag.label}
                 />
