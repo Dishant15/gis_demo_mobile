@@ -1,5 +1,12 @@
 import React, {useCallback, useState} from 'react';
-import {View, Text, StyleSheet, Dimensions, StatusBar} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  StatusBar,
+  Pressable,
+} from 'react-native';
 import {TextInput, Button, HelperText} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -161,17 +168,20 @@ const LoginScreen = () => {
             </HelperText>
           ) : null}
 
-          <Input
-            label="Server"
-            onChangeText={noop}
-            onFocus={handleShowPopup}
-            value={hostConfig.label}
-            underlineColorAndroid="transparent"
-            autoCapitalize="none"
-            autoCorrect={false}
-            returnKeyType="done"
-            right={<TextInput.Icon name="pencil" onPress={handleShowPopup} />}
-          />
+          <Pressable onPress={handleShowPopup} pointerEvents="box-only">
+            <Input
+              label="Server"
+              onChangeText={noop}
+              onFocus={handleShowPopup}
+              value={hostConfig.label}
+              underlineColorAndroid="transparent"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="done"
+              editable={false}
+              right={<TextInput.Icon name="pencil" onPress={handleShowPopup} />}
+            />
+          </Pressable>
 
           <View style={styles.submitBtnWrapper}>
             <Button

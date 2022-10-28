@@ -134,8 +134,9 @@ android {
         applicationId "in.gpstek.netgis"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1000
+        versionCode 1001
         versionName "1.0"
+        archivesBaseName = "NETGIS_" + versionName + "_" + versionCode
     }
     splits {
         abi {
@@ -191,7 +192,6 @@ android {
                 output.versionCodeOverride =
                         defaultConfig.versionCode * 1000 + versionCodes.get(abi)
             }
-
         }
     }
 }
