@@ -507,7 +507,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = in.gpstek.netgis;
+				PRODUCT_BUNDLE_IDENTIFIER = com.netgis.chavda;
 				PRODUCT_NAME = networkgis;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -536,7 +536,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = in.gpstek.netgis;
+				PRODUCT_BUNDLE_IDENTIFIER = com.netgis.chavda;
 				PRODUCT_NAME = networkgis;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
