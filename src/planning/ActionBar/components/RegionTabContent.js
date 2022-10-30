@@ -98,7 +98,7 @@ const RegionTabContent = ({hideModal}) => {
   return (
     <View style={styles.container}>
       {isLoading ? <Loader /> : null}
-      <Header text="ADD ELEMENT" icon="attractions" onClose={hideModal} />
+      <Header text="REGIONS" icon="attractions" onClose={hideModal} />
       <View style={styles.titleWrapper}>
         <Title style={styles.title}>Select Regions</Title>
         <Button

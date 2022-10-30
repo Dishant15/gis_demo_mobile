@@ -156,7 +156,7 @@ const TicketWorkorderScreen = props => {
         }}
         ListEmptyComponent={
           <View style={[layout.center, layout.container]}>
-            <Subheading>Workorde list is Empty</Subheading>
+            <Subheading>Workorder list is Empty</Subheading>
           </View>
         }
       />
