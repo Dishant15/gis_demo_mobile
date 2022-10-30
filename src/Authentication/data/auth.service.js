@@ -2,9 +2,14 @@ import {apiPostLogin} from '~constants/url.constants';
 import Api from '~utils/api.utils';
 
 import {CLIENT_ID} from '@env';
+import trim from 'lodash/trim';
 
 export const postLogin = async data => {
-  const reqData = {...data, client_id: CLIENT_ID};
+  const reqData = {
+    username: trim(data.username),
+    password: trim(data.password),
+    client_id: CLIENT_ID,
+  };
   const res = await Api.post(apiPostLogin(), reqData);
   return res.data;
 };
