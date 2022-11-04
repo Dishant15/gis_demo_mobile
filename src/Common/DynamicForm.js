@@ -40,10 +40,6 @@ export const FIELD_TYPES = {
 const DynamicForm = forwardRef(
   ({formConfigs, data, onSubmit, onCancel, isLoading}, ref) => {
     const {sections} = formConfigs;
-    console.log(
-      '🚀 ~ file: DynamicForm.js ~ line 35 ~ formConfigs',
-      formConfigs,
-    );
     const {top} = useSafeAreaInsets();
 
     const {

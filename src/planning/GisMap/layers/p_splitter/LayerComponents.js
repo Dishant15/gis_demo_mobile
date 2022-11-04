@@ -49,6 +49,8 @@ export const Geometry = ({
   splitter_type,
   isEdit,
   handleMarkerDrag = noop,
+  tappable = false,
+  draggable = false,
 }) => {
   if (coordinates) {
     const Icon = getIcon({splitter_type, isEdit});
@@ -56,8 +58,8 @@ export const Geometry = ({
       <Marker
         coordinate={coordinates}
         onDragEnd={handleMarkerDrag}
-        tappable
-        draggable
+        tappable={tappable}
+        draggable={draggable}
         stopPropagation
         flat
         tracksInfoWindowChanges={false}
@@ -139,6 +141,8 @@ export const ElementLayer = () => {
       handleMarkerDrag={handleMarkerDrag}
       splitter_type={configuration.splitter_type}
       isEdit={isEdit}
+      tappable={true}
+      draggable={true}
     />
   );
 };

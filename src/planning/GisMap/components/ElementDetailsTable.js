@@ -9,7 +9,10 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 
 import {fetchElementDetails} from '~planning/data/layer.services';
-import {setMapState} from '~planning/data/planningGis.reducer';
+import {
+  setMapState,
+  setTicketElements,
+} from '~planning/data/planningGis.reducer';
 import {CustomBottomPopup} from '~Common/CustomPopup';
 import Header from '~planning/ActionBar/components/Header';
 import {
@@ -75,6 +78,7 @@ const ElementDetailsTable = ({
         enableMapInterection: true,
       }),
     );
+    dispatch(setTicketElements({key: 'isHidden', value: false}));
   }, [dispatch, layerKey, elemData, featureType]);
 
   return (

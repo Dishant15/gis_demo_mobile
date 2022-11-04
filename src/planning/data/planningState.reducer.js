@@ -60,6 +60,9 @@ const planningStateSlice = createSlice({
     selectConfiguration: (state, {payload}) => {
       state.selectedConfigurations[payload.layerKey] = payload.configuration;
     },
+    resetPlanningState: state => {
+      return initialState;
+    },
   },
   extraReducers: builder => {
     builder.addCase(logout, () => initialState);
@@ -74,5 +77,6 @@ export const {
   removeLayerSelect,
   setLayerConfigurations,
   selectConfiguration,
+  resetPlanningState,
 } = planningStateSlice.actions;
 export default planningStateSlice.reducer;

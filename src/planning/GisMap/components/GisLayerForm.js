@@ -15,12 +15,13 @@ import {
 import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
 import {
   getPlanningMapStateData,
+  getPlanningTicketId,
   getPlanningTicketWorkOrderId,
 } from '~planning/data/planningGis.selectors';
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {fetchLayerDataThunk} from '~planning/data/actionBar.services';
-import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {TICKET_WORKORDER_TYPE} from '../utils';
 
 export const GisLayerForm = ({
   formConfig,
@@ -34,8 +35,8 @@ export const GisLayerForm = ({
 
   const data = useSelector(getPlanningMapStateData);
   const selectedRegionIds = useSelector(getSelectedRegionIds);
-  const ticketId = useSelector(getSelectedPlanningTicket);
   const workOrderId = useSelector(getPlanningTicketWorkOrderId);
+  const ticketId = useSelector(getPlanningTicketId);
 
   const onSuccessHandler = () => {
     showToast('Element operation completed Successfully', TOAST_TYPE.SUCCESS);
@@ -64,10 +65,10 @@ export const GisLayerForm = ({
       notiText = 'Please correct input errors and submit again';
     } else {
       // maybe Internal server or network error
-      formRef.current.onError(
-        '__all__',
-        'Something went wrong. Can not perform operation',
-      );
+      // formRef.current.onError(
+      //   '__all__',
+      //   'Something went wrong. Can not perform operation',
+      // );
       notiText =
         'Something went wrong at our side. Please try again after refreshing the page.';
     }
@@ -122,19 +123,21 @@ export const GisLayerForm = ({
     const isWorkOrderUpdate = !!ticketId;
     // call addWorkOrder api if isWorkOrderUpdate, addElement api if not
     if (isWorkOrderUpdate) {
-      if (isEdit) {
+      if (isEdit && workOrderId) {
         // edit work order element api
         editTicketElement(validatedData);
       } else {
         // create workOrder data if isWorkOrderUpdate
-        const workOrderData = {
+        let workOrderData = {
           workOrder: {
-            work_order_type: workOrderId,
+            work_order_type: TICKET_WORKORDER_TYPE.ADD,
             layer_key: layerKey,
             remark,
           },
           element: validatedData,
         };
+        // assign coordinates to geometry
+        workOrderData.element.geometry = workOrderData.element.coordinates;
         // add workorder data to validatedData
         addWorkOrder(workOrderData);
       }

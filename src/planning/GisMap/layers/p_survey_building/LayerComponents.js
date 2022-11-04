@@ -3,6 +3,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Marker} from 'react-native-maps';
 
 import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
+import AddGisMapLayer from '~planning/GisMap/components/AddGisMapLayer';
+import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
+import EditGisLayer from '~planning/GisMap/components/EditGisLayer';
 
 import {zIndexMapping} from '../common/configuration';
 import {
@@ -18,26 +21,30 @@ import {
 import {noop} from 'lodash';
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 
-import BuildingViewIcon from '~assets/markers/building_view.svg';
-import BuildingEditIcon from '~assets/markers/building_pin.svg';
-import AddGisMapLayer from '~planning/GisMap/components/AddGisMapLayer';
 import {PLANNING_EVENT} from '~planning/GisMap/utils';
 import {getPlanningMapStateEvent} from '~planning/data/planningState.selectors';
-import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
-import EditGisLayer from '~planning/GisMap/components/EditGisLayer';
+
+import BuildingViewIcon from '~assets/markers/building_view.svg';
+import BuildingEditIcon from '~assets/markers/building_pin.svg';
 
 export const getIcon = props =>
   props?.isEdit ? BuildingEditIcon : BuildingViewIcon;
 
-export const Geometry = ({coordinates, isEdit, handleMarkerDrag = noop}) => {
+export const Geometry = ({
+  coordinates,
+  isEdit,
+  handleMarkerDrag = noop,
+  tappable = false,
+  draggable = false,
+}) => {
   if (coordinates) {
     const Icon = getIcon({isEdit});
     return (
       <Marker
         coordinate={coordinates}
         onDragEnd={handleMarkerDrag}
-        tappable
-        draggable
+        tappable={tappable}
+        draggable={draggable}
         stopPropagation
         flat
         tracksInfoWindowChanges={false}
@@ -101,6 +108,8 @@ export const ElementLayer = () => {
       coordinates={coordinates}
       handleMarkerDrag={handleMarkerDrag}
       isEdit={isEdit}
+      tappable={true}
+      draggable={true}
     />
   );
 };

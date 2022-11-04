@@ -32,14 +32,20 @@ import EditGisLayer from '~planning/GisMap/components/EditGisLayer';
 
 export const getIcon = () => Icon;
 
-export const Geometry = ({coordinates, isEdit, handleMarkerDrag = noop}) => {
+export const Geometry = ({
+  coordinates,
+  isEdit,
+  handleMarkerDrag = noop,
+  tappable = false,
+  draggable = false,
+}) => {
   if (coordinates) {
     return (
       <Marker
         coordinate={coordinates}
         onDragEnd={handleMarkerDrag}
-        tappable
-        draggable
+        tappable={tappable}
+        draggable={draggable}
         stopPropagation
         flat
         tracksInfoWindowChanges={false}
@@ -113,6 +119,8 @@ export const ElementLayer = () => {
       coordinates={coordinates}
       handleMarkerDrag={handleMarkerDrag}
       isEdit={isEdit}
+      tappable={true}
+      draggable={true}
     />
   );
 };

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo, useRef} from 'react';
+import React, {useState, useEffect, useMemo, useRef, forwardRef} from 'react';
 import {View, InteractionManager} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
@@ -21,6 +21,7 @@ import {
   getElementCoordinates,
   getElementTypeFromLayerKey,
   LayerKeyMappings,
+  PLANNING_EVENT,
 } from './utils';
 import {INIT_MAP_LOCATION, layout} from '~constants/constants';
 import {getMapType} from '~Common/data/appstate.selector';
@@ -95,6 +96,7 @@ const GisMap = props => {
     <View style={[layout.container, layout.relative]}>
       {showMap ? (
         <Animatable.View animation="fadeIn" style={layout.container}>
+          <MapController ref={mapRef} mapState={mapState} />
           <Map
             ref={mapRef}
             onMapReady={onMapReady}
@@ -115,5 +117,23 @@ const GisMap = props => {
     </View>
   );
 };
+
+const MapController = forwardRef((props, ref) => {
+  const {mapState} = props;
+
+  useEffect(() => {
+    if (mapState.event === PLANNING_EVENT.editElementLocation) {
+      // geometry can be Array or object
+      if (!Array.isArray(mapState.geometry)) {
+        ref.current.animateToRegion(
+          {...INIT_MAP_LOCATION, ...mapState.geometry},
+          100,
+        );
+      }
+    }
+  }, [mapState.event]);
+
+  return null;
+});
 
 export default GisMap;

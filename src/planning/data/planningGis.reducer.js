@@ -74,6 +74,9 @@ const planningGisSlice = createSlice({
     toggleTicketElements: state => {
       state.ticketData.isHidden = !state.ticketData.isHidden;
     },
+    setTicketElements: (state, {payload}) => {
+      state.ticketData[payload.key] = payload.value;
+    },
     // payload => list of selected layerKey
     // when region changes remove data for all inactive layers, so user can fetch fresh on click
     resetUnselectedLayerGisData: (state, {payload}) => {
@@ -94,6 +97,14 @@ const planningGisSlice = createSlice({
           };
         }
       }
+    },
+    resetPlanningTicketData: state => {
+      state.ticketData = initialState.ticketData;
+      state.ticketGisData = initialState.ticketGisData;
+      state.workOrderId = initialState.workOrderId;
+    },
+    resetPlanningGisData: state => {
+      return initialState;
     },
   },
   extraReducers: {
@@ -181,7 +192,7 @@ const planningGisSlice = createSlice({
       state.ticketData.isLoading = false;
       state.ticketData.isFetched = true;
       state.ticketData.isError = false;
-      state.ticketData.isHidden = true;
+      state.ticketData.isHidden = false;
       state.ticketData.countByStatus = countBy(
         ticketGisData.work_orders,
         'status',
@@ -201,5 +212,8 @@ export const {
   resetUnselectedLayerGisData,
   setTicketWorkOrderId,
   toggleTicketElements,
+  resetPlanningTicketData,
+  resetPlanningGisData,
+  setTicketElements,
 } = planningGisSlice.actions;
 export default planningGisSlice.reducer;

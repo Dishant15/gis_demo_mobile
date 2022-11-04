@@ -28,6 +28,8 @@ export const getPlanningMapStateData = store =>
   store.planningGis.mapState.data || {};
 export const getPlanningTicketWorkOrderId = store =>
   store.planningGis.workOrderId;
+export const getPlanningTicketId = store =>
+  get(store, 'planningGis.ticketData.id');
 
 export const getSelectedConfigurations = store =>
   store.planningState.selectedConfigurations;

@@ -1,7 +1,14 @@
 import {getSelectedLayerKeys} from './planningState.selectors';
-import {handleLayerSelect, handleRegionSelect} from './planningState.reducer';
+import {
+  handleLayerSelect,
+  handleRegionSelect,
+  resetPlanningState,
+} from './planningState.reducer';
 import {fetchLayerDataThunk} from './actionBar.services';
-import {resetUnselectedLayerGisData} from './planningGis.reducer';
+import {
+  resetPlanningGisData,
+  resetUnselectedLayerGisData,
+} from './planningGis.reducer';
 
 export const onRegionSelectionUpdate =
   updatedRegionIdList => (dispatch, getState) => {
@@ -33,3 +40,8 @@ export const onRegionSelectionUpdate =
     }
     dispatch(resetUnselectedLayerGisData(selectedLayerKeys));
   };
+
+export const clearPlanningData = dispatch => {
+  dispatch(resetPlanningState());
+  dispatch(resetPlanningGisData());
+};
