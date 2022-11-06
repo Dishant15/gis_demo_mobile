@@ -9,7 +9,7 @@ import {
 import {Subheading, Card, Headline, Button} from 'react-native-paper';
 import {useQuery} from 'react-query';
 
-import {get, noop, size} from 'lodash';
+import {get, size} from 'lodash';
 
 import Loader from '~Common/Loader';
 
@@ -108,13 +108,6 @@ const DashboardScreen = ({navigation}) => {
             </Card.Actions>
           </Card>
         </View>
-        {/* <DynamicForm
-          formConfigs={FORM_CONFIGS}
-          data={INITIAL_DATA}
-          onSubmit={data => console.log(data)}
-          onClose={noop}
-          isLoading={false}
-        /> */}
       </ScrollView>
       {loadingDashboard ? <Loader /> : null}
     </View>
@@ -132,12 +125,13 @@ const styles = StyleSheet.create({
   },
   squreCard: {
     width: CARD_WIDTH,
-    height: CARD_WIDTH * 0.8,
+    minHeight: CARD_WIDTH * 0.8,
   },
   squreCardContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingBottom: 12,
+    alignItems: 'stretch',
   },
   squreCardWrapper: {},
   headline: {
