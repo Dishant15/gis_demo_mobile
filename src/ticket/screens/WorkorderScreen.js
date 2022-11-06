@@ -1,4 +1,3 @@
-import {get, noop} from 'lodash';
 import React, {useEffect, useCallback} from 'react';
 import {useQuery} from 'react-query';
 import {
@@ -10,17 +9,17 @@ import {fetchTicketWorkorders} from '~ticket/data/services';
 import {View, FlatList, StyleSheet, Pressable, Switch} from 'react-native';
 import {
   Card,
-  Title,
   Subheading,
   Paragraph,
   Chip,
   Button,
   Avatar,
-  Text,
+  Caption,
 } from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
-import {replace, size} from 'lodash';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {replace, get, sumBy} from 'lodash';
+import {format} from 'date-fns';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 
@@ -126,8 +125,9 @@ const WorkorderScreen = props => {
         data={surveyList}
         keyExtractor={item => item.id}
         renderItem={({item, index}) => {
-          const {name, area, pincode, tags, status, remark} = item;
-
+          const {name, area, pincode, tags, status, remark, units, created_on} =
+            item;
+          const total_home_pass = sumBy(units, 'total_home_pass');
           return (
             <Pressable
               style={styles.cardItem}
@@ -149,7 +149,7 @@ const WorkorderScreen = props => {
                 <Paragraph>
                   {area} - {pincode}
                 </Paragraph>
-                <Paragraph>Total Units - {size(item.units)}</Paragraph>
+                <Paragraph>Total homepass - {total_home_pass}</Paragraph>
                 {!!remark ? <Paragraph>Remarks - {remark}</Paragraph> : null}
                 <View style={styles.chipWrapper}>
                   {tags.map(tag => (
@@ -160,6 +160,16 @@ const WorkorderScreen = props => {
                       {replace(tag, '_', ' ')}
                     </Chip>
                   ))}
+                  <View
+                    style={{
+                      alignItems: 'flex-end',
+                      alignSelf: 'flex-end',
+                      flex: 1,
+                    }}>
+                    <Caption>
+                      @{format(new Date(created_on), 'dd/MM/yy')}
+                    </Caption>
+                  </View>
                 </View>
               </View>
               <View style={styles.iconWrapper}>

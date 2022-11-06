@@ -19,7 +19,7 @@ const BOTTOM_POSITION = 66;
  * Parent
  *    Map
  */
-const MapType = () => {
+const MapType = ({style}) => {
   const mapType = useSelector(getMapType);
   const dispatch = useDispatch();
   const {bottom} = useSafeAreaInsets();
@@ -29,10 +29,12 @@ const MapType = () => {
 
   return (
     <View
-      style={[
-        styles.mapTypeWrapper,
-        {bottom: Math.max(bottom + BOTTOM_POSITION, BOTTOM_POSITION)},
-      ]}>
+      style={
+        style || [
+          styles.mapTypeWrapper,
+          {bottom: Math.max(bottom + BOTTOM_POSITION, BOTTOM_POSITION)},
+        ]
+      }>
       <TouchableOpacity onPress={handleMapType}>
         <FastImage
           style={styles.mapTypeImage}

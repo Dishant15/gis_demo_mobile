@@ -58,6 +58,7 @@ const PlanningTicketListScreen = props => {
             created_on,
             remarks,
             region,
+            assignee,
           } = item;
           let networkTypeDisplay = '';
           if (network_type === 'B') {
@@ -117,6 +118,15 @@ const PlanningTicketListScreen = props => {
                     {format(new Date(due_date), 'dd-MM-yyyy')}
                   </Subheading>
                 </View>
+                {!!assignee ? (
+                  <View style={styles.cardRow}>
+                    <Subheading style={styles.label}>Assignee</Subheading>
+                    <Subheading>:</Subheading>
+                    <Subheading style={styles.value}>
+                      {assignee.name}
+                    </Subheading>
+                  </View>
+                ) : null}
                 <View style={styles.chipContainer}>
                   <Chip
                     textStyle={styles.chipTextStyle}

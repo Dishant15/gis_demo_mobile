@@ -1,6 +1,6 @@
 import React, {useMemo, useRef, useCallback, useEffect, useState} from 'react';
 import {View, Dimensions, StyleSheet, BackHandler} from 'react-native';
-import MapView, {Marker, PROVIDER_GOOGLE, Polygon} from 'react-native-maps';
+import {Marker, Polygon} from 'react-native-maps';
 import {useDispatch, useSelector} from 'react-redux';
 import {size, get, lastIndexOf} from 'lodash';
 import {Card, Button, Paragraph, Subheading, Title} from 'react-native-paper';
@@ -9,6 +9,8 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import Input from '~Common/Input';
 import BackHeader from '~Common/components/Header/BackHeader';
+import Map from '~Common/components/Map';
+
 import {layout, screens, colors, THEME_COLORS} from '~constants/constants';
 import {
   getGeoSurveyFormData,
@@ -31,6 +33,7 @@ import {
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {surveyDeleteSuccess, unitDeleteSuccess} from '~constants/messages';
 import {percentToHex} from '~utils/app.utils';
+import {zIndexMapping} from '~planning/GisMap/layers/common/configuration';
 
 const {width, height} = Dimensions.get('window');
 
@@ -215,46 +218,43 @@ const ReviewScreen = ({navigation}) => {
       <KeyboardAwareScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={styles.contentContainerStyle}>
-        <MapView
-          ref={mapRef}
-          provider={PROVIDER_GOOGLE}
-          style={{
-            width: width,
-            height: height / 2,
-          }}
-          initialRegion={{
-            longitudeDelta: 0.06032254546880722,
-            latitudeDelta: 0.0005546677,
-            longitude: 72.56051184609532,
-            latitude: 23.024334044995985,
-          }}
-          onMapReady={onMapLayout}
-          onLayout={onMapLayout}
-          onMapLoaded={onMapLoaded}>
-          {showMapRender ? (
-            <>
-              {unitMarkerList.map((marker, index) => {
-                return (
-                  <Marker
-                    key={index}
-                    coordinate={marker}
-                    stopPropagation
-                    flat
-                    tracksInfoWindowChanges={false}
+        <View style={layout.relative}>
+          <Map
+            ref={mapRef}
+            style={{
+              width: width,
+              height: height / 2,
+            }}
+            onMapReady={onMapLayout}
+            onLayout={onMapLayout}
+            onMapLoaded={onMapLoaded}
+            showMapType
+            mapTypeStyle={styles.mapTypeStyle}>
+            {showMapRender ? (
+              <>
+                {unitMarkerList.map((marker, index) => {
+                  return (
+                    <Marker
+                      key={index}
+                      coordinate={marker}
+                      stopPropagation
+                      flat
+                      tracksInfoWindowChanges={false}
+                    />
+                  );
+                })}
+                {size(formData.coordinates) ? (
+                  <Polygon
+                    coordinates={formData.coordinates}
+                    strokeWidth={2}
+                    strokeColor={strokeColor}
+                    fillColor={`${strokeColor}14`}
                   />
-                );
-              })}
-              {size(formData.coordinates) ? (
-                <Polygon
-                  coordinates={formData.coordinates}
-                  strokeWidth={2}
-                  strokeColor={strokeColor}
-                  fillColor={`${strokeColor}14`}
-                />
-              ) : null}
-            </>
-          ) : null}
-        </MapView>
+                ) : null}
+              </>
+            ) : null}
+          </Map>
+        </View>
         <View style={styles.contentWrapper}>
           <Subheading style={styles.title}>Survey</Subheading>
           <Card elevation={0} style={styles.cardBorder}>
@@ -519,6 +519,22 @@ const styles = StyleSheet.create({
   },
   contentContainerStyle: {
     paddingBottom: 40,
+  },
+  mapTypeStyle: {
+    position: 'absolute',
+    bottom: 14,
+    right: 14,
+    backgroundColor: colors.white,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    zIndex: zIndexMapping.mapType,
   },
 });
 

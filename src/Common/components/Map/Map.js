@@ -9,7 +9,7 @@ import {getMapType} from '../../data/appstate.selector';
 import {colors, INIT_MAP_LOCATION, layout} from '~constants/constants';
 
 const Map = forwardRef((props, ref) => {
-  const {children, showMapType = false, ...rest} = props;
+  const {children, style, mapTypeStyle, showMapType = false, ...rest} = props;
 
   const mapType = useSelector(getMapType);
 
@@ -17,7 +17,7 @@ const Map = forwardRef((props, ref) => {
     <>
       <MapView
         ref={ref}
-        style={layout.map}
+        style={style || layout.map}
         initialRegion={INIT_MAP_LOCATION}
         provider={PROVIDER_GOOGLE}
         mapType={showMapType ? mapType : undefined}
@@ -29,7 +29,7 @@ const Map = forwardRef((props, ref) => {
         {...rest}>
         {children}
       </MapView>
-      {showMapType ? <MapType /> : null}
+      {showMapType ? <MapType style={mapTypeStyle} /> : null}
     </>
   );
 });
