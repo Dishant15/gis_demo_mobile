@@ -30,6 +30,7 @@ import {ELEMENT_TYPE, PLANNING_EVENT} from '~planning/GisMap/utils';
 import AreaIcon from '~assets/markers/path.svg';
 
 const STROKE_COLOR = '#CE855A';
+const FILL_COLOR = '#CE855A' + percentToHex(30);
 
 export const getIcon = () => AreaIcon;
 
@@ -40,7 +41,7 @@ export const Geometry = ({coordinates}) => {
         coordinates={coordinates}
         strokeColor={STROKE_COLOR}
         strokeWidth={2}
-        fillColor={STROKE_COLOR + percentToHex(30)}
+        fillColor={FILL_COLOR}
         zIndex={zIndexMapping[LAYER_KEY]}
       />
     );

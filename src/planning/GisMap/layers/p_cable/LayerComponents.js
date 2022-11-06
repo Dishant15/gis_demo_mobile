@@ -125,10 +125,7 @@ export const ElementLayer = () => {
             );
           })
         : null}
-      <Geometry
-        coordinates={coordinates}
-        color_on_map={configuration.color_on_map}
-      />
+      <Geometry coordinates={coordinates} {...configuration} />
     </>
   );
 };

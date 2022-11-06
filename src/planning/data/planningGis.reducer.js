@@ -41,7 +41,7 @@ const initialState = {
     isLoading: false,
     isFetched: false,
     isError: false,
-    isHidden: true,
+    isHidden: false,
   },
   // list of elements that can be shown on map with converted data
   ticketGisData: [],
@@ -192,7 +192,7 @@ const planningGisSlice = createSlice({
       state.ticketData.isLoading = false;
       state.ticketData.isFetched = true;
       state.ticketData.isError = false;
-      state.ticketData.isHidden = false;
+      // state.ticketData.isHidden = false;
       state.ticketData.countByStatus = countBy(
         ticketGisData.work_orders,
         'status',

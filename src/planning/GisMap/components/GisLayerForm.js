@@ -83,6 +83,18 @@ export const GisLayerForm = ({
     },
   );
 
+  const {mutate: editWorkOrder, isLoading: isEditTicketLoading} = useMutation(
+    mutationData =>
+      editTicketWorkorderElement({
+        data: mutationData,
+        workOrderId,
+      }),
+    {
+      onSuccess: onSuccessHandler,
+      onError: onErrorHandler,
+    },
+  );
+
   const {mutate: addElement, isLoading: isAddLoading} = useMutation(
     mutationData => addNewElement({data: mutationData, layerKey}),
     {
@@ -100,19 +112,6 @@ export const GisLayerForm = ({
     },
   );
 
-  const {mutate: editTicketElement, isLoading: isEditTicketLoading} =
-    useMutation(
-      mutationData =>
-        editTicketWorkorderElement({
-          data: mutationData,
-          workOrderId,
-        }),
-      {
-        onSuccess: onSuccessHandler,
-        onError: onErrorHandler,
-      },
-    );
-
   const onSubmit = (data, setError, clearErrors) => {
     clearErrors();
     // remove remark from data and pass in workorder data
@@ -125,7 +124,7 @@ export const GisLayerForm = ({
     if (isWorkOrderUpdate) {
       if (isEdit && workOrderId) {
         // edit work order element api
-        editTicketElement(validatedData);
+        editWorkOrder(validatedData);
       } else {
         // create workOrder data if isWorkOrderUpdate
         let workOrderData = {
@@ -167,7 +166,9 @@ export const GisLayerForm = ({
         data={data}
         onSubmit={onSubmit}
         onCancel={onClose}
-        isLoading={isLoading || isAddLoading || isEditLoading}
+        isLoading={
+          isLoading || isAddLoading || isEditLoading || isEditTicketLoading
+        }
       />
     </CustomBottomPopup>
   );

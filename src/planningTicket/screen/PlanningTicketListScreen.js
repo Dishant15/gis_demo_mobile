@@ -21,6 +21,7 @@ import {fetchTicketList} from '~Dashboard/data/services';
 import {setTicketId} from '~planningTicket/data/planningTicket.reducer';
 
 import {colors, layout, screens} from '~constants/constants';
+import {setTicketWorkOrderId} from '~planning/data/planningGis.reducer';
 
 const PlanningTicketListScreen = props => {
   const dispatch = useDispatch();
@@ -36,6 +37,7 @@ const PlanningTicketListScreen = props => {
 
   const navigateToWorkorder = id => () => {
     dispatch(setTicketId(id));
+    dispatch(setTicketWorkOrderId(null));
     navigation.navigate(screens.planningTicketWorkorder, {ticketId: id});
   };
 

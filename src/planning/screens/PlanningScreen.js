@@ -25,6 +25,7 @@ const PlanningScreen = props => {
       <ActionBar />
       <GisMap />
       <MapTitleBox />
+      {/* full screen popup */}
       <LayerEventComponent />
     </View>
   );

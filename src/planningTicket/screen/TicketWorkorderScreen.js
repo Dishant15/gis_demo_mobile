@@ -21,7 +21,6 @@ import InprogressImg from '~assets/img/inprogress.png';
 import {
   setMapState,
   setTicketWorkOrderId,
-  setTicketElements,
 } from '~planning/data/planningGis.reducer';
 import {PLANNING_EVENT} from '~planning/GisMap/utils';
 import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
@@ -56,11 +55,10 @@ const TicketWorkorderScreen = props => {
   useRefreshOnFocus(refetch);
 
   const navigateToMap = useCallback(() => {
-    dispatch(setTicketElements({key: 'isHidden', value: false}));
     navigation.navigate(screens.planningTicketMap);
   }, []);
 
-  const navigateToEditMap = useCallback(
+  const navigateToWorkorderDetails = useCallback(
     (index, item) => () => {
       dispatch(
         setMapState({
@@ -136,7 +134,7 @@ const TicketWorkorderScreen = props => {
           return (
             <Pressable
               style={styles.cardItem}
-              onPress={navigateToEditMap(index, item)}>
+              onPress={navigateToWorkorderDetails(index, item)}>
               <View style={styles.content}>
                 <Card.Title
                   style={styles.cardTitle}

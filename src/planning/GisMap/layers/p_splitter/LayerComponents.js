@@ -139,10 +139,10 @@ export const ElementLayer = () => {
     <Geometry
       coordinates={coordinates}
       handleMarkerDrag={handleMarkerDrag}
-      splitter_type={configuration.splitter_type}
       isEdit={isEdit}
       tappable={true}
       draggable={true}
+      {...configuration}
     />
   );
 };

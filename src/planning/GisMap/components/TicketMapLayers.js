@@ -19,12 +19,14 @@ const TicketMapLayers = () => {
   if (ticketId && !isHidden) {
     return (
       <>
-        <Polygon
-          coordinates={area_pocket.coordinates}
-          strokeWidth={2}
-          strokeColor="#88B14BCC"
-          fillColor="#88B14B4D"
-        />
+        {!!area_pocket?.coordinates ? (
+          <Polygon
+            coordinates={area_pocket.coordinates}
+            strokeWidth={2}
+            strokeColor="#88B14BCC"
+            fillColor="#88B14B4D"
+          />
+        ) : null}
         {work_orders.map(workOrder => {
           const {id, layer_key, element} = workOrder;
           if (element.id) {
