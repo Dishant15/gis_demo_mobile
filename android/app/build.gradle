@@ -134,7 +134,7 @@ android {
         applicationId "in.gpstek.netgis"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1001
+        versionCode 1002
         versionName "1.0"
         archivesBaseName = "NETGIS_" + versionName + "_" + versionCode
     }
