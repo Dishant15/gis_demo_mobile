@@ -160,16 +160,11 @@ const WorkorderScreen = props => {
                       {replace(tag, '_', ' ')}
                     </Chip>
                   ))}
-                  <View
-                    style={{
-                      alignItems: 'flex-end',
-                      alignSelf: 'flex-end',
-                      flex: 1,
-                    }}>
-                    <Caption>
-                      @{format(new Date(created_on), 'dd/MM/yy')}
-                    </Caption>
-                  </View>
+                </View>
+                <View style={styles.dateWrapper}>
+                  <Caption>
+                    {format(new Date(created_on), 'HH:mm dd/MM/yy')}
+                  </Caption>
                 </View>
               </View>
               <View style={styles.iconWrapper}>
@@ -307,6 +302,12 @@ const styles = StyleSheet.create({
     width: 1.1,
     height: '100%',
     backgroundColor: '#e0e0e0',
+  },
+  dateWrapper: {
+    alignItems: 'flex-end',
+    alignSelf: 'flex-end',
+    flex: 1,
+    paddingTop: 4,
   },
 });
 
