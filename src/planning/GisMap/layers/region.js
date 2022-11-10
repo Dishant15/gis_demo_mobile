@@ -6,8 +6,11 @@ import {Polygon} from 'react-native-maps';
 import {getFillColor} from '~utils/map.utils';
 import {getLayerViewData} from '~planning/data/planningGis.selectors';
 import {zIndexMapping} from './common/configuration';
+import Icon from '~assets/markers/pentagon.svg';
 
 export const LAYER_KEY = 'region';
+
+export const getIcon = () => Icon;
 
 export const ViewLayer = () => {
   /**

@@ -104,6 +104,10 @@ const AddElementContent = ({hideModal}) => {
         );
         return;
       }
+      if (layerKey === 'region') {
+        showToast('Can not process requested operation', TOAST_TYPE.ERROR);
+        return;
+      }
       // start event if no other event running
       dispatch(
         setMapState({
@@ -140,6 +144,8 @@ const AddElementContent = ({hideModal}) => {
         <ScrollView style={styles.container}>
           {layerCofigs.map(config => {
             const {layer_key, name, is_configurable, configuration} = config;
+            // do not show ticket element
+            if (layer_key === 'ticket') return null;
             // get icon
             let Icon;
             if (is_configurable) {

@@ -2,11 +2,8 @@ import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 
 import {coordsToLatLongMap} from '~utils/map.utils';
+import * as RegionLayer from './layers/region';
 
-import {
-  ViewLayer as RegionViewLayer,
-  LAYER_KEY as RegionKey,
-} from './layers/region';
 import {
   ViewLayer as DPViewLayer,
   AddLayer as DPAddLayer,
@@ -96,8 +93,9 @@ export const getElementTypeFromLayerKey = layerKey => {
 };
 
 export const LayerKeyMappings = {
-  [RegionKey]: {
-    ViewLayer: RegionViewLayer,
+  [RegionLayer.LAYER_KEY]: {
+    ViewLayer: RegionLayer.ViewLayer,
+    Icon: RegionLayer.getIcon,
   },
   [DpKey]: {
     [PLANNING_EVENT.addElement]: <DPAddLayer />,
@@ -199,7 +197,7 @@ export const convertLayerServerData = (layerKey, serverData) => {
     return resultData;
   }
   // Multi polygon - regions
-  else if (layerKey === RegionKey) {
+  else if (layerKey === RegionLayer.LAYER_KEY) {
     resultData.map(d => {
       // [ [lat, lng], ...] -> [{lat, lng}, ...]
       d.coordinates = coordsToLatLongMap(d.coordinates, true);
