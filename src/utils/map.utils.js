@@ -1,8 +1,11 @@
-import {countBy, orderBy, size, get} from 'lodash';
+import countBy from 'lodash/countBy';
+import size from 'lodash/size';
+import get from 'lodash/get';
 
 // coordinates :- isMulti ? [ [ [lng, lat] ] ] : [ [lng, lat], ...]
 export const coordsToLatLongMap = (coordinates, isMulti = false) => {
-  const inputCoords = isMulti ? coordinates : [coordinates];
+  // coordinates : isMulti : [ [ [ [ ...list of coords ] ] ] ]
+  const inputCoords = isMulti ? get(coordinates, '0') : [coordinates];
   let resultPolyData = [];
 
   for (let mInd = 0; mInd < inputCoords.length; mInd++) {
