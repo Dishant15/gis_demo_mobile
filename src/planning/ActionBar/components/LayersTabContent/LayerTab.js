@@ -1,20 +1,16 @@
 import React, {useCallback, useState} from 'react';
-import {View, Pressable, StyleSheet, ScrollView} from 'react-native';
+import {View, Pressable, StyleSheet} from 'react-native';
 
-import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {get, noop, size} from 'lodash';
+import get from 'lodash/get';
+import noop from 'lodash/noop';
+import size from 'lodash/size';
 
-import {Button, Text, Divider, Subheading, Title} from 'react-native-paper';
+import {Button, Text, Divider, Subheading} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Loader from '~Common/Loader';
-import Header from './Header';
 
-import {
-  fetchLayerDataThunk,
-  fetchLayerList,
-} from '~planning/data/actionBar.services';
+import {fetchLayerDataThunk} from '~planning/data/actionBar.services';
 import {
   getLayerNetworkState,
   getLayerViewData,
@@ -24,73 +20,18 @@ import {
   removeLayerSelect,
   setActiveTab,
 } from '~planning/data/planningState.reducer';
-import {
-  getSelectedLayerKeys,
-  getSelectedRegionIds,
-} from '~planning/data/planningState.selectors';
 import {colors} from '~constants/constants';
 import {PLANNING_EVENT} from '~planning/GisMap/utils';
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
-const LayersTabContent = ({hideModal}) => {
-  /**
-   * Render list of elements user can view on map
-   * User can click and get data of layers
-   * handle layer data loading
-   *
-   * Parent
-   *  ActionBar
-   */
-
-  const {isLoading, data: layerCofigs = []} = useQuery(
-    'planningLayerConfigs',
-    fetchLayerList,
-    {
-      staleTime: Infinity,
-    },
-  );
-  const regionIdList = useSelector(getSelectedRegionIds);
-  const selectedLayerKeys = useSelector(getSelectedLayerKeys);
-  const dispatch = useDispatch();
-
-  const handleFullDataRefresh = useCallback(() => {
-    for (let l_ind = 0; l_ind < selectedLayerKeys.length; l_ind++) {
-      const currLayerKey = selectedLayerKeys[l_ind];
-      dispatch(fetchLayerDataThunk({regionIdList, layerKey: currLayerKey}));
-    }
-  }, [regionIdList, selectedLayerKeys]);
-
-  return (
-    <View style={styles.container}>
-      {isLoading ? <Loader /> : null}
-      <Header text="GIS LAYERS" icon="layers" onClose={hideModal} />
-      <View style={styles.titleWrapper}>
-        <Title style={styles.title}>Select Layers</Title>
-        <Button
-          color={colors.success}
-          mode="outlined"
-          onPress={handleFullDataRefresh}
-          icon="sync">
-          Refresh
-        </Button>
-      </View>
-      <ScrollView contentContainerStyle={styles.wrapper}>
-        {layerCofigs.map(layer => {
-          return (
-            <LayerTab
-              key={layer.layer_key}
-              layerConfig={layer}
-              regionIdList={regionIdList}
-            />
-          );
-        })}
-      </ScrollView>
-    </View>
-  );
-};
-
 const LayerTab = ({layerConfig, regionIdList}) => {
+  /**
+   * Render each tab of a layer key
+   * Handle layer on click
+   * Handle layer collapsible expand
+   * Show list of elements on expand
+   */
   const {layer_key, name} = layerConfig;
 
   const dispatch = useDispatch();
@@ -252,4 +193,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LayersTabContent;
+export default LayerTab;
