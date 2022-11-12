@@ -1,4 +1,5 @@
 import {FEATURE_TYPES, LAYER_STATUS_OPTIONS} from '../common/configuration';
+import {latLongMapToCoords} from '~utils/map.utils';
 import Icon from '~assets/markers/p_dp_view.svg';
 import EditIcon from '~assets/markers/p_dp_edit.svg';
 
@@ -61,4 +62,34 @@ export const ELEMENT_FORM_TEMPLATE = {
       ],
     },
   ],
+};
+
+export const ELEMENT_TABLE_FIELDS = [
+  {label: 'Name', field: 'name', type: 'simple'},
+  {label: 'Address', field: 'address', type: 'simple'},
+  {label: 'Unique Id', field: 'unique_id', type: 'simple'},
+  {label: 'Reff Code', field: 'ref_code', type: 'simple'},
+  {label: 'Status', field: 'status', type: 'status'},
+];
+
+export const transformAndValidateData = (
+  formData,
+  setError,
+  isEdit,
+  configuration,
+) => {
+  if (isEdit) {
+    return {
+      ...formData,
+      // remove geometry
+      geometry: undefined,
+    };
+  } else {
+    return {
+      ...formData,
+      // remove coordinates and add geometry
+      coordinates: undefined,
+      geometry: latLongMapToCoords([formData.coordinates])[0],
+    };
+  }
 };

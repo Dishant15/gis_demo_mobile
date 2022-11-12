@@ -47,31 +47,6 @@ export const Geometry = ({coordinates, color_on_map}) => {
   return null;
 };
 
-export const ViewLayer = () => {
-  /**
-   * Parent:
-   *  GisMap > utils > getLayerCompFromKey
-   */
-  const layerData = useSelector(getLayerViewData(LAYER_KEY));
-  const data = layerData.viewData;
-
-  return (
-    <>
-      {data.map(element => {
-        const {id, hidden, coordinates, color_on_map} = element;
-        if (hidden) return null;
-        return (
-          <Geometry
-            key={id}
-            coordinates={coordinates}
-            color_on_map={color_on_map}
-          />
-        );
-      })}
-    </>
-  );
-};
-
 export const AddLayer = () => {
   return (
     <AddPolyLineLayer
@@ -129,59 +104,3 @@ export const ElementLayer = () => {
     </>
   );
 };
-
-export const ElementForm = () => {
-  const configuration = useSelector(getLayerSelectedConfiguration(LAYER_KEY));
-  // get map state event
-  const currEvent = useSelector(getPlanningMapStateEvent);
-  // check if add or edit event
-  const isEdit = currEvent === PLANNING_EVENT.editElementDetails;
-
-  const transformAndValidateData = useCallback(
-    formData => {
-      if (isEdit) {
-        return {
-          ...formData,
-          // remove geometry
-          geometry: undefined,
-        };
-      } else {
-        return {
-          ...formData,
-          // remove coordinates and add geometry
-          coordinates: undefined,
-          remark: undefined,
-          geometry: latLongMapToLineCoords(formData.coordinates),
-          // convert select fields to simple values
-          configuration: configuration.id,
-        };
-      }
-    },
-    [isEdit],
-  );
-
-  return (
-    <GisLayerForm
-      isEdit={isEdit}
-      layerKey={LAYER_KEY}
-      formConfig={ELEMENT_FORM_TEMPLATE}
-      transformAndValidateData={transformAndValidateData}
-    />
-  );
-};
-
-export const ELEMENT_TABLE_FIELDS = [
-  {label: 'Name', field: 'name', type: 'simple'},
-  {label: 'Unique Id', field: 'unique_id', type: 'simple'},
-  {label: 'Reff Code', field: 'ref_code', type: 'simple'},
-  {label: 'Cable Type', field: 'cable_type_display', type: 'simple'},
-  {label: 'Gis Length', field: 'gis_len', type: 'simple'},
-  {label: 'Actual Length', field: 'actual_len', type: 'simple'},
-  {label: 'Start Reading', field: 'start_reading', type: 'simple'},
-  {label: 'End Reading', field: 'end_reading', type: 'simple'},
-  {label: 'No of tubes', field: 'no_of_tube', type: 'simple'},
-  {label: 'Core / Tube', field: 'core_per_tube', type: 'simple'},
-  {label: 'Specification', field: 'specification', type: 'simple'},
-  {label: 'Vendor', field: 'vendor', type: 'simple'},
-  {label: 'Status', field: 'status', type: 'status'},
-];

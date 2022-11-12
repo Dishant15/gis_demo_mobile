@@ -112,7 +112,7 @@ const MapController = forwardRef((props, ref) => {
   const {mapState} = props;
 
   useEffect(() => {
-    if (mapState.event === PLANNING_EVENT.editElementLocation) {
+    if (mapState.event === PLANNING_EVENT.editElementGeometry) {
       // geometry can be Array or object
       if (!Array.isArray(mapState.geometry)) {
         ref.current.animateToRegion(

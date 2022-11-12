@@ -190,3 +190,57 @@ export const ELEMENT_FORM_TEMPLATE = {
     },
   ],
 };
+
+export const ELEMENT_TABLE_FIELDS = [
+  {label: 'Name', field: 'name', type: 'simple'},
+  {label: 'Unique Id', field: 'unique_id', type: 'simple'},
+  {label: 'Reff Code', field: 'ref_code', type: 'simple'},
+  {label: 'Address', field: 'address', type: 'simple'},
+  {label: 'Area', field: 'area', type: 'simple'},
+  {label: 'City', field: 'city', type: 'simple'},
+  {label: 'State', field: 'state', type: 'simple'},
+  {label: 'Pincode', field: 'pincode', type: 'simple'},
+  {label: 'Tags', field: 'tags', type: 'simple'},
+  {label: 'Home Pass', field: 'home_pass', type: 'simple'},
+  {label: 'Over Head Cable', field: 'over_head_cable', type: 'boolean'},
+  {label: 'Cabling Required', field: 'cabling_required', type: 'boolean'},
+  {
+    label: 'Poll Cabling possible',
+    field: 'poll_cabling_possible',
+    type: 'boolean',
+  },
+  {
+    label: 'Locality Status',
+    field: 'locality_status_display',
+    type: 'simple',
+  },
+  // multi select comma separeted string
+  {
+    label: 'Broadband Availability',
+    field: 'broadband_availability',
+    type: 'simple',
+  },
+  {
+    label: 'Cable Tv Availability',
+    field: 'cable_tv_availability',
+    type: 'simple',
+  },
+  {label: 'Status', field: 'status', type: 'status'},
+];
+
+export const transformAndValidateData = (
+  formData,
+  setError,
+  isEdit,
+  configuration,
+) => {
+  if (isEdit) {
+    return {
+      ...formData,
+      // remove geometry
+      geometry: undefined,
+    };
+  } else {
+    return formData;
+  }
+};

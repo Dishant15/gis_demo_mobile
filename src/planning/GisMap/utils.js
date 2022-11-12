@@ -111,10 +111,6 @@ export const LayerKeyMappings = {
     transformAndValidateData: DPLayer.transformAndValidateData,
     [PLANNING_EVENT.addElement]: <DPAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <DpEditMapLayer />,
-    [PLANNING_EVENT.addElementForm]: <DpForm />,
-    [PLANNING_EVENT.editElementDetails]: <DpForm />,
-    Geometry: DPGeometry,
-    Icon: DpGetIcon,
   },
   [SplitterLayer.LAYER_KEY]: {
     featureType: SplitterLayer.LAYER_FEATURE_TYPE,
@@ -126,10 +122,6 @@ export const LayerKeyMappings = {
     transformAndValidateData: SplitterLayer.transformAndValidateData,
     [PLANNING_EVENT.addElement]: <SplitterAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <SplitterEditMapLayer />,
-    [PLANNING_EVENT.addElementForm]: <SplitterForm />,
-    [PLANNING_EVENT.editElementDetails]: <SplitterForm />,
-    Geometry: SplitterGeometry,
-    Icon: SplitterGetIcon,
   },
   [CableLayer.LAYER_KEY]: {
     featureType: CableLayer.LAYER_FEATURE_TYPE,
@@ -140,10 +132,6 @@ export const LayerKeyMappings = {
     transformAndValidateData: CableLayer.transformAndValidateData,
     [PLANNING_EVENT.addElement]: <CableAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <CableEditMapLayer />,
-    [PLANNING_EVENT.addElementForm]: <CableForm />,
-    [PLANNING_EVENT.editElementDetails]: <CableForm />,
-    Geometry: CableGeometry,
-    Icon: CableGetIcon,
   },
   [SAreaLayer.LAYER_KEY]: {
     featureType: SAreaLayer.LAYER_FEATURE_TYPE,
@@ -154,22 +142,16 @@ export const LayerKeyMappings = {
     transformAndValidateData: SAreaLayer.transformAndValidateData,
     [PLANNING_EVENT.addElement]: <SAreaAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <SAreaEditMapLayer />,
-    [PLANNING_EVENT.addElementForm]: <SAreaForm />,
-    [PLANNING_EVENT.editElementDetails]: <SAreaForm />,
-    Geometry: SAreaGeometry,
-    Icon: SAreaIcon,
   },
   [BuildingLayer.LAYER_KEY]: {
     featureType: BuildingLayer.LAYER_FEATURE_TYPE,
     getViewOptions: BuildingLayer.getViewOptions,
     initialElementData: BuildingLayer.INITIAL_ELEMENT_DATA,
     elementTableFields: BuildingLayer.ELEMENT_TABLE_FIELDS,
+    formConfig: BuildingLayer.ELEMENT_FORM_TEMPLATE,
+    transformAndValidateData: BuildingLayer.transformAndValidateData,
     [PLANNING_EVENT.addElement]: <BuildingAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <BuildingEditMapLayer />,
-    [PLANNING_EVENT.addElementForm]: <BuildingForm />,
-    [PLANNING_EVENT.editElementDetails]: <BuildingForm />,
-    Geometry: BuildingGeometry,
-    Icon: BuildingIcon,
   },
 };
 
@@ -201,7 +183,7 @@ export const convertLayerServerData = (layerKey, serverData) => {
   let resultData = cloneDeep(serverData) || [];
 
   // PolyLine
-  if (layerKey === CableKey || layerKey === SAreaKey) {
+  if (layerKey === CableLayer.LAYER_KEY || layerKey === SAreaLayer.LAYER_KEY) {
     resultData.map(d => {
       // [ [lat, lng], ...] -> [{lat, lng}, ...]
       d.coordinates = coordsToLatLongMap(d.coordinates);
@@ -211,9 +193,9 @@ export const convertLayerServerData = (layerKey, serverData) => {
   }
   // Point gis layer
   else if (
-    layerKey === DpKey ||
-    layerKey === SplitterKey ||
-    layerKey === BuildingKey
+    layerKey === DPLayer.LAYER_KEY ||
+    layerKey === SplitterLayer.LAYER_KEY ||
+    layerKey === BuildingLayer.LAYER_KEY
   ) {
     resultData.map(d => {
       d.coordinates = coordsToLatLongMap([d.coordinates])[0];

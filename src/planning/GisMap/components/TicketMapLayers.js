@@ -1,12 +1,13 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
 
-import {Polygon} from 'react-native-maps';
+import {Polyline, Polygon, Marker} from 'react-native-maps';
 
 import {getPlanningTicketData} from '~planning/data/planningGis.selectors';
 import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
 
 import {LayerKeyMappings} from '../utils';
+import {FEATURE_TYPES, zIndexMapping} from '../layers/common/configuration';
 
 const TicketMapLayers = () => {
   const ticketId = useSelector(getSelectedPlanningTicket);
@@ -30,8 +31,45 @@ const TicketMapLayers = () => {
         {work_orders.map(workOrder => {
           const {id, layer_key, element} = workOrder;
           if (element.id) {
-            const GeometryComponent = LayerKeyMappings[layer_key]['Geometry'];
-            return <GeometryComponent key={id} {...element} />;
+            const featureType = LayerKeyMappings[layer_key]['featureType'];
+            const viewOptions =
+              LayerKeyMappings[layer_key]['getViewOptions'](element);
+
+            switch (featureType) {
+              case FEATURE_TYPES.POINT:
+                return (
+                  <Marker
+                    key={id}
+                    {...element}
+                    {...viewOptions}
+                    coordinate={element.coordinates}
+                    zIndex={zIndexMapping[layer_key]}>
+                    <viewOptions.icon />
+                  </Marker>
+                );
+
+              case FEATURE_TYPES.POLYGON:
+                return (
+                  <Polygon
+                    key={id}
+                    {...element}
+                    {...viewOptions}
+                    zIndex={zIndexMapping[layer_key]}
+                  />
+                );
+
+              case FEATURE_TYPES.POLYLINE:
+                return (
+                  <Polyline
+                    key={id}
+                    {...element}
+                    {...viewOptions}
+                    zIndex={zIndexMapping[layer_key]}
+                  />
+                );
+              default:
+                return null;
+            }
           }
         })}
       </>

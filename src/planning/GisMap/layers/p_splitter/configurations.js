@@ -3,6 +3,7 @@ import SecondarySpliterIcon from '~assets/markers/spliter_view.svg';
 import SecondarySpliterEditIcon from '~assets/markers/spliter_edit.svg';
 import PrimarySpliterIcon from '~assets/markers/spliter_view_primary.svg';
 import PrimarySpliterEditIcon from '~assets/markers/spliter_edit_primary.svg';
+import {latLongMapToCoords} from '~utils/map.utils';
 
 export const LAYER_KEY = 'p_splitter';
 export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POINT;
@@ -62,4 +63,41 @@ export const ELEMENT_FORM_TEMPLATE = {
       ],
     },
   ],
+};
+
+export const ELEMENT_TABLE_FIELDS = [
+  {label: 'Name', field: 'name', type: 'simple'},
+  {label: 'Unique Id', field: 'unique_id', type: 'simple'},
+  {label: 'Reff Code', field: 'ref_code', type: 'simple'},
+  {label: 'Splitter Type', field: 'splitter_type_display', type: 'simple'},
+  {label: 'Address', field: 'address', type: 'simple'},
+  {label: 'Ratio', field: 'ratio', type: 'simple'},
+  {label: 'Specification', field: 'specification', type: 'simple'},
+  {label: 'Vendor', field: 'vendor', type: 'simple'},
+  {label: 'Status', field: 'status', type: 'status'},
+];
+
+export const transformAndValidateData = (
+  formData,
+  setError,
+  isEdit,
+  configuration,
+) => {
+  if (isEdit) {
+    return {
+      ...formData,
+      // remove geometry
+      geometry: undefined,
+    };
+  } else {
+    return {
+      ...formData,
+      // remove coordinates and add geometry
+      coordinates: undefined,
+      remark: undefined,
+      geometry: latLongMapToCoords([formData.coordinates])[0],
+      // convert select fields to simple values
+      configuration: configuration.id,
+    };
+  }
 };

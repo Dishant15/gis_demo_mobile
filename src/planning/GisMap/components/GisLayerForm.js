@@ -1,10 +1,13 @@
 import React, {useRef} from 'react';
+import {View} from 'react-native';
 import {useMutation} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+
 import {get} from 'lodash';
 
 import DynamicForm from '~Common/DynamicForm';
-import {CustomBottomPopup} from '~Common/CustomPopup';
+import BackHeader from '~Common/components/Header/BackHeader';
 
 import {
   addNewElement,
@@ -14,29 +17,35 @@ import {
 } from '~planning/data/layer.services';
 import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
 import {
-  getPlanningMapStateData,
+  getPlanningMapState,
   getPlanningTicketId,
   getPlanningTicketWorkOrderId,
 } from '~planning/data/planningGis.selectors';
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {fetchLayerDataThunk} from '~planning/data/actionBar.services';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import {TICKET_WORKORDER_TYPE} from '../utils';
+import {
+  LayerKeyMappings,
+  PLANNING_EVENT,
+  TICKET_WORKORDER_TYPE,
+} from '../utils';
+import {layout} from '~constants/constants';
 
-export const GisLayerForm = ({
-  formConfig,
-  layerKey,
-  transformAndValidateData,
-  isConfigurable,
-  isEdit,
-}) => {
+export const GisLayerForm = ({layerKey}) => {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const formRef = useRef();
 
-  const data = useSelector(getPlanningMapStateData);
   const selectedRegionIds = useSelector(getSelectedRegionIds);
   const workOrderId = useSelector(getPlanningTicketWorkOrderId);
   const ticketId = useSelector(getPlanningTicketId);
+  const {event, data} = useSelector(getPlanningMapState);
+  const isEdit = event === PLANNING_EVENT.editElementForm;
+  const formConfig = get(LayerKeyMappings, [layerKey, 'formConfig']);
+  const transformAndValidateData = get(LayerKeyMappings, [
+    layerKey,
+    'transformAndValidateData',
+  ]);
 
   const onSuccessHandler = () => {
     showToast('Element operation completed Successfully', TOAST_TYPE.SUCCESS);
@@ -149,27 +158,24 @@ export const GisLayerForm = ({
     }
   };
 
-  const onClose = () => {
+  const handleGoBack = () => {
     dispatch(setMapState({}));
+    navigation.goBack();
   };
 
   return (
-    <CustomBottomPopup
-      wrapperStyle={{
-        height: '100%',
-        maxHeight: '100%',
-      }}
-      handleClose={onClose}>
+    <View style={layout.container}>
+      <BackHeader title="Element form" onGoBack={handleGoBack} />
       <DynamicForm
         ref={formRef}
         formConfigs={formConfig}
         data={data}
         onSubmit={onSubmit}
-        onCancel={onClose}
+        onCancel={handleGoBack}
         isLoading={
           isLoading || isAddLoading || isEditLoading || isEditTicketLoading
         }
       />
-    </CustomBottomPopup>
+    </View>
   );
 };

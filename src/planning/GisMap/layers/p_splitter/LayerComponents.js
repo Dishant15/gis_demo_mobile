@@ -71,30 +71,6 @@ export const Geometry = ({
   return null;
 };
 
-export const ViewLayer = () => {
-  /**
-   * Parent:
-   *  GisMap > utils > getLayerCompFromKey
-   */
-  const layerData = useSelector(getLayerViewData(LAYER_KEY));
-  const data = layerData.viewData;
-
-  return (
-    <>
-      {data.map(dp => {
-        const {id, coordinates, splitter_type} = dp;
-        return (
-          <Geometry
-            key={id}
-            splitter_type={splitter_type}
-            coordinates={coordinates}
-          />
-        );
-      })}
-    </>
-  );
-};
-
 export const AddLayer = () => {
   const coordinates = useSelector(getGisMapStateGeometry);
 
@@ -128,7 +104,7 @@ export const ElementLayer = () => {
   // get map state event
   const currEvent = useSelector(getPlanningMapStateEvent);
   // check if add or edit event
-  const isEdit = currEvent === PLANNING_EVENT.editElementLocation;
+  const isEdit = currEvent === PLANNING_EVENT.editElementGeometry;
 
   const handleMarkerDrag = e => {
     const coords = e.nativeEvent.coordinate;
@@ -146,55 +122,3 @@ export const ElementLayer = () => {
     />
   );
 };
-
-export const ElementForm = () => {
-  const configuration = useSelector(getLayerSelectedConfiguration(LAYER_KEY));
-  // get map state event
-  const currEvent = useSelector(getPlanningMapStateEvent);
-  // check if add or edit event
-  const isEdit = currEvent === PLANNING_EVENT.editElementDetails;
-
-  const transformAndValidateData = useCallback(
-    formData => {
-      if (isEdit) {
-        return {
-          ...formData,
-          // remove geometry
-          geometry: undefined,
-        };
-      } else {
-        return {
-          ...formData,
-          // remove coordinates and add geometry
-          coordinates: undefined,
-          remark: undefined,
-          geometry: latLongMapToCoords([formData.coordinates])[0],
-          // convert select fields to simple values
-          configuration: configuration.id,
-        };
-      }
-    },
-    [isEdit],
-  );
-
-  return (
-    <GisLayerForm
-      isEdit={isEdit}
-      layerKey={LAYER_KEY}
-      formConfig={ELEMENT_FORM_TEMPLATE}
-      transformAndValidateData={transformAndValidateData}
-    />
-  );
-};
-
-export const ELEMENT_TABLE_FIELDS = [
-  {label: 'Name', field: 'name', type: 'simple'},
-  {label: 'Unique Id', field: 'unique_id', type: 'simple'},
-  {label: 'Reff Code', field: 'ref_code', type: 'simple'},
-  {label: 'Splitter Type', field: 'splitter_type_display', type: 'simple'},
-  {label: 'Address', field: 'address', type: 'simple'},
-  {label: 'Ratio', field: 'ratio', type: 'simple'},
-  {label: 'Specification', field: 'specification', type: 'simple'},
-  {label: 'Vendor', field: 'vendor', type: 'simple'},
-  {label: 'Status', field: 'status', type: 'status'},
-];

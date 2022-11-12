@@ -40,7 +40,7 @@ export const FIELD_TYPES = {
 const DynamicForm = forwardRef(
   ({formConfigs, data, onSubmit, onCancel, isLoading}, ref) => {
     const {sections} = formConfigs;
-    const {top} = useSafeAreaInsets();
+    const {bottom} = useSafeAreaInsets();
 
     const {
       formState: {errors},
@@ -66,7 +66,7 @@ const DynamicForm = forwardRef(
     return (
       <KeyboardAwareScrollView
         keyboardShouldPersistTaps="always"
-        style={[styles.container, {paddingTop: Math.max(top, 0)}]}>
+        style={[styles.container, {paddingBottom: Math.max(bottom, 12)}]}>
         {sections.map((section, s_id) => {
           const {title, fieldConfigs, showCloseIcon} = section;
           return (
