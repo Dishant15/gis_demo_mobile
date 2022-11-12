@@ -22,6 +22,7 @@ export const screens = {
   planningTicketList: 'planningTicketList',
   planningTicketWorkorder: 'planningTicketWorkorder',
   planningTicketMap: 'planningTicketMap',
+  planningTicketDetails: 'planningTicketDetails',
 
   networkScreen: 'networkScreen',
   clientScreen: 'clientScreen',
@@ -116,6 +117,9 @@ export const layout = StyleSheet.create({
   },
   textCenter: {
     textAlign: 'center',
+  },
+  relative: {
+    position: 'relative',
   },
 });
 

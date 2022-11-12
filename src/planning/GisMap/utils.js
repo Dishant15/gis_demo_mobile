@@ -15,7 +15,6 @@ import {
   ElementForm as DpForm,
   getIcon as DpGetIcon,
   ElementLayer as DpElement,
-  ElementDetails as DpDetails,
   EditMapLayer as DpEditMapLayer,
 } from './layers/p_dp';
 import {
@@ -25,7 +24,6 @@ import {
   ElementForm as SplitterForm,
   getIcon as SplitterGetIcon,
   ElementLayer as SplitterElement,
-  ElementDetails as SplitterDetails,
   EditMapLayer as SplitterEditMapLayer,
 } from './layers/p_splitter';
 import {
@@ -35,7 +33,6 @@ import {
   AddLayer as CableAddLayer,
   ElementLayer as CableElement,
   ElementForm as CableForm,
-  ElementDetails as CableDetails,
   EditMapLayer as CableEditMapLayer,
 } from './layers/p_cable';
 import {
@@ -46,7 +43,6 @@ import {
   AddLayer as SAreaAddLayer,
   ElementLayer as SAreaElement,
   ElementForm as SAreaForm,
-  ElementDetails as SAreaDetails,
   EditMapLayer as SAreaEditMapLayer,
 } from './layers/p_survey_area';
 
@@ -58,17 +54,25 @@ import {
   AddLayer as BuildingAddLayer,
   ElementLayer as BuildingElement,
   ElementForm as BuildingForm,
-  ElementDetails as BuildingDetails,
   EditMapLayer as BuildingEditMapLayer,
 } from './layers/p_survey_building';
 
-// possible events that can happen on map
-export const PLANNING_EVENT = {
+export const PLANNING_EVENT_old = {
   addElement: 'A',
   addElementForm: 'F',
   showElementDetails: 'D',
   editElementDetails: 'EF',
   editElementLocation: 'E',
+};
+// possible events that can happen on map
+export const PLANNING_EVENT = {
+  addElementGeometry: 'A',
+  editElementGeometry: 'E',
+  addElementForm: 'F',
+  editElementForm: 'EF',
+  showElementDetails: 'D',
+  showElementConnections: 'EC',
+  addElementConnection: 'AC',
 };
 
 export const TICKET_WORKORDER_TYPE = {
@@ -108,7 +112,6 @@ export const LayerKeyMappings = {
     [PLANNING_EVENT.addElement]: <DPAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <DpEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <DpForm />,
-    [PLANNING_EVENT.showElementDetails]: <DpDetails />,
     [PLANNING_EVENT.editElementDetails]: <DpForm />,
     Geometry: DPGeometry,
     Icon: DpGetIcon,
@@ -124,7 +127,6 @@ export const LayerKeyMappings = {
     [PLANNING_EVENT.addElement]: <SplitterAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <SplitterEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <SplitterForm />,
-    [PLANNING_EVENT.showElementDetails]: <SplitterDetails />,
     [PLANNING_EVENT.editElementDetails]: <SplitterForm />,
     Geometry: SplitterGeometry,
     Icon: SplitterGetIcon,
@@ -139,7 +141,6 @@ export const LayerKeyMappings = {
     [PLANNING_EVENT.addElement]: <CableAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <CableEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <CableForm />,
-    [PLANNING_EVENT.showElementDetails]: <CableDetails />,
     [PLANNING_EVENT.editElementDetails]: <CableForm />,
     Geometry: CableGeometry,
     Icon: CableGetIcon,
@@ -154,7 +155,6 @@ export const LayerKeyMappings = {
     [PLANNING_EVENT.addElement]: <SAreaAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <SAreaEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <SAreaForm />,
-    [PLANNING_EVENT.showElementDetails]: <SAreaDetails />,
     [PLANNING_EVENT.editElementDetails]: <SAreaForm />,
     Geometry: SAreaGeometry,
     Icon: SAreaIcon,
@@ -167,7 +167,6 @@ export const LayerKeyMappings = {
     [PLANNING_EVENT.addElement]: <BuildingAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <BuildingEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <BuildingForm />,
-    [PLANNING_EVENT.showElementDetails]: <BuildingDetails />,
     [PLANNING_EVENT.editElementDetails]: <BuildingForm />,
     Geometry: BuildingGeometry,
     Icon: BuildingIcon,

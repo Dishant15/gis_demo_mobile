@@ -1,17 +1,8 @@
 import React, {useCallback} from 'react';
 import {View, FlatList, StyleSheet} from 'react-native';
 import {useQuery} from 'react-query';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
-import get from 'lodash/get';
-
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigation} from '@react-navigation/native';
-
-import {fetchElementDetails} from '~planning/data/layer.services';
-import {setMapState} from '~planning/data/planningGis.reducer';
-import {CustomBottomPopup} from '~Common/CustomPopup';
-import Header from '~planning/ActionBar/components/Header';
 import {
   Button,
   Chip,
@@ -19,30 +10,44 @@ import {
   IconButton,
   Subheading,
 } from 'react-native-paper';
-import {colors, layout} from '~constants/constants';
+
+import get from 'lodash/get';
+
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useNavigation} from '@react-navigation/native';
+
 import Loader from '~Common/Loader';
-import {ELEMENT_TYPE, PLANNING_EVENT} from '../utils';
+import BackHeader from '~Common/components/Header/BackHeader';
+
+import {fetchElementDetails} from '~planning/data/layer.services';
+import {setMapState} from '~planning/data/planningGis.reducer';
+import {getPlanningMapStateData} from '~planning/data/planningGis.selectors';
+
+import {colors, layout} from '~constants/constants';
+import {
+  ELEMENT_TYPE,
+  LayerKeyMappings,
+  PLANNING_EVENT,
+} from '~planning/GisMap/utils';
 import {coordsToLatLongMap} from '~utils/map.utils';
 
-const ElementDetailsTable = ({
-  rowDefs,
-  layerKey,
-  elementId,
-  onEditDataConverter,
-  featureType = ELEMENT_TYPE.MARKER,
-}) => {
+const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   const navigation = useNavigation();
-  const {top} = useSafeAreaInsets();
+  const {bottom} = useSafeAreaInsets();
   const dispatch = useDispatch();
+
+  const {elementId} = useSelector(getPlanningMapStateData);
 
   const {data: elemData, isLoading} = useQuery(
     ['elementDetails', layerKey, elementId],
     fetchElementDetails,
   );
 
-  const handleCloseDetails = useCallback(() => {
+  const rowDefs = get(LayerKeyMappings, [layerKey, 'elementTableFields'], []);
+  const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
+
+  const handleBack = useCallback(() => {
     dispatch(setMapState({}));
-    // temparary fix
     navigation.goBack();
   }, [dispatch]);
 
@@ -51,7 +56,7 @@ const ElementDetailsTable = ({
       setMapState({
         event: PLANNING_EVENT.editElementDetails,
         layerKey,
-        data: onEditDataConverter(elemData),
+        data: onEditDataConverter ? onEditDataConverter(elemData) : elemData,
       }),
     );
   }, [dispatch, layerKey, elemData, onEditDataConverter]);
@@ -78,19 +83,13 @@ const ElementDetailsTable = ({
   }, [dispatch, layerKey, elemData, featureType]);
 
   return (
-    <CustomBottomPopup
-      wrapperStyle={{
-        height: '100%',
-        maxHeight: '100%',
-        paddingTop: Math.max(top, 0),
-      }}
-      handleClose={handleCloseDetails}>
-      <Header text="Element Details" onClose={handleCloseDetails} />
+    <View style={[layout.container, layout.relative]}>
+      <BackHeader title="Element Details" onGoBack={handleBack} />
       {isLoading ? <Loader /> : null}
       <FlatList
         data={rowDefs}
         keyExtractor={item => item.field}
-        renderItem={({item, index}) => {
+        renderItem={({item}) => {
           const {label, field, type} = item;
           let ValueCell;
 
@@ -148,15 +147,17 @@ const ElementDetailsTable = ({
           );
         }}
       />
-      <View style={styles.actionWrapper}>
+      <View
+        style={[
+          styles.actionWrapper,
+          {paddingBottom: Math.max(bottom + 12, 12)},
+        ]}>
         <Button
           style={[layout.button, styles.btn1]}
           contentStyle={styles.btnContent}
           color={colors.secondaryMain}
           mode="outlined"
-          onPress={handleEditDetails}
-          // icon="edit"
-        >
+          onPress={handleEditDetails}>
           Details
         </Button>
         <Button
@@ -164,13 +165,11 @@ const ElementDetailsTable = ({
           contentStyle={styles.btnContent}
           color={colors.secondaryMain}
           mode="outlined"
-          onPress={handleEditLocation}
-          // icon="edit-location"
-        >
+          onPress={handleEditLocation}>
           Location
         </Button>
       </View>
-    </CustomBottomPopup>
+    </View>
   );
 };
 

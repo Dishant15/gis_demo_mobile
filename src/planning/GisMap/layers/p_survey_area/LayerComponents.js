@@ -156,7 +156,7 @@ export const ElementForm = () => {
   );
 };
 
-const ELEMENT_TABLE_FIELDS = [
+export const ELEMENT_TABLE_FIELDS = [
   {label: 'Name', field: 'name', type: 'simple'},
   {label: 'Unique Id', field: 'unique_id', type: 'simple'},
   {label: 'Reff Code', field: 'ref_code', type: 'simple'},
@@ -192,21 +192,3 @@ const ELEMENT_TABLE_FIELDS = [
   },
   {label: 'Status', field: 'status', type: 'status'},
 ];
-
-const convertDataBeforeForm = data => {
-  return data;
-};
-
-export const ElementDetails = () => {
-  const {elementId} = useSelector(getPlanningMapStateData);
-
-  return (
-    <ElementDetailsTable
-      rowDefs={ELEMENT_TABLE_FIELDS}
-      layerKey={LAYER_KEY}
-      elementId={elementId}
-      onEditDataConverter={convertDataBeforeForm}
-      featureType={ELEMENT_TYPE.POLYGON}
-    />
-  );
-};

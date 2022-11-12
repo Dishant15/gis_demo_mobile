@@ -19,6 +19,7 @@ import WorkorderScreen from '~ticket/screens/WorkorderScreen';
 import PlanningTicket from '~planningTicket/screen/PlanningTicketListScreen';
 import TicketWorkorder from '~planningTicket/screen/TicketWorkorderScreen';
 import PlanningScreen from '~planning/screens/PlanningScreen';
+import PlanningTicketDetails from '~planning/screens/PlanningTicketDetails';
 
 import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';
 import LocationProvider from '~Common/LocationProvider';
@@ -120,6 +121,11 @@ const RootNavigation = () => {
             <Stack.Screen
               name={screens.planningTicketMap}
               component={PlanningScreen}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.planningTicketDetails}
+              component={PlanningTicketDetails}
               options={options}
             />
           </Stack.Navigator>

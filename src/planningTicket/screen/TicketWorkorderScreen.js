@@ -6,7 +6,8 @@ import {Card, Subheading, Paragraph, Button, Avatar} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {filter, get} from 'lodash';
+import get from 'lodash/get';
+import filter from 'lodash/filter';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 import Loader from '~Common/Loader';
@@ -18,13 +19,10 @@ import {layout, screens, colors, THEME_COLORS} from '~constants/constants';
 import AcceptImg from '~assets/img/accept.png';
 import CancelImg from '~assets/img/cancel.png';
 import InprogressImg from '~assets/img/inprogress.png';
-import {
-  setMapState,
-  setTicketWorkOrderId,
-} from '~planning/data/planningGis.reducer';
-import {PLANNING_EVENT} from '~planning/GisMap/utils';
+
 import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
 import {getPlanningTicketData} from '~planning/data/planningGis.selectors';
+import {navigateTicketWorkorderToDetails} from '~planning/data/event.actions';
 
 /**
  * Parent:
@@ -60,15 +58,7 @@ const TicketWorkorderScreen = props => {
 
   const navigateToWorkorderDetails = useCallback(
     (index, item) => () => {
-      dispatch(
-        setMapState({
-          event: PLANNING_EVENT.showElementDetails,
-          layerKey: item.layer_key,
-          data: {elementId: item.element.id},
-        }),
-      );
-      dispatch(setTicketWorkOrderId(item.id));
-      navigation.navigate(screens.planningTicketMap);
+      dispatch(navigateTicketWorkorderToDetails(item, navigation));
     },
     [],
   );
@@ -95,7 +85,10 @@ const TicketWorkorderScreen = props => {
 
   return (
     <View style={[layout.container, layout.relative]}>
-      <BackHeader title="Workorders" onGoBack={navigation.goBack} />
+      <BackHeader
+        title={get(ticketData, 'name', '')}
+        onGoBack={navigation.goBack}
+      />
       <View style={styles.filterWrapper}>
         <Pressable
           style={[styles.filterblock, isSubmitted && styles.filterSubmited]}
