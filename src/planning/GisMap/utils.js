@@ -3,9 +3,12 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import {coordsToLatLongMap} from '~utils/map.utils';
 import * as RegionLayer from './layers/region';
-
+import * as DPLayer from './layers/p_dp';
+import * as SplitterLayer from './layers/p_splitter';
+import * as CableLayer from './layers/p_cable';
+import * as BuildingLayer from './layers/p_survey_building';
+import * as SAreaLayer from './layers/p_survey_area';
 import {
-  ViewLayer as DPViewLayer,
   AddLayer as DPAddLayer,
   Geometry as DPGeometry,
   LAYER_KEY as DpKey,
@@ -17,7 +20,6 @@ import {
 } from './layers/p_dp';
 import {
   LAYER_KEY as SplitterKey,
-  ViewLayer as SplitterLayer,
   Geometry as SplitterGeometry,
   AddLayer as SplitterAddLayer,
   ElementForm as SplitterForm,
@@ -28,7 +30,6 @@ import {
 } from './layers/p_splitter';
 import {
   LAYER_KEY as CableKey,
-  ViewLayer as CableLayer,
   Geometry as CableGeometry,
   getIcon as CableGetIcon,
   AddLayer as CableAddLayer,
@@ -94,56 +95,80 @@ export const getElementTypeFromLayerKey = layerKey => {
 
 export const LayerKeyMappings = {
   [RegionLayer.LAYER_KEY]: {
-    ViewLayer: RegionLayer.ViewLayer,
-    Icon: RegionLayer.getIcon,
+    featureType: RegionLayer.LAYER_FEATURE_TYPE,
+    getViewOptions: RegionLayer.getViewOptions,
   },
-  [DpKey]: {
+  [DPLayer.LAYER_KEY]: {
+    featureType: DPLayer.LAYER_FEATURE_TYPE,
+    getViewOptions: DPLayer.getViewOptions,
+    initialElementData: DPLayer.INITIAL_ELEMENT_DATA,
+    elementTableFields: DPLayer.ELEMENT_TABLE_FIELDS,
+    formConfig: DPLayer.ELEMENT_FORM_TEMPLATE,
+    transformAndValidateData: DPLayer.transformAndValidateData,
     [PLANNING_EVENT.addElement]: <DPAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <DpEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <DpForm />,
     [PLANNING_EVENT.showElementDetails]: <DpDetails />,
     [PLANNING_EVENT.editElementDetails]: <DpForm />,
-    ViewLayer: DPViewLayer,
     Geometry: DPGeometry,
     Icon: DpGetIcon,
   },
-  [SplitterKey]: {
+  [SplitterLayer.LAYER_KEY]: {
+    featureType: SplitterLayer.LAYER_FEATURE_TYPE,
+    getViewOptions: SplitterLayer.getViewOptions,
+    initialElementData: SplitterLayer.INITIAL_ELEMENT_DATA,
+    elementTableFields: SplitterLayer.ELEMENT_TABLE_FIELDS,
+    elementTableExtraControls: SplitterLayer.ELEMENT_TABLE_EXTRA_CONTROLS,
+    formConfig: SplitterLayer.ELEMENT_FORM_TEMPLATE,
+    transformAndValidateData: SplitterLayer.transformAndValidateData,
     [PLANNING_EVENT.addElement]: <SplitterAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <SplitterEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <SplitterForm />,
     [PLANNING_EVENT.showElementDetails]: <SplitterDetails />,
     [PLANNING_EVENT.editElementDetails]: <SplitterForm />,
-    ViewLayer: SplitterLayer,
     Geometry: SplitterGeometry,
     Icon: SplitterGetIcon,
   },
-  [CableKey]: {
+  [CableLayer.LAYER_KEY]: {
+    featureType: CableLayer.LAYER_FEATURE_TYPE,
+    getViewOptions: CableLayer.getViewOptions,
+    initialElementData: CableLayer.INITIAL_ELEMENT_DATA,
+    elementTableFields: CableLayer.ELEMENT_TABLE_FIELDS,
+    formConfig: CableLayer.ELEMENT_FORM_TEMPLATE,
+    transformAndValidateData: CableLayer.transformAndValidateData,
     [PLANNING_EVENT.addElement]: <CableAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <CableEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <CableForm />,
     [PLANNING_EVENT.showElementDetails]: <CableDetails />,
     [PLANNING_EVENT.editElementDetails]: <CableForm />,
-    ViewLayer: CableLayer,
     Geometry: CableGeometry,
     Icon: CableGetIcon,
   },
-  [SAreaKey]: {
+  [SAreaLayer.LAYER_KEY]: {
+    featureType: SAreaLayer.LAYER_FEATURE_TYPE,
+    getViewOptions: SAreaLayer.getViewOptions,
+    initialElementData: SAreaLayer.INITIAL_ELEMENT_DATA,
+    elementTableFields: SAreaLayer.ELEMENT_TABLE_FIELDS,
+    formConfig: SAreaLayer.ELEMENT_FORM_TEMPLATE,
+    transformAndValidateData: SAreaLayer.transformAndValidateData,
     [PLANNING_EVENT.addElement]: <SAreaAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <SAreaEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <SAreaForm />,
     [PLANNING_EVENT.showElementDetails]: <SAreaDetails />,
     [PLANNING_EVENT.editElementDetails]: <SAreaForm />,
-    ViewLayer: SAreaViewLayer,
     Geometry: SAreaGeometry,
     Icon: SAreaIcon,
   },
-  [BuildingKey]: {
+  [BuildingLayer.LAYER_KEY]: {
+    featureType: BuildingLayer.LAYER_FEATURE_TYPE,
+    getViewOptions: BuildingLayer.getViewOptions,
+    initialElementData: BuildingLayer.INITIAL_ELEMENT_DATA,
+    elementTableFields: BuildingLayer.ELEMENT_TABLE_FIELDS,
     [PLANNING_EVENT.addElement]: <BuildingAddLayer />,
     [PLANNING_EVENT.editElementLocation]: <BuildingEditMapLayer />,
     [PLANNING_EVENT.addElementForm]: <BuildingForm />,
     [PLANNING_EVENT.showElementDetails]: <BuildingDetails />,
     [PLANNING_EVENT.editElementDetails]: <BuildingForm />,
-    ViewLayer: BuildingViewLayer,
     Geometry: BuildingGeometry,
     Icon: BuildingIcon,
   },

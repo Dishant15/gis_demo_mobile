@@ -1,6 +1,17 @@
-import {LAYER_STATUS_OPTIONS} from '../common/configuration';
+import {FEATURE_TYPES, LAYER_STATUS_OPTIONS} from '../common/configuration';
+import CableIcon from '~assets/markers/line_pin.svg';
 
 export const LAYER_KEY = 'p_cable';
+export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POLYLINE;
+
+export const getViewOptions = ({color_on_map}) => {
+  return {
+    strokeColor: color_on_map,
+    strokeWidth: 2,
+    icon: CableIcon,
+    pin: CableIcon,
+  };
+};
 
 export const INITIAL_ELEMENT_DATA = {
   name: '',

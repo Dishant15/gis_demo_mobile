@@ -1,6 +1,22 @@
-import {LAYER_STATUS_OPTIONS} from '../common/configuration';
+import {FEATURE_TYPES, LAYER_STATUS_OPTIONS} from '../common/configuration';
+import SecondarySpliterIcon from '~assets/markers/spliter_view.svg';
+import SecondarySpliterEditIcon from '~assets/markers/spliter_edit.svg';
+import PrimarySpliterIcon from '~assets/markers/spliter_view_primary.svg';
+import PrimarySpliterEditIcon from '~assets/markers/spliter_edit_primary.svg';
 
 export const LAYER_KEY = 'p_splitter';
+export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POINT;
+
+export const getViewOptions = ({splitter_type}) => ({
+  tappable: false,
+  draggable: false,
+  stopPropagation: true,
+  flat: true,
+  tracksInfoWindowChanges: false,
+  icon: splitter_type === 'P' ? PrimarySpliterIcon : SecondarySpliterIcon,
+  pin:
+    splitter_type === 'P' ? PrimarySpliterEditIcon : SecondarySpliterEditIcon,
+});
 
 export const INITIAL_ELEMENT_DATA = {
   name: '',

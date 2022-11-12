@@ -45,3 +45,8 @@ export const clearPlanningData = dispatch => {
   dispatch(resetPlanningState());
   dispatch(resetPlanningGisData());
 };
+
+/**
+ * create file: event.actions
+ * add isFullscreen flag in data
+ */

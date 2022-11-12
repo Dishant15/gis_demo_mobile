@@ -17,3 +17,10 @@ export const zIndexMapping = {
   edit: 50,
   mapType: 51,
 };
+
+export const FEATURE_TYPES = {
+  POLYLINE: 'polyline',
+  POINT: 'point',
+  POLYGON: 'polygon',
+  MULTI_POLYGON: 'multi_polygon',
+};

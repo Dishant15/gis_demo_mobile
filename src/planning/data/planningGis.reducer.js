@@ -24,7 +24,7 @@ const defaultLayerNetworkState = {
 const initialState = {
   // shape : { layer-key: { ...defaultLayerNetworkState } }
   layerNetworkState: {},
-  // shape : { layer-key: { viewData: [], editData: {} } }
+  // shape : { layer-key: [ {...Gis data, ...}, ...] }
   layerData: {},
   /**
    * shape: {
@@ -91,10 +91,7 @@ const planningGisSlice = createSlice({
           state.layerNetworkState[currNsKey] = {
             ...defaultLayerNetworkState,
           };
-          state.layerData[currNsKey] = {
-            viewData: [],
-            editData: {},
-          };
+          state.layerData[currNsKey] = [];
         }
       }
     },
@@ -132,10 +129,7 @@ const planningGisSlice = createSlice({
           isLoading: true,
           isSelected: true,
         };
-        state.layerData[layerKey] = {
-          viewData: [],
-          editData: {},
-        };
+        state.layerData[layerKey] = [];
       }
     },
     // fetch success
@@ -145,7 +139,7 @@ const planningGisSlice = createSlice({
       state.layerNetworkState[layerKey].isFetched = true;
       state.layerNetworkState[layerKey].count = size(action.payload);
       // convert payload coordinates into google coordinates data
-      state.layerData[layerKey].viewData = convertLayerServerData(
+      state.layerData[layerKey] = convertLayerServerData(
         layerKey,
         action.payload,
       );

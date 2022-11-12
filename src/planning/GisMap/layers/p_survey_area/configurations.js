@@ -1,7 +1,21 @@
 import {FIELD_TYPES} from '~Common/DynamicForm';
-import {LAYER_STATUS_OPTIONS} from '../common/configuration';
+import {FEATURE_TYPES, LAYER_STATUS_OPTIONS} from '../common/configuration';
+import {percentToHex} from '~utils/app.utils';
+import Icon from '~assets/markers/path.svg';
 
 export const LAYER_KEY = 'p_survey_area';
+export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POLYGON;
+
+const STROKE_COLOR = '#CE855A';
+const FILL_COLOR = '#CE855A' + percentToHex(30);
+
+export const getViewOptions = () => ({
+  strokeColor: STROKE_COLOR,
+  strokeWidth: 2,
+  fillColor: FILL_COLOR,
+  icon: Icon,
+  pin: Icon,
+});
 
 export const INITIAL_ELEMENT_DATA = {
   name: '',

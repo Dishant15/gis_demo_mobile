@@ -33,13 +33,6 @@ import {PLANNING_EVENT} from '~planning/GisMap/utils';
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
-const regionLayerConfig = {
-  layer_key: 'region',
-  name: 'Regions',
-  can_edit: false,
-  can_add: false,
-};
-
 const LayersTabContent = ({hideModal}) => {
   /**
    * Render list of elements user can view on map
@@ -55,9 +48,6 @@ const LayersTabContent = ({hideModal}) => {
     fetchLayerList,
     {
       staleTime: Infinity,
-      select: data => {
-        return [regionLayerConfig, ...data];
-      },
     },
   );
   const regionIdList = useSelector(getSelectedRegionIds);

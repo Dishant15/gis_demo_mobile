@@ -1,6 +1,19 @@
-import {LAYER_STATUS_OPTIONS} from '../common/configuration';
+import {FEATURE_TYPES, LAYER_STATUS_OPTIONS} from '../common/configuration';
+import Icon from '~assets/markers/p_dp_view.svg';
+import EditIcon from '~assets/markers/p_dp_edit.svg';
 
 export const LAYER_KEY = 'p_dp';
+export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POINT;
+
+export const getViewOptions = () => ({
+  tappable: false,
+  draggable: false,
+  stopPropagation: true,
+  flat: true,
+  tracksInfoWindowChanges: false,
+  icon: Icon,
+  pin: EditIcon,
+});
 
 export const INITIAL_ELEMENT_DATA = {
   name: '',

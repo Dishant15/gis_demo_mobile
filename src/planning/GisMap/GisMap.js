@@ -10,7 +10,6 @@ import {LayerGisEventComponent} from './components/LayerToComponentMap';
 import TicketMapLayers from './components/TicketMapLayers';
 import Map from '~Common/components/Map';
 
-import {getSelectedLayerKeys} from '~planning/data/planningState.selectors';
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 import {
   getGisMapInterectionEnable,
@@ -20,13 +19,13 @@ import {
 import {
   getElementCoordinates,
   getElementTypeFromLayerKey,
-  LayerKeyMappings,
   PLANNING_EVENT,
 } from './utils';
 import {INIT_MAP_LOCATION, layout} from '~constants/constants';
 import {getMapType} from '~Common/data/appstate.selector';
 import {get} from 'lodash';
 import {getEdgePadding} from '~utils/app.utils';
+import GisMapViewLayer from './components/GisMapViewLayer';
 
 /**
  * Parent
@@ -41,8 +40,6 @@ const GisMap = props => {
   const {bottom} = useSafeAreaInsets();
   const mapRef = useRef();
 
-  // get list of selected layer-keys
-  const mapLayers = useSelector(getSelectedLayerKeys);
   const enableInterection = useSelector(getGisMapInterectionEnable);
   const mapState = useSelector(getPlanningMapState);
   const mapType = useSelector(getMapType);
@@ -65,13 +62,6 @@ const GisMap = props => {
     );
     dispatch(updateMapStateCoordinates(coords));
   };
-
-  const Layers = useMemo(() => {
-    return mapLayers.map(layerKey => {
-      const ViewLayerComponent = LayerKeyMappings[layerKey]['ViewLayer'];
-      return <ViewLayerComponent key={layerKey} />;
-    });
-  }, [mapLayers]);
 
   const onMapReady = () => {
     // set map region to ticket area
@@ -106,7 +96,7 @@ const GisMap = props => {
             onPoiClick={handleMapClick}>
             {showMapRender ? (
               <>
-                {Layers}
+                <GisMapViewLayer />
                 <LayerGisEventComponent />
                 <TicketMapLayers />
               </>
