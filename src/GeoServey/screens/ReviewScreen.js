@@ -229,7 +229,7 @@ const ReviewScreen = ({navigation}) => {
             onLayout={onMapLayout}
             onMapLoaded={onMapLoaded}
             showMapType
-            mapTypeStyle={styles.mapTypeStyle}>
+            mapTypeStyle="bottom-right">
             {showMapRender ? (
               <>
                 {unitMarkerList.map((marker, index) => {
