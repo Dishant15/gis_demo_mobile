@@ -111,7 +111,7 @@ const AddElementContent = ({hideModal}) => {
       // start event if no other event running
       dispatch(
         setMapState({
-          event: PLANNING_EVENT.addElement,
+          event: PLANNING_EVENT.addElementGeometry,
           layerKey,
           enableMapInterection: true,
           elementType: getElementTypeFromLayerKey(layerKey),
@@ -152,9 +152,10 @@ const AddElementContent = ({hideModal}) => {
               let currConfig = get(selectedConfigurations, layer_key, false);
               if (!currConfig) currConfig = configuration[0];
               // configurable layers will have getIcon function
-              Icon = LayerKeyMappings[layer_key]['Icon'](currConfig);
+              Icon =
+                LayerKeyMappings[layer_key]['getViewOptions'](currConfig).icon;
             } else {
-              Icon = LayerKeyMappings[layer_key]['Icon']();
+              Icon = LayerKeyMappings[layer_key]['getViewOptions']().icon;
             }
 
             return (

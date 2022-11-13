@@ -109,8 +109,8 @@ export const LayerKeyMappings = {
     elementTableFields: DPLayer.ELEMENT_TABLE_FIELDS,
     formConfig: DPLayer.ELEMENT_FORM_TEMPLATE,
     transformAndValidateData: DPLayer.transformAndValidateData,
-    [PLANNING_EVENT.addElement]: <DPAddLayer />,
-    [PLANNING_EVENT.editElementLocation]: <DpEditMapLayer />,
+    [PLANNING_EVENT.addElementGeometry]: <DPAddLayer />,
+    [PLANNING_EVENT.editElementGeometry]: <DpEditMapLayer />,
   },
   [SplitterLayer.LAYER_KEY]: {
     featureType: SplitterLayer.LAYER_FEATURE_TYPE,

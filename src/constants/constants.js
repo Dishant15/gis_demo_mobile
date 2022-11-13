@@ -22,7 +22,7 @@ export const screens = {
   planningTicketList: 'planningTicketList',
   planningTicketWorkorder: 'planningTicketWorkorder',
   planningTicketMap: 'planningTicketMap',
-  planningTicketDetails: 'planningTicketDetails',
+  gisEventScreen: 'gisEventScreen',
 
   networkScreen: 'networkScreen',
   clientScreen: 'clientScreen',

@@ -3,13 +3,13 @@ import {useSelector} from 'react-redux';
 
 import get from 'lodash/get';
 
-import ElementDetailsTable from './ElementDetailsTable';
-import {GisLayerForm} from './GisLayerForm';
+import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
+import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
 
 import {getPlanningMapState} from '~planning/data/planningGis.selectors';
-import {LayerKeyMappings, PLANNING_EVENT} from '../utils';
+import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
 
-const GisDetailsEventLayer = () => {
+const GisEventScreen = props => {
   const {layerKey, event} = useSelector(getPlanningMapState);
   switch (event) {
     case PLANNING_EVENT.addElementForm:
@@ -40,4 +40,4 @@ const GisDetailsEventLayer = () => {
   }
 };
 
-export default memo(GisDetailsEventLayer);
+export default memo(GisEventScreen);

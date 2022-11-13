@@ -19,7 +19,7 @@ import WorkorderScreen from '~ticket/screens/WorkorderScreen';
 import PlanningTicket from '~planningTicket/screen/PlanningTicketListScreen';
 import TicketWorkorder from '~planningTicket/screen/TicketWorkorderScreen';
 import PlanningScreen from '~planning/screens/PlanningScreen';
-import PlanningTicketDetails from '~planning/screens/PlanningTicketDetails';
+import GisEventScreen from '~planning/screens/GisEventScreen';
 
 import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';
 import LocationProvider from '~Common/LocationProvider';
@@ -124,8 +124,8 @@ const RootNavigation = () => {
               options={options}
             />
             <Stack.Screen
-              name={screens.planningTicketDetails}
-              component={PlanningTicketDetails}
+              name={screens.gisEventScreen}
+              component={GisEventScreen}
               options={options}
             />
           </Stack.Navigator>
