@@ -91,7 +91,7 @@ const WorkorderScreen = props => {
   const isRejected = statusFilter === 'R';
   return (
     <View style={[layout.container, layout.relative]}>
-      <BackHeader title="Workorders" onGoBack={navigation.goBack} />
+      <BackHeader title={get(data, 'name', '')} onGoBack={navigation.goBack} />
       <View style={styles.filterWrapper}>
         <Pressable
           style={[styles.filterblock, isSubmitted && styles.filterSubmited]}
