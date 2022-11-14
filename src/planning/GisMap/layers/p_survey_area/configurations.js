@@ -227,20 +227,3 @@ export const ELEMENT_TABLE_FIELDS = [
   },
   {label: 'Status', field: 'status', type: 'status'},
 ];
-
-export const transformAndValidateData = (
-  formData,
-  setError,
-  isEdit,
-  configuration,
-) => {
-  if (isEdit) {
-    return {
-      ...formData,
-      // remove geometry
-      geometry: undefined,
-    };
-  } else {
-    return formData;
-  }
-};

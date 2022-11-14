@@ -121,6 +121,9 @@ export const layout = StyleSheet.create({
   relative: {
     position: 'relative',
   },
+  mrl8: {
+    marginLeft: 8,
+  },
 });
 
 // AHMEDABAD CENTER

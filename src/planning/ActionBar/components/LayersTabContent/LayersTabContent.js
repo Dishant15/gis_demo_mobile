@@ -63,9 +63,7 @@ const LayersTabContent = ({hideModal}) => {
       </View>
       <ScrollView contentContainerStyle={styles.wrapper}>
         {layerCofigs.map(layer => {
-          // do not show ticket element
-          if (layer.layer_key === 'ticket') return null;
-
+          if (layer.hide_on_mobile) return null;
           return (
             <LayerTab
               key={layer.layer_key}

@@ -1,18 +1,15 @@
 import React, {useMemo, useState, useCallback} from 'react';
-import {
-  View,
-  StyleSheet,
-  Dimensions,
-  Pressable,
-  ScrollView,
-} from 'react-native';
+import {View, StyleSheet, Pressable, ScrollView} from 'react-native';
 import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {filter, get, size} from 'lodash';
-import {Subheading, Divider} from 'react-native-paper';
+import filter from 'lodash/filter';
+import get from 'lodash/get';
+import size from 'lodash/size';
 
+import {Subheading, Divider} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 import Loader from '~Common/Loader';
 import Header from './Header';
 import ElementConfigList from './ElementConfigList';
@@ -32,13 +29,11 @@ import {
   getSelectedConfigurations,
 } from '~planning/data/planningGis.selectors';
 import {
-  getElementTypeFromLayerKey,
   LayerKeyMappings,
   PLANNING_EVENT,
   TICKET_WORKORDER_TYPE,
 } from '~planning/GisMap/utils';
 
-import {ICONS} from '~utils/icons';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {colors, layout} from '~constants/constants';
 import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
@@ -114,7 +109,6 @@ const AddElementContent = ({hideModal}) => {
           event: PLANNING_EVENT.addElementGeometry,
           layerKey,
           enableMapInterection: true,
-          elementType: getElementTypeFromLayerKey(layerKey),
         }),
       );
       if (ticketId) {
@@ -143,9 +137,15 @@ const AddElementContent = ({hideModal}) => {
         <Header text="ADD ELEMENT" icon="add-location" onClose={hideModal} />
         <ScrollView style={styles.container}>
           {layerCofigs.map(config => {
-            const {layer_key, name, is_configurable, configuration} = config;
-            // do not show ticket element
-            if (layer_key === 'ticket') return null;
+            const {
+              layer_key,
+              name,
+              is_configurable,
+              configuration,
+              can_add_on_mobile,
+            } = config;
+            // do not show
+            if (!can_add_on_mobile) return null;
             // get icon
             let Icon;
             if (is_configurable) {

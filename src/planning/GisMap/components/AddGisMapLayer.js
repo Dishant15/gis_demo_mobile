@@ -1,29 +1,40 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {View, StyleSheet} from 'react-native';
-
-import FloatingCard from '~Common/components/FloatingCard';
-import {Button, Card} from 'react-native-paper';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {Button} from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import {lineString, length} from '@turf/turf';
-import {size, round} from 'lodash';
+
+import get from 'lodash/get';
+import size from 'lodash/size';
+import round from 'lodash/round';
+
+import MapCard from '~Common/components/MapCard';
 
 import {setMapState} from '~planning/data/planningGis.reducer';
-import {layout, THEME_COLORS} from '~constants/constants';
-import {getGisMapStateGeometry} from '~planning/data/planningGis.selectors';
+import {getPlanningMapState} from '~planning/data/planningGis.selectors';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import {latLongMapToCoords, latLongMapToLineCoords} from '~utils/map.utils';
-import {IconButton} from '~Common/components/Button';
+import {
+  latLongMapToCoords,
+  latLongMapToLineCoords,
+  pointLatLongMapToCoords,
+} from '~utils/map.utils';
+import {LayerKeyMappings, PLANNING_EVENT} from '../utils';
+import {FEATURE_TYPES} from '../layers/common/configuration';
+import {colors, layout, THEME_COLORS} from '~constants/constants';
+import {onElementGeometryEdit} from '~planning/data/event.actions';
 
-const AddGisMapLayer = ({helpText, featureType, nextEvent = {}}) => {
+const AddGisMapLayer = () => {
   const dispatch = useDispatch();
-  const {top} = useSafeAreaInsets();
+  const navigation = useNavigation();
 
-  const coordinates = useSelector(getGisMapStateGeometry);
+  const {geometry: coordinates, layerKey} = useSelector(getPlanningMapState);
+  const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
+  const initialData = get(LayerKeyMappings, [layerKey, 'initialElementData']);
 
-  const handleAddComplete = useCallback(() => {
+  const handleAddComplete = () => {
     let submitData = {};
-    if (featureType === 'polyline') {
+    if (featureType === FEATURE_TYPES.POLYLINE) {
       if (size(coordinates) < 2) {
         showToast('Invalid line', TOAST_TYPE.ERROR);
         return;
@@ -31,63 +42,62 @@ const AddGisMapLayer = ({helpText, featureType, nextEvent = {}}) => {
       submitData.geometry = latLongMapToLineCoords(coordinates);
       const gis_len = length(lineString(submitData.geometry));
       submitData.gis_len = String(round(gis_len, 4));
-    } else if (featureType === 'polygon') {
+    } else if (featureType === FEATURE_TYPES.POLYGON) {
       submitData.geometry = latLongMapToCoords(coordinates);
+    } else if (featureType === FEATURE_TYPES.POINT) {
+      submitData.geometry = pointLatLongMapToCoords(coordinates);
     } else {
-      // marker
-      submitData.geometry = latLongMapToCoords([coordinates])[0];
+      throw new Error('feature type is invalid');
     }
-    // set marker coords to form data
-    nextEvent.data = {
-      ...nextEvent.data,
-      ...submitData,
-      coordinates: coordinates,
-    };
     // complete current event -> fire next event
-    dispatch(setMapState(nextEvent));
-  }, [coordinates, featureType]);
+    dispatch(
+      onElementGeometryEdit(
+        {
+          event: PLANNING_EVENT.addElementForm, // event for "layerForm"
+          layerKey,
+          data: {...initialData, ...submitData}, // init data
+        },
+        navigation,
+      ),
+    );
+  };
 
   const handleCancel = useCallback(() => {
     dispatch(setMapState({}));
   }, []);
 
-  return (
-    <View style={[styles.contentWrapper, {top: Math.max(top, 14)}]}>
-      <View style={styles.content}>
-        <FloatingCard title={helpText} isAbsolute={false}>
-          <Card.Actions>
-            <IconButton
-              icon="close"
-              color={THEME_COLORS.error.main}
-              style={[layout.smallButton, layout.smallButtonMR]}
-              textColor={THEME_COLORS.error.contrastText}
-              text="Cancel"
-              onPress={handleCancel}
-            />
-            <IconButton
-              icon="check"
-              color={THEME_COLORS.primary.main}
-              style={[layout.smallButton]}
-              textColor={THEME_COLORS.error.contrastText}
-              text="Complete"
-              onPress={handleAddComplete}
-            />
-          </Card.Actions>
-        </FloatingCard>
-      </View>
-    </View>
-  );
-};
+  // helpText show in popup based on featureType
+  const mapCardTitle = useMemo(() => {
+    switch (featureType) {
+      case FEATURE_TYPES.POLYLINE:
+        return 'Click on map to create line on map. Double click to complete.';
+      case FEATURE_TYPES.POLYGON:
+        return 'Click on map to place area points on map. Complete polygon and adjust points.';
+      case FEATURE_TYPES.POINT:
+        return 'Click on map to add new location';
+      default:
+        return '';
+    }
+  }, [featureType]);
 
-const styles = StyleSheet.create({
-  contentWrapper: {
-    position: 'absolute',
-    top: 14,
-    left: 58,
-    right: 14,
-  },
-  content: {
-    paddingLeft: 8,
-  },
-});
+  const ActionContent = (
+    <>
+      <TouchableOpacity onPress={handleAddComplete}>
+        <Button
+          mode="text"
+          color={colors.white}
+          style={{backgroundColor: THEME_COLORS.secondary.main}}>
+          Submit
+        </Button>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleCancel}>
+        <Button mode="text" color={THEME_COLORS.error.main} style={layout.mrl8}>
+          Cancel
+        </Button>
+      </TouchableOpacity>
+    </>
+  );
+
+  return <MapCard title={mapCardTitle} actionContent={ActionContent} />;
+};
 export default AddGisMapLayer;

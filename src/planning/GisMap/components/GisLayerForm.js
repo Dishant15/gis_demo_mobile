@@ -4,7 +4,8 @@ import {useMutation} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
-import {get} from 'lodash';
+import get from 'lodash/get';
+import size from 'lodash/size';
 
 import DynamicForm from '~Common/DynamicForm';
 import BackHeader from '~Common/components/Header/BackHeader';
@@ -15,7 +16,10 @@ import {
   editElementDetails,
   editTicketWorkorderElement,
 } from '~planning/data/layer.services';
-import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
+import {
+  getLayerSelectedConfiguration,
+  getSelectedRegionIds,
+} from '~planning/data/planningState.selectors';
 import {
   getPlanningMapState,
   getPlanningTicketId,
@@ -29,7 +33,7 @@ import {
   PLANNING_EVENT,
   TICKET_WORKORDER_TYPE,
 } from '../utils';
-import {layout} from '~constants/constants';
+import {layout, screens} from '~constants/constants';
 
 export const GisLayerForm = ({layerKey}) => {
   const navigation = useNavigation();
@@ -40,6 +44,8 @@ export const GisLayerForm = ({layerKey}) => {
   const workOrderId = useSelector(getPlanningTicketWorkOrderId);
   const ticketId = useSelector(getPlanningTicketId);
   const {event, data} = useSelector(getPlanningMapState);
+  const configuration = useSelector(getLayerSelectedConfiguration(layerKey));
+
   const isEdit = event === PLANNING_EVENT.editElementForm;
   const formConfig = get(LayerKeyMappings, [layerKey, 'formConfig']);
   const transformAndValidateData = get(LayerKeyMappings, [
@@ -51,13 +57,17 @@ export const GisLayerForm = ({layerKey}) => {
     showToast('Element operation completed Successfully', TOAST_TYPE.SUCCESS);
     // close form
     dispatch(setMapState({}));
-    // refetch layer
-    dispatch(
-      fetchLayerDataThunk({
-        regionIdList: selectedRegionIds,
-        layerKey,
-      }),
-    );
+    if (size(selectedRegionIds)) {
+      // refetch layer
+      dispatch(
+        fetchLayerDataThunk({
+          regionIdList: selectedRegionIds,
+          layerKey,
+        }),
+      );
+    }
+    // navigate to planning map
+    navigation.navigate(screens.planningScreen);
   };
 
   const onErrorHandler = err => {
@@ -68,6 +78,7 @@ export const GisLayerForm = ({layerKey}) => {
       for (const fieldKey in errData) {
         if (Object.hasOwnProperty.call(errData, fieldKey)) {
           const errList = errData[fieldKey];
+          if (fieldKey === 'geometry') continue;
           formRef.current.onError(fieldKey, get(errList, '0', ''));
         }
       }
@@ -127,13 +138,15 @@ export const GisLayerForm = ({layerKey}) => {
     const remark = data.remark;
     delete data.remark;
     // convert data to server friendly form
-    const validatedData = transformAndValidateData(data, setError);
+    const validatedData = transformAndValidateData
+      ? transformAndValidateData(data, setError, isEdit, configuration)
+      : data;
     const isWorkOrderUpdate = !!ticketId;
     // call addWorkOrder api if isWorkOrderUpdate, addElement api if not
     if (isWorkOrderUpdate) {
       if (isEdit && workOrderId) {
         // edit work order element api
-        editWorkOrder(validatedData);
+        editWorkOrder({...validatedData, geometry: undefined});
       } else {
         // create workOrder data if isWorkOrderUpdate
         let workOrderData = {
@@ -144,14 +157,12 @@ export const GisLayerForm = ({layerKey}) => {
           },
           element: validatedData,
         };
-        // assign coordinates to geometry
-        workOrderData.element.geometry = workOrderData.element.coordinates;
         // add workorder data to validatedData
         addWorkOrder(workOrderData);
       }
     } else {
       if (isEdit) {
-        editElement(validatedData);
+        editElement({...validatedData, geometry: undefined});
       } else {
         addElement(validatedData);
       }

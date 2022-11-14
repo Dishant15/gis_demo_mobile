@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from 'react';
 import {View, Pressable, StyleSheet} from 'react-native';
-
+import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 
 import get from 'lodash/get';
@@ -24,6 +24,7 @@ import {colors} from '~constants/constants';
 import {PLANNING_EVENT} from '~planning/GisMap/utils';
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {onLayerElementClick} from '~planning/data/event.actions';
 
 const LayerTab = ({layerConfig, regionIdList}) => {
   /**
@@ -107,19 +108,22 @@ const LayerTab = ({layerConfig, regionIdList}) => {
 };
 
 const ElementList = ({layerKey}) => {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   // get list of elements for current key
-  const {viewData = []} = useSelector(getLayerViewData(layerKey));
+  const viewData = useSelector(getLayerViewData(layerKey));
 
   const handleElementClick = useCallback(
     elementId => () => {
-      dispatch(setActiveTab(null));
       dispatch(
-        setMapState({
-          event: PLANNING_EVENT.showElementDetails,
-          layerKey,
-          data: {elementId},
-        }),
+        onLayerElementClick(
+          {
+            event: PLANNING_EVENT.showElementDetails,
+            layerKey,
+            data: {elementId},
+          },
+          navigation,
+        ),
       );
     },
     [layerKey],

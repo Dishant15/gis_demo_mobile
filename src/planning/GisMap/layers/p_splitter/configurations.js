@@ -84,18 +84,10 @@ export const transformAndValidateData = (
   configuration,
 ) => {
   if (isEdit) {
-    return {
-      ...formData,
-      // remove geometry
-      geometry: undefined,
-    };
+    return formData;
   } else {
     return {
       ...formData,
-      // remove coordinates and add geometry
-      coordinates: undefined,
-      remark: undefined,
-      geometry: latLongMapToCoords([formData.coordinates])[0],
       // convert select fields to simple values
       configuration: configuration.id,
     };

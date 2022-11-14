@@ -1,48 +1,47 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {View, StyleSheet} from 'react-native';
+import {useMutation} from 'react-query';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
-import {Button, Card} from 'react-native-paper';
-import FloatingCard from '~Common/components/FloatingCard';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {Button} from 'react-native-paper';
 
-import {get, round} from 'lodash';
+import get from 'lodash/get';
+import round from 'lodash/round';
 import {lineString, length} from '@turf/turf';
 
+import MapCard from '~Common/components/MapCard';
+
 import {setMapState} from '~planning/data/planningGis.reducer';
-import {layout, THEME_COLORS} from '~constants/constants';
 import {
-  getGisMapStateGeometry,
-  getPlanningMapStateData,
+  getPlanningMapState,
+  getPlanningTicketId,
   getPlanningTicketWorkOrderId,
 } from '~planning/data/planningGis.selectors';
-import {useMutation} from 'react-query';
 import {
   editElementDetails,
   editTicketWorkorderElement,
 } from '~planning/data/layer.services';
-import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {fetchLayerDataThunk} from '~planning/data/actionBar.services';
 import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
-import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
-import {latLongMapToCoords, latLongMapToLineCoords} from '~utils/map.utils';
-import {ELEMENT_TYPE} from '../utils';
-import {zIndexMapping} from '../layers/common/configuration';
-import {IconButton} from '~Common/components/Button';
 
-const EditGisLayer = ({
-  helpText,
-  layerKey,
-  featureType, // marker | polyline | polygon
-}) => {
-  const {top} = useSafeAreaInsets();
+import {FEATURE_TYPES} from '../layers/common/configuration';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {latLongMapToCoords, latLongMapToLineCoords} from '~utils/map.utils';
+import {LayerKeyMappings} from '../utils';
+import {colors, layout, THEME_COLORS} from '~constants/constants';
+
+const EditGisLayer = () => {
   const dispatch = useDispatch();
 
-  const coordinates = useSelector(getGisMapStateGeometry);
   const selectedRegionIds = useSelector(getSelectedRegionIds);
-  const ticketId = useSelector(getSelectedPlanningTicket);
+  const ticketId = useSelector(getPlanningTicketId);
   const workOrderId = useSelector(getPlanningTicketWorkOrderId);
-  const data = useSelector(getPlanningMapStateData);
+  const {
+    geometry: coordinates,
+    data,
+    layerKey,
+  } = useSelector(getPlanningMapState);
+  const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
 
   const onSuccessHandler = () => {
     showToast('Element location updated Successfully', TOAST_TYPE.SUCCESS);
@@ -58,10 +57,6 @@ const EditGisLayer = ({
   };
 
   const onErrorHandler = err => {
-    console.log(
-      '🚀 ~ file: EditGisLayer.js ~ line 46 ~ onErrorHandler ~ err',
-      err,
-    );
     const errStatus = get(err, 'response.status');
     let notiText;
     if (errStatus === 400) {
@@ -108,20 +103,22 @@ const EditGisLayer = ({
     const isWorkOrderUpdate = !!ticketId;
     // create submit data
     let submitData = {};
-    if (featureType === ELEMENT_TYPE.POLYLINE) {
+    if (featureType === FEATURE_TYPES.POLYLINE) {
       const geometry = latLongMapToLineCoords(coordinates);
       submitData = {
         geometry,
         gis_len: round(length(lineString(geometry)), 4),
       };
-    } else if (featureType === ELEMENT_TYPE.POLYGON) {
+    } else if (featureType === FEATURE_TYPES.POLYGON) {
       submitData = {
         geometry: latLongMapToCoords(coordinates),
       };
-    } else {
+    } else if (featureType === FEATURE_TYPES.POINT) {
       submitData = {
         geometry: latLongMapToCoords([coordinates])[0],
       };
+    } else {
+      throw new Error('feature type is invalid');
     }
     // hit api
     if (isWorkOrderUpdate) {
@@ -129,58 +126,51 @@ const EditGisLayer = ({
     } else {
       editElement(submitData);
     }
-  }, [coordinates, ticketId]);
+  }, [coordinates, ticketId, featureType]);
 
   const handleCancel = useCallback(() => {
     dispatch(setMapState({}));
+  }, []);
+
+  // helpText show in popup based on featureType
+  const mapCardTitle = useMemo(() => {
+    switch (featureType) {
+      case FEATURE_TYPES.POLYLINE:
+        return 'Click on map to create line on map. Double click to complete.';
+      case FEATURE_TYPES.POLYGON:
+        return 'Click on map to place area points on map. Complete polygon and adjust points.';
+      case FEATURE_TYPES.POINT:
+        return 'Click or drag and drop marker to new location';
+      default:
+        return '';
+    }
   }, [featureType]);
 
-  return (
-    <View
-      style={[
-        styles.contentWrapper,
-        {top: Math.max(top, 14), zIndex: zIndexMapping.edit},
-      ]}>
-      <View style={styles.content}>
-        <FloatingCard
-          title={helpText}
-          isAbsolute={false}
-          // subtitle="Tap on map to add element, long press and drag to change position"
-        >
-          <Card.Actions>
-            <IconButton
-              icon="close"
-              color={THEME_COLORS.error.main}
-              style={[layout.smallButton, layout.smallButtonMR]}
-              textColor={THEME_COLORS.error.contrastText}
-              text="Cancel"
-              onPress={handleCancel}
-            />
-            <IconButton
-              icon="check"
-              color={THEME_COLORS.primary.main}
-              style={[layout.smallButton]}
-              textColor={THEME_COLORS.error.contrastText}
-              text="Update"
-              onPress={handleUpdate}
-              loading={isEditLoading || isEditTicketLoading}
-            />
-          </Card.Actions>
-        </FloatingCard>
-      </View>
-    </View>
-  );
+  const ActionContent = useMemo(() => {
+    return (
+      <>
+        <TouchableOpacity onPress={handleUpdate}>
+          <Button
+            mode="text"
+            color={colors.white}
+            style={{backgroundColor: THEME_COLORS.secondary.main}}
+            loading={isEditLoading || isEditTicketLoading}>
+            Update
+          </Button>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleCancel}>
+          <Button
+            mode="text"
+            color={THEME_COLORS.error.main}
+            style={layout.mrl8}>
+            Cancel
+          </Button>
+        </TouchableOpacity>
+      </>
+    );
+  }, [isEditLoading, isEditTicketLoading]);
+
+  return <MapCard title={mapCardTitle} actionContent={ActionContent} />;
 };
 
-const styles = StyleSheet.create({
-  contentWrapper: {
-    position: 'absolute',
-    top: 14,
-    left: 58,
-    right: 14,
-  },
-  content: {
-    paddingLeft: 8,
-  },
-});
 export default EditGisLayer;

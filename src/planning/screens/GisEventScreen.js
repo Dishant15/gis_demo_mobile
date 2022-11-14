@@ -11,6 +11,7 @@ import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
 
 const GisEventScreen = props => {
   const {layerKey, event} = useSelector(getPlanningMapState);
+
   switch (event) {
     case PLANNING_EVENT.addElementForm:
       const OverrideAddForm = get(LayerKeyMappings, [
@@ -19,8 +20,8 @@ const GisEventScreen = props => {
       ]);
 
       if (!!OverrideAddForm) return <OverrideAddForm />;
-
       return <GisLayerForm layerKey={layerKey} />;
+
     case PLANNING_EVENT.editElementForm:
       const OverrideEditForm = get(LayerKeyMappings, [
         layerKey,
@@ -28,8 +29,8 @@ const GisEventScreen = props => {
       ]);
 
       if (!!OverrideEditForm) return <OverrideEditForm />;
-
       return <GisLayerForm layerKey={layerKey} />;
+
     case PLANNING_EVENT.showElementDetails:
       // LookupError: App 'gis_layer' doesn't have a 'region' model.
       if (layerKey === 'region') return null;

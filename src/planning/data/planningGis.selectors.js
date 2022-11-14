@@ -11,27 +11,22 @@ export const getLayerNetworkState = layerKey =>
   );
 
 export const getLayerViewData = layerKey =>
-  createSelector(getAllLayersData, layerData => get(layerData, layerKey, {}));
-
-export const getGisMapState = store => store.planningGis.mapState.state;
-export const getGisMapStateLayerKey = store =>
-  store.planningGis.mapState.layerKey;
-export const getGisMapStateGeometry = store =>
-  store.planningGis.mapState.geometry;
-
-export const getGisMapInterectionEnable = store =>
-  store.planningGis.mapState.enableMapInterection;
+  createSelector(getAllLayersData, layerData => get(layerData, layerKey, []));
 
 // Gis Map Event selectors
 export const getPlanningMapState = store => store.planningGis.mapState;
 export const getPlanningMapStateData = store =>
   store.planningGis.mapState.data || {};
-export const getPlanningTicketWorkOrderId = store =>
-  store.planningGis.workOrderId;
-export const getPlanningTicketId = store =>
-  get(store, 'planningGis.ticketData.id');
+export const getPlanningMapStateEvent = store =>
+  store.planningGis.mapState.event || '';
 
 export const getSelectedConfigurations = store =>
   store.planningState.selectedConfigurations;
 
+export const getPlanningTicketId = store => store.planningGis.ticketId;
 export const getPlanningTicketData = store => store.planningGis.ticketData;
+export const getPlanningTicketWorkOrderId = store =>
+  store.planningGis.workOrderId;
+
+export const getGisMapInterectionEnable = store =>
+  store.planningGis.mapState.enableMapInterection;

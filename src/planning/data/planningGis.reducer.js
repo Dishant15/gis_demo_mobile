@@ -35,8 +35,10 @@ const initialState = {
    * }
    */
   mapState: {},
+  // ticket related fields
+  ticketId: null,
   // shape : { **Network state, **ticket fields, area_pocket: {},
-  //  work_orders: [ {**WorkOrder fields, element }, ... ] }
+  //          work_orders: [ {**WorkOrder fields, element }, ... ] }
   ticketData: {
     isLoading: false,
     isFetched: false,
@@ -45,6 +47,7 @@ const initialState = {
   },
   // list of elements that can be shown on map with converted data
   ticketGisData: [],
+  // workorder id
   workOrderId: null,
 };
 
@@ -52,30 +55,24 @@ const planningGisSlice = createSlice({
   name: 'planningGis',
   initialState,
   reducers: {
+    // payload: ticketId ( Number ) | null
+    setTicketId: (state, {payload}) => {
+      state.ticketId = payload;
+    },
+    // payload : { event, layerKey, data }
+    // no need to manage hide show based on next event like web
     setMapState: (state, {payload}) => {
       state.mapState = {...payload};
     },
-    updateMapState: (state, {payload}) => {
-      state.mapState = {...state.mapState, ...payload};
-    },
-    resetMapState: state => {
-      state.mapState = {};
-    },
+    // only used in mobile, update and hold temparay Coordinates changes
     updateMapStateCoordinates: (state, {payload}) => {
       state.mapState.geometry = payload;
-    },
-    updateMapStateData: (state, {payload}) => {
-      const mapStateData = get(state.mapState, 'data', {});
-      state.mapState.data = {...mapStateData, ...payload};
     },
     setTicketWorkOrderId: (state, {payload}) => {
       state.workOrderId = payload;
     },
     toggleTicketElements: state => {
       state.ticketData.isHidden = !state.ticketData.isHidden;
-    },
-    setTicketElements: (state, {payload}) => {
-      state.ticketData[payload.key] = payload.value;
     },
     // payload => list of selected layerKey
     // when region changes remove data for all inactive layers, so user can fetch fresh on click
@@ -95,12 +92,7 @@ const planningGisSlice = createSlice({
         }
       }
     },
-    resetPlanningTicketData: state => {
-      state.ticketData = initialState.ticketData;
-      state.ticketGisData = initialState.ticketGisData;
-      state.workOrderId = initialState.workOrderId;
-    },
-    resetPlanningGisData: state => {
+    resetPlanningGisData: () => {
       return initialState;
     },
   },
@@ -186,7 +178,6 @@ const planningGisSlice = createSlice({
       state.ticketData.isLoading = false;
       state.ticketData.isFetched = true;
       state.ticketData.isError = false;
-      // state.ticketData.isHidden = false;
       state.ticketData.countByStatus = countBy(
         ticketGisData.work_orders,
         'status',
@@ -199,15 +190,12 @@ const planningGisSlice = createSlice({
 });
 
 export const {
+  setTicketId,
   setMapState,
-  updateMapState,
-  resetMapState,
   updateMapStateCoordinates,
   resetUnselectedLayerGisData,
   setTicketWorkOrderId,
   toggleTicketElements,
-  resetPlanningTicketData,
   resetPlanningGisData,
-  setTicketElements,
 } = planningGisSlice.actions;
 export default planningGisSlice.reducer;

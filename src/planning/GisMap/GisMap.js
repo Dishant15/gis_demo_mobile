@@ -1,14 +1,16 @@
-import React, {useState, useEffect, useMemo, useRef, forwardRef} from 'react';
+import React, {useState, useEffect, useRef, forwardRef} from 'react';
 import {View, InteractionManager} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import * as Animatable from 'react-native-animatable';
+import get from 'lodash/get';
 
-import {LayerGisEventComponent} from './components/LayerToComponentMap';
 import TicketMapLayers from './components/TicketMapLayers';
 import Map from '~Common/components/Map';
+import GisMapViewLayer from './components/GisMapViewLayer';
+import GisMapEventLayer from './components/GisMapEventLayer';
 
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 import {
@@ -16,16 +18,10 @@ import {
   getPlanningMapState,
   getPlanningTicketData,
 } from '~planning/data/planningGis.selectors';
-import {
-  getElementCoordinates,
-  getElementTypeFromLayerKey,
-  PLANNING_EVENT,
-} from './utils';
-import {INIT_MAP_LOCATION, layout} from '~constants/constants';
 import {getMapType} from '~Common/data/appstate.selector';
-import {get} from 'lodash';
+import {getElementCoordinates, LayerKeyMappings, PLANNING_EVENT} from './utils';
+import {INIT_MAP_LOCATION, layout} from '~constants/constants';
 import {getEdgePadding} from '~utils/app.utils';
-import GisMapViewLayer from './components/GisMapViewLayer';
 
 /**
  * Parent
@@ -41,9 +37,11 @@ const GisMap = props => {
   const mapRef = useRef();
 
   const enableInterection = useSelector(getGisMapInterectionEnable);
-  const mapState = useSelector(getPlanningMapState);
+  const {geometry, layerKey, event} = useSelector(getPlanningMapState);
   const mapType = useSelector(getMapType);
   const ticketData = useSelector(getPlanningTicketData);
+
+  const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -55,11 +53,7 @@ const GisMap = props => {
     if (!enableInterection) return;
     if (!e.nativeEvent.coordinate) return;
     let coords = e.nativeEvent.coordinate;
-    coords = getElementCoordinates(
-      coords,
-      mapState.geometry,
-      getElementTypeFromLayerKey(mapState.layerKey),
-    );
+    coords = getElementCoordinates(coords, geometry, featureType);
     dispatch(updateMapStateCoordinates(coords));
   };
 
@@ -86,7 +80,7 @@ const GisMap = props => {
     <View style={[layout.container, layout.relative]}>
       {showMap ? (
         <Animatable.View animation="fadeIn" style={layout.container}>
-          <MapController ref={mapRef} mapState={mapState} />
+          <MapController ref={mapRef} mapState={{event, geometry}} />
           <Map
             ref={mapRef}
             onMapReady={onMapReady}
@@ -97,8 +91,8 @@ const GisMap = props => {
             {showMapRender ? (
               <>
                 <GisMapViewLayer />
-                <LayerGisEventComponent />
                 <TicketMapLayers />
+                <GisMapEventLayer />
               </>
             ) : null}
           </Map>

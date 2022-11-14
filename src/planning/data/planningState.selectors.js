@@ -1,5 +1,5 @@
 import {createSelector} from '@reduxjs/toolkit';
-import {get} from 'lodash';
+import get from 'lodash/get';
 
 export const getActiveTab = store => store.planningState.activeTab;
 
@@ -11,14 +11,7 @@ export const getExpandedRegionIds = store =>
 export const getSelectedLayerKeys = store =>
   store.planningState.selectedLayerKeys;
 
-export const getSelectedConfigurations = store =>
-  store.planningState.selectedConfigurations;
-
-export const getLayerSelectedConfiguration = layerKey =>
-  createSelector(getSelectedConfigurations, selectedConfigs =>
-    get(selectedConfigs, layerKey, {}),
-  );
-
+// Get list of all configurable layerKey -> ConfigList
 export const getLayerConfigurations = store =>
   store.planningState.layerConfigurations;
 
@@ -27,5 +20,10 @@ export const getSingleLayerConfigurationList = layerKey =>
     get(layerConfigList, layerKey, []),
   );
 
-export const getPlanningMapStateEvent = store =>
-  store.planningGis.mapState.event || '';
+export const getSelectedConfigurations = store =>
+  store.planningState.selectedConfigurations;
+
+export const getLayerSelectedConfiguration = layerKey =>
+  createSelector(getSelectedConfigurations, selectedConfigs =>
+    get(selectedConfigs, layerKey, {}),
+  );

@@ -24,12 +24,10 @@ import {setMapState} from '~planning/data/planningGis.reducer';
 import {getPlanningMapStateData} from '~planning/data/planningGis.selectors';
 
 import {colors, layout} from '~constants/constants';
-import {
-  ELEMENT_TYPE,
-  LayerKeyMappings,
-  PLANNING_EVENT,
-} from '~planning/GisMap/utils';
+import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
 import {coordsToLatLongMap} from '~utils/map.utils';
+import {navigateEventScreenToMap} from '~planning/data/event.actions';
+import {FEATURE_TYPES} from '../layers/common/configuration';
 
 const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   const navigation = useNavigation();
@@ -41,6 +39,10 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   const {data: elemData, isLoading} = useQuery(
     ['elementDetails', layerKey, elementId],
     fetchElementDetails,
+    {
+      // assign same coordinates to geometry to handle data for gislayerform -> workorder add
+      select: data => ({...data, geometry: data.coordinates}),
+    },
   );
 
   const rowDefs = get(LayerKeyMappings, [layerKey, 'elementTableFields'], []);
@@ -62,23 +64,31 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   }, [dispatch, layerKey, elemData, onEditDataConverter]);
 
   const handleEditLocation = useCallback(() => {
+    let geometry = null;
+    if (
+      featureType === FEATURE_TYPES.POLYLINE ||
+      featureType === FEATURE_TYPES.POLYGON
+    ) {
+      geometry = coordsToLatLongMap(elemData.coordinates);
+    } else {
+      geometry = coordsToLatLongMap([elemData.coordinates])[0];
+    }
     dispatch(
-      setMapState({
-        event: PLANNING_EVENT.editElementGeometry,
-        layerKey,
-        // pass elem data to update edit icon / style based on configs
-        data: {
-          ...elemData,
-          elementId: elemData.id,
-          coordinates: elemData.coordinates,
+      navigateEventScreenToMap(
+        {
+          event: PLANNING_EVENT.editElementGeometry,
+          layerKey,
+          // pass elem data to update edit icon / style based on configs
+          data: {
+            ...elemData,
+            elementId: elemData.id,
+            coordinates: elemData.coordinates,
+          },
+          geometry,
+          enableMapInterection: true,
         },
-        geometry:
-          featureType === ELEMENT_TYPE.POLYLINE ||
-          featureType === ELEMENT_TYPE.POLYGON
-            ? coordsToLatLongMap(elemData.coordinates)
-            : coordsToLatLongMap([elemData.coordinates])[0],
-        enableMapInterection: true,
-      }),
+        navigation,
+      ),
     );
   }, [dispatch, layerKey, elemData, featureType]);
 

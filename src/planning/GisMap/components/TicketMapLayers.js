@@ -10,8 +10,8 @@ import {LayerKeyMappings} from '../utils';
 import {FEATURE_TYPES, zIndexMapping} from '../layers/common/configuration';
 
 const TicketMapLayers = () => {
-  const ticketId = useSelector(getSelectedPlanningTicket);
   const {
+    id: ticketId,
     work_orders = [],
     area_pocket,
     isHidden,

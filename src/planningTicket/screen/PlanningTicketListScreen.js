@@ -12,16 +12,20 @@ import {useQuery} from 'react-query';
 import {format} from 'date-fns';
 import {useDispatch} from 'react-redux';
 
-import {filter, get, size} from 'lodash';
+import filter from 'lodash/filter';
+import get from 'lodash/get';
+import size from 'lodash/size';
 
 import Loader from '~Common/Loader';
 
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 import {fetchTicketList} from '~Dashboard/data/services';
-import {setTicketId} from '~planningTicket/data/planningTicket.reducer';
 
 import {colors, layout, screens} from '~constants/constants';
-import {setTicketWorkOrderId} from '~planning/data/planningGis.reducer';
+import {
+  setTicketId,
+  setTicketWorkOrderId,
+} from '~planning/data/planningGis.reducer';
 
 const PlanningTicketListScreen = props => {
   const dispatch = useDispatch();

@@ -22,7 +22,6 @@ export const INITIAL_ELEMENT_DATA = {
   unique_id: 'REG_DP_',
   ref_code: '',
   status: 'P',
-  coordinates: {},
 };
 
 // this will become function -> generate From Configs
@@ -71,25 +70,3 @@ export const ELEMENT_TABLE_FIELDS = [
   {label: 'Reff Code', field: 'ref_code', type: 'simple'},
   {label: 'Status', field: 'status', type: 'status'},
 ];
-
-export const transformAndValidateData = (
-  formData,
-  setError,
-  isEdit,
-  configuration,
-) => {
-  if (isEdit) {
-    return {
-      ...formData,
-      // remove geometry
-      geometry: undefined,
-    };
-  } else {
-    return {
-      ...formData,
-      // remove coordinates and add geometry
-      coordinates: undefined,
-      geometry: latLongMapToCoords([formData.coordinates])[0],
-    };
-  }
-};
