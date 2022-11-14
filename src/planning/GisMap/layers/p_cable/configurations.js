@@ -1,5 +1,4 @@
 import {FEATURE_TYPES, LAYER_STATUS_OPTIONS} from '../common/configuration';
-import {latLongMapToLineCoords} from '~utils/map.utils';
 import CableIcon from '~assets/markers/line_pin.svg';
 
 export const LAYER_KEY = 'p_cable';
