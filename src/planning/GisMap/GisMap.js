@@ -18,10 +18,14 @@ import {
   getPlanningMapState,
   getPlanningTicketData,
 } from '~planning/data/planningGis.selectors';
-import {getMapType} from '~Common/data/appstate.selector';
+import {
+  getLocationPermissionType,
+  getMapType,
+} from '~Common/data/appstate.selector';
 import {getElementCoordinates, LayerKeyMappings, PLANNING_EVENT} from './utils';
 import {INIT_MAP_LOCATION, layout} from '~constants/constants';
 import {getEdgePadding} from '~utils/app.utils';
+import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
 
 /**
  * Parent
@@ -38,8 +42,9 @@ const GisMap = props => {
 
   const enableInterection = useSelector(getGisMapInterectionEnable);
   const {geometry, layerKey, event} = useSelector(getPlanningMapState);
-  const mapType = useSelector(getMapType);
   const ticketData = useSelector(getPlanningTicketData);
+  const mapType = useSelector(getMapType);
+  const locationPermType = useSelector(getLocationPermissionType);
 
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
 
@@ -87,7 +92,9 @@ const GisMap = props => {
             showMapType
             mapType={mapType}
             onPress={handleMapClick}
-            onPoiClick={handleMapClick}>
+            onPoiClick={handleMapClick}
+            showsUserLocation={locationPermType === PERMISSIONS_TYPE.ALLOW}
+            showsMyLocationButton={locationPermType === PERMISSIONS_TYPE.ALLOW}>
             {showMapRender ? (
               <>
                 <GisMapViewLayer />

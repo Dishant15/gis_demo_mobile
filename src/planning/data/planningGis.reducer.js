@@ -63,7 +63,7 @@ const planningGisSlice = createSlice({
     // payload : { event, layerKey, data }
     setMapState: (state, {payload}) => {
       const currMapState = state.mapState;
-      // if next event is editElement
+      // if next event is editElementGeometry
       if (
         payload.event === PLANNING_EVENT.editElementGeometry &&
         currMapState.event !== payload.event
@@ -80,7 +80,7 @@ const planningGisSlice = createSlice({
           };
         }
       }
-      // if current event is editElement
+      // if current event is editElementGeometry
       if (
         currMapState.event === PLANNING_EVENT.editElementGeometry &&
         // next event is not same

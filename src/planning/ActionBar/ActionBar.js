@@ -52,7 +52,10 @@ const ActionBar = () => {
   return (
     <>
       <View
-        style={[styles.actionWrapper, {bottom: Math.max(insets.bottom, 16)}]}>
+        style={[
+          styles.actionWrapper,
+          {bottom: Math.max(insets.bottom + 66, 66)},
+        ]}>
         <TouchableOpacity style={[styles.action]} onPress={handleTabChange(0)}>
           <MaterialIcons
             size={30}
@@ -87,8 +90,7 @@ const ActionBar = () => {
 const styles = StyleSheet.create({
   actionWrapper: {
     position: 'absolute',
-    right: 16,
-    bottom: 16,
+    right: 11,
     zIndex: 1,
   },
   action: {
