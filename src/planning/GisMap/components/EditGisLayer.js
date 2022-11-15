@@ -7,6 +7,7 @@ import {Button} from 'react-native-paper';
 
 import get from 'lodash/get';
 import round from 'lodash/round';
+import size from 'lodash/size';
 import {lineString, length} from '@turf/turf';
 
 import MapCard from '~Common/components/MapCard';
@@ -14,10 +15,12 @@ import MapCard from '~Common/components/MapCard';
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {
   getPlanningMapState,
-  getPlanningTicketId,
+  getPlanningTicketData,
   getPlanningTicketWorkOrderId,
 } from '~planning/data/planningGis.selectors';
 import {
+  addNewElement,
+  addNewTicketWorkorder,
   editElementDetails,
   editTicketWorkorderElement,
 } from '~planning/data/layer.services';
@@ -27,33 +30,43 @@ import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
 import {FEATURE_TYPES} from '../layers/common/configuration';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {latLongMapToCoords, latLongMapToLineCoords} from '~utils/map.utils';
-import {LayerKeyMappings} from '../utils';
+import {
+  LayerKeyMappings,
+  PLANNING_EVENT,
+  TICKET_WORKORDER_TYPE,
+} from '../utils';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
 
 const EditGisLayer = () => {
   const dispatch = useDispatch();
 
   const selectedRegionIds = useSelector(getSelectedRegionIds);
-  const ticketId = useSelector(getPlanningTicketId);
+  const ticketData = useSelector(getPlanningTicketData);
   const workOrderId = useSelector(getPlanningTicketWorkOrderId);
   const {
     geometry: coordinates,
     data,
     layerKey,
+    event,
   } = useSelector(getPlanningMapState);
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
+  const ticketId = get(ticketData, 'id');
+  const ticketName = get(ticketData, 'name');
+  const isEdit = event === PLANNING_EVENT.editElementGeometry;
 
   const onSuccessHandler = () => {
     showToast('Element location updated Successfully', TOAST_TYPE.SUCCESS);
     // close form
     dispatch(setMapState({}));
     // refetch layer
-    dispatch(
-      fetchLayerDataThunk({
-        regionIdList: selectedRegionIds,
-        layerKey,
-      }),
-    );
+    if (size(selectedRegionIds)) {
+      dispatch(
+        fetchLayerDataThunk({
+          regionIdList: selectedRegionIds,
+          layerKey,
+        }),
+      );
+    }
   };
 
   const onErrorHandler = err => {
@@ -77,6 +90,34 @@ const EditGisLayer = () => {
     showToast(notiText, TOAST_TYPE.ERROR);
   };
 
+  const {mutate: addWorkOrder, isLoading} = useMutation(
+    mutationData => addNewTicketWorkorder({data: mutationData, ticketId}),
+    {
+      onSuccess: onSuccessHandler,
+      onError: onErrorHandler,
+    },
+  );
+
+  const {mutate: editWorkOrder, isLoading: isEditTicketLoading} = useMutation(
+    mutationData =>
+      editTicketWorkorderElement({
+        data: mutationData,
+        workOrderId,
+      }),
+    {
+      onSuccess: onSuccessHandler,
+      onError: onErrorHandler,
+    },
+  );
+
+  const {mutate: addElement, isLoading: isAddLoading} = useMutation(
+    mutationData => addNewElement({data: mutationData, layerKey}),
+    {
+      onSuccess: onSuccessHandler,
+      onError: onErrorHandler,
+    },
+  );
+
   const {mutate: editElement, isLoading: isEditLoading} = useMutation(
     mutationData =>
       editElementDetails({data: mutationData, layerKey, elementId: data.id}),
@@ -86,21 +127,11 @@ const EditGisLayer = () => {
     },
   );
 
-  const {mutate: editTicketElement, isLoading: isEditTicketLoading} =
-    useMutation(
-      mutationData =>
-        editTicketWorkorderElement({
-          data: mutationData,
-          workOrderId,
-        }),
-      {
-        onSuccess: onSuccessHandler,
-        onError: onErrorHandler,
-      },
-    );
-
-  const handleUpdate = useCallback(() => {
+  const handleUpdate = () => {
     const isWorkOrderUpdate = !!ticketId;
+    // remove remark from data and pass in workorder data
+    const remark = data.remark;
+    delete data.remark;
     // create submit data
     let submitData = {};
     if (featureType === FEATURE_TYPES.POLYLINE) {
@@ -120,13 +151,48 @@ const EditGisLayer = () => {
     } else {
       throw new Error('feature type is invalid');
     }
-    // hit api
-    if (isWorkOrderUpdate) {
-      editTicketElement(submitData);
+
+    if (isEdit) {
+      if (isWorkOrderUpdate) {
+        if (workOrderId) {
+          // edit work order element api
+          editWorkOrder(submitData);
+        } else {
+          // create workOrder data if isWorkOrderUpdate
+          let workOrderData = {
+            workOrder: {
+              work_order_type: TICKET_WORKORDER_TYPE.ADD,
+              layer_key: layerKey,
+              remark,
+            },
+            element: {...data, ...submitData, id: undefined},
+          };
+          // add workorder data to validatedData
+          addWorkOrder(workOrderData);
+        }
+      } else {
+        editElement(submitData);
+      }
     } else {
-      editElement(submitData);
+      // add
+      if (isWorkOrderUpdate) {
+        console.log('add work order if not edit and ticket id exist');
+        // create workOrder data if isWorkOrderUpdate
+        let workOrderData = {
+          workOrder: {
+            work_order_type: TICKET_WORKORDER_TYPE.ADD,
+            layer_key: layerKey,
+            remark,
+          },
+          element: {...data, ...submitData, id: undefined},
+        };
+        // add workorder data to validatedData
+        addWorkOrder(workOrderData);
+      } else {
+        addElement(submitData);
+      }
     }
-  }, [coordinates, ticketId, featureType]);
+  };
 
   const handleCancel = useCallback(() => {
     dispatch(setMapState({}));
@@ -146,31 +212,34 @@ const EditGisLayer = () => {
     }
   }, [featureType]);
 
-  const ActionContent = useMemo(() => {
-    return (
-      <>
-        <TouchableOpacity onPress={handleUpdate}>
-          <Button
-            mode="text"
-            color={colors.white}
-            style={{backgroundColor: THEME_COLORS.secondary.main}}
-            loading={isEditLoading || isEditTicketLoading}>
-            Update
-          </Button>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleCancel}>
-          <Button
-            mode="text"
-            color={THEME_COLORS.error.main}
-            style={layout.mrl8}>
-            Cancel
-          </Button>
-        </TouchableOpacity>
-      </>
-    );
-  }, [isEditLoading, isEditTicketLoading]);
+  const isLoadingBtn =
+    isLoading || isAddLoading || isEditLoading || isEditTicketLoading;
+  const ActionContent = (
+    <>
+      <TouchableOpacity onPress={handleUpdate}>
+        <Button
+          mode="text"
+          color={colors.white}
+          style={{backgroundColor: THEME_COLORS.secondary.main}}
+          loading={isLoadingBtn}>
+          Update
+        </Button>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleCancel}>
+        <Button mode="text" color={THEME_COLORS.error.main} style={layout.mrl8}>
+          Cancel
+        </Button>
+      </TouchableOpacity>
+    </>
+  );
 
-  return <MapCard title={mapCardTitle} actionContent={ActionContent} />;
+  return (
+    <MapCard
+      title={ticketName ? ticketName : 'Planning'}
+      subTitle={mapCardTitle}
+      actionContent={ActionContent}
+    />
+  );
 };
 
 export default EditGisLayer;

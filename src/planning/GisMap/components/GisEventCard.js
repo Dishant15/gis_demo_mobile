@@ -24,14 +24,10 @@ const GisMapCard = () => {
     dispatch(toggleTicketElements());
   }, []);
 
-  if (event) {
-    if (event === PLANNING_EVENT.addElementGeometry) {
-      return <AddGisMapLayer />;
-    } else if (event === PLANNING_EVENT.editElementGeometry) {
-      return <EditGisLayer />;
-    } else {
-      return null;
-    }
+  if (event === PLANNING_EVENT.addElementGeometry) {
+    return <AddGisMapLayer />;
+  } else if (event === PLANNING_EVENT.editElementGeometry) {
+    return <EditGisLayer />;
   } else if (ticketData?.id) {
     const isHidden = get(ticketData, 'isHidden');
     const ActionContent = (

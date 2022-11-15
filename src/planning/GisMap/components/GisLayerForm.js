@@ -143,11 +143,32 @@ export const GisLayerForm = ({layerKey}) => {
       : data;
     const isWorkOrderUpdate = !!ticketId;
     // call addWorkOrder api if isWorkOrderUpdate, addElement api if not
-    if (isWorkOrderUpdate) {
-      if (isEdit && workOrderId) {
-        // edit work order element api
-        editWorkOrder({...validatedData, geometry: undefined});
+
+    if (isEdit) {
+      if (isWorkOrderUpdate) {
+        if (workOrderId) {
+          // edit work order element api
+          editWorkOrder({...validatedData, geometry: undefined});
+        } else {
+          // create workOrder data if isWorkOrderUpdate
+          let workOrderData = {
+            workOrder: {
+              work_order_type: TICKET_WORKORDER_TYPE.ADD,
+              layer_key: layerKey,
+              remark,
+            },
+            element: validatedData,
+          };
+          // add workorder data to validatedData
+          addWorkOrder(workOrderData);
+        }
       } else {
+        editElement({...validatedData, geometry: undefined});
+      }
+    } else {
+      // add
+      if (isWorkOrderUpdate) {
+        console.log('add work order if not edit and ticket id exist');
         // create workOrder data if isWorkOrderUpdate
         let workOrderData = {
           workOrder: {
@@ -159,10 +180,6 @@ export const GisLayerForm = ({layerKey}) => {
         };
         // add workorder data to validatedData
         addWorkOrder(workOrderData);
-      }
-    } else {
-      if (isEdit) {
-        editElement({...validatedData, geometry: undefined});
       } else {
         addElement(validatedData);
       }
@@ -173,6 +190,8 @@ export const GisLayerForm = ({layerKey}) => {
     dispatch(setMapState({}));
     navigation.goBack();
   };
+  const isLoadingBtn =
+    isLoading || isAddLoading || isEditLoading || isEditTicketLoading;
 
   return (
     <View style={layout.container}>
@@ -183,9 +202,7 @@ export const GisLayerForm = ({layerKey}) => {
         data={data}
         onSubmit={onSubmit}
         onCancel={handleGoBack}
-        isLoading={
-          isLoading || isAddLoading || isEditLoading || isEditTicketLoading
-        }
+        isLoading={isLoadingBtn}
       />
     </View>
   );

@@ -49,7 +49,6 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
 
   const handleBack = useCallback(() => {
-    dispatch(setMapState({}));
     navigation.goBack();
   }, [dispatch]);
 

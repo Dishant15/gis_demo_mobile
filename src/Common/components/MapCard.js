@@ -1,8 +1,9 @@
 import React from 'react';
-import {View, StyleSheet, Pressable} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Paragraph, Title} from 'react-native-paper';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
@@ -12,8 +13,6 @@ const MapCard = ({
   showBackIcon = true,
   title = '',
   subTitle = '',
-  primaryAction = null,
-  secondaryAction = null,
   actionContent = null,
 }) => {
   const navigation = useNavigation();
@@ -23,13 +22,15 @@ const MapCard = ({
     <View style={[styles.card, {top: Math.max(top, 14)}]}>
       <View style={styles.titleWrapper}>
         {showBackIcon ? (
-          <Pressable style={styles.iconWrapper} onPress={navigation.goBack}>
+          <TouchableOpacity
+            style={styles.iconWrapper}
+            onPress={navigation.goBack}>
             <MaterialIcons
               size={24}
               name={'arrow-back-ios'}
               color={colors.white}
             />
-          </Pressable>
+          </TouchableOpacity>
         ) : null}
         <Title numberOfLines={2} ellipsizeMode="tail" style={styles.title}>
           {title}

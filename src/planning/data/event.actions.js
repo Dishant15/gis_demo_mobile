@@ -35,3 +35,8 @@ export const onLayerElementClick = (data, navigation) => dispatch => {
   dispatch(setMapState(data));
   navigation.navigate(screens.gisEventScreen);
 };
+
+export const onViewMapClick = navigation => dispatch => {
+  dispatch(setMapState({}));
+  navigation.navigate(screens.planningTicketMap);
+};

@@ -12,7 +12,10 @@ import round from 'lodash/round';
 import MapCard from '~Common/components/MapCard';
 
 import {setMapState} from '~planning/data/planningGis.reducer';
-import {getPlanningMapState} from '~planning/data/planningGis.selectors';
+import {
+  getPlanningMapState,
+  getPlanningTicketData,
+} from '~planning/data/planningGis.selectors';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {
   latLongMapToCoords,
@@ -28,6 +31,7 @@ const AddGisMapLayer = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
+  const ticketData = useSelector(getPlanningTicketData);
   const {geometry: coordinates, layerKey} = useSelector(getPlanningMapState);
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
   const initialData = get(LayerKeyMappings, [layerKey, 'initialElementData']);
@@ -98,6 +102,12 @@ const AddGisMapLayer = () => {
     </>
   );
 
-  return <MapCard title={mapCardTitle} actionContent={ActionContent} />;
+  return (
+    <MapCard
+      title={ticketData?.name ? ticketData.name : 'Planning'}
+      subTitle={mapCardTitle}
+      actionContent={ActionContent}
+    />
+  );
 };
 export default AddGisMapLayer;

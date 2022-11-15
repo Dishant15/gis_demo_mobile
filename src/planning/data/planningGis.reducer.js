@@ -5,10 +5,11 @@ import size from 'lodash/size';
 import difference from 'lodash/difference';
 import cloneDeep from 'lodash/cloneDeep';
 import countBy from 'lodash/countBy';
+import findIndex from 'lodash/findIndex';
 
 import {fetchLayerDataThunk} from './actionBar.services';
 import {handleLayerSelect, removeLayerSelect} from './planningState.reducer';
-import {convertLayerServerData} from '../GisMap/utils';
+import {convertLayerServerData, PLANNING_EVENT} from '../GisMap/utils';
 import {fetchTicketWorkorderDataThunk} from './ticket.services';
 import {coordsToLatLongMap} from '~utils/map.utils';
 import {logout} from '~Authentication/data/auth.reducer';
@@ -60,8 +61,43 @@ const planningGisSlice = createSlice({
       state.ticketId = payload;
     },
     // payload : { event, layerKey, data }
-    // no need to manage hide show based on next event like web
     setMapState: (state, {payload}) => {
+      const currMapState = state.mapState;
+      // if next event is editElement
+      if (
+        payload.event === PLANNING_EVENT.editElementGeometry &&
+        currMapState.event !== payload.event
+      ) {
+        // hide current element from layerData
+        const elemLayerDataInd = findIndex(state.layerData[payload.layerKey], [
+          'id',
+          payload.data.elementId,
+        ]);
+        if (elemLayerDataInd !== -1) {
+          state.layerData[payload.layerKey][elemLayerDataInd] = {
+            ...state.layerData[payload.layerKey][elemLayerDataInd],
+            hidden: true,
+          };
+        }
+      }
+      // if current event is editElement
+      if (
+        currMapState.event === PLANNING_EVENT.editElementGeometry &&
+        // next event is not same
+        currMapState.event !== payload.event
+      ) {
+        // show current element from layerData
+        const elemLayerDataInd = findIndex(
+          state.layerData[currMapState.layerKey],
+          ['id', currMapState.data.elementId],
+        );
+        if (elemLayerDataInd !== -1) {
+          state.layerData[currMapState.layerKey][elemLayerDataInd] = {
+            ...state.layerData[currMapState.layerKey][elemLayerDataInd],
+            hidden: false,
+          };
+        }
+      }
       state.mapState = {...payload};
     },
     // only used in mobile, update and hold temparay Coordinates changes

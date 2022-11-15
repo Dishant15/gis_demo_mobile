@@ -14,7 +14,7 @@ import Loader from '~Common/Loader';
 
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 
-import {layout, screens, colors, THEME_COLORS} from '~constants/constants';
+import {layout, colors, THEME_COLORS} from '~constants/constants';
 
 import AcceptImg from '~assets/img/accept.png';
 import CancelImg from '~assets/img/cancel.png';
@@ -22,7 +22,10 @@ import InprogressImg from '~assets/img/inprogress.png';
 
 import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
 import {getPlanningTicketData} from '~planning/data/planningGis.selectors';
-import {navigateTicketWorkorderToDetails} from '~planning/data/event.actions';
+import {
+  navigateTicketWorkorderToDetails,
+  onViewMapClick,
+} from '~planning/data/event.actions';
 
 /**
  * Parent:
@@ -53,7 +56,7 @@ const TicketWorkorderScreen = props => {
   useRefreshOnFocus(refetch);
 
   const navigateToMap = useCallback(() => {
-    navigation.navigate(screens.planningTicketMap);
+    dispatch(onViewMapClick(navigation));
   }, []);
 
   const navigateToWorkorderDetails = useCallback(
