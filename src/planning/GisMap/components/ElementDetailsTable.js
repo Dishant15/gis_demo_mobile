@@ -28,6 +28,7 @@ import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
 import {coordsToLatLongMap} from '~utils/map.utils';
 import {navigateEventScreenToMap} from '~planning/data/event.actions';
 import {FEATURE_TYPES} from '../layers/common/configuration';
+import {checkUserPermission} from '~Authentication/data/auth.selectors';
 
 const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   const navigation = useNavigation();
@@ -35,6 +36,10 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   const dispatch = useDispatch();
 
   const {elementId} = useSelector(getPlanningMapStateData);
+  const hasLayerEditPermission = useSelector(
+    checkUserPermission(`${layerKey}_edit`),
+  );
+  const hasEditPermission = layerKey !== 'region' && hasLayerEditPermission;
 
   const {data: elemData, isLoading} = useQuery(
     ['elementDetails', layerKey, elementId],
@@ -92,7 +97,7 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   }, [dispatch, layerKey, elemData, featureType]);
 
   return (
-    <View style={[layout.container, layout.relative]}>
+    <View style={styles.container}>
       <BackHeader title="Element Details" onGoBack={handleBack} />
       {isLoading ? <Loader /> : null}
       <FlatList
@@ -156,33 +161,41 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
           );
         }}
       />
-      <View
-        style={[
-          styles.actionWrapper,
-          {paddingBottom: Math.max(bottom + 12, 12)},
-        ]}>
-        <Button
-          style={[layout.button, styles.btn1]}
-          contentStyle={styles.btnContent}
-          color={colors.secondaryMain}
-          mode="outlined"
-          onPress={handleEditDetails}>
-          Details
-        </Button>
-        <Button
-          style={[layout.button, styles.btn2]}
-          contentStyle={styles.btnContent}
-          color={colors.secondaryMain}
-          mode="outlined"
-          onPress={handleEditLocation}>
-          Location
-        </Button>
-      </View>
+      {hasEditPermission ? (
+        <View
+          style={[
+            styles.actionWrapper,
+            {paddingBottom: Math.max(bottom + 12, 12)},
+          ]}>
+          <Button
+            style={[layout.button, styles.btn1]}
+            contentStyle={styles.btnContent}
+            color={colors.secondaryMain}
+            mode="outlined"
+            onPress={handleEditDetails}>
+            Details
+          </Button>
+          <Button
+            style={[layout.button, styles.btn2]}
+            contentStyle={styles.btnContent}
+            color={colors.secondaryMain}
+            mode="outlined"
+            onPress={handleEditLocation}>
+            Location
+          </Button>
+        </View>
+      ) : null}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.white,
+    position: 'relative',
+    paddingBottom: 60,
+  },
   tableRow: {
     flexDirection: 'row',
     paddingVertical: 8,
