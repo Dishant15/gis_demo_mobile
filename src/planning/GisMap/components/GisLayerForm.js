@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useRef, useCallback} from 'react';
 import {View} from 'react-native';
 import {useMutation} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
@@ -132,13 +132,28 @@ export const GisLayerForm = ({layerKey}) => {
     },
   );
 
+  const handleAddWorkOrder = (submitData, remark) => {
+    // create workOrder data if isWorkOrderUpdate
+    let workOrderData = {
+      workOrder: {
+        work_order_type: TICKET_WORKORDER_TYPE.EDIT,
+        layer_key: layerKey,
+        remark,
+      },
+      element: submitData,
+    };
+    // add workorder data to validatedData
+    addWorkOrder(workOrderData);
+  };
+
   const onSubmit = (data, setError, clearErrors) => {
     clearErrors();
     // remove remark from data and pass in workorder data
     const remark = data.remark;
     delete data.remark;
+    let validatedData = prepareServerData(data, isEdit, formConfig);
     // convert data to server friendly form
-    const validatedData = transformAndValidateData
+    validatedData = transformAndValidateData
       ? transformAndValidateData(data, setError, isEdit, configuration)
       : data;
     const isWorkOrderUpdate = !!ticketId;
@@ -150,17 +165,7 @@ export const GisLayerForm = ({layerKey}) => {
           // edit work order element api
           editWorkOrder({...validatedData, geometry: undefined});
         } else {
-          // create workOrder data if isWorkOrderUpdate
-          let workOrderData = {
-            workOrder: {
-              work_order_type: TICKET_WORKORDER_TYPE.ADD,
-              layer_key: layerKey,
-              remark,
-            },
-            element: validatedData,
-          };
-          // add workorder data to validatedData
-          addWorkOrder(workOrderData);
+          handleAddWorkOrder(validatedData, remark);
         }
       } else {
         editElement({...validatedData, geometry: undefined});
@@ -169,22 +174,27 @@ export const GisLayerForm = ({layerKey}) => {
       // add
       if (isWorkOrderUpdate) {
         console.log('add work order if not edit and ticket id exist');
-        // create workOrder data if isWorkOrderUpdate
-        let workOrderData = {
-          workOrder: {
-            work_order_type: TICKET_WORKORDER_TYPE.ADD,
-            layer_key: layerKey,
-            remark,
-          },
-          element: validatedData,
-        };
-        // add workorder data to validatedData
-        addWorkOrder(workOrderData);
+        handleAddWorkOrder(validatedData, remark);
       } else {
         addElement(validatedData);
       }
     }
   };
+
+  const prepareServerData = useCallback((data, isEdit, formConfig) => {
+    let serverData = {};
+    for (let index = 0; index < formConfig.sections.length; index++) {
+      const {fieldConfigs} = formConfig.sections[index];
+      for (let fInd = 0; fInd < fieldConfigs.length; fInd++) {
+        const {field_key} = fieldConfigs[fInd];
+        serverData[field_key] = data[field_key];
+      }
+    }
+    if (isEdit) {
+      serverData['id'] = data?.id;
+    }
+    return serverData;
+  }, []);
 
   const handleGoBack = () => {
     dispatch(setMapState({}));

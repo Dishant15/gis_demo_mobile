@@ -35,6 +35,8 @@ export const apiGetDashboardData = () => '/api/dashboard/';
 // query_type = detail | data
 export const apiGetRegionList = (query_type = 'detail') =>
   `/api/region/${query_type}/list/`;
+export const apiGetRegionDetails = regionId =>
+  `/api/region/${regionId}/details/?query_type=data`;
 
 // planning apis
 export const apiGetPlanningConfigs = () => '/api/planning/configs/';
@@ -62,3 +64,6 @@ export const apiPutTicketWorkorderEdit = workOrderId =>
 
 export const apiPutTicketWorkorderElementEdit = workOrderId =>
   `/api/ticket/workorder/${workOrderId}/edit/element/`;
+
+export const apiPostValidateElementGeometry = () =>
+  '/api/planning/layer/validate/geometry/';

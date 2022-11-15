@@ -17,3 +17,8 @@ export const getViewOptions = (props = {}) => {
     pin: Icon,
   };
 };
+
+export const ELEMENT_TABLE_FIELDS = [
+  {label: 'Name', field: 'name', type: 'simple'},
+  {label: 'Unique Id', field: 'unique_id', type: 'simple'},
+];

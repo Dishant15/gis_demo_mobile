@@ -104,6 +104,9 @@ const planningGisSlice = createSlice({
     updateMapStateCoordinates: (state, {payload}) => {
       state.mapState.geometry = payload;
     },
+    updateMapStateDataErrPolygons: (state, {payload}) => {
+      state.mapState.errPolygons = payload;
+    },
     setTicketWorkOrderId: (state, {payload}) => {
       state.workOrderId = payload;
     },
@@ -233,5 +236,6 @@ export const {
   setTicketWorkOrderId,
   toggleTicketElements,
   resetPlanningGisData,
+  updateMapStateDataErrPolygons,
 } = planningGisSlice.actions;
 export default planningGisSlice.reducer;

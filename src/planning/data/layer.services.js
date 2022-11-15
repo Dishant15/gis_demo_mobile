@@ -1,8 +1,10 @@
 import Api from '~utils/api.utils';
 import {
   apiGetElementDetails,
+  apiGetRegionDetails,
   apiPostAddElement,
   apiPostAddTicketWorkorder,
+  apiPostValidateElementGeometry,
   apiPutEditElement,
   apiPutTicketWorkorderElementEdit,
 } from '~constants/url.constants';
@@ -32,6 +34,17 @@ export const editTicketWorkorderElement = async ({data, workOrderId}) => {
 
 export const fetchElementDetails = async ({queryKey}) => {
   const [_key, layerKey, elementId] = queryKey;
-  const res = await Api.get(apiGetElementDetails(layerKey, elementId));
+  if (layerKey === 'region') {
+    const res = await Api.get(apiGetRegionDetails(elementId));
+    return res.data;
+  } else {
+    const res = await Api.get(apiGetElementDetails(layerKey, elementId));
+    return res.data;
+  }
+};
+
+// data : { layerKey, element_id*, featureType, geometry, region_id_list / ticket_id }
+export const validateElementGeometry = async data => {
+  const res = await Api.post(apiPostValidateElementGeometry(), data);
   return res.data;
 };

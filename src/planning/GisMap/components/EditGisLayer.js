@@ -12,6 +12,8 @@ import {lineString, length} from '@turf/turf';
 
 import MapCard from '~Common/components/MapCard';
 
+import useValidateGeometry from '../hooks/useValidateGeometry';
+
 import {setMapState} from '~planning/data/planningGis.reducer';
 import {
   getPlanningMapState,
@@ -39,6 +41,7 @@ import {colors, layout, THEME_COLORS} from '~constants/constants';
 
 const EditGisLayer = () => {
   const dispatch = useDispatch();
+  const {validateElementMutation, isValidationLoading} = useValidateGeometry();
 
   const selectedRegionIds = useSelector(getSelectedRegionIds);
   const ticketData = useSelector(getPlanningTicketData);
@@ -49,6 +52,7 @@ const EditGisLayer = () => {
     layerKey,
     event,
   } = useSelector(getPlanningMapState);
+
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
   const ticketId = get(ticketData, 'id');
   const ticketName = get(ticketData, 'name');
@@ -127,6 +131,20 @@ const EditGisLayer = () => {
     },
   );
 
+  const handleAddWorkOrder = (submitData, remark) => {
+    // create workOrder data if isWorkOrderUpdate
+    let workOrderData = {
+      workOrder: {
+        work_order_type: TICKET_WORKORDER_TYPE.EDIT,
+        layer_key: layerKey,
+        remark,
+      },
+      element: {...submitData, id: data?.data},
+    };
+    // add workorder data to validatedData
+    addWorkOrder(workOrderData);
+  };
+
   const handleUpdate = () => {
     const isWorkOrderUpdate = !!ticketId;
     // remove remark from data and pass in workorder data
@@ -152,46 +170,43 @@ const EditGisLayer = () => {
       throw new Error('feature type is invalid');
     }
 
-    if (isEdit) {
-      if (isWorkOrderUpdate) {
-        if (workOrderId) {
-          // edit work order element api
-          editWorkOrder(submitData);
-        } else {
-          // create workOrder data if isWorkOrderUpdate
-          let workOrderData = {
-            workOrder: {
-              work_order_type: TICKET_WORKORDER_TYPE.ADD,
-              layer_key: layerKey,
-              remark,
-            },
-            element: {...data, ...submitData, id: undefined},
-          };
-          // add workorder data to validatedData
-          addWorkOrder(workOrderData);
-        }
-      } else {
-        editElement(submitData);
-      }
-    } else {
-      // add
-      if (isWorkOrderUpdate) {
-        console.log('add work order if not edit and ticket id exist');
-        // create workOrder data if isWorkOrderUpdate
-        let workOrderData = {
-          workOrder: {
-            work_order_type: TICKET_WORKORDER_TYPE.ADD,
-            layer_key: layerKey,
-            remark,
-          },
-          element: {...data, ...submitData, id: undefined},
-        };
-        // add workorder data to validatedData
-        addWorkOrder(workOrderData);
-      } else {
-        addElement(submitData);
-      }
+    // server side validate geometry
+    let validationData = {
+      layerKey,
+      element_id: data?.elementId,
+      featureType,
+      geometry: submitData.geometry,
+      region_id_list: selectedRegionIds,
+    };
+    if (size(selectedRegionIds)) {
+      validationData['region_id_list'] = selectedRegionIds;
+    } else if (ticketId) {
+      validationData['ticket_id'] = ticketId;
     }
+    validateElementMutation(validationData, {
+      onSuccess: () => {
+        if (isEdit) {
+          if (isWorkOrderUpdate) {
+            if (workOrderId) {
+              // edit work order element api
+              editWorkOrder(submitData);
+            } else {
+              handleAddWorkOrder(submitData, remark);
+            }
+          } else {
+            editElement(submitData);
+          }
+        } else {
+          // add
+          if (isWorkOrderUpdate) {
+            console.log('add work order if not edit and ticket id exist');
+            handleAddWorkOrder(submitData, remark);
+          } else {
+            addElement(submitData);
+          }
+        }
+      },
+    });
   };
 
   const handleCancel = useCallback(() => {
@@ -213,7 +228,11 @@ const EditGisLayer = () => {
   }, [featureType]);
 
   const isLoadingBtn =
-    isLoading || isAddLoading || isEditLoading || isEditTicketLoading;
+    isLoading ||
+    isAddLoading ||
+    isEditLoading ||
+    isEditTicketLoading ||
+    isValidationLoading;
   const ActionContent = (
     <>
       <TouchableOpacity onPress={handleUpdate}>

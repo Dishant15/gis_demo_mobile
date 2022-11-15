@@ -26,13 +26,21 @@ import {LayerKeyMappings, PLANNING_EVENT} from '../utils';
 import {FEATURE_TYPES} from '../layers/common/configuration';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
 import {onElementGeometryEdit} from '~planning/data/event.actions';
+import useValidateGeometry from '../hooks/useValidateGeometry';
+import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
 
 const AddGisMapLayer = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const {validateElementMutation, isValidationLoading} = useValidateGeometry(); // once user adds marker go in edit mode
 
   const ticketData = useSelector(getPlanningTicketData);
-  const {geometry: coordinates, layerKey} = useSelector(getPlanningMapState);
+  const selectedRegionIds = useSelector(getSelectedRegionIds);
+  const {
+    geometry: coordinates,
+    layerKey,
+    data,
+  } = useSelector(getPlanningMapState);
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
   const initialData = get(LayerKeyMappings, [layerKey, 'initialElementData']);
 
@@ -53,16 +61,31 @@ const AddGisMapLayer = () => {
     } else {
       throw new Error('feature type is invalid');
     }
-    // complete current event -> fire next event
-    dispatch(
-      onElementGeometryEdit(
-        {
-          event: PLANNING_EVENT.addElementForm, // event for "layerForm"
-          layerKey,
-          data: {...initialData, ...submitData}, // init data
+
+    // server side validate geometry
+    validateElementMutation(
+      {
+        layerKey,
+        element_id: data?.elementId,
+        featureType,
+        geometry: submitData.geometry,
+        region_id_list: selectedRegionIds,
+      },
+      {
+        onSuccess: () => {
+          // complete current event -> fire next event
+          dispatch(
+            onElementGeometryEdit(
+              {
+                event: PLANNING_EVENT.addElementForm, // event for "layerForm"
+                layerKey,
+                data: {...initialData, ...submitData}, // init data
+              },
+              navigation,
+            ),
+          );
         },
-        navigation,
-      ),
+      },
     );
   };
 
@@ -90,7 +113,8 @@ const AddGisMapLayer = () => {
         <Button
           mode="text"
           color={colors.white}
-          style={{backgroundColor: THEME_COLORS.secondary.main}}>
+          style={{backgroundColor: THEME_COLORS.secondary.main}}
+          loading={isValidationLoading}>
           Submit
         </Button>
       </TouchableOpacity>

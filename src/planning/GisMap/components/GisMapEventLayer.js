@@ -2,12 +2,18 @@ import React, {memo} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Polyline, Polygon, Marker} from 'react-native-maps';
 
+import size from 'lodash/size';
+
+import CustomMarker from '~Common/CustomMarker';
+
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 import {getPlanningMapState} from '~planning/data/planningGis.selectors';
 import {getLayerSelectedConfiguration} from '~planning/data/planningState.selectors';
 import {FEATURE_TYPES, zIndexMapping} from '../layers/common/configuration';
 import {LayerKeyMappings, PLANNING_EVENT} from '../utils';
-import CustomMarker from '~Common/CustomMarker';
+import {percentToHex} from '~utils/app.utils';
+
+const errPolygonsFillColor = '#FF0000' + percentToHex(50);
 
 const GisMapEventLayer = () => {
   const dispatch = useDispatch();
@@ -15,6 +21,7 @@ const GisMapEventLayer = () => {
     layerKey,
     event,
     geometry: coordinates,
+    errPolygons,
   } = useSelector(getPlanningMapState);
   const configuration = useSelector(getLayerSelectedConfiguration(layerKey));
 
@@ -30,6 +37,21 @@ const GisMapEventLayer = () => {
     dispatch(updateMapStateCoordinates(coords));
   };
 
+  const mayRenderErrPolygons = size(errPolygons)
+    ? errPolygons.map((ePoly, eInd) => {
+        return (
+          <Polygon
+            key={eInd}
+            strokeColor="red"
+            fillColor={errPolygonsFillColor}
+            strokeWidth={2}
+            coordinates={ePoly}
+            zIndex={zIndexMapping.edit}
+          />
+        );
+      })
+    : null;
+
   if (
     (event === PLANNING_EVENT.addElementGeometry ||
       event === PLANNING_EVENT.editElementGeometry) &&
@@ -42,20 +64,24 @@ const GisMapEventLayer = () => {
     switch (featureType) {
       case FEATURE_TYPES.POINT:
         return (
-          <Marker
-            {...viewOptions}
-            tappable
-            draggable
-            coordinate={coordinates}
-            zIndex={zIndexMapping[layerKey]}
-            onDragEnd={handleMarkerDrag}>
-            <viewOptions.pin />
-          </Marker>
+          <>
+            {mayRenderErrPolygons}
+            <Marker
+              {...viewOptions}
+              tappable
+              draggable
+              coordinate={coordinates}
+              zIndex={zIndexMapping[layerKey]}
+              onDragEnd={handleMarkerDrag}>
+              <viewOptions.pin />
+            </Marker>
+          </>
         );
 
       case FEATURE_TYPES.POLYGON:
         return (
           <>
+            {mayRenderErrPolygons}
             {Array.isArray(coordinates)
               ? coordinates.map((marker, i) => {
                   return (
@@ -83,6 +109,7 @@ const GisMapEventLayer = () => {
       case FEATURE_TYPES.POLYLINE:
         return (
           <>
+            {mayRenderErrPolygons}
             {Array.isArray(coordinates)
               ? coordinates.map((marker, i) => {
                   return (
