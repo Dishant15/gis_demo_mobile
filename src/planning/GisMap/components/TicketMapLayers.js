@@ -4,7 +4,6 @@ import {useSelector} from 'react-redux';
 import {Polyline, Polygon, Marker} from 'react-native-maps';
 
 import {getPlanningTicketData} from '~planning/data/planningGis.selectors';
-import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
 
 import {LayerKeyMappings} from '../utils';
 import {FEATURE_TYPES, zIndexMapping} from '../layers/common/configuration';
