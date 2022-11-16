@@ -135,11 +135,13 @@ const EditGisLayer = () => {
     // create workOrder data if isWorkOrderUpdate
     let workOrderData = {
       workOrder: {
-        work_order_type: TICKET_WORKORDER_TYPE.EDIT,
+        work_order_type: isEdit
+          ? TICKET_WORKORDER_TYPE.EDIT
+          : TICKET_WORKORDER_TYPE.ADD,
         layer_key: layerKey,
         remark,
       },
-      element: {...submitData, id: data?.data},
+      element: {...submitData, id: data?.id},
     };
     // add workorder data to validatedData
     addWorkOrder(workOrderData);
