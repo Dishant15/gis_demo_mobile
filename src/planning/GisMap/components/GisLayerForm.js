@@ -52,6 +52,7 @@ export const GisLayerForm = ({layerKey}) => {
     layerKey,
     'transformAndValidateData',
   ]);
+  const title = get(formConfig, 'sections.0.title', 'Element form');
 
   const onSuccessHandler = () => {
     showToast('Element operation completed Successfully', TOAST_TYPE.SUCCESS);
@@ -136,7 +137,9 @@ export const GisLayerForm = ({layerKey}) => {
     // create workOrder data if isWorkOrderUpdate
     let workOrderData = {
       workOrder: {
-        work_order_type: TICKET_WORKORDER_TYPE.EDIT,
+        work_order_type: isEdit
+          ? TICKET_WORKORDER_TYPE.EDIT
+          : TICKET_WORKORDER_TYPE.ADD,
         layer_key: layerKey,
         remark,
       },
@@ -205,7 +208,7 @@ export const GisLayerForm = ({layerKey}) => {
 
   return (
     <View style={layout.container}>
-      <BackHeader title="Element form" onGoBack={handleGoBack} />
+      <BackHeader title={title} onGoBack={handleGoBack} />
       <DynamicForm
         ref={formRef}
         formConfigs={formConfig}
@@ -213,6 +216,7 @@ export const GisLayerForm = ({layerKey}) => {
         onSubmit={onSubmit}
         onCancel={handleGoBack}
         isLoading={isLoadingBtn}
+        skipTitleIndex={0}
       />
     </View>
   );

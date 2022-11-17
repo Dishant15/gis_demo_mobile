@@ -17,7 +17,7 @@ import Input from '~Common/Input';
 import {FormSelect} from './components/FormFields';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {colors, layout} from '~constants/constants';
+import {colors, layout, THEME_COLORS} from '~constants/constants';
 import {get} from 'lodash';
 
 export const FIELD_TYPES = {
@@ -36,9 +36,15 @@ export const FIELD_TYPES = {
  *
  * @formConfigs {sections: { title, fieldConfigs: [ { field_key, label, field_type } ] } }
  * @data initial data for edit forms
+ *
+ * Parent:
+ *    GisLayerForm
  */
 const DynamicForm = forwardRef(
-  ({formConfigs, data, onSubmit, onCancel, isLoading}, ref) => {
+  (
+    {formConfigs, data, onSubmit, onCancel, isLoading, skipTitleIndex = null},
+    ref,
+  ) => {
     const {sections} = formConfigs;
     const {bottom} = useSafeAreaInsets();
 
@@ -71,7 +77,7 @@ const DynamicForm = forwardRef(
           const {title, fieldConfigs, showCloseIcon} = section;
           return (
             <View key={title}>
-              <Title>{title}</Title>
+              {skipTitleIndex === s_id ? null : <Title>{title}</Title>}
               {!!fieldConfigs ? (
                 <View>
                   {fieldConfigs.map(config => {
@@ -381,7 +387,10 @@ const DynamicForm = forwardRef(
             style={styles.btn2}
             loading={isLoading}
             contentStyle={layout.button}
-            color={colors.black}
+            labelStyle={{
+              color: THEME_COLORS.secondary.contrastText,
+            }}
+            color={THEME_COLORS.secondary.main}
             uppercase
             mode="contained"
             onPress={handleSubmit(onFormSubmit)}>
