@@ -11,6 +11,7 @@ import {getPlanningMapState} from '~planning/data/planningGis.selectors';
 import {FEATURE_TYPES, zIndexMapping} from '../layers/common/configuration';
 import {LayerKeyMappings, PLANNING_EVENT} from '../utils';
 import {percentToHex} from '~utils/app.utils';
+import {getLayerSelectedConfiguration} from '~planning/data/planningState.selectors';
 
 const errPolygonsFillColor = '#FF0000' + percentToHex(50);
 
@@ -31,6 +32,7 @@ const AddEditGeometryLayer = () => {
     errPolygons,
     data,
   } = useSelector(getPlanningMapState);
+  const configuration = useSelector(getLayerSelectedConfiguration(layerKey));
 
   // for polygon and polyline
   const handlePolygonMarkerDrag = index => e => {
@@ -64,8 +66,13 @@ const AddEditGeometryLayer = () => {
       event === PLANNING_EVENT.editElementGeometry) &&
     coordinates
   ) {
+    const isEdit = event === PLANNING_EVENT.editElementGeometry;
     const featureType = LayerKeyMappings[layerKey]['featureType'];
-    const viewOptions = LayerKeyMappings[layerKey]['getViewOptions'](data);
+    // data is used from mapState for edit element
+    // configuration is used to default selected from redux
+    const viewOptions = LayerKeyMappings[layerKey]['getViewOptions'](
+      isEdit ? data : configuration,
+    );
 
     switch (featureType) {
       case FEATURE_TYPES.POINT:

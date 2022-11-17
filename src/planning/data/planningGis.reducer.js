@@ -37,7 +37,11 @@ const initialState = {
    */
   mapState: {},
   // ticket related fields
+  // set ticker data when user click on ticket from PlanningTicket
+  // at same time workOrderId will be reset
   ticketId: null,
+  // fetch ticket data based on ticketId, when TicketWorkorderScreen called.
+  // refetch ticker data when user add / edit element
   // shape : { **Network state, **ticket fields, area_pocket: {},
   //          work_orders: [ {**WorkOrder fields, element }, ... ] }
   ticketData: {
@@ -46,7 +50,7 @@ const initialState = {
     isError: false,
     isHidden: false,
   },
-  // workorder id
+  // set workorder id if user select ticket workorder
   workOrderId: null,
 };
 
@@ -129,8 +133,16 @@ const planningGisSlice = createSlice({
         }
       }
     },
-    resetPlanningGisData: () => {
-      return initialState;
+    // reset ticker data if user visit planning map from drawer
+    resetTicketData: state => {
+      state.ticketId = null;
+      state.ticketData = {
+        isLoading: false,
+        isFetched: false,
+        isError: false,
+        isHidden: false,
+      };
+      state.workOrderId = null;
     },
   },
   extraReducers: {
@@ -233,7 +245,7 @@ export const {
   resetUnselectedLayerGisData,
   setTicketWorkOrderId,
   toggleTicketElements,
-  resetPlanningGisData,
+  resetTicketData,
   updateMapStateDataErrPolygons,
 } = planningGisSlice.actions;
 export default planningGisSlice.reducer;

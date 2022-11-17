@@ -3,7 +3,6 @@ import {countBy, filter, get, isNull} from 'lodash';
 import {logout} from '~Authentication/data/auth.reducer';
 
 const initialState = {
-  selectedTicketId: null,
   workorderData: {},
   workorderList: [],
   filteredWorkorderList: [],
@@ -15,9 +14,6 @@ const planningTicketReducer = createSlice({
   name: 'planningTicket',
   initialState,
   reducers: {
-    setTicketId: (state, {payload}) => {
-      state.selectedTicketId = payload;
-    },
     setWorkorderData: (state, {payload}) => {
       const workorderList = get(payload, 'work_orders', []);
       state.workorderData = {...payload};
@@ -39,6 +35,6 @@ const planningTicketReducer = createSlice({
   },
 });
 
-export const {setTicketId, setWorkorderData, setFilteredworkorderList} =
+export const {setWorkorderData, setFilteredworkorderList} =
   planningTicketReducer.actions;
 export default planningTicketReducer.reducer;

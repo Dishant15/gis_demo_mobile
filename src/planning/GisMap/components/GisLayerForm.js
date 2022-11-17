@@ -163,10 +163,14 @@ export const GisLayerForm = ({layerKey}) => {
     // remove remark from data and pass in workorder data
     const remark = data.remark;
     delete data.remark;
+    // if form is edit get configuration if from data otherwise get from redux;
+    const configId = isEdit
+      ? get(data, 'configuration')
+      : get(configuration, 'id');
     let validatedData = prepareServerData(data, isEdit, formConfig);
     // convert data to server friendly form
     validatedData = transformAndValidateData
-      ? transformAndValidateData(data, setError, isEdit, configuration)
+      ? transformAndValidateData(data, setError, isEdit, configId)
       : data;
     const isWorkOrderUpdate = !!ticketId;
     // call addWorkOrder api if isWorkOrderUpdate, addElement api if not

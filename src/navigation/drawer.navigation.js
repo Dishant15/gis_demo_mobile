@@ -21,10 +21,10 @@ import {
   getUserPermissions,
 } from '~Authentication/data/auth.selectors';
 import {handleLogoutUser} from '~Authentication/data/auth.actions';
+import {resetTicketData} from '~planning/data/planningGis.reducer';
 
 import GTPL_LOGO from '~assets/img/gtpl.jpeg';
 import GPSTEKLOGO from '~assets/svg/gpstek.svg';
-import {clearPlanningData} from '~planning/data/planning.actions';
 
 const Drawer = createDrawerNavigator();
 
@@ -113,7 +113,7 @@ const DrawerContent = props => {
               title="Planning"
               left={() => <List.Icon icon="vector-polyline" />}
               onPress={() => {
-                dispatch(clearPlanningData);
+                dispatch(resetTicketData());
                 props.navigation.closeDrawer();
                 props.navigation.navigate(screens.planningScreen);
               }}

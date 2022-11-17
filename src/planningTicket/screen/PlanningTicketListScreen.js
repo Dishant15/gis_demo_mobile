@@ -40,6 +40,7 @@ const PlanningTicketListScreen = props => {
   useRefreshOnFocus(refetch);
 
   const navigateToWorkorder = id => () => {
+    // set ticket id and reset workorder
     dispatch(setTicketId(id));
     dispatch(setTicketWorkOrderId(null));
     navigation.navigate(screens.planningTicketWorkorder, {ticketId: id});

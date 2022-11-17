@@ -15,10 +15,7 @@ import Header from './Header';
 import ElementConfigList from './ElementConfigList';
 
 import {fetchLayerListDetails} from '~planning/data/actionBar.services';
-import {
-  setMapState,
-  setTicketWorkOrderId,
-} from '~planning/data/planningGis.reducer';
+import {setMapState} from '~planning/data/planningGis.reducer';
 import {setActiveTab} from '~planning/data/planningState.reducer';
 import {
   selectConfiguration,
@@ -28,15 +25,10 @@ import {
   getPlanningMapState,
   getSelectedConfigurations,
 } from '~planning/data/planningGis.selectors';
-import {
-  LayerKeyMappings,
-  PLANNING_EVENT,
-  TICKET_WORKORDER_TYPE,
-} from '~planning/GisMap/utils';
+import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
 
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {colors, layout} from '~constants/constants';
-import {getSelectedPlanningTicket} from '~planningTicket/data/planningTicket.selector';
 
 /**
  * Parent:
@@ -81,7 +73,6 @@ const AddElementContent = ({hideModal}) => {
   const [layerConfigKey, setLayerConfigKey] = useState(null);
   const {event} = useSelector(getPlanningMapState);
   const selectedConfigurations = useSelector(getSelectedConfigurations);
-  const ticketId = useSelector(getSelectedPlanningTicket);
 
   // shape: [ { layer_key, name, is_configurable, can_add, can_edit,
   //              configuration: [ **list of layer wise configs] }, ... ]
@@ -111,12 +102,9 @@ const AddElementContent = ({hideModal}) => {
           enableMapInterection: true,
         }),
       );
-      if (ticketId) {
-        dispatch(setTicketWorkOrderId(TICKET_WORKORDER_TYPE.ADD));
-      }
       dispatch(setActiveTab(null));
     },
-    [event, ticketId],
+    [event],
   );
 
   const handleLayerConfigShow = useCallback(

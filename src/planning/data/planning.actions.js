@@ -1,14 +1,7 @@
 import {getSelectedLayerKeys} from './planningState.selectors';
-import {
-  handleLayerSelect,
-  handleRegionSelect,
-  resetPlanningState,
-} from './planningState.reducer';
+import {handleLayerSelect, handleRegionSelect} from './planningState.reducer';
 import {fetchLayerDataThunk} from './actionBar.services';
-import {
-  resetPlanningGisData,
-  resetUnselectedLayerGisData,
-} from './planningGis.reducer';
+import {resetUnselectedLayerGisData} from './planningGis.reducer';
 
 export const onRegionSelectionUpdate =
   updatedRegionIdList => (dispatch, getState) => {
@@ -40,13 +33,3 @@ export const onRegionSelectionUpdate =
     }
     dispatch(resetUnselectedLayerGisData(selectedLayerKeys));
   };
-
-export const clearPlanningData = dispatch => {
-  dispatch(resetPlanningState());
-  dispatch(resetPlanningGisData());
-};
-
-/**
- * create file: event.actions
- * add isFullscreen flag in data
- */

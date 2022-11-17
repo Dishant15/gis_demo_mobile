@@ -81,7 +81,7 @@ export const transformAndValidateData = (
   formData,
   setError,
   isEdit,
-  configuration,
+  configurationId,
 ) => {
   if (isEdit) {
     return formData;
@@ -89,7 +89,7 @@ export const transformAndValidateData = (
     return {
       ...formData,
       // convert select fields to simple values
-      configuration: configuration.id,
+      configuration: configurationId,
     };
   }
 };
