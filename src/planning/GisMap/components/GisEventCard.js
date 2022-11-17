@@ -1,18 +1,19 @@
 import React, {useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import {Button} from 'react-native-paper';
+
+import get from 'lodash/get';
 
 import MapCard from '~Common/components/MapCard';
 import AddGisMapLayer from './AddGisMapLayer';
-import EditGisLayer from './EditGisLayer';
+import EditGisMapLayer from './EditGisMapLayer';
 
 import {PLANNING_EVENT} from '../utils';
 import {
   getPlanningMapStateEvent,
   getPlanningTicketData,
 } from '~planning/data/planningGis.selectors';
-import {Button} from 'react-native-paper';
 import {colors, THEME_COLORS} from '~constants/constants';
-import {get} from 'lodash';
 import {toggleTicketElements} from '~planning/data/planningGis.reducer';
 
 const GisMapCard = () => {
@@ -27,7 +28,7 @@ const GisMapCard = () => {
   if (event === PLANNING_EVENT.addElementGeometry) {
     return <AddGisMapLayer />;
   } else if (event === PLANNING_EVENT.editElementGeometry) {
-    return <EditGisLayer />;
+    return <EditGisMapLayer />;
   } else if (ticketData?.id) {
     const isHidden = get(ticketData, 'isHidden');
     const ActionContent = (

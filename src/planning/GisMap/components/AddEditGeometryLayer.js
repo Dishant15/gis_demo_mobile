@@ -8,22 +8,29 @@ import CustomMarker from '~Common/CustomMarker';
 
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 import {getPlanningMapState} from '~planning/data/planningGis.selectors';
-import {getLayerSelectedConfiguration} from '~planning/data/planningState.selectors';
 import {FEATURE_TYPES, zIndexMapping} from '../layers/common/configuration';
 import {LayerKeyMappings, PLANNING_EVENT} from '../utils';
 import {percentToHex} from '~utils/app.utils';
 
 const errPolygonsFillColor = '#FF0000' + percentToHex(50);
 
-const GisMapEventLayer = () => {
+/**
+ * Render map element based on featureType
+ * show map element and interect with them when user only adding, editing geometry
+ *
+ * Parent:
+ *    GisMap
+ *
+ */
+const AddEditGeometryLayer = () => {
   const dispatch = useDispatch();
   const {
     layerKey,
     event,
     geometry: coordinates,
     errPolygons,
+    data,
   } = useSelector(getPlanningMapState);
-  const configuration = useSelector(getLayerSelectedConfiguration(layerKey));
 
   // for polygon and polyline
   const handlePolygonMarkerDrag = index => e => {
@@ -58,8 +65,7 @@ const GisMapEventLayer = () => {
     coordinates
   ) {
     const featureType = LayerKeyMappings[layerKey]['featureType'];
-    const viewOptions =
-      LayerKeyMappings[layerKey]['getViewOptions'](configuration);
+    const viewOptions = LayerKeyMappings[layerKey]['getViewOptions'](data);
 
     switch (featureType) {
       case FEATURE_TYPES.POINT:
@@ -71,7 +77,7 @@ const GisMapEventLayer = () => {
               tappable
               draggable
               coordinate={coordinates}
-              zIndex={zIndexMapping[layerKey]}
+              zIndex={zIndexMapping.edit}
               onDragEnd={handleMarkerDrag}>
               <viewOptions.pin />
             </Marker>
@@ -93,7 +99,7 @@ const GisMapEventLayer = () => {
                       stopPropagation
                       flat
                       tracksInfoWindowChanges={false}
-                      zIndex={zIndexMapping[layerKey]}
+                      zIndex={zIndexMapping.edit}
                     />
                   );
                 })
@@ -121,7 +127,7 @@ const GisMapEventLayer = () => {
                       stopPropagation
                       flat
                       tracksInfoWindowChanges={false}
-                      zIndex={zIndexMapping[layerKey]}
+                      zIndex={zIndexMapping.edit}
                     />
                   );
                 })
@@ -142,4 +148,4 @@ const GisMapEventLayer = () => {
   }
 };
 
-export default memo(GisMapEventLayer);
+export default memo(AddEditGeometryLayer);

@@ -178,13 +178,13 @@ const EditGisLayer = () => {
       element_id: data?.elementId,
       featureType,
       geometry: submitData.geometry,
-      region_id_list: selectedRegionIds,
     };
-    if (size(selectedRegionIds)) {
-      validationData['region_id_list'] = selectedRegionIds;
-    } else if (ticketId) {
+    if (ticketId) {
       validationData['ticket_id'] = ticketId;
+    } else if (size(selectedRegionIds)) {
+      validationData['region_id_list'] = selectedRegionIds;
     }
+
     validateElementMutation(validationData, {
       onSuccess: () => {
         if (isEdit) {

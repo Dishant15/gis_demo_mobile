@@ -46,8 +46,6 @@ const initialState = {
     isError: false,
     isHidden: false,
   },
-  // list of elements that can be shown on map with converted data
-  ticketGisData: [],
   // workorder id
   workOrderId: null,
 };

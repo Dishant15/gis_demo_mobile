@@ -10,7 +10,7 @@ import get from 'lodash/get';
 import TicketMapLayers from './components/TicketMapLayers';
 import Map from '~Common/components/Map';
 import GisMapViewLayer from './components/GisMapViewLayer';
-import GisMapEventLayer from './components/GisMapEventLayer';
+import AddEditGeometryLayer from './components/AddEditGeometryLayer';
 
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 import {
@@ -93,13 +93,14 @@ const GisMap = props => {
             mapType={mapType}
             onPress={handleMapClick}
             onPoiClick={handleMapClick}
+            onMarkerPress={handleMapClick}
             showsUserLocation={locationPermType === PERMISSIONS_TYPE.ALLOW}
             showsMyLocationButton={locationPermType === PERMISSIONS_TYPE.ALLOW}>
             {showMapRender ? (
               <>
                 <GisMapViewLayer />
                 <TicketMapLayers />
-                <GisMapEventLayer />
+                <AddEditGeometryLayer />
               </>
             ) : null}
           </Map>

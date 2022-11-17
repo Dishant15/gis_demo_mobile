@@ -43,6 +43,7 @@ const AddGisMapLayer = () => {
   } = useSelector(getPlanningMapState);
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
   const initialData = get(LayerKeyMappings, [layerKey, 'initialElementData']);
+  const ticketId = get(ticketData, 'id');
 
   const handleAddComplete = () => {
     let submitData = {};
@@ -63,30 +64,33 @@ const AddGisMapLayer = () => {
     }
 
     // server side validate geometry
-    validateElementMutation(
-      {
-        layerKey,
-        element_id: data?.elementId,
-        featureType,
-        geometry: submitData.geometry,
-        region_id_list: selectedRegionIds,
+    let validationData = {
+      layerKey,
+      element_id: data?.elementId,
+      featureType,
+      geometry: submitData.geometry,
+    };
+    if (ticketId) {
+      validationData['ticket_id'] = ticketId;
+    } else if (size(selectedRegionIds)) {
+      validationData['region_id_list'] = selectedRegionIds;
+    }
+
+    validateElementMutation(validationData, {
+      onSuccess: () => {
+        // complete current event -> fire next event
+        dispatch(
+          onElementGeometryEdit(
+            {
+              event: PLANNING_EVENT.addElementForm, // event for "layerForm"
+              layerKey,
+              data: {...initialData, ...submitData}, // init data
+            },
+            navigation,
+          ),
+        );
       },
-      {
-        onSuccess: () => {
-          // complete current event -> fire next event
-          dispatch(
-            onElementGeometryEdit(
-              {
-                event: PLANNING_EVENT.addElementForm, // event for "layerForm"
-                layerKey,
-                data: {...initialData, ...submitData}, // init data
-              },
-              navigation,
-            ),
-          );
-        },
-      },
-    );
+    });
   };
 
   const handleCancel = useCallback(() => {
