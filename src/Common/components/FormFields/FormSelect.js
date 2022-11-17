@@ -1,5 +1,5 @@
 import React, {useState, useCallback, useRef, useMemo} from 'react';
-import {View, StyleSheet, Pressable, Dimensions} from 'react-native';
+import {View, StyleSheet, Pressable, Keyboard} from 'react-native';
 import {
   Button,
   Menu,
@@ -13,7 +13,7 @@ import {
 } from 'react-native-paper';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-import {difference, filter, find, indexOf, join, map, split} from 'lodash';
+import {difference, find, indexOf, join, map, split} from 'lodash';
 
 import Input from '~Common/Input';
 
@@ -22,8 +22,6 @@ import {noop} from '~utils/app.utils';
 import {useKeyboard} from '~utils/useKeyboard';
 
 import CloseIcon from '~assets/svg/icon_close.svg';
-
-const {height} = Dimensions.get('screen');
 
 export const FormSelect = ({
   tagList,
@@ -39,9 +37,12 @@ export const FormSelect = ({
   const [extraOpt, setExtraOpt] = useState('');
   const scrollRef = useRef();
 
-  const isKeyboardVisible = useKeyboard();
+  const {availableHeight} = useKeyboard();
 
-  const openMenu = () => setVisible(true);
+  const openMenu = () => {
+    setVisible(true);
+    Keyboard.dismiss();
+  };
   const closeMenu = () => setVisible(false);
 
   const handleReset = useCallback(() => {
@@ -105,10 +106,7 @@ export const FormSelect = ({
         <Portal>
           <Modal visible={visible} onDismiss={closeMenu}>
             <View
-              style={[
-                styles.menuContentStyle,
-                {maxHeight: isKeyboardVisible ? height * 0.5 : height * 0.8},
-              ]}>
+              style={[styles.menuContentStyle, {maxHeight: availableHeight}]}>
               <View style={styles.titleWrapper}>
                 <Title
                   style={styles.title}

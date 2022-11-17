@@ -9,10 +9,8 @@ import {colors} from '~constants/constants';
 import {noop} from '~utils/app.utils';
 import {useKeyboard} from '~utils/useKeyboard';
 
-import CloseIcon from '~assets/svg/icon_close.svg';
 import {toggleFromList} from '~Common/TagSelect';
-
-const {height} = Dimensions.get('screen');
+import CloseIcon from '~assets/svg/icon_close.svg';
 
 const SelectModel = ({
   closeMenu,
@@ -23,7 +21,7 @@ const SelectModel = ({
 }) => {
   const [tags, setTags] = useState(selectedTags);
   const scrollRef = useRef();
-  const isKeyboardVisible = useKeyboard();
+  const {availableHeight} = useKeyboard();
 
   const handleSubmit = useCallback(() => {
     onSubmit(tags);
@@ -41,11 +39,7 @@ const SelectModel = ({
   return (
     <Portal>
       <Modal visible={true} onDismiss={closeMenu}>
-        <View
-          style={[
-            styles.menuContentStyle,
-            {maxHeight: isKeyboardVisible ? height * 0.5 : height * 0.8},
-          ]}>
+        <View style={[styles.menuContentStyle, {maxHeight: availableHeight}]}>
           <View style={styles.titleWrapper}>
             <Title style={styles.title} numberOfLines={1} ellipsizeMode="tail">
               {inputLabel}

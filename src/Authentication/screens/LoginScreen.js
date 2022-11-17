@@ -6,6 +6,7 @@ import {
   Dimensions,
   StatusBar,
   Pressable,
+  Keyboard,
 } from 'react-native';
 import {TextInput, Button, HelperText} from 'react-native-paper';
 import {useForm, Controller} from 'react-hook-form';
@@ -44,6 +45,7 @@ const LoginScreen = () => {
 
   const handleShowPopup = useCallback(() => {
     setshowPopup(true);
+    Keyboard.dismiss();
   }, []);
 
   const handleHidePopup = useCallback(() => {

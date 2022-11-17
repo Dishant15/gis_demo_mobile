@@ -1,11 +1,5 @@
 import React, {useState, useCallback, useRef} from 'react';
-import {
-  View,
-  StyleSheet,
-  Pressable,
-  Dimensions,
-  ScrollView,
-} from 'react-native';
+import {View, StyleSheet, Pressable, ScrollView, Keyboard} from 'react-native';
 import {
   Button,
   Menu,
@@ -18,15 +12,18 @@ import {
 } from 'react-native-paper';
 import Modal from 'react-native-modal';
 
-import {difference, find, indexOf, map} from 'lodash';
+import difference from 'lodash/difference';
+import find from 'lodash/find';
+import indexOf from 'lodash/indexOf';
+import map from 'lodash/map';
+import noop from 'lodash/noop';
+
+import Input from './Input';
 
 import {colors} from '~constants/constants';
-import {noop} from '~utils/app.utils';
-import Input from './Input';
 import {useKeyboard} from '~utils/useKeyboard';
-import CloseIcon from '~assets/svg/icon_close.svg';
 
-const {height, width} = Dimensions.get('screen');
+import CloseIcon from '~assets/svg/icon_close.svg';
 
 const TagSelect = ({
   tagList,
@@ -40,9 +37,12 @@ const TagSelect = ({
   const [extraOpt, setExtraOpt] = useState('');
   const scrollRef = useRef();
 
-  const isKeyboardVisible = useKeyboard();
+  const {availableHeight} = useKeyboard();
 
-  const openMenu = () => setVisible(true);
+  const openMenu = () => {
+    setVisible(true);
+    Keyboard.dismiss();
+  };
   const closeMenu = () => setVisible(false);
 
   const handleReset = useCallback(() => {
@@ -107,10 +107,7 @@ const TagSelect = ({
             onBackdropPress={closeMenu}
             avoidKeyboard>
             <View
-              style={[
-                styles.menuContentStyle,
-                {maxHeight: isKeyboardVisible ? height * 0.5 : height * 0.8},
-              ]}>
+              style={[styles.menuContentStyle, {maxHeight: availableHeight}]}>
               <View style={styles.titleWrapper}>
                 <Title
                   style={styles.title}

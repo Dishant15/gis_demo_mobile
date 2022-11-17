@@ -1,20 +1,30 @@
 import {useEffect, useState} from 'react';
-import {Keyboard} from 'react-native';
+import {Keyboard, Dimensions} from 'react-native';
 
-export function useKeyboard() {
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+
+const {height} = Dimensions.get('window');
+
+export const useKeyboard = () => {
+  const {bottom, top} = useSafeAreaInsets();
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [availableHeight, setAvailableHeight] = useState(height);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
-      () => {
-        setKeyboardVisible(true); // or some other action
+      e => {
+        const keyboardHeight = e.endCoordinates.height;
+        setKeyboardVisible(true);
+        setKeyboardHeight(keyboardHeight);
+        setAvailableHeight(height - keyboardHeight - top - bottom);
       },
     );
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       () => {
-        setKeyboardVisible(false); // or some other action
+        setKeyboardVisible(false);
       },
     );
 
@@ -24,5 +34,5 @@ export function useKeyboard() {
     };
   }, []);
 
-  return isKeyboardVisible;
-}
+  return {isKeyboardVisible, availableHeight, keyboardHeight};
+};
