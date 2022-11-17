@@ -38,6 +38,8 @@ import {
   TICKET_WORKORDER_TYPE,
 } from '../utils';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
+import {handleLayerSelect} from '~planning/data/planningState.reducer';
+import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
 
 const EditGisLayer = () => {
   const dispatch = useDispatch();
@@ -62,6 +64,13 @@ const EditGisLayer = () => {
     showToast('Element location updated Successfully', TOAST_TYPE.SUCCESS);
     // close form
     dispatch(setMapState({}));
+    // fetch ticket details if user come from ticket screen
+    if (ticketId) {
+      dispatch(fetchTicketWorkorderDataThunk(ticketId));
+    } else {
+      // otherwise select layer
+      dispatch(handleLayerSelect(layerKey));
+    }
     // refetch layer
     if (size(selectedRegionIds)) {
       dispatch(

@@ -42,7 +42,9 @@ const planningStateSlice = createSlice({
     },
     // payload : layer key
     handleLayerSelect: (state, {payload}) => {
-      state.selectedLayerKeys.push(payload);
+      if (!state.selectedLayerKeys.includes(payload)) {
+        state.selectedLayerKeys.push(payload);
+      }
     },
     removeLayerSelect: (state, {payload}) => {
       const layerSerchInd = state.selectedLayerKeys.indexOf(payload);

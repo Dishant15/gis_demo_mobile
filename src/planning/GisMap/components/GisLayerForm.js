@@ -34,6 +34,8 @@ import {
   TICKET_WORKORDER_TYPE,
 } from '../utils';
 import {layout, screens} from '~constants/constants';
+import {handleLayerSelect} from '~planning/data/planningState.reducer';
+import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
 
 export const GisLayerForm = ({layerKey}) => {
   const navigation = useNavigation();
@@ -58,6 +60,13 @@ export const GisLayerForm = ({layerKey}) => {
     showToast('Element operation completed Successfully', TOAST_TYPE.SUCCESS);
     // close form
     dispatch(setMapState({}));
+    // fetch ticket details if user come from ticket screen
+    if (ticketId) {
+      dispatch(fetchTicketWorkorderDataThunk(ticketId));
+    } else {
+      // otherwise select layer
+      dispatch(handleLayerSelect(layerKey));
+    }
     if (size(selectedRegionIds)) {
       // refetch layer
       dispatch(
