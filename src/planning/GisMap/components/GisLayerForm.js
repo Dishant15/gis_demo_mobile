@@ -5,7 +5,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
 import get from 'lodash/get';
-import size from 'lodash/size';
 
 import DynamicForm from '~Common/DynamicForm';
 import BackHeader from '~Common/components/Header/BackHeader';
@@ -16,17 +15,15 @@ import {
   editElementDetails,
   editTicketWorkorderElement,
 } from '~planning/data/layer.services';
-import {
-  getLayerSelectedConfiguration,
-  getSelectedRegionIds,
-} from '~planning/data/planningState.selectors';
+import {getLayerSelectedConfiguration} from '~planning/data/planningState.selectors';
 import {
   getPlanningMapState,
   getPlanningTicketId,
   getPlanningTicketWorkOrderId,
 } from '~planning/data/planningGis.selectors';
 import {setMapState} from '~planning/data/planningGis.reducer';
-import {fetchLayerDataThunk} from '~planning/data/actionBar.services';
+import {onElementUpdate} from '~planning/data/event.actions';
+
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {
   LayerKeyMappings,
@@ -34,15 +31,12 @@ import {
   TICKET_WORKORDER_TYPE,
 } from '../utils';
 import {layout, screens} from '~constants/constants';
-import {handleLayerSelect} from '~planning/data/planningState.reducer';
-import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
 
 export const GisLayerForm = ({layerKey}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const formRef = useRef();
 
-  const selectedRegionIds = useSelector(getSelectedRegionIds);
   const workOrderId = useSelector(getPlanningTicketWorkOrderId);
   const ticketId = useSelector(getPlanningTicketId);
   const {event, data} = useSelector(getPlanningMapState);
@@ -58,24 +52,7 @@ export const GisLayerForm = ({layerKey}) => {
 
   const onSuccessHandler = () => {
     showToast('Element operation completed Successfully', TOAST_TYPE.SUCCESS);
-    // close form
-    dispatch(setMapState({}));
-    // fetch ticket details if user come from ticket screen
-    if (ticketId) {
-      dispatch(fetchTicketWorkorderDataThunk(ticketId));
-    } else {
-      // otherwise select layer
-      dispatch(handleLayerSelect(layerKey));
-    }
-    if (size(selectedRegionIds)) {
-      // refetch layer
-      dispatch(
-        fetchLayerDataThunk({
-          regionIdList: selectedRegionIds,
-          layerKey,
-        }),
-      );
-    }
+    dispatch(onElementUpdate(layerKey));
     // navigate to planning map
     navigation.navigate(screens.planningScreen);
   };
@@ -165,8 +142,8 @@ export const GisLayerForm = ({layerKey}) => {
     delete data.remark;
     // if form is edit get configuration if from data otherwise get from redux;
     const configId = isEdit
-      ? get(data, 'configuration')
-      : get(configuration, 'id');
+      ? get(data, 'configuration', undefined)
+      : get(configuration, 'id', undefined);
     let validatedData = prepareServerData(data, isEdit, formConfig);
     // convert data to server friendly form
     validatedData = transformAndValidateData

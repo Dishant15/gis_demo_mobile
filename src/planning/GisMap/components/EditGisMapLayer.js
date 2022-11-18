@@ -26,8 +26,8 @@ import {
   editElementDetails,
   editTicketWorkorderElement,
 } from '~planning/data/layer.services';
-import {fetchLayerDataThunk} from '~planning/data/actionBar.services';
 import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
+import {onElementUpdate} from '~planning/data/event.actions';
 
 import {FEATURE_TYPES} from '../layers/common/configuration';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
@@ -38,8 +38,6 @@ import {
   TICKET_WORKORDER_TYPE,
 } from '../utils';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
-import {handleLayerSelect} from '~planning/data/planningState.reducer';
-import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
 
 const EditGisLayer = () => {
   const dispatch = useDispatch();
@@ -62,24 +60,7 @@ const EditGisLayer = () => {
 
   const onSuccessHandler = () => {
     showToast('Element location updated Successfully', TOAST_TYPE.SUCCESS);
-    // close form
-    dispatch(setMapState({}));
-    // fetch ticket details if user come from ticket screen
-    if (ticketId) {
-      dispatch(fetchTicketWorkorderDataThunk(ticketId));
-    } else {
-      // otherwise select layer
-      dispatch(handleLayerSelect(layerKey));
-    }
-    // refetch layer
-    if (size(selectedRegionIds)) {
-      dispatch(
-        fetchLayerDataThunk({
-          regionIdList: selectedRegionIds,
-          layerKey,
-        }),
-      );
-    }
+    dispatch(onElementUpdate(layerKey));
   };
 
   const onErrorHandler = err => {

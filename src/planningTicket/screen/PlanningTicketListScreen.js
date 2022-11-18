@@ -20,12 +20,9 @@ import Loader from '~Common/Loader';
 
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 import {fetchTicketList} from '~Dashboard/data/services';
+import {onTicketClick} from '~planningTicket/data/planningTicket.action';
 
-import {colors, layout, screens} from '~constants/constants';
-import {
-  setTicketId,
-  setTicketWorkOrderId,
-} from '~planning/data/planningGis.reducer';
+import {colors, layout} from '~constants/constants';
 
 const PlanningTicketListScreen = props => {
   const dispatch = useDispatch();
@@ -40,10 +37,7 @@ const PlanningTicketListScreen = props => {
   useRefreshOnFocus(refetch);
 
   const navigateToWorkorder = id => () => {
-    // set ticket id and reset workorder
-    dispatch(setTicketId(id));
-    dispatch(setTicketWorkOrderId(null));
-    navigation.navigate(screens.planningTicketWorkorder, {ticketId: id});
+    dispatch(onTicketClick(navigation, id));
   };
 
   return (

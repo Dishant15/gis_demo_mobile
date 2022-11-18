@@ -3,7 +3,6 @@ import SecondarySpliterIcon from '~assets/markers/spliter_view.svg';
 import SecondarySpliterEditIcon from '~assets/markers/spliter_edit.svg';
 import PrimarySpliterIcon from '~assets/markers/spliter_view_primary.svg';
 import PrimarySpliterEditIcon from '~assets/markers/spliter_edit_primary.svg';
-import {latLongMapToCoords} from '~utils/map.utils';
 
 export const LAYER_KEY = 'p_splitter';
 export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POINT;
