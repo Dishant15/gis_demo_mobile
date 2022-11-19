@@ -2,6 +2,7 @@ import {FEATURE_TYPES, LAYER_STATUS_OPTIONS} from '../common/configuration';
 import CableIcon from '~assets/markers/line_pin.svg';
 
 export const LAYER_KEY = 'p_cable';
+export const PRE_UID = 'CBL';
 export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POLYLINE;
 
 export const getViewOptions = ({color_on_map}) => {

@@ -90,17 +90,18 @@ export const GisLayerForm = ({layerKey}) => {
     },
   );
 
-  const {mutate: editWorkOrder, isLoading: isEditTicketLoading} = useMutation(
-    mutationData =>
-      editTicketWorkorderElement({
-        data: mutationData,
-        workOrderId,
-      }),
-    {
-      onSuccess: onSuccessHandler,
-      onError: onErrorHandler,
-    },
-  );
+  const {mutate: editWorkOrderElementMutation, isLoading: isEditTicketLoading} =
+    useMutation(
+      mutationData =>
+        editTicketWorkorderElement({
+          data: mutationData,
+          workOrderId,
+        }),
+      {
+        onSuccess: onSuccessHandler,
+        onError: onErrorHandler,
+      },
+    );
 
   const {mutate: addElement, isLoading: isAddLoading} = useMutation(
     mutationData => addNewElement({data: mutationData, layerKey}),
@@ -154,21 +155,25 @@ export const GisLayerForm = ({layerKey}) => {
 
     if (isEdit) {
       if (isWorkOrderUpdate) {
+        // user came from a ticket
         if (workOrderId) {
           // edit work order element api
-          editWorkOrder({...validatedData, geometry: undefined});
+          editWorkOrderElementMutation({...validatedData, geometry: undefined});
         } else {
           handleAddWorkOrder(validatedData, remark);
         }
       } else {
+        // user came from planning in drawer
+        // directly update element without workorder
         editElement({...validatedData, geometry: undefined});
       }
     } else {
-      // add
+      // user came from GisMap Add Element tab
       if (isWorkOrderUpdate) {
-        console.log('add work order if not edit and ticket id exist');
+        // user will add element with a workorder
         handleAddWorkOrder(validatedData, remark);
       } else {
+        // directly add element
         addElement(validatedData);
       }
     }

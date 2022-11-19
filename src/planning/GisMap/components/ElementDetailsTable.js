@@ -26,7 +26,7 @@ import {getPlanningMapStateData} from '~planning/data/planningGis.selectors';
 import {colors, layout} from '~constants/constants';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
 import {coordsToLatLongMap} from '~utils/map.utils';
-import {navigateEventScreenToMap} from '~planning/data/event.actions';
+import {onEditElementGeometry} from '~planning/data/event.actions';
 import {FEATURE_TYPES} from '../layers/common/configuration';
 import {checkUserPermission} from '~Authentication/data/auth.selectors';
 
@@ -39,6 +39,7 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   const hasLayerEditPermission = useSelector(
     checkUserPermission(`${layerKey}_edit`),
   );
+  // User can not edit region on mobile application
   const hasEditPermission = layerKey !== 'region' && hasLayerEditPermission;
 
   const {data: elemData, isLoading} = useQuery(
@@ -78,7 +79,7 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
       geometry = coordsToLatLongMap([elemData.coordinates])[0];
     }
     dispatch(
-      navigateEventScreenToMap(
+      onEditElementGeometry(
         {
           event: PLANNING_EVENT.editElementGeometry,
           layerKey,
@@ -86,7 +87,6 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
           data: {
             ...elemData,
             elementId: elemData.id,
-            coordinates: elemData.coordinates,
           },
           geometry,
           enableMapInterection: true,

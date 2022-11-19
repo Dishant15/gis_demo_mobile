@@ -1,6 +1,8 @@
-import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import orderBy from 'lodash/orderBy';
+import {FEATURE_TYPES} from './layers/common/configuration';
+import {coordsToLatLongMap} from '~utils/map.utils';
+import {customAlphabet} from 'nanoid/non-secure';
 
 import * as RegionLayer from './layers/region';
 import * as DPLayer from './layers/p_dp';
@@ -8,9 +10,6 @@ import * as SplitterLayer from './layers/p_splitter';
 import * as CableLayer from './layers/p_cable';
 import * as BuildingLayer from './layers/p_survey_building';
 import * as SAreaLayer from './layers/p_survey_area';
-
-import {FEATURE_TYPES} from './layers/common/configuration';
-import {coordsToLatLongMap} from '~utils/map.utils';
 
 // possible events that can happen on map
 export const PLANNING_EVENT = {
@@ -31,11 +30,13 @@ export const TICKET_WORKORDER_TYPE = {
 
 export const LayerKeyMappings = {
   [RegionLayer.LAYER_KEY]: {
+    preUid: RegionLayer.PRE_UID,
     featureType: RegionLayer.LAYER_FEATURE_TYPE,
     getViewOptions: RegionLayer.getViewOptions,
     elementTableFields: RegionLayer.ELEMENT_TABLE_FIELDS,
   },
   [DPLayer.LAYER_KEY]: {
+    preUid: DPLayer.PRE_UID,
     featureType: DPLayer.LAYER_FEATURE_TYPE,
     getViewOptions: DPLayer.getViewOptions,
     initialElementData: DPLayer.INITIAL_ELEMENT_DATA,
@@ -43,6 +44,7 @@ export const LayerKeyMappings = {
     formConfig: DPLayer.ELEMENT_FORM_TEMPLATE,
   },
   [SplitterLayer.LAYER_KEY]: {
+    preUid: SplitterLayer.PRE_UID,
     featureType: SplitterLayer.LAYER_FEATURE_TYPE,
     getViewOptions: SplitterLayer.getViewOptions,
     initialElementData: SplitterLayer.INITIAL_ELEMENT_DATA,
@@ -52,6 +54,7 @@ export const LayerKeyMappings = {
     transformAndValidateData: SplitterLayer.transformAndValidateData,
   },
   [CableLayer.LAYER_KEY]: {
+    preUid: CableLayer.PRE_UID,
     featureType: CableLayer.LAYER_FEATURE_TYPE,
     getViewOptions: CableLayer.getViewOptions,
     initialElementData: CableLayer.INITIAL_ELEMENT_DATA,
@@ -60,6 +63,7 @@ export const LayerKeyMappings = {
     transformAndValidateData: CableLayer.transformAndValidateData,
   },
   [SAreaLayer.LAYER_KEY]: {
+    preUid: SAreaLayer.PRE_UID,
     featureType: SAreaLayer.LAYER_FEATURE_TYPE,
     getViewOptions: SAreaLayer.getViewOptions,
     initialElementData: SAreaLayer.INITIAL_ELEMENT_DATA,
@@ -67,6 +71,7 @@ export const LayerKeyMappings = {
     formConfig: SAreaLayer.ELEMENT_FORM_TEMPLATE,
   },
   [BuildingLayer.LAYER_KEY]: {
+    preUid: BuildingLayer.PRE_UID,
     featureType: BuildingLayer.LAYER_FEATURE_TYPE,
     getViewOptions: BuildingLayer.getViewOptions,
     initialElementData: BuildingLayer.INITIAL_ELEMENT_DATA,
@@ -133,4 +138,12 @@ export const getElementCoordinates = (
     return [...(existingCoordinates || []), newCoordinates];
   }
   return newCoordinates;
+};
+
+const alphabet =
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+export const nanoid = customAlphabet(alphabet, 6);
+
+export const generateElementUid = layerKey => {
+  return `${LayerKeyMappings[layerKey]['preUid']}.${nanoid()}`;
 };

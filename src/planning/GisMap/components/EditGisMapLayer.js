@@ -32,11 +32,7 @@ import {onElementUpdate} from '~planning/data/event.actions';
 import {FEATURE_TYPES} from '../layers/common/configuration';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {latLongMapToCoords, latLongMapToLineCoords} from '~utils/map.utils';
-import {
-  LayerKeyMappings,
-  PLANNING_EVENT,
-  TICKET_WORKORDER_TYPE,
-} from '../utils';
+import {LayerKeyMappings, TICKET_WORKORDER_TYPE} from '../utils';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
 
 const EditGisLayer = () => {
@@ -50,13 +46,11 @@ const EditGisLayer = () => {
     geometry: coordinates,
     data,
     layerKey,
-    event,
   } = useSelector(getPlanningMapState);
 
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
   const ticketId = get(ticketData, 'id');
   const ticketName = get(ticketData, 'name');
-  const isEdit = event === PLANNING_EVENT.editElementGeometry;
 
   const onSuccessHandler = () => {
     showToast('Element location updated Successfully', TOAST_TYPE.SUCCESS);
@@ -92,25 +86,18 @@ const EditGisLayer = () => {
     },
   );
 
-  const {mutate: editWorkOrder, isLoading: isEditTicketLoading} = useMutation(
-    mutationData =>
-      editTicketWorkorderElement({
-        data: mutationData,
-        workOrderId,
-      }),
-    {
-      onSuccess: onSuccessHandler,
-      onError: onErrorHandler,
-    },
-  );
-
-  const {mutate: addElement, isLoading: isAddLoading} = useMutation(
-    mutationData => addNewElement({data: mutationData, layerKey}),
-    {
-      onSuccess: onSuccessHandler,
-      onError: onErrorHandler,
-    },
-  );
+  const {mutate: editWorkOrderElementMutation, isLoading: isEditTicketLoading} =
+    useMutation(
+      mutationData =>
+        editTicketWorkorderElement({
+          data: mutationData,
+          workOrderId,
+        }),
+      {
+        onSuccess: onSuccessHandler,
+        onError: onErrorHandler,
+      },
+    );
 
   const {mutate: editElement, isLoading: isEditLoading} = useMutation(
     mutationData =>
@@ -125,9 +112,7 @@ const EditGisLayer = () => {
     // create workOrder data if isWorkOrderUpdate
     let workOrderData = {
       workOrder: {
-        work_order_type: isEdit
-          ? TICKET_WORKORDER_TYPE.EDIT
-          : TICKET_WORKORDER_TYPE.ADD,
+        work_order_type: TICKET_WORKORDER_TYPE.EDIT,
         layer_key: layerKey,
         remark,
       },
@@ -177,25 +162,19 @@ const EditGisLayer = () => {
 
     validateElementMutation(validationData, {
       onSuccess: () => {
-        if (isEdit) {
-          if (isWorkOrderUpdate) {
-            if (workOrderId) {
-              // edit work order element api
-              editWorkOrder(submitData);
-            } else {
-              handleAddWorkOrder(submitData, remark);
-            }
+        if (isWorkOrderUpdate) {
+          // user came from a ticket
+          if (workOrderId) {
+            // edit work order element api
+            editWorkOrderElementMutation(submitData);
           } else {
-            editElement(submitData);
+            // edit planning element and submit with new work order
+            handleAddWorkOrder(submitData, remark);
           }
         } else {
-          // add
-          if (isWorkOrderUpdate) {
-            console.log('add work order if not edit and ticket id exist');
-            handleAddWorkOrder(submitData, remark);
-          } else {
-            addElement(submitData);
-          }
+          // user came from planning in drawer
+          // directly update element without workorder
+          editElement(submitData);
         }
       },
     });

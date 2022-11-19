@@ -25,7 +25,7 @@ import {
 import {LayerKeyMappings, PLANNING_EVENT} from '../utils';
 import {FEATURE_TYPES} from '../layers/common/configuration';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
-import {onElementGeometryEdit} from '~planning/data/event.actions';
+import {onAddElementDetails} from '~planning/data/event.actions';
 import useValidateGeometry from '../hooks/useValidateGeometry';
 import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
 
@@ -42,7 +42,6 @@ const AddGisMapLayer = () => {
     data,
   } = useSelector(getPlanningMapState);
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
-  const initialData = get(LayerKeyMappings, [layerKey, 'initialElementData']);
   const ticketId = get(ticketData, 'id');
 
   const handleAddComplete = () => {
@@ -77,17 +76,15 @@ const AddGisMapLayer = () => {
     }
 
     validateElementMutation(validationData, {
-      onSuccess: () => {
+      onSuccess: res => {
         // complete current event -> fire next event
         dispatch(
-          onElementGeometryEdit(
-            {
-              event: PLANNING_EVENT.addElementForm, // event for "layerForm"
-              layerKey,
-              data: {...initialData, ...submitData}, // init data
-            },
+          onAddElementDetails({
+            layerKey,
+            submitData,
+            validationRes: res,
             navigation,
-          ),
+          }),
         );
       },
     });

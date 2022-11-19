@@ -4,6 +4,7 @@ import Icon from '~assets/markers/p_dp_view.svg';
 import EditIcon from '~assets/markers/p_dp_edit.svg';
 
 export const LAYER_KEY = 'p_dp';
+export const PRE_UID = 'DP';
 export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POINT;
 
 export const getViewOptions = () => ({

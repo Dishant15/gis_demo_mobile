@@ -3,6 +3,7 @@ import {getFillColor} from '~utils/map.utils';
 import Icon from '~assets/markers/pentagon.svg';
 
 export const LAYER_KEY = 'region';
+export const PRE_UID = 'RGN';
 export const LAYER_FEATURE_TYPE = FEATURE_TYPES.MULTI_POLYGON;
 
 export const getViewOptions = (props = {}) => {

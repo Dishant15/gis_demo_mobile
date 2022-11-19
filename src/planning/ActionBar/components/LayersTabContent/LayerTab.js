@@ -21,10 +21,8 @@ import {
   setActiveTab,
 } from '~planning/data/planningState.reducer';
 import {colors} from '~constants/constants';
-import {PLANNING_EVENT} from '~planning/GisMap/utils';
-import {setMapState} from '~planning/data/planningGis.reducer';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import {onLayerElementClick} from '~planning/data/event.actions';
+import {openElementDetails} from '~planning/data/event.actions';
 
 const LayerTab = ({layerConfig, regionIdList}) => {
   /**
@@ -115,16 +113,7 @@ const ElementList = ({layerKey}) => {
 
   const handleElementClick = useCallback(
     elementId => () => {
-      dispatch(
-        onLayerElementClick(
-          {
-            event: PLANNING_EVENT.showElementDetails,
-            layerKey,
-            data: {elementId},
-          },
-          navigation,
-        ),
-      );
+      dispatch(openElementDetails(layerKey, elementId, navigation));
     },
     [layerKey],
   );

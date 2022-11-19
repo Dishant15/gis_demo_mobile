@@ -6,6 +6,7 @@ import Icon from '~assets/markers/building_view.svg';
 import EditIcon from '~assets/markers/building_pin.svg';
 
 export const LAYER_KEY = 'p_survey_building';
+export const PRE_UID = 'SB';
 export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POINT;
 
 export const getViewOptions = () => ({

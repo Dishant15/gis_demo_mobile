@@ -29,7 +29,9 @@ const GisMapCard = () => {
     return <AddGisMapLayer />;
   } else if (event === PLANNING_EVENT.editElementGeometry) {
     return <EditGisMapLayer />;
-  } else if (ticketData?.id) {
+  }
+  // user came to map from ticket show header with show / hide ticket element btn
+  else if (ticketData?.id) {
     const isHidden = get(ticketData, 'isHidden');
     const ActionContent = (
       <Button
@@ -41,7 +43,9 @@ const GisMapCard = () => {
       </Button>
     );
     return <MapCard title={ticketData.name} actionContent={ActionContent} />;
-  } else {
+  }
+  // user came from planning tap on drawer show simple title
+  else {
     return <MapCard title="Planning Map" />;
   }
 };
