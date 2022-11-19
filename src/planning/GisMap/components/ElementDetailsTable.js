@@ -54,10 +54,6 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   const rowDefs = get(LayerKeyMappings, [layerKey, 'elementTableFields'], []);
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
 
-  const handleBack = useCallback(() => {
-    navigation.goBack();
-  }, [dispatch]);
-
   const handleEditDetails = useCallback(() => {
     dispatch(
       setMapState({
@@ -98,7 +94,7 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
 
   return (
     <View style={styles.container}>
-      <BackHeader title="Element Details" onGoBack={handleBack} />
+      <BackHeader title="Element Details" onGoBack={navigation.goBack} />
       {isLoading ? <Loader /> : null}
       <FlatList
         data={rowDefs}

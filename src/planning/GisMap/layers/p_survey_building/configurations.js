@@ -1,5 +1,9 @@
 import {FIELD_TYPES} from '~Common/DynamicForm';
-import {FEATURE_TYPES, LAYER_STATUS_OPTIONS} from '../common/configuration';
+import {
+  ELEMENT_FORM_ABSTRACT_TEMPLATE,
+  ELEMENT_TABLE_ABSTRACT_FIELDS,
+  FEATURE_TYPES,
+} from '../common/configuration';
 import {AREA_TAG_OPTIONS} from '../p_survey_area';
 
 import Icon from '~assets/markers/building_view.svg';
@@ -44,33 +48,12 @@ export const ELEMENT_FORM_TEMPLATE = {
     {
       title: 'Survey Building Form',
       fieldConfigs: [
-        {
-          field_key: 'name',
-          label: 'Name',
-          field_type: FIELD_TYPES.Input,
-        },
+        ...ELEMENT_FORM_ABSTRACT_TEMPLATE,
         {
           field_key: 'address',
           label: 'Address',
           field_type: FIELD_TYPES.TextArea,
         },
-        {
-          field_key: 'unique_id',
-          label: 'Unique Id',
-          field_type: FIELD_TYPES.Input,
-        },
-        {
-          field_key: 'ref_code',
-          label: 'Reff Code',
-          field_type: FIELD_TYPES.Input,
-        },
-        {
-          field_key: 'status',
-          label: 'Status',
-          field_type: FIELD_TYPES.Select,
-          options: LAYER_STATUS_OPTIONS,
-        },
-
         {
           field_key: 'tags',
           label: 'Tags',
@@ -107,14 +90,11 @@ export const ELEMENT_FORM_TEMPLATE = {
 };
 
 export const ELEMENT_TABLE_FIELDS = [
-  {label: 'Name', field: 'name', type: 'simple'},
+  ...ELEMENT_TABLE_ABSTRACT_FIELDS,
   {label: 'Address', field: 'address', type: 'simple'},
   {label: 'Tags', field: 'tags', type: 'simple'},
   {label: 'Categories', field: 'category_display', type: 'simple'},
   {label: 'Floors', field: 'floors', type: 'simple'},
   {label: 'House Per Floor', field: 'house_per_floor', type: 'simple'},
   {label: 'Total Home Pass', field: 'total_home_pass', type: 'simple'},
-  {label: 'Unique Id', field: 'unique_id', type: 'simple'},
-  {label: 'Reff Code', field: 'ref_code', type: 'simple'},
-  {label: 'Status', field: 'status', type: 'status'},
 ];

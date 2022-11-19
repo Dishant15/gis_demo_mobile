@@ -1,5 +1,10 @@
-import {FEATURE_TYPES, LAYER_STATUS_OPTIONS} from '../common/configuration';
+import {
+  ELEMENT_FORM_ABSTRACT_TEMPLATE,
+  ELEMENT_TABLE_ABSTRACT_FIELDS,
+  FEATURE_TYPES,
+} from '../common/configuration';
 import CableIcon from '~assets/markers/line_pin.svg';
+import {FIELD_TYPES} from '~Common/DynamicForm';
 
 export const LAYER_KEY = 'p_cable';
 export const PRE_UID = 'CBL';
@@ -36,27 +41,7 @@ export const ELEMENT_FORM_TEMPLATE = {
     {
       title: 'Cable Form',
       fieldConfigs: [
-        {
-          field_key: 'name',
-          label: 'Name',
-          field_type: 'input',
-        },
-        {
-          field_key: 'unique_id',
-          label: 'Unique Id',
-          field_type: 'input',
-        },
-        {
-          field_key: 'ref_code',
-          label: 'Reff Code',
-          field_type: 'input',
-        },
-        {
-          field_key: 'status',
-          label: 'Status',
-          field_type: 'chipSelect',
-          options: LAYER_STATUS_OPTIONS,
-        },
+        ...ELEMENT_FORM_ABSTRACT_TEMPLATE,
         {
           field_key: 'cable_type',
           label: 'Cable Type',
@@ -66,25 +51,25 @@ export const ELEMENT_FORM_TEMPLATE = {
         {
           field_key: 'gis_len',
           label: 'Gis Length (Km)',
-          field_type: 'input',
+          field_type: FIELD_TYPES.Input,
           type: 'number',
         },
         {
           field_key: 'actual_len',
           label: 'Actual Length',
-          field_type: 'input',
+          field_type: FIELD_TYPES.Input,
           type: 'number',
         },
         {
           field_key: 'start_reading',
           label: 'Start Reading',
-          field_type: 'input',
+          field_type: FIELD_TYPES.Input,
           type: 'number',
         },
         {
           field_key: 'end_reading',
           label: 'End Reading',
-          field_type: 'input',
+          field_type: FIELD_TYPES.Input,
           type: 'number',
         },
       ],
@@ -92,12 +77,8 @@ export const ELEMENT_FORM_TEMPLATE = {
   ],
 };
 
-export const transformAndValidateConfigData = data => data;
-
 export const ELEMENT_TABLE_FIELDS = [
-  {label: 'Name', field: 'name', type: 'simple'},
-  {label: 'Unique Id', field: 'unique_id', type: 'simple'},
-  {label: 'Reff Code', field: 'ref_code', type: 'simple'},
+  ...ELEMENT_TABLE_ABSTRACT_FIELDS,
   {label: 'Cable Type', field: 'cable_type_display', type: 'simple'},
   {label: 'Gis Length', field: 'gis_len', type: 'simple'},
   {label: 'Actual Length', field: 'actual_len', type: 'simple'},
@@ -107,7 +88,6 @@ export const ELEMENT_TABLE_FIELDS = [
   {label: 'Core / Tube', field: 'core_per_tube', type: 'simple'},
   {label: 'Specification', field: 'specification', type: 'simple'},
   {label: 'Vendor', field: 'vendor', type: 'simple'},
-  {label: 'Status', field: 'status', type: 'status'},
 ];
 
 export const transformAndValidateData = (

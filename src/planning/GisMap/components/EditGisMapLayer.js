@@ -199,11 +199,7 @@ const EditGisLayer = () => {
   }, [featureType]);
 
   const isLoadingBtn =
-    isLoading ||
-    isAddLoading ||
-    isEditLoading ||
-    isEditTicketLoading ||
-    isValidationLoading;
+    isLoading || isEditLoading || isEditTicketLoading || isValidationLoading;
   const ActionContent = (
     <>
       <TouchableOpacity onPress={handleUpdate}>

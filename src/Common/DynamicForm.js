@@ -18,7 +18,7 @@ import {FormSelect} from './components/FormFields';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {colors, layout, THEME_COLORS} from '~constants/constants';
-import {get} from 'lodash';
+import get from 'lodash/get';
 
 export const FIELD_TYPES = {
   Input: 'input',
@@ -86,12 +86,9 @@ const DynamicForm = forwardRef(
                       label,
                       field_type,
                       type,
-                      required = true,
+                      validationProps,
+                      disabled,
                     } = config;
-                    let rules = {};
-                    if (required) {
-                      rules.required = `${label} is required.`;
-                    }
                     switch (field_type) {
                       case FIELD_TYPES.Input:
                         return (
@@ -99,7 +96,7 @@ const DynamicForm = forwardRef(
                             key={field_key}
                             control={control}
                             name={field_key}
-                            rules={rules}
+                            rules={validationProps}
                             render={({
                               field: {ref, onChange, onBlur, value},
                             }) => (
@@ -110,6 +107,7 @@ const DynamicForm = forwardRef(
                                 onBlur={onBlur}
                                 value={!!value ? String(value) : ''}
                                 error={get(errors, [field_key, 'message'])}
+                                disabled={disabled}
                                 underlineColorAndroid="transparent"
                                 autoCapitalize="none"
                                 autoCorrect={false}
@@ -128,7 +126,7 @@ const DynamicForm = forwardRef(
                             key={field_key}
                             control={control}
                             name={field_key}
-                            rules={rules}
+                            rules={validationProps}
                             render={({
                               field: {ref, onChange, onBlur, value},
                             }) => (
@@ -139,6 +137,7 @@ const DynamicForm = forwardRef(
                                 onBlur={onBlur}
                                 value={!!value ? String(value) : ''}
                                 error={get(errors, [field_key, 'message'])}
+                                disabled={disabled}
                                 underlineColorAndroid="transparent"
                                 autoCapitalize="none"
                                 autoCorrect={false}
@@ -162,7 +161,7 @@ const DynamicForm = forwardRef(
                             key={field_key}
                             control={control}
                             name={field_key}
-                            rules={rules}
+                            rules={validationProps}
                             render={({field: {onChange, value}}) => {
                               const errMessage = get(errors, [
                                 field_key,
@@ -209,7 +208,7 @@ const DynamicForm = forwardRef(
                             key={field_key}
                             control={control}
                             name={field_key}
-                            rules={rules}
+                            rules={validationProps}
                             render={({
                               field: {ref, onChange, onBlur, value},
                             }) => {
@@ -260,7 +259,7 @@ const DynamicForm = forwardRef(
                             key={field_key}
                             control={control}
                             name={field_key}
-                            rules={rules}
+                            rules={validationProps}
                             render={({
                               field: {ref, onChange, onBlur, value},
                             }) => {
@@ -295,7 +294,7 @@ const DynamicForm = forwardRef(
                             key={field_key}
                             control={control}
                             name={field_key}
-                            rules={rules}
+                            rules={validationProps}
                             render={({
                               field: {ref, onChange, onBlur, value},
                             }) => {
@@ -332,7 +331,7 @@ const DynamicForm = forwardRef(
                             key={field_key}
                             control={control}
                             name={field_key}
-                            rules={rules}
+                            rules={validationProps}
                             render={({
                               field: {ref, onChange, onBlur, value},
                             }) => {

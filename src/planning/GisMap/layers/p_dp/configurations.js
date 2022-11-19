@@ -1,7 +1,11 @@
-import {FEATURE_TYPES, LAYER_STATUS_OPTIONS} from '../common/configuration';
-import {latLongMapToCoords} from '~utils/map.utils';
+import {
+  ELEMENT_FORM_ABSTRACT_TEMPLATE,
+  ELEMENT_TABLE_ABSTRACT_FIELDS,
+  FEATURE_TYPES,
+} from '../common/configuration';
 import Icon from '~assets/markers/p_dp_view.svg';
 import EditIcon from '~assets/markers/p_dp_edit.svg';
+import {FIELD_TYPES} from '~Common/DynamicForm';
 
 export const LAYER_KEY = 'p_dp';
 export const PRE_UID = 'DP';
@@ -32,31 +36,16 @@ export const ELEMENT_FORM_TEMPLATE = {
       title: 'Distribution Point Form',
       showCloseIcon: true,
       fieldConfigs: [
-        {
-          field_key: 'name',
-          label: 'Name',
-          field_type: 'input',
-        },
+        ...ELEMENT_FORM_ABSTRACT_TEMPLATE,
         {
           field_key: 'address',
           label: 'Address',
-          field_type: 'textArea',
-        },
-        {
-          field_key: 'unique_id',
-          label: 'Unique Id',
-          field_type: 'input',
-        },
-        {
-          field_key: 'status',
-          label: 'Status',
-          field_type: 'chipSelect',
-          options: LAYER_STATUS_OPTIONS,
+          field_type: FIELD_TYPES.TextArea,
         },
         {
           field_key: 'remark',
           label: 'Remark',
-          field_type: 'textArea',
+          field_type: FIELD_TYPES.TextArea,
           required: false,
         },
       ],
@@ -65,9 +54,6 @@ export const ELEMENT_FORM_TEMPLATE = {
 };
 
 export const ELEMENT_TABLE_FIELDS = [
-  {label: 'Name', field: 'name', type: 'simple'},
+  ...ELEMENT_TABLE_ABSTRACT_FIELDS,
   {label: 'Address', field: 'address', type: 'simple'},
-  {label: 'Unique Id', field: 'unique_id', type: 'simple'},
-  {label: 'Reff Code', field: 'ref_code', type: 'simple'},
-  {label: 'Status', field: 'status', type: 'status'},
 ];

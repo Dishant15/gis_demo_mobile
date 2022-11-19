@@ -49,7 +49,7 @@ const PlanningTicketListScreen = props => {
         renderItem={({item}) => {
           const {
             name,
-            unique_id,
+            network_id,
             ticket_type,
             status,
             network_type,
@@ -93,7 +93,7 @@ const PlanningTicketListScreen = props => {
               <Card.Content>
                 <Title style={styles.name}>{name}</Title>
                 <Subheading style={styles.cardUniqueId}>
-                  #{unique_id}
+                  #{network_id}
                 </Subheading>
                 <Paragraph>Region: {get(region, 'name', '')}</Paragraph>
                 <View style={styles.cardRow}>
@@ -190,7 +190,6 @@ const styles = StyleSheet.create({
     paddingStart: 4,
     flexShrink: 1,
     alignSelf: 'flex-end',
-    // textDecorationLine: 'underline',
   },
   cardRow: {
     flexDirection: 'row',
