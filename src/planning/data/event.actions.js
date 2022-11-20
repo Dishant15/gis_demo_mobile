@@ -1,4 +1,8 @@
-import {setMapState, setTicketWorkOrderId} from './planningGis.reducer';
+import {
+  setMapPosition,
+  setMapState,
+  setTicketWorkOrderId,
+} from './planningGis.reducer';
 import {getPlanningTicketData} from './planningGis.selectors';
 import {handleLayerSelect, setActiveTab} from './planningState.reducer';
 import {getSelectedRegionIds} from './planningState.selectors';
@@ -15,6 +19,7 @@ import {
 import {fetchLayerDataThunk} from './actionBar.services';
 import {fetchTicketWorkorderDataThunk} from './ticket.services';
 import {screens} from '~constants/constants';
+import {coordsToLatLongMap, pointCoordsToLatLongMap} from '~utils/map.utils';
 
 export const navigateTicketWorkorderToDetails =
   (item, navigation) => dispatch => {
@@ -105,4 +110,28 @@ export const onElementUpdate = layerKey => (dispatch, getState) => {
       );
     }
   }
+};
+
+export const onShowMarkerOnMapPress = (center, navigation) => dispatch => {
+  // close form
+  dispatch(setMapState({}));
+  dispatch(
+    setMapPosition({
+      center: pointCoordsToLatLongMap(center),
+      zoom: 16,
+    }),
+  );
+  navigation.navigate(screens.planningScreen);
+};
+
+// polygon, polyline
+export const onShowAreaOnMapPress = (coordinates, navigation) => dispatch => {
+  // close form
+  dispatch(setMapState({}));
+  dispatch(
+    setMapPosition({
+      coordinates: coordsToLatLongMap(coordinates),
+    }),
+  );
+  navigation.navigate(screens.planningScreen);
 };

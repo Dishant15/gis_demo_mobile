@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import {View, FlatList, StyleSheet} from 'react-native';
+import {View, FlatList, StyleSheet, Pressable} from 'react-native';
 import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 
@@ -9,24 +9,32 @@ import {
   Divider,
   IconButton,
   Subheading,
+  Text,
 } from 'react-native-paper';
 
 import get from 'lodash/get';
 
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import Loader from '~Common/Loader';
 import BackHeader from '~Common/components/Header/BackHeader';
+import {IconButton as CustomIconButton} from '~Common/components/Button';
 
 import {fetchElementDetails} from '~planning/data/layer.services';
-import {setMapState} from '~planning/data/planningGis.reducer';
+import {setMapPosition, setMapState} from '~planning/data/planningGis.reducer';
 import {getPlanningMapStateData} from '~planning/data/planningGis.selectors';
 
-import {colors, layout} from '~constants/constants';
+import {colors, layout, THEME_COLORS} from '~constants/constants';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
-import {coordsToLatLongMap} from '~utils/map.utils';
-import {onEditElementGeometry} from '~planning/data/event.actions';
+import {coordsToLatLongMap, pointCoordsToLatLongMap} from '~utils/map.utils';
+import {
+  onEditElementGeometry,
+  onShowAreaOnMapPress,
+  onShowMarkerOnMapPress,
+  onShowOnMapPress,
+} from '~planning/data/event.actions';
 import {FEATURE_TYPES} from '../layers/common/configuration';
 import {checkUserPermission} from '~Authentication/data/auth.selectors';
 
@@ -92,6 +100,22 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
     );
   }, [dispatch, layerKey, elemData, featureType]);
 
+  const handleShowOnMap = useCallback(() => {
+    const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
+    switch (featureType) {
+      case FEATURE_TYPES.POINT:
+        dispatch(onShowMarkerOnMapPress(elemData.coordinates, navigation));
+        break;
+      case FEATURE_TYPES.POLYGON:
+      case FEATURE_TYPES.POLYLINE:
+      case FEATURE_TYPES.MULTI_POLYGON:
+        dispatch(onShowAreaOnMapPress(elemData.coordinates, navigation));
+        break;
+      default:
+        break;
+    }
+  }, [dispatch, layerKey, elemData]);
+
   return (
     <View style={styles.container}>
       <BackHeader title="Element Details" onGoBack={navigation.goBack} />
@@ -114,16 +138,24 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
                   : colors.error; // IA: In active
 
               ValueCell = (
-                <View style={styles.tableValue}>
-                  <Chip
-                    style={{
-                      backgroundColor: color,
-                      width: 140,
-                    }}
-                    selected
-                    selectedColor={colors.white}>
-                    {get(elemData, `${field}_display`)}
-                  </Chip>
+                <View style={[styles.tableValue, {alignItems: 'flex-start'}]}>
+                  <View
+                    style={[
+                      styles.chipWrapper,
+                      {
+                        backgroundColor: color,
+                      },
+                    ]}>
+                    <MaterialIcons
+                      size={16}
+                      name="check"
+                      color={colors.white}
+                      style={styles.chipIcon}
+                    />
+                    <Text style={styles.chipText}>
+                      {get(elemData, `${field}_display`)}
+                    </Text>
+                  </View>
                 </View>
               );
               break;
@@ -161,27 +193,41 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
         }}
       />
       {hasEditPermission ? (
-        <View
-          style={[
-            styles.actionWrapper,
-            {paddingBottom: Math.max(bottom + 12, 12)},
-          ]}>
-          <Button
-            style={[layout.button, styles.btn1]}
-            contentStyle={styles.btnContent}
-            color={colors.secondaryMain}
-            mode="outlined"
-            onPress={handleEditDetails}>
-            Details
-          </Button>
-          <Button
-            style={[layout.button, styles.btn2]}
-            contentStyle={styles.btnContent}
-            color={colors.secondaryMain}
-            mode="outlined"
-            onPress={handleEditLocation}>
-            Location
-          </Button>
+        <View style={{paddingBottom: Math.max(bottom, 0)}}>
+          <View style={styles.squreButtonWrapper}>
+            <View style={styles.squreButtonContent}>
+              <Pressable style={styles.squreButton} onPress={handleEditDetails}>
+                <MaterialIcons
+                  size={22}
+                  name="edit"
+                  color={THEME_COLORS.secondary.main}
+                />
+              </Pressable>
+              <Text style={styles.squreButtonText}>Details</Text>
+            </View>
+            <View style={styles.squreButtonContent}>
+              <Pressable
+                style={styles.squreButton}
+                onPress={handleEditLocation}>
+                <MaterialIcons
+                  size={22}
+                  name="edit-location"
+                  color={THEME_COLORS.secondary.main}
+                />
+              </Pressable>
+              <Text style={styles.squreButtonText}>Location</Text>
+            </View>
+            <View style={styles.squreButtonContent}>
+              <Pressable style={styles.squreButton} onPress={handleShowOnMap}>
+                <MaterialIcons
+                  size={22}
+                  name="language"
+                  color={THEME_COLORS.secondary.main}
+                />
+              </Pressable>
+              <Text style={styles.squreButtonText}>Map</Text>
+            </View>
+          </View>
         </View>
       ) : null}
     </View>
@@ -225,6 +271,45 @@ const styles = StyleSheet.create({
   btnContent: {
     width: '100%',
     height: '100%',
+  },
+  chipWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 4,
+    paddingRight: 12,
+    borderRadius: 16,
+  },
+  chipIcon: {
+    padding: 4,
+  },
+  chipText: {
+    minHeight: 24,
+    lineHeight: 24,
+    marginVertical: 4,
+    color: colors.white,
+  },
+  squreButtonContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  squreButton: {
+    borderColor: THEME_COLORS.secondary.main,
+    borderWidth: 1,
+    height: 50,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+  },
+  squreButtonWrapper: {
+    justifyContent: 'space-around',
+    flexDirection: 'row',
+    padding: 12,
+  },
+  squreButtonText: {
+    color: THEME_COLORS.secondary.main,
+    paddingTop: 6,
+    paddingBottom: 4,
   },
 });
 

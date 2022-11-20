@@ -59,6 +59,14 @@ export const pointLatLongMapToCoords = latLongObj => {
   return [latLongObj.longitude, latLongObj.latitude];
 };
 
+// [longitude, latitude] :- { longitude, latitude }
+export const pointCoordsToLatLongMap = coordinates => {
+  return {
+    longitude: coordinates[0],
+    latitude: coordinates[1],
+  };
+};
+
 export const convertWorkOrderData = workOrder => {
   let convertedWorkOrder = {...workOrder};
   let {area_pocket, work_orders} = convertedWorkOrder;

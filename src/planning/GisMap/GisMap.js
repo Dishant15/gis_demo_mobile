@@ -15,6 +15,7 @@ import AddEditGeometryLayer from './components/AddEditGeometryLayer';
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 import {
   getGisMapInterectionEnable,
+  getPlanningMapPosition,
   getPlanningMapState,
   getPlanningTicketData,
 } from '~planning/data/planningGis.selectors';
@@ -46,6 +47,7 @@ const GisMap = props => {
   const ticketData = useSelector(getPlanningTicketData);
   const mapType = useSelector(getMapType);
   const locationPermType = useSelector(getLocationPermissionType);
+  const mapPosition = useSelector(getPlanningMapPosition);
 
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
 
@@ -71,10 +73,18 @@ const GisMap = props => {
         edgePadding: getEdgePadding(bottom),
         animated: true,
       });
-    } else {
-      // otherwise set to initial region
-      mapRef.current.animateToRegion(INIT_MAP_LOCATION, 100);
+    } else if (mapPosition.center) {
+      mapRef.current.animateCamera(
+        {center: mapPosition.center, zoom: mapPosition.zoom},
+        {duration: 100},
+      );
+    } else if (mapPosition.coordinates) {
+      mapRef.current.fitToCoordinates(mapPosition.coordinates, {
+        edgePadding: getEdgePadding(bottom),
+        animated: true,
+      });
     }
+
     setTimeout(() => {
       setMapRender(true);
     }, 20);

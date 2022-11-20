@@ -13,6 +13,10 @@ import {convertLayerServerData, PLANNING_EVENT} from '../GisMap/utils';
 import {fetchTicketWorkorderDataThunk} from './ticket.services';
 import {coordsToLatLongMap} from '~utils/map.utils';
 import {logout} from '~Authentication/data/auth.reducer';
+import {
+  DEFAULT_MAP_CENTER,
+  DEFAULT_MAP_ZOOM,
+} from '~Common/components/Map/map.constants';
 
 const defaultLayerNetworkState = {
   isLoading: false,
@@ -36,6 +40,10 @@ const initialState = {
    * }
    */
   mapState: {},
+  mapPosition: {
+    center: DEFAULT_MAP_CENTER,
+    zoom: DEFAULT_MAP_ZOOM,
+  },
   // ticket related fields
   // set ticker data when user click on ticket from PlanningTicket
   // at same time workOrderId will be reset
@@ -144,6 +152,10 @@ const planningGisSlice = createSlice({
       };
       state.workOrderId = null;
     },
+    setMapPosition: (state, {payload}) => {
+      // can not be partial as web
+      state.mapPosition = {...payload};
+    },
   },
   extraReducers: {
     // payload : layerKey
@@ -247,5 +259,6 @@ export const {
   toggleTicketElements,
   resetTicketData,
   updateMapStateDataErrPolygons,
+  setMapPosition,
 } = planningGisSlice.actions;
 export default planningGisSlice.reducer;

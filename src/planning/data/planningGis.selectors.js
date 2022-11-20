@@ -32,3 +32,5 @@ export const getPlanningTicketWorkOrderId = store =>
 // set geometry if enableMapInterection is true;
 export const getGisMapInterectionEnable = store =>
   store.planningGis.mapState.enableMapInterection;
+
+export const getPlanningMapPosition = store => store.planningGis.mapPosition;
