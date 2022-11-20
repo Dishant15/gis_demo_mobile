@@ -36,9 +36,9 @@ export const INITIAL_ELEMENT_DATA = {
   floors: 0,
   house_per_floor: 0,
   total_home_pass: 0,
-  unique_id: 'REG_SB_',
+  unique_id: '',
   ref_code: '',
-  status: 'P',
+  status: 'RFS',
   coordinates: {},
 };
 

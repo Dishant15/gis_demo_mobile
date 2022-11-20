@@ -24,9 +24,9 @@ export const getViewOptions = () => ({
 export const INITIAL_ELEMENT_DATA = {
   name: '',
   address: '',
-  unique_id: 'REG_DP_',
+  unique_id: '',
   ref_code: '',
-  status: 'P',
+  status: 'RFS',
 };
 
 // this will become function -> generate From Configs
