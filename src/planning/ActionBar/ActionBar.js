@@ -2,7 +2,7 @@ import React, {useCallback, useMemo} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {isNull} from 'lodash';
+import isNull from 'lodash/isNull';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -18,9 +18,9 @@ import {setActiveTab} from '~planning/data/planningState.reducer';
 import {colors} from '~constants/constants';
 
 const ActionBar = () => {
-  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const activeTab = useSelector(getActiveTab);
+  const {bottom} = useSafeAreaInsets();
 
   const handleTabChange = useCallback(
     newValue => () => {
@@ -51,11 +51,7 @@ const ActionBar = () => {
 
   return (
     <>
-      <View
-        style={[
-          styles.actionWrapper,
-          {bottom: Math.max(insets.bottom + 66, 66)},
-        ]}>
+      <View style={[styles.actionWrapper, {bottom: Math.max(bottom + 84, 84)}]}>
         <TouchableOpacity style={[styles.action]} onPress={handleTabChange(0)}>
           <MaterialIcons
             size={30}

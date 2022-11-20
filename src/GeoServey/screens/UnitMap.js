@@ -1,11 +1,19 @@
 import React, {useRef, useState, useCallback, useMemo} from 'react';
 import {View, InteractionManager, BackHandler} from 'react-native';
 import {Marker, Polygon} from 'react-native-maps';
-import {isNull, get, size, differenceBy, join, split} from 'lodash';
 import {polygon, point, booleanPointInPolygon} from '@turf/turf';
 import * as Animatable from 'react-native-animatable';
-import {Button, Card} from 'react-native-paper';
+import {useIsFocused, useFocusEffect} from '@react-navigation/native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useMutation} from 'react-query';
+
+import {Card} from 'react-native-paper';
+
+import {isNull, get, size, differenceBy, join, split} from 'lodash';
+
 import Map from '~Common/components/Map';
+import FloatingCard from '~Common/components/FloatingCard';
+import {IconButton} from '~Common/components/Button';
 
 import {colors, layout, screens, THEME_COLORS} from '~constants/constants';
 import {useDispatch, useSelector} from 'react-redux';
@@ -21,17 +29,17 @@ import {
   updateUnitFormData,
   updateSurveyUnitList,
 } from '~GeoServey/data/geoSurvey.reducer';
-import {useIsFocused, useFocusEffect} from '@react-navigation/native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {upsertSurveyUnit} from '~GeoServey/data/geoSurvey.service';
-import {useMutation} from 'react-query';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import {getMapType} from '~Common/data/appstate.selector';
+import {
+  getLocationPermissionType,
+  getMapType,
+} from '~Common/data/appstate.selector';
 import {getEdgePadding} from '~utils/app.utils';
 
 import {latLongMapToCoords, pointLatLongMapToCoords} from '~utils/map.utils';
-import FloatingCard from '~Common/components/FloatingCard';
-import {IconButton} from '~Common/components/Button';
+import {MY_LOCATION_BUTTON_POSITION} from '~Common/components/Map/map.constants';
+import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
 
 /**
  * Parent:
@@ -46,6 +54,7 @@ const UnitMap = ({navigation}) => {
   const unitData = useSelector(getGeoSurveyUnitFormData);
   const surveyId = useSelector(getSelectedSurveyId);
   const mapType = useSelector(getMapType);
+  const locationPermType = useSelector(getLocationPermissionType);
 
   const surveyCoords = useSelector(getSurveyCoordinates);
   const surveyStatus = useSelector(getSurveyStatus);
@@ -229,6 +238,10 @@ const UnitMap = ({navigation}) => {
               ref={mapRef}
               showMapType
               mapType={mapType}
+              showsUserLocation={locationPermType === PERMISSIONS_TYPE.ALLOW}
+              myLocationButtonPosition={
+                MY_LOCATION_BUTTON_POSITION.BOTTOM_RIGHT
+              }
               onMapReady={onMapReady}
               onLayout={onMapReady} // hack to set coordinate on map re-render
               onMapLoaded={onMapLoaded}

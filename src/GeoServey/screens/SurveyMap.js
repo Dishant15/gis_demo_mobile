@@ -3,14 +3,14 @@ import {
   View,
   BackHandler,
   InteractionManager,
-  Dimensions,
   StatusBar,
   StyleSheet,
   Pressable,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
+import {useMutation} from 'react-query';
+
 import size from 'lodash/size';
-import get from 'lodash/get';
 
 import {Polygon} from 'react-native-maps';
 import {Card} from 'react-native-paper';
@@ -19,19 +19,15 @@ import Map from '~Common/components/Map';
 import * as Animatable from 'react-native-animatable';
 import {useIsFocused, useFocusEffect} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import {polygon, booleanContains} from '@turf/turf';
 
 import CustomMarker from '~Common/CustomMarker';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FloatingCard from '~Common/components/FloatingCard';
+import {IconButton} from '~Common/components/Button';
 
-import {
-  colors,
-  INIT_MAP_LOCATION,
-  layout,
-  screens,
-  THEME_COLORS,
-} from '~constants/constants';
+import {colors, layout, screens, THEME_COLORS} from '~constants/constants';
 import {
   getSurveyCoordinates,
   getIsReviewed,
@@ -45,7 +41,6 @@ import {
   updateSurveyFormData,
   updateSurveyList,
 } from '~GeoServey/data/geoSurvey.reducer';
-import {useMutation} from 'react-query';
 import {updateGeoServey} from '~GeoServey/data/geoSurvey.service';
 import {latLongMapToCoords} from '~utils/map.utils';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
@@ -56,16 +51,9 @@ import {
 } from '~Common/data/appstate.selector';
 import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
 
-import FloatingCard from '~Common/components/FloatingCard';
 import {getEdgePadding} from '~utils/app.utils';
-import {IconButton} from '~Common/components/Button';
 import {zIndexMapping} from '~planning/GisMap/layers/common/configuration';
-
-let {width, height} = Dimensions.get('window');
-const ASPECT_RATIO = width / height;
-
-const LATITUDE_DELTA = 0.00444;
-const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+import {MY_LOCATION_BUTTON_POSITION} from '~Common/components/Map/map.constants';
 
 /**
  * render maps with survey points
@@ -88,7 +76,6 @@ const SurveyMap = ({navigation}) => {
 
   // location
   const locationPermType = useSelector(getLocationPermissionType);
-  const currentLocation = useSelector(getCurrentLocation);
   const mapType = useSelector(getMapType);
 
   const [showMap, setMapVisibility] = useState(false);
@@ -276,8 +263,8 @@ const SurveyMap = ({navigation}) => {
           <Animatable.View animation="fadeIn" style={layout.container}>
             <Map
               showsUserLocation={locationPermType === PERMISSIONS_TYPE.ALLOW}
-              showsMyLocationButton={
-                locationPermType === PERMISSIONS_TYPE.ALLOW
+              myLocationButtonPosition={
+                MY_LOCATION_BUTTON_POSITION.BOTTOM_RIGHT
               }
               showsIndoorLevelPicker
               showMapType={true}

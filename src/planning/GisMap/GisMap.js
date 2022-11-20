@@ -26,6 +26,7 @@ import {getElementCoordinates, LayerKeyMappings, PLANNING_EVENT} from './utils';
 import {INIT_MAP_LOCATION, layout} from '~constants/constants';
 import {getEdgePadding} from '~utils/app.utils';
 import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
+import {MY_LOCATION_BUTTON_POSITION} from '~Common/components/Map/map.constants';
 
 /**
  * Parent
@@ -95,7 +96,7 @@ const GisMap = props => {
             onPoiClick={handleMapClick}
             onMarkerPress={handleMapClick}
             showsUserLocation={locationPermType === PERMISSIONS_TYPE.ALLOW}
-            showsMyLocationButton={locationPermType === PERMISSIONS_TYPE.ALLOW}>
+            myLocationButtonPosition={MY_LOCATION_BUTTON_POSITION.BOTTOM_RIGHT}>
             {showMapRender ? (
               <>
                 <GisMapViewLayer />
