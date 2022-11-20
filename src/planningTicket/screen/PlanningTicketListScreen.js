@@ -60,11 +60,16 @@ const PlanningTicketListScreen = props => {
             assignee,
           } = item;
           let networkTypeDisplay = '';
-          if (network_type === 'B') {
-            networkTypeDisplay = 'As Build';
-          } else if (network_type === 'P') {
-            networkTypeDisplay = 'As Planned';
+          if (network_type === 'L1') {
+            networkTypeDisplay = 'L1 Design';
+          } else if (network_type === 'L2') {
+            networkTypeDisplay = 'L2 Design';
+          } else if (network_type === 'RFS') {
+            networkTypeDisplay = 'Ready For Service';
+          } else {
+            networkTypeDisplay = 'In Active';
           }
+
           let ticketTypeDisplay = '';
           if (ticket_type === 'S') {
             ticketTypeDisplay = 'Survey';

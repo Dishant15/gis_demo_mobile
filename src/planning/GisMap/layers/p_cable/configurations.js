@@ -21,9 +21,9 @@ export const getViewOptions = ({color_on_map}) => {
 
 export const INITIAL_ELEMENT_DATA = {
   name: '',
-  unique_id: 'REG_CBL_',
+  unique_id: '',
   ref_code: '',
-  status: 'P',
+  status: 'RFS',
   coordinates: [],
   // editable
   cable_type: 'O',

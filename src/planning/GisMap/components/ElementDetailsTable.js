@@ -107,11 +107,12 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
             case 'status':
               const elemStatus = get(elemData, field);
               const color =
-                elemStatus === 'V'
+                elemStatus === 'RFS'
                   ? colors.success
-                  : elemStatus === 'P'
+                  : elemStatus === 'L1' || elemStatus === 'L2'
                   ? colors.warning
-                  : colors.error;
+                  : colors.error; // IA: In active
+
               ValueCell = (
                 <View style={styles.tableValue}>
                   <Chip
@@ -126,6 +127,7 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
                 </View>
               );
               break;
+
             case 'boolean':
               const elemBoolData = get(elemData, field);
               ValueCell = (
@@ -138,6 +140,7 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
                 </View>
               );
               break;
+
             default:
               ValueCell = (
                 <Subheading style={styles.tableValue}>
