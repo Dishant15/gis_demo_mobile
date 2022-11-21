@@ -1,6 +1,6 @@
-import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import React, {useCallback} from 'react';
+import {View, StyleSheet, BackHandler} from 'react-native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Paragraph, Title} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -8,6 +8,8 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import {colors, THEME_COLORS} from '~constants/constants';
+import {useDispatch} from 'react-redux';
+import {goBackFromPlanningScreen} from '~planning/data/event.actions';
 
 const MapCard = ({
   showBackIcon = true,
@@ -15,16 +17,28 @@ const MapCard = ({
   subTitle = '',
   actionContent = null,
 }) => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const {top} = useSafeAreaInsets();
+
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', customGoBack);
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', customGoBack);
+    }, []),
+  );
+
+  const customGoBack = () => {
+    dispatch(goBackFromPlanningScreen(navigation));
+    return true;
+  };
 
   return (
     <View style={[styles.card, {top: Math.max(top, 14)}]}>
       <View style={styles.titleWrapper}>
         {showBackIcon ? (
-          <TouchableOpacity
-            style={styles.iconWrapper}
-            onPress={navigation.goBack}>
+          <TouchableOpacity style={styles.iconWrapper} onPress={customGoBack}>
             <MaterialIcons
               size={24}
               name={'arrow-back-ios'}

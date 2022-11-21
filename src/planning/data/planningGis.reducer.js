@@ -143,6 +143,7 @@ const planningGisSlice = createSlice({
     },
     // reset ticker data if user visit planning map from drawer
     resetTicketData: state => {
+      state.mapState = {};
       state.ticketId = null;
       state.ticketData = {
         isLoading: false,

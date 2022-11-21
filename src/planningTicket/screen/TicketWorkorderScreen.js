@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {View, FlatList, StyleSheet, Pressable} from 'react-native';
+import {View, FlatList, StyleSheet, Pressable, BackHandler} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
 import {Card, Subheading, Paragraph, Button, Avatar} from 'react-native-paper';
@@ -14,7 +14,7 @@ import Loader from '~Common/Loader';
 
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 
-import {layout, colors, THEME_COLORS} from '~constants/constants';
+import {layout, colors, THEME_COLORS, screens} from '~constants/constants';
 
 import AcceptImg from '~assets/img/accept.png';
 import CancelImg from '~assets/img/cancel.png';
@@ -26,6 +26,7 @@ import {
   navigateTicketWorkorderToDetails,
   onViewMapClick,
 } from '~planning/data/event.actions';
+import {useFocusEffect} from '@react-navigation/native';
 
 /**
  * Parent:
@@ -36,6 +37,19 @@ import {
 const TicketWorkorderScreen = props => {
   const {navigation} = props;
   const ticketId = get(props, 'route.params.ticketId');
+
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', customGoBack);
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', customGoBack);
+    }, []),
+  );
+
+  const customGoBack = () => {
+    navigation.navigate(screens.planningTicketList);
+    return true;
+  };
 
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
@@ -88,10 +102,7 @@ const TicketWorkorderScreen = props => {
 
   return (
     <View style={[layout.container, layout.relative]}>
-      <BackHeader
-        title={get(ticketData, 'name', '')}
-        onGoBack={navigation.goBack}
-      />
+      <BackHeader title={get(ticketData, 'name', '')} onGoBack={customGoBack} />
       <View style={styles.filterWrapper}>
         <Pressable
           style={[styles.filterblock, isSubmitted && styles.filterSubmited]}

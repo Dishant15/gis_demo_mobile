@@ -22,7 +22,10 @@ import {
   getPlanningTicketWorkOrderId,
 } from '~planning/data/planningGis.selectors';
 import {setMapState} from '~planning/data/planningGis.reducer';
-import {onElementUpdate} from '~planning/data/event.actions';
+import {
+  goBackFromGisEventScreen,
+  onElementUpdate,
+} from '~planning/data/event.actions';
 
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {
@@ -30,7 +33,7 @@ import {
   PLANNING_EVENT,
   TICKET_WORKORDER_TYPE,
 } from '../utils';
-import {layout, screens} from '~constants/constants';
+import {layout} from '~constants/constants';
 
 export const GisLayerForm = ({layerKey}) => {
   const navigation = useNavigation();
@@ -53,8 +56,7 @@ export const GisLayerForm = ({layerKey}) => {
   const onSuccessHandler = () => {
     showToast('Element operation completed Successfully', TOAST_TYPE.SUCCESS);
     dispatch(onElementUpdate(layerKey));
-    // navigate to planning map
-    navigation.navigate(screens.planningScreen);
+    dispatch(goBackFromGisEventScreen(navigation));
   };
 
   const onErrorHandler = err => {
@@ -196,7 +198,7 @@ export const GisLayerForm = ({layerKey}) => {
 
   const handleGoBack = () => {
     dispatch(setMapState({}));
-    navigation.goBack();
+    dispatch(goBackFromGisEventScreen(navigation));
   };
   const isLoadingBtn =
     isLoading || isAddLoading || isEditLoading || isEditTicketLoading;

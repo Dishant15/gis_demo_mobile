@@ -108,11 +108,11 @@ const RootNavigation = () => {
               component={ReviewScreen}
               options={options}
             />
-            <Stack.Screen
+            {/* <Stack.Screen
               name={screens.planningTicketList}
               component={PlanningTicket}
               options={options}
-            />
+            /> */}
             <Stack.Screen
               name={screens.planningTicketWorkorder}
               component={TicketWorkorder}

@@ -3,7 +3,10 @@ import {
   setMapState,
   setTicketWorkOrderId,
 } from './planningGis.reducer';
-import {getPlanningTicketData} from './planningGis.selectors';
+import {
+  getPlanningTicketData,
+  getPlanningTicketId,
+} from './planningGis.selectors';
 import {handleLayerSelect, setActiveTab} from './planningState.reducer';
 import {getSelectedRegionIds} from './planningState.selectors';
 
@@ -160,4 +163,27 @@ export const onShowAreaOnMapPress = (coordinates, navigation) => dispatch => {
     }),
   );
   navigation.navigate(screens.planningScreen);
+};
+
+export const goBackFromGisEventScreen = navigation => (dispatch, getState) => {
+  const storeState = getState();
+  const ticketId = getPlanningTicketId(storeState);
+
+  if (ticketId) {
+    navigation.navigate(screens.planningTicketMap);
+  } else {
+    navigation.navigate(screens.planningScreen);
+  }
+};
+
+export const goBackFromPlanningScreen = navigation => (dispatch, getState) => {
+  const storeState = getState();
+  const ticketId = getPlanningTicketId(storeState);
+
+  if (ticketId) {
+    dispatch(setTicketWorkOrderId(null));
+    navigation.navigate(screens.planningTicketWorkorder, {ticketId});
+  } else {
+    navigation.navigate(screens.dashboardScreen);
+  }
 };

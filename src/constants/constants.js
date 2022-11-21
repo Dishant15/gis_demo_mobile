@@ -21,12 +21,13 @@ export const screens = {
 
   planningTicketList: 'planningTicketList',
   planningTicketWorkorder: 'planningTicketWorkorder',
+
   planningTicketMap: 'planningTicketMap',
+  planningScreen: 'planningScreen',
   gisEventScreen: 'gisEventScreen',
 
   networkScreen: 'networkScreen',
   clientScreen: 'clientScreen',
-  planningScreen: 'planningScreen',
 };
 
 export const fonts = {
