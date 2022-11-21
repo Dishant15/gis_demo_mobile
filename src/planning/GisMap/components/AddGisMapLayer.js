@@ -11,7 +11,10 @@ import round from 'lodash/round';
 
 import MapCard from '~Common/components/MapCard';
 
-import {setMapState} from '~planning/data/planningGis.reducer';
+import {
+  setMapState,
+  updateMapStateDataErrPolygons,
+} from '~planning/data/planningGis.reducer';
 import {
   getPlanningMapState,
   getPlanningTicketData,
@@ -22,7 +25,7 @@ import {
   latLongMapToLineCoords,
   pointLatLongMapToCoords,
 } from '~utils/map.utils';
-import {LayerKeyMappings, PLANNING_EVENT} from '../utils';
+import {LayerKeyMappings} from '../utils';
 import {FEATURE_TYPES} from '../layers/common/configuration';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
 import {onAddElementDetails} from '~planning/data/event.actions';
@@ -32,7 +35,9 @@ import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
 const AddGisMapLayer = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const {validateElementMutation, isValidationLoading} = useValidateGeometry(); // once user adds marker go in edit mode
+  const {validateElementMutation, isValidationLoading} = useValidateGeometry({
+    setErrPolygonAction: updateMapStateDataErrPolygons,
+  }); // once user adds marker go in edit mode
 
   const ticketData = useSelector(getPlanningTicketData);
   const selectedRegionIds = useSelector(getSelectedRegionIds);

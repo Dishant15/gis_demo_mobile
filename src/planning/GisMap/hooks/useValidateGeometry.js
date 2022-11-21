@@ -4,7 +4,6 @@ import {useDispatch} from 'react-redux';
 import get from 'lodash/get';
 
 import {validateElementGeometry} from '~planning/data/layer.services';
-import {updateMapStateDataErrPolygons} from '~planning/data/planningGis.reducer';
 
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {coordsToLatLongMap} from '~utils/map.utils';
@@ -13,7 +12,7 @@ import {coordsToLatLongMap} from '~utils/map.utils';
  * validate region intersects
  * on error set errPolyCoords into redux
  */
-const useValidateGeometry = () => {
+const useValidateGeometry = ({setErrPolygonAction}) => {
   const dispatch = useDispatch();
 
   const {mutate: validateElement, isLoading: isValidationLoading} = useMutation(
@@ -21,7 +20,7 @@ const useValidateGeometry = () => {
     {
       // reset errors on mutate
       onMutate: () => {
-        dispatch(updateMapStateDataErrPolygons(null));
+        dispatch(setErrPolygonAction(null));
       },
       onError: err => {
         if (err.response.status === 400) {
@@ -41,8 +40,8 @@ const useValidateGeometry = () => {
 
               errPolyCoords.push(errCoordinates);
             }
-            if (errPolyCoords.length) {
-              dispatch(updateMapStateDataErrPolygons(errPolyCoords));
+            if (errPolyCoords.length && setErrPolygonAction) {
+              dispatch(setErrPolygonAction(errPolyCoords));
             }
             showToast(
               'New geometry has incorrect intersection with adjacent geometries. Please correct the red area show on map.',

@@ -14,14 +14,16 @@ import MapCard from '~Common/components/MapCard';
 
 import useValidateGeometry from '../hooks/useValidateGeometry';
 
-import {setMapState} from '~planning/data/planningGis.reducer';
+import {
+  setMapState,
+  updateMapStateDataErrPolygons,
+} from '~planning/data/planningGis.reducer';
 import {
   getPlanningMapState,
   getPlanningTicketData,
   getPlanningTicketWorkOrderId,
 } from '~planning/data/planningGis.selectors';
 import {
-  addNewElement,
   addNewTicketWorkorder,
   editElementDetails,
   editTicketWorkorderElement,
@@ -37,7 +39,9 @@ import {colors, layout, THEME_COLORS} from '~constants/constants';
 
 const EditGisLayer = () => {
   const dispatch = useDispatch();
-  const {validateElementMutation, isValidationLoading} = useValidateGeometry();
+  const {validateElementMutation, isValidationLoading} = useValidateGeometry({
+    setErrPolygonAction: updateMapStateDataErrPolygons,
+  });
 
   const selectedRegionIds = useSelector(getSelectedRegionIds);
   const ticketData = useSelector(getPlanningTicketData);

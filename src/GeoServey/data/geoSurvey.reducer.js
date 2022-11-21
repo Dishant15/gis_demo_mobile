@@ -39,6 +39,7 @@ const initialState = {
   surveyList: [],
   filteredSurveyList: [],
   statusFilter: null,
+  errPolygons: [],
   // all data bellow is for form edit / add purpose
   selectedSurveyIndex: null,
   selectedSurvey: {},
@@ -78,14 +79,13 @@ const geoSurveyReducer = createSlice({
       if (isNull(payload)) {
         state.selectedSurvey = {...defaultSurveyData};
         state.selectedSurveyIndex = -1;
-        state.selectedUnitIndex = null;
-        state.selectedUnitData = {};
       } else {
         state.selectedSurvey = {...payload.surveyData};
         state.selectedSurveyIndex = payload.surveyIndex;
-        state.selectedUnitIndex = null;
-        state.selectedUnitData = {};
       }
+      state.selectedUnitIndex = null;
+      state.selectedUnitData = {};
+      state.errPolygons = [];
     },
     updateSurveyFormData: (state, {payload}) => {
       state.selectedSurvey = {...payload};
@@ -97,6 +97,9 @@ const geoSurveyReducer = createSlice({
       } else {
         state.surveyList[state.selectedSurveyIndex] = {...payload};
       }
+    },
+    setErrPolygons: (state, {payload}) => {
+      state.errPolygons = payload;
     },
     // payload : unit index
     selectUnit: (state, {payload}) => {
@@ -195,5 +198,6 @@ export const {
   deleteSurveyData,
   deleteUnitData,
   setFilteredSurveyList,
+  setErrPolygons,
 } = geoSurveyReducer.actions;
 export default geoSurveyReducer.reducer;

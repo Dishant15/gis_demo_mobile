@@ -36,8 +36,11 @@ import {
   getSurveyBoundaryList,
   getGeoSurveyFormData,
   getTicketStatus,
+  getTicketId,
+  getErrPolygons,
 } from '~GeoServey/data/geoSurvey.selectors';
 import {
+  setErrPolygons,
   updateSurveyFormData,
   updateSurveyList,
 } from '~GeoServey/data/geoSurvey.reducer';
@@ -45,15 +48,17 @@ import {updateGeoServey} from '~GeoServey/data/geoSurvey.service';
 import {latLongMapToCoords} from '~utils/map.utils';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {
-  getCurrentLocation,
   getLocationPermissionType,
   getMapType,
 } from '~Common/data/appstate.selector';
 import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
 
-import {getEdgePadding} from '~utils/app.utils';
+import {getEdgePadding, percentToHex} from '~utils/app.utils';
 import {zIndexMapping} from '~planning/GisMap/layers/common/configuration';
 import {MY_LOCATION_BUTTON_POSITION} from '~Common/components/Map/map.constants';
+import useValidateGeometry from '~planning/GisMap/hooks/useValidateGeometry';
+
+const errPolygonsFillColor = '#FF0000' + percentToHex(50);
 
 /**
  * render maps with survey points
@@ -64,16 +69,20 @@ import {MY_LOCATION_BUTTON_POSITION} from '~Common/components/Map/map.constants'
 const SurveyMap = ({navigation}) => {
   const isFocused = useIsFocused();
   const {bottom, top} = useSafeAreaInsets();
+  const {validateElementMutation, isValidationLoading} = useValidateGeometry({
+    setErrPolygonAction: setErrPolygons,
+  }); // once user adds marker go in edit mode
 
   const coords = useSelector(getSurveyCoordinates);
   const isReviewed = useSelector(getIsReviewed);
   const selectedArea = useSelector(getSelectedArea);
+  const ticketId = useSelector(getTicketId);
   const surveyList = useSelector(getSurveyBoundaryList);
   const formData = useSelector(getGeoSurveyFormData);
   // surveyId indicate that survey is add or edit
   const surveyId = useSelector(getSelectedSurveyId);
   const ticketStatus = useSelector(getTicketStatus);
-
+  const errPolygons = useSelector(getErrPolygons);
   // location
   const locationPermType = useSelector(getLocationPermissionType);
   const mapType = useSelector(getMapType);
@@ -154,11 +163,23 @@ const SurveyMap = ({navigation}) => {
       return;
     }
 
-    if (surveyId) {
-      handleUpdatePolygon();
-    } else {
-      handleSavePolygon();
-    }
+    // server side validate geometry
+    let validationData = {
+      layerKey: 'p_survey_area',
+      featureType: 'polygon',
+      geometry: latLongMapToCoords(coordinates),
+      ticket_id: ticketId,
+    };
+
+    validateElementMutation(validationData, {
+      onSuccess: res => {
+        if (surveyId) {
+          handleUpdatePolygon();
+        } else {
+          handleSavePolygon();
+        }
+      },
+    });
   };
 
   const handleMarkerDrag = index => e => {
@@ -210,6 +231,21 @@ const SurveyMap = ({navigation}) => {
     );
   }, []);
 
+  const mayRenderErrPolygons = size(errPolygons)
+    ? errPolygons.map((ePoly, eInd) => {
+        return (
+          <Polygon
+            key={eInd}
+            strokeColor="red"
+            fillColor={errPolygonsFillColor}
+            strokeWidth={2}
+            coordinates={ePoly}
+            zIndex={zIndexMapping.edit}
+          />
+        );
+      })
+    : null;
+
   if (!isFocused) return null;
 
   return (
@@ -244,6 +280,7 @@ const SurveyMap = ({navigation}) => {
                 text="Complete"
                 onPress={handleBtnPress}
                 style={[layout.smallButton, layout.smallButtonMR]}
+                loading={isValidationLoading}
               />
             ) : (
               <IconButton
@@ -326,6 +363,7 @@ const SurveyMap = ({navigation}) => {
                       fillColor="transparent"
                     />
                   ) : null}
+                  {mayRenderErrPolygons}
                 </>
               ) : null}
             </Map>
