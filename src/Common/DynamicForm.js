@@ -141,12 +141,12 @@ const DynamicForm = forwardRef(
                                 underlineColorAndroid="transparent"
                                 autoCapitalize="none"
                                 autoCorrect={false}
-                                returnKeyType="done"
+                                returnKeyType="next" // next will not show new line in keyboard
                                 blurOnSubmit={true}
                                 multiline={true}
                                 // onSubmitEditing={handleFocus('address')}
                                 inputStyle={{
-                                  minHeight: 100,
+                                  height: 100,
                                 }}
                                 keyboardType={
                                   type === 'number' ? 'number-pad' : 'default'

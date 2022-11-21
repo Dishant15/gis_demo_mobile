@@ -20,6 +20,7 @@ import {fetchLayerDataThunk} from './actionBar.services';
 import {fetchTicketWorkorderDataThunk} from './ticket.services';
 import {screens} from '~constants/constants';
 import {coordsToLatLongMap, pointCoordsToLatLongMap} from '~utils/map.utils';
+import {FEATURE_TYPES} from '~planning/GisMap/layers/common/configuration';
 
 export const navigateTicketWorkorderToDetails =
   (item, navigation) => dispatch => {
@@ -34,10 +35,25 @@ export const navigateTicketWorkorderToDetails =
     navigation.navigate(screens.gisEventScreen);
   };
 
-export const onEditElementGeometry = (data, navigation) => dispatch => {
-  dispatch(setMapState(data));
-  navigation.navigate(screens.planningScreen);
-};
+export const onEditElementGeometry =
+  (data, featureType, navigation) => dispatch => {
+    dispatch(setMapState(data));
+    if (featureType === FEATURE_TYPES.POINT) {
+      dispatch(
+        setMapPosition({
+          center: data.geometry,
+          zoom: 16,
+        }),
+      );
+    } else {
+      dispatch(
+        setMapPosition({
+          coordinates: data.geometry,
+        }),
+      );
+    }
+    navigation.navigate(screens.planningScreen);
+  };
 
 export const onAddElementDetails =
   ({layerKey, submitData, validationRes, navigation}) =>
@@ -81,7 +97,17 @@ export const openElementDetails =
     navigation.navigate(screens.gisEventScreen);
   };
 
-export const onViewMapClick = navigation => dispatch => {
+export const onViewMapClick = navigation => (dispatch, getState) => {
+  const storeState = getState();
+  const ticketData = getPlanningTicketData(storeState);
+  const ticketArea = get(ticketData, 'area_pocket.coordinates', null);
+  if (ticketArea) {
+    dispatch(
+      setMapPosition({
+        coordinates: ticketArea,
+      }),
+    );
+  }
   dispatch(setMapState({}));
   navigation.navigate(screens.planningTicketMap);
 };

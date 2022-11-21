@@ -95,6 +95,7 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
           geometry,
           enableMapInterection: true,
         },
+        featureType,
         navigation,
       ),
     );

@@ -17,7 +17,6 @@ import {
   getGisMapInterectionEnable,
   getPlanningMapPosition,
   getPlanningMapState,
-  getPlanningTicketData,
 } from '~planning/data/planningGis.selectors';
 import {
   getLocationPermissionType,
@@ -36,6 +35,7 @@ import {MY_LOCATION_BUTTON_POSITION} from '~Common/components/Map/map.constants'
 const GisMap = props => {
   const [showMap, setMapVisibility] = useState(false);
   const [showMapRender, setMapRender] = useState(false);
+  const [isMapReady, setIsMapReady] = useState(false);
 
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
@@ -44,7 +44,6 @@ const GisMap = props => {
 
   const enableInterection = useSelector(getGisMapInterectionEnable);
   const {geometry, layerKey, event} = useSelector(getPlanningMapState);
-  const ticketData = useSelector(getPlanningTicketData);
   const mapType = useSelector(getMapType);
   const locationPermType = useSelector(getLocationPermissionType);
   const mapPosition = useSelector(getPlanningMapPosition);
@@ -66,14 +65,25 @@ const GisMap = props => {
   };
 
   const onMapReady = () => {
+    setIsMapReady(true);
+    if (isMapReady) return;
+
+    centerElementsOnMap();
+
+    setTimeout(() => {
+      setMapRender(true);
+    }, 20);
+  };
+
+  const onLayout = () => {
+    if (isMapReady) {
+      centerElementsOnMap();
+    }
+  };
+
+  const centerElementsOnMap = () => {
     // set map region to ticket area
-    const ticketArea = get(ticketData, 'area_pocket.coordinates', null);
-    if (ticketArea) {
-      mapRef.current.fitToCoordinates(ticketArea, {
-        edgePadding: getEdgePadding(bottom),
-        animated: true,
-      });
-    } else if (mapPosition.center) {
+    if (mapPosition.center) {
       mapRef.current.animateCamera(
         {center: mapPosition.center, zoom: mapPosition.zoom},
         {duration: 100},
@@ -84,10 +94,6 @@ const GisMap = props => {
         animated: true,
       });
     }
-
-    setTimeout(() => {
-      setMapRender(true);
-    }, 20);
   };
 
   if (!isFocused) return null;
@@ -96,10 +102,10 @@ const GisMap = props => {
     <View style={[layout.container, layout.relative]}>
       {showMap ? (
         <Animatable.View animation="fadeIn" style={layout.container}>
-          <MapController ref={mapRef} mapState={{event, geometry}} />
           <Map
             ref={mapRef}
             onMapReady={onMapReady}
+            onLayout={onLayout}
             showMapType
             mapType={mapType}
             onPress={handleMapClick}

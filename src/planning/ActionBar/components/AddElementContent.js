@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import filter from 'lodash/filter';
 import get from 'lodash/get';
 import size from 'lodash/size';
+import noop from 'lodash/noop';
 
 import {Subheading, Divider} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -136,14 +137,17 @@ const AddElementContent = ({hideModal}) => {
             if (!can_add_on_mobile) return null;
             // get icon
             let Icon;
+            const getViewOptions = get(LayerKeyMappings, [
+              layer_key,
+              'getViewOptions',
+            ]);
             if (is_configurable) {
               let currConfig = get(selectedConfigurations, layer_key, false);
               if (!currConfig) currConfig = configuration[0];
               // configurable layers will have getIcon function
-              Icon =
-                LayerKeyMappings[layer_key]['getViewOptions'](currConfig).icon;
+              Icon = getViewOptions ? getViewOptions(currConfig).icon : null;
             } else {
-              Icon = LayerKeyMappings[layer_key]['getViewOptions']().icon;
+              Icon = getViewOptions ? getViewOptions().icon : null;
             }
 
             return (
@@ -152,7 +156,7 @@ const AddElementContent = ({hideModal}) => {
                   <Pressable
                     style={styles.elementTitleContent}
                     onPress={handleAddElementClick(layer_key)}>
-                    <Icon width={26} />
+                    {Icon ? <Icon width={26} /> : null}
                     <Subheading style={styles.title}>{name}</Subheading>
                   </Pressable>
                   {is_configurable ? (
