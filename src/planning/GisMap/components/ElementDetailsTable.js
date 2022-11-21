@@ -3,14 +3,7 @@ import {View, FlatList, StyleSheet, Pressable} from 'react-native';
 import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {
-  Button,
-  Chip,
-  Divider,
-  IconButton,
-  Subheading,
-  Text,
-} from 'react-native-paper';
+import {Divider, IconButton, Subheading, Text} from 'react-native-paper';
 
 import get from 'lodash/get';
 
@@ -20,20 +13,21 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import Loader from '~Common/Loader';
 import BackHeader from '~Common/components/Header/BackHeader';
-import {IconButton as CustomIconButton} from '~Common/components/Button';
 
 import {fetchElementDetails} from '~planning/data/layer.services';
-import {setMapPosition, setMapState} from '~planning/data/planningGis.reducer';
-import {getPlanningMapStateData} from '~planning/data/planningGis.selectors';
+import {setMapState} from '~planning/data/planningGis.reducer';
+import {
+  getPlanningMapStateData,
+  getPlanningTicketData,
+} from '~planning/data/planningGis.selectors';
 
-import {colors, layout, THEME_COLORS} from '~constants/constants';
+import {colors, THEME_COLORS} from '~constants/constants';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
-import {coordsToLatLongMap, pointCoordsToLatLongMap} from '~utils/map.utils';
+import {coordsToLatLongMap} from '~utils/map.utils';
 import {
   onEditElementGeometry,
   onShowAreaOnMapPress,
   onShowMarkerOnMapPress,
-  onShowOnMapPress,
 } from '~planning/data/event.actions';
 import {FEATURE_TYPES} from '../layers/common/configuration';
 import {checkUserPermission} from '~Authentication/data/auth.selectors';
@@ -43,6 +37,7 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   const {bottom} = useSafeAreaInsets();
   const dispatch = useDispatch();
 
+  const ticketData = useSelector(getPlanningTicketData);
   const {elementId} = useSelector(getPlanningMapStateData);
   const hasLayerEditPermission = useSelector(
     checkUserPermission(`${layerKey}_edit`),
@@ -63,14 +58,16 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
 
   const handleEditDetails = useCallback(() => {
-    dispatch(
-      setMapState({
-        event: PLANNING_EVENT.editElementForm,
-        layerKey,
-        data: onEditDataConverter ? onEditDataConverter(elemData) : elemData,
-      }),
-    );
-  }, [dispatch, layerKey, elemData, onEditDataConverter]);
+    let mapStateData = {
+      event: PLANNING_EVENT.editElementForm,
+      layerKey,
+      data: onEditDataConverter ? onEditDataConverter(elemData) : elemData,
+    };
+    if (ticketData?.network_type) {
+      mapStateData.data['status'] = ticketData.network_type;
+    }
+    dispatch(setMapState(mapStateData));
+  }, [dispatch, layerKey, elemData, onEditDataConverter, ticketData]);
 
   const handleEditLocation = useCallback(() => {
     let geometry = null;

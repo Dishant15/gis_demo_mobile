@@ -60,26 +60,32 @@ export const onEditElementGeometry =
 
 export const onAddElementDetails =
   ({layerKey, submitData, validationRes, navigation}) =>
-  dispatch => {
+  (dispatch, getState) => {
     const initialData = get(LayerKeyMappings, [layerKey, 'initialElementData']);
     const region_list = get(validationRes, 'data.region_list');
     // get region uid
     const reg_uid = !!size(region_list) ? last(region_list).unique_id : 'RGN';
     const element_uid = generateElementUid(layerKey);
 
-    dispatch(
-      setMapState({
-        event: PLANNING_EVENT.addElementForm, // event for "layerForm"
-        layerKey,
-        data: {
-          ...initialData,
-          // submit data will have all geometry related fields submitted by AddGisMapLayer
-          ...submitData,
-          unique_id: element_uid,
-          network_id: `${reg_uid}-${element_uid}`,
-        },
-      }),
-    );
+    const storeState = getState();
+    const ticketData = getPlanningTicketData(storeState);
+
+    let mapStateData = {
+      event: PLANNING_EVENT.addElementForm, // event for "layerForm"
+      layerKey,
+      data: {
+        ...initialData,
+        // submit data will have all geometry related fields submitted by AddGisMapLayer
+        ...submitData,
+        unique_id: element_uid,
+        network_id: `${reg_uid}-${element_uid}`,
+      },
+    };
+    // assign new status as per ticket network_type
+    if (ticketData?.network_type) {
+      mapStateData.data['status'] = ticketData.network_type;
+    }
+    dispatch(setMapState(mapStateData));
     navigation.navigate(screens.gisEventScreen);
   };
 
