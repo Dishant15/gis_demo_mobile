@@ -1,11 +1,19 @@
 import React, {useCallback} from 'react';
 import {Dimensions, View, StyleSheet} from 'react-native';
-import {Title, List, Headline, Divider, Subheading} from 'react-native-paper';
+import {
+  Title,
+  List,
+  Headline,
+  Divider,
+  Subheading,
+  Text,
+} from 'react-native-paper';
 
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {useDispatch, useSelector} from 'react-redux';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import FastImage from 'react-native-fast-image';
+import VersionInfo from 'react-native-version-info';
 import {get} from 'lodash';
 
 import {DrawerButton} from '~Common/components/Header/ActionButtons';
@@ -133,6 +141,9 @@ const DrawerContent = props => {
         }}>
         <Subheading>Powered by</Subheading>
         <GPSTEKLOGO width={180} />
+        <Text>
+          v {VersionInfo.appVersion} ({VersionInfo.buildVersion})
+        </Text>
       </View>
     </View>
   );
