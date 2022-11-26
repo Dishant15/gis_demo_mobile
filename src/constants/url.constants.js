@@ -67,3 +67,6 @@ export const apiPutTicketWorkorderElementEdit = workOrderId =>
 
 export const apiPostValidateElementGeometry = () =>
   '/api/planning/layer/validate/geometry/';
+
+export const apiGetElementAssociations = (layerKey, elementId) =>
+  `/api/planning/layer/${layerKey}/${elementId}/associations/`;

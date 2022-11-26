@@ -98,3 +98,13 @@ export const ELEMENT_TABLE_FIELDS = [
   {label: 'House Per Floor', field: 'house_per_floor', type: 'simple'},
   {label: 'Total Home Pass', field: 'total_home_pass', type: 'simple'},
 ];
+
+export const ELEMENT_TABLE_EXTRA_CONTROLS = [
+  {
+    control: 'add_associations',
+    data: ['p_splitter', 'p_pop', 'p_spop', 'p_dp'],
+  },
+  {
+    control: 'association_list',
+  },
+];

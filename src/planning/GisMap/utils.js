@@ -13,13 +13,19 @@ import * as SAreaLayer from './layers/p_survey_area';
 
 // possible events that can happen on map
 export const PLANNING_EVENT = {
-  addElementGeometry: 'A',
-  editElementGeometry: 'E',
-  addElementForm: 'F',
-  editElementForm: 'EF',
-  showElementDetails: 'D',
-  showElementConnections: 'EC',
-  addElementConnection: 'AC',
+  addElementGeometry: 1,
+  editElementGeometry: 2,
+  addElementForm: 3,
+  editElementForm: 4,
+  showElementDetails: 5,
+  // special events
+  showElementConnections: 6,
+  addElementConnection: 7,
+  showPossibleAddAssociatiation: 8,
+  showAssociatedElements: 9,
+  // map select elements on location
+  selectElementsOnMapClick: 10,
+  listElementsOnMap: 11,
 };
 
 export const TICKET_WORKORDER_TYPE = {
@@ -69,6 +75,7 @@ export const LayerKeyMappings = {
     initialElementData: SAreaLayer.INITIAL_ELEMENT_DATA,
     elementTableFields: SAreaLayer.ELEMENT_TABLE_FIELDS,
     formConfig: SAreaLayer.ELEMENT_FORM_TEMPLATE,
+    elementTableExtraControls: SAreaLayer.ELEMENT_TABLE_EXTRA_CONTROLS,
   },
   [BuildingLayer.LAYER_KEY]: {
     preUid: BuildingLayer.PRE_UID,
@@ -77,6 +84,7 @@ export const LayerKeyMappings = {
     initialElementData: BuildingLayer.INITIAL_ELEMENT_DATA,
     elementTableFields: BuildingLayer.ELEMENT_TABLE_FIELDS,
     formConfig: BuildingLayer.ELEMENT_FORM_TEMPLATE,
+    elementTableExtraControls: BuildingLayer.ELEMENT_TABLE_EXTRA_CONTROLS,
   },
 };
 

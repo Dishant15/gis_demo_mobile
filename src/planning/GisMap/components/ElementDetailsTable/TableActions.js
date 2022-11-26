@@ -1,20 +1,16 @@
 import React, {useCallback} from 'react';
-import {View, FlatList, StyleSheet, Pressable} from 'react-native';
-import {useQuery} from 'react-query';
+import {View, StyleSheet, Pressable} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {Divider, IconButton, Subheading, Text} from 'react-native-paper';
+import {Text} from 'react-native-paper';
 
 import get from 'lodash/get';
 
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Loader from '~Common/Loader';
-import BackHeader from '~Common/components/Header/BackHeader';
-
-import {fetchElementDetails} from '~planning/data/layer.services';
 import {hideElement, setMapState} from '~planning/data/planningGis.reducer';
 import {
   getPlanningMapStateData,
@@ -28,11 +24,12 @@ import {
   onEditElementGeometry,
   onShowAreaOnMapPress,
   onShowMarkerOnMapPress,
+  showAssociatiationList,
 } from '~planning/data/event.actions';
-import {FEATURE_TYPES} from '../layers/common/configuration';
+import {FEATURE_TYPES} from '../../layers/common/configuration';
 import {checkUserPermission} from '~Authentication/data/auth.selectors';
 
-const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
+const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
   const navigation = useNavigation();
   const {bottom} = useSafeAreaInsets();
   const dispatch = useDispatch();
@@ -45,17 +42,12 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   // User can not edit region on mobile application
   const hasEditPermission = layerKey !== 'region' && hasLayerEditPermission;
 
-  const {data: elemData, isLoading} = useQuery(
-    ['elementDetails', layerKey, elementId],
-    fetchElementDetails,
-    {
-      // assign same coordinates to geometry to handle data for gislayerform -> workorder add
-      select: data => ({...data, geometry: data.coordinates}),
-    },
-  );
-
-  const rowDefs = get(LayerKeyMappings, [layerKey, 'elementTableFields'], []);
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
+  const extraControls = get(
+    LayerKeyMappings,
+    [layerKey, 'elementTableExtraControls'],
+    [],
+  );
 
   const handleEditDetails = useCallback(() => {
     let mapStateData = {
@@ -122,119 +114,73 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   }, [dispatch, layerKey, elemData]);
 
   return (
-    <View style={styles.container}>
-      <BackHeader title="Element Details" onGoBack={navigation.goBack} />
-      {isLoading ? <Loader /> : null}
-      <FlatList
-        data={rowDefs}
-        keyExtractor={item => item.field}
-        renderItem={({item}) => {
-          const {label, field, type} = item;
-          let ValueCell;
-
-          switch (type) {
-            case 'status':
-              const elemStatus = get(elemData, field);
-              const color =
-                elemStatus === 'RFS'
-                  ? colors.success
-                  : elemStatus === 'L1' || elemStatus === 'L2'
-                  ? colors.warning
-                  : colors.error; // IA: In active
-
-              ValueCell = (
-                <View style={[styles.tableValue, {alignItems: 'flex-start'}]}>
-                  <View
-                    style={[
-                      styles.chipWrapper,
-                      {
-                        backgroundColor: color,
-                      },
-                    ]}>
-                    <MaterialIcons
-                      size={16}
-                      name="check"
-                      color={colors.white}
-                      style={styles.chipIcon}
-                    />
-                    <Text style={styles.chipText}>
-                      {get(elemData, `${field}_display`)}
-                    </Text>
-                  </View>
-                </View>
+    <View style={{paddingBottom: Math.max(bottom, 0)}}>
+      <View style={styles.squreButtonWrapper}>
+        {hasEditPermission ? (
+          <>
+            <IconButton
+              iconName="edit"
+              label="Details"
+              onPress={handleEditDetails}
+            />
+            <IconButton
+              iconName="edit-location"
+              label="Location"
+              onPress={handleEditLocation}
+            />
+          </>
+        ) : null}
+        <IconButton iconName="language" label="Map" onPress={handleShowOnMap} />
+        {extraControls.map(({control, data}) => {
+          switch (control) {
+            case 'connections':
+              return null;
+            case 'workorders':
+              return null;
+            case 'add_associations':
+              return null;
+            case 'association_list':
+              return (
+                <IconButton
+                  key={control}
+                  iconName="lan"
+                  label={'Show\nAssociations'}
+                  onPress={() =>
+                    dispatch(
+                      showAssociatiationList({
+                        layerKey,
+                        elementId: elemData.id,
+                      }),
+                    )
+                  }
+                  IconComponent={MaterialCommunityIcons}
+                />
               );
-              break;
-
-            case 'boolean':
-              const elemBoolData = get(elemData, field);
-              ValueCell = (
-                <View style={styles.tableValue}>
-                  <IconButton
-                    icon={elemBoolData ? 'check' : 'close'}
-                    color={elemBoolData ? colors.success : colors.error}
-                    size={20}
-                  />
-                </View>
-              );
-              break;
-
             default:
-              ValueCell = (
-                <Subheading style={styles.tableValue}>
-                  {get(elemData, field, '--') || '--'}
-                </Subheading>
-              );
-              break;
+              return null;
           }
-          return (
-            <>
-              <View style={styles.tableRow}>
-                <Subheading style={styles.tableLabel}>{label}</Subheading>
-                {ValueCell}
-              </View>
-              <Divider />
-            </>
-          );
-        }}
-      />
-      {hasEditPermission ? (
-        <View style={{paddingBottom: Math.max(bottom, 0)}}>
-          <View style={styles.squreButtonWrapper}>
-            <View style={styles.squreButtonContent}>
-              <Pressable style={styles.squreButton} onPress={handleEditDetails}>
-                <MaterialIcons
-                  size={22}
-                  name="edit"
-                  color={THEME_COLORS.secondary.main}
-                />
-              </Pressable>
-              <Text style={styles.squreButtonText}>Details</Text>
-            </View>
-            <View style={styles.squreButtonContent}>
-              <Pressable
-                style={styles.squreButton}
-                onPress={handleEditLocation}>
-                <MaterialIcons
-                  size={22}
-                  name="edit-location"
-                  color={THEME_COLORS.secondary.main}
-                />
-              </Pressable>
-              <Text style={styles.squreButtonText}>Location</Text>
-            </View>
-            <View style={styles.squreButtonContent}>
-              <Pressable style={styles.squreButton} onPress={handleShowOnMap}>
-                <MaterialIcons
-                  size={22}
-                  name="language"
-                  color={THEME_COLORS.secondary.main}
-                />
-              </Pressable>
-              <Text style={styles.squreButtonText}>Map</Text>
-            </View>
-          </View>
-        </View>
-      ) : null}
+        })}
+      </View>
+    </View>
+  );
+};
+
+const IconButton = ({
+  onPress,
+  iconName,
+  label,
+  IconComponent = MaterialIcons,
+}) => {
+  return (
+    <View style={styles.squreButtonContent}>
+      <Pressable style={styles.squreButton} onPress={onPress}>
+        <IconComponent
+          size={22}
+          name={iconName}
+          color={THEME_COLORS.secondary.main}
+        />
+      </Pressable>
+      <Text style={styles.squreButtonText}>{label}</Text>
     </View>
   );
 };
@@ -309,13 +255,15 @@ const styles = StyleSheet.create({
   squreButtonWrapper: {
     justifyContent: 'space-around',
     flexDirection: 'row',
+    alignItems: 'flex-start',
     padding: 12,
   },
   squreButtonText: {
     color: THEME_COLORS.secondary.main,
     paddingTop: 6,
     paddingBottom: 4,
+    textAlign: 'center',
   },
 });
 
-export default ElementDetailsTable;
+export default TableActions;

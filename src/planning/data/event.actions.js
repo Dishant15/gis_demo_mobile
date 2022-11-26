@@ -203,3 +203,15 @@ export const goBackFromPlanningScreen = navigation => (dispatch, getState) => {
     navigation.navigate(screens.dashboardScreen);
   }
 };
+
+export const showAssociatiationList =
+  ({layerKey, elementId}) =>
+  dispatch => {
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.showAssociatedElements,
+        layerKey,
+        data: {elementId},
+      }),
+    );
+  };

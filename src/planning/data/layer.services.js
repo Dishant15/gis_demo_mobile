@@ -1,5 +1,6 @@
 import Api from '~utils/api.utils';
 import {
+  apiGetElementAssociations,
   apiGetElementDetails,
   apiGetRegionDetails,
   apiPostAddElement,
@@ -46,5 +47,11 @@ export const fetchElementDetails = async ({queryKey}) => {
 // data : { layerKey, element_id*, featureType, geometry, region_id_list / ticket_id }
 export const validateElementGeometry = async data => {
   const res = await Api.post(apiPostValidateElementGeometry(), data);
+  return res.data;
+};
+
+export const fetchElementAssociations = async ({queryKey}) => {
+  const [_key, layerKey, elementId] = queryKey;
+  const res = await Api.get(apiGetElementAssociations(layerKey, elementId));
   return res.data;
 };

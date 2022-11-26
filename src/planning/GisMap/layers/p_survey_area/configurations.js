@@ -209,3 +209,13 @@ export const ELEMENT_TABLE_FIELDS = [
     type: 'simple',
   },
 ];
+
+export const ELEMENT_TABLE_EXTRA_CONTROLS = [
+  {
+    control: 'add_associations',
+    data: ['p_survey_building'],
+  },
+  {
+    control: 'association_list',
+  },
+];

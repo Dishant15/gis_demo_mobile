@@ -7,6 +7,7 @@ import get from 'lodash/get';
 
 import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
 import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
+import ShowAssociatedElements from '~planning/GisMap/components/ShowAssociatedElements';
 
 import {getPlanningMapState} from '~planning/data/planningGis.selectors';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
@@ -50,7 +51,8 @@ const GisEventScreen = props => {
 
     case PLANNING_EVENT.showElementDetails:
       return <ElementDetailsTable layerKey={layerKey} />;
-
+    case PLANNING_EVENT.showAssociatedElements:
+      return <ShowAssociatedElements />;
     default:
       return null;
   }

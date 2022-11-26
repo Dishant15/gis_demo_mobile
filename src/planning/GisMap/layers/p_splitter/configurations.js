@@ -80,3 +80,9 @@ export const transformAndValidateData = (
     };
   }
 };
+
+export const ELEMENT_TABLE_EXTRA_CONTROLS = [
+  {
+    control: 'connections',
+  },
+];
