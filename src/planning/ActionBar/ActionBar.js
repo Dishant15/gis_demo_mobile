@@ -17,6 +17,9 @@ import {getActiveTab} from '~planning/data/planningState.selectors';
 import {setActiveTab} from '~planning/data/planningState.reducer';
 import {colors} from '~constants/constants';
 
+// increament as per how many btns added below this ActionBar
+const ACTION_BUTTON_SIZE = 84;
+
 const ActionBar = () => {
   const dispatch = useDispatch();
   const activeTab = useSelector(getActiveTab);
@@ -51,7 +54,16 @@ const ActionBar = () => {
 
   return (
     <>
-      <View style={[styles.actionWrapper, {bottom: Math.max(bottom + 84, 84)}]}>
+      <View
+        style={[
+          styles.actionWrapper,
+          {
+            bottom: Math.max(
+              bottom + ACTION_BUTTON_SIZE * 2,
+              ACTION_BUTTON_SIZE * 2,
+            ),
+          },
+        ]}>
         <TouchableOpacity style={[styles.action]} onPress={handleTabChange(0)}>
           <MaterialIcons
             size={30}

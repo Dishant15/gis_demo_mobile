@@ -34,3 +34,4 @@ export const getGisMapInterectionEnable = store =>
   store.planningGis.mapState.enableMapInterection;
 
 export const getPlanningMapPosition = store => store.planningGis.mapPosition;
+export const getPlanningMapFilters = store => store.planningGis.filters;
