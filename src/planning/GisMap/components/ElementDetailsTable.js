@@ -15,7 +15,7 @@ import Loader from '~Common/Loader';
 import BackHeader from '~Common/components/Header/BackHeader';
 
 import {fetchElementDetails} from '~planning/data/layer.services';
-import {setMapState} from '~planning/data/planningGis.reducer';
+import {hideElement, setMapState} from '~planning/data/planningGis.reducer';
 import {
   getPlanningMapStateData,
   getPlanningTicketData,
@@ -96,7 +96,14 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
         navigation,
       ),
     );
-  }, [dispatch, layerKey, elemData, featureType]);
+    dispatch(
+      hideElement({
+        layerKey,
+        elementId: elemData.id,
+        isTicket: !!ticketData?.id,
+      }),
+    );
+  }, [dispatch, layerKey, elemData, featureType, ticketData]);
 
   const handleShowOnMap = useCallback(() => {
     const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);

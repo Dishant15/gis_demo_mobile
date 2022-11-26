@@ -7,7 +7,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import * as Animatable from 'react-native-animatable';
 import get from 'lodash/get';
 
-import TicketMapLayers from './components/TicketMapLayers';
+import TicketMapViewLayer from './components/TicketMapViewLayer';
 import Map from '~Common/components/Map';
 import GisMapViewLayer from './components/GisMapViewLayer';
 import AddEditGeometryLayer from './components/AddEditGeometryLayer';
@@ -116,7 +116,7 @@ const GisMap = props => {
             {showMapRender ? (
               <>
                 <GisMapViewLayer />
-                <TicketMapLayers />
+                <TicketMapViewLayer />
                 <AddEditGeometryLayer />
               </>
             ) : null}

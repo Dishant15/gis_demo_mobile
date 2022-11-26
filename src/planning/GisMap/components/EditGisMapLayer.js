@@ -16,6 +16,7 @@ import useValidateGeometry from '../hooks/useValidateGeometry';
 
 import {
   setMapState,
+  unHideElement,
   updateMapStateDataErrPolygons,
 } from '~planning/data/planningGis.reducer';
 import {
@@ -186,7 +187,14 @@ const EditGisLayer = () => {
 
   const handleCancel = useCallback(() => {
     dispatch(setMapState({}));
-  }, []);
+    dispatch(
+      unHideElement({
+        layerKey,
+        elementId: data.elementId,
+        isTicket: !!ticketId,
+      }),
+    );
+  }, [layerKey, ticketId, data]);
 
   // helpText show in popup based on featureType
   const mapCardTitle = useMemo(() => {

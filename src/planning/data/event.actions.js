@@ -2,8 +2,10 @@ import {
   setMapPosition,
   setMapState,
   setTicketWorkOrderId,
+  unHideElement,
 } from './planningGis.reducer';
 import {
+  getPlanningMapStateData,
   getPlanningTicketData,
   getPlanningTicketId,
 } from './planningGis.selectors';
@@ -124,6 +126,7 @@ export const onViewMapClick = navigation => (dispatch, getState) => {
 export const onElementUpdate = layerKey => (dispatch, getState) => {
   const storeState = getState();
   const selectedRegionIds = getSelectedRegionIds(storeState);
+  const {elementId} = getPlanningMapStateData(storeState);
   const ticketData = getPlanningTicketData(storeState);
   const ticketId = get(ticketData, 'id');
 
@@ -145,6 +148,13 @@ export const onElementUpdate = layerKey => (dispatch, getState) => {
       );
     }
   }
+  dispatch(
+    unHideElement({
+      layerKey,
+      elementId,
+      isTicket: !!ticketId,
+    }),
+  );
 };
 
 export const onShowMarkerOnMapPress = (center, navigation) => dispatch => {

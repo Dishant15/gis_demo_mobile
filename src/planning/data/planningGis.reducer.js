@@ -6,10 +6,12 @@ import difference from 'lodash/difference';
 import cloneDeep from 'lodash/cloneDeep';
 import countBy from 'lodash/countBy';
 import findIndex from 'lodash/findIndex';
+import filter from 'lodash/filter';
+import isNumber from 'lodash/isNumber';
 
 import {fetchLayerDataThunk} from './actionBar.services';
 import {handleLayerSelect, removeLayerSelect} from './planningState.reducer';
-import {convertLayerServerData, PLANNING_EVENT} from '../GisMap/utils';
+import {convertLayerServerData} from '../GisMap/utils';
 import {fetchTicketWorkorderDataThunk} from './ticket.services';
 import {coordsToLatLongMap} from '~utils/map.utils';
 import {logout} from '~Authentication/data/auth.reducer';
@@ -27,9 +29,14 @@ const defaultLayerNetworkState = {
 };
 
 const initialState = {
+  filters: {
+    status: null,
+  },
   // shape : { layer-key: { ...defaultLayerNetworkState } }
   layerNetworkState: {},
   // shape : { layer-key: [ {...Gis data, ...}, ...] }
+  masterGisData: {},
+  // filtered gis data, same as masterGisData
   layerData: {},
   /**
    * shape: {
@@ -44,6 +51,8 @@ const initialState = {
     center: DEFAULT_MAP_CENTER,
     zoom: DEFAULT_MAP_ZOOM,
   },
+  // shape { layerKey, elementId }
+  mapHighlight: {},
   // ticket related fields
   // set ticker data when user click on ticket from PlanningTicket
   // at same time workOrderId will be reset
@@ -66,48 +75,63 @@ const planningGisSlice = createSlice({
   name: 'planningGis',
   initialState,
   reducers: {
+    // payload : { filterKey, filterValue }
+    setFilter: (state, {payload}) => {
+      const {filterKey, filterValue} = payload;
+      // filter layerData based on filter value
+      let filteredGisLayerData = {};
+      // filter elements by status
+      if (filterKey === 'status') {
+        // get keys of layerData
+        const layerKeyList = Object.keys(state.masterGisData);
+        // loop over layerKeys
+        for (let lkInd = 0; lkInd < layerKeyList.length; lkInd++) {
+          const currLayerKey = layerKeyList[lkInd];
+          // filter list of elements of each layer key
+          filteredGisLayerData[currLayerKey] = filter(
+            state.masterGisData[currLayerKey],
+            ['status', filterValue],
+          );
+        }
+      }
+      // update states
+      state.layerData = filteredGisLayerData;
+      state.filters[filterKey] = filterValue;
+    },
+    resetFilters: state => {
+      state.layerData = cloneDeep(state.masterGisData);
+      state.filters = initialState.filters;
+    },
     // payload: ticketId ( Number ) | null
     setTicketId: (state, {payload}) => {
       state.ticketId = payload;
     },
+    // payload: { layerKey, elementId, isTicket }
+    hideElement: (state, {payload}) => {
+      const {layerKey, elementId} = payload;
+      // hide current element from layerData
+      const elemLayerDataInd = findIndex(state.layerData[layerKey], [
+        'id',
+        elementId,
+      ]);
+      if (elemLayerDataInd !== -1) {
+        state.layerData[layerKey][elemLayerDataInd].hidden = true;
+      }
+    },
+    // payload: { layerKey, elementId, isTicket }
+    unHideElement: (state, {payload}) => {
+      const {layerKey, elementId} = payload;
+      // hide current element from layerData
+      const elemLayerDataInd = findIndex(state.layerData[layerKey], [
+        'id',
+        elementId,
+      ]);
+      if (elemLayerDataInd !== -1) {
+        state.layerData[layerKey][elemLayerDataInd].hidden = false;
+      }
+    },
     // payload : { event, layerKey, data }
     setMapState: (state, {payload}) => {
-      const currMapState = state.mapState;
-      // if next event is editElementGeometry
-      if (
-        payload.event === PLANNING_EVENT.editElementGeometry &&
-        currMapState.event !== payload.event
-      ) {
-        // hide current element from layerData
-        const elemLayerDataInd = findIndex(state.layerData[payload.layerKey], [
-          'id',
-          payload.data.elementId,
-        ]);
-        if (elemLayerDataInd !== -1) {
-          state.layerData[payload.layerKey][elemLayerDataInd] = {
-            ...state.layerData[payload.layerKey][elemLayerDataInd],
-            hidden: true,
-          };
-        }
-      }
-      // if current event is editElementGeometry
-      if (
-        currMapState.event === PLANNING_EVENT.editElementGeometry &&
-        // next event is not same
-        currMapState.event !== payload.event
-      ) {
-        // show current element from layerData
-        const elemLayerDataInd = findIndex(
-          state.layerData[currMapState.layerKey],
-          ['id', currMapState.data.elementId],
-        );
-        if (elemLayerDataInd !== -1) {
-          state.layerData[currMapState.layerKey][elemLayerDataInd] = {
-            ...state.layerData[currMapState.layerKey][elemLayerDataInd],
-            hidden: false,
-          };
-        }
-      }
       state.mapState = {...payload};
     },
     // only used in mobile, update and hold temparay Coordinates changes
@@ -141,6 +165,79 @@ const planningGisSlice = createSlice({
         }
       }
     },
+    setMapPosition: (state, {payload}) => {
+      // can not be partial as web
+      state.mapPosition = {...payload};
+    },
+    setMapHighlight: (state, {payload}) => {
+      // check previously any element is highlighted or not
+      if (state.mapHighlight.layerKey) {
+        // revert highlight current element from layerData
+        const prevElemLayerDataInd = findIndex(
+          state.layerData[state.mapHighlight.layerKey],
+          ['id', state.mapHighlight.elementId],
+        );
+        if (prevElemLayerDataInd !== -1) {
+          state.layerData[state.mapHighlight.layerKey][
+            prevElemLayerDataInd
+          ].highlighted = false;
+        }
+      }
+      // highlight current element from layerData
+      const elemLayerDataInd = findIndex(state.layerData[payload.layerKey], [
+        'id',
+        payload.elementId,
+      ]);
+      if (elemLayerDataInd !== -1) {
+        state.layerData[payload.layerKey][elemLayerDataInd].highlighted = true;
+      }
+      state.mapHighlight = {...payload};
+    },
+    resetMapHighlight: state => {
+      // revert highlight and reset mapHighlight
+      const elemLayerDataInd = findIndex(
+        state.layerData[state.mapHighlight.layerKey],
+        ['id', state.mapHighlight.elementId],
+      );
+      if (elemLayerDataInd !== -1) {
+        state.layerData[state.mapHighlight.layerKey][
+          elemLayerDataInd
+        ].highlighted = false;
+      }
+      state.mapHighlight = {};
+    },
+    setTicketMapHighlight: (state, {payload}) => {
+      // payload: ticket-wo id
+      // check previous ticket element is highlighted or not
+      if (isNumber(state.ticketData.ticketHighlightedWo)) {
+        const workorderInd = findIndex(state.ticketData.work_orders, [
+          'id',
+          state.ticketData.ticketHighlightedWo,
+        ]);
+        if (workorderInd !== -1) {
+          state.ticketData.work_orders[workorderInd].highlighted = false;
+        }
+      }
+      // highlight current ticket wo
+      const workorderInd = findIndex(state.ticketData.work_orders, [
+        'id',
+        payload,
+      ]);
+      if (workorderInd !== -1) {
+        state.ticketData.work_orders[workorderInd].highlighted = true;
+        state.ticketData.ticketHighlightedWo = payload;
+      }
+    },
+    resetTicketMapHighlight: state => {
+      const workorderInd = findIndex(state.ticketData.work_orders, [
+        'id',
+        state.ticketData.ticketHighlightedWo,
+      ]);
+      if (workorderInd !== -1) {
+        state.ticketData.work_orders[workorderInd].highlighted = false;
+        state.ticketData.ticketHighlightedWo = undefined;
+      }
+    },
     // reset ticker data if user visit planning map from drawer
     resetTicketData: state => {
       state.mapState = {};
@@ -152,10 +249,6 @@ const planningGisSlice = createSlice({
         isHidden: false,
       };
       state.workOrderId = null;
-    },
-    setMapPosition: (state, {payload}) => {
-      // can not be partial as web
-      state.mapPosition = {...payload};
     },
   },
   extraReducers: {
@@ -183,6 +276,7 @@ const planningGisSlice = createSlice({
           isLoading: true,
           isSelected: true,
         };
+        state.masterGisData[layerKey] = [];
         state.layerData[layerKey] = [];
       }
     },
@@ -193,10 +287,11 @@ const planningGisSlice = createSlice({
       state.layerNetworkState[layerKey].isFetched = true;
       state.layerNetworkState[layerKey].count = size(action.payload);
       // convert payload coordinates into google coordinates data
-      state.layerData[layerKey] = convertLayerServerData(
-        layerKey,
-        action.payload,
+      const convertedLayerGisData = cloneDeep(
+        convertLayerServerData(layerKey, action.payload),
       );
+      state.masterGisData[layerKey] = convertedLayerGisData;
+      state.layerData[layerKey] = convertedLayerGisData;
     },
     // handle error
     [fetchLayerDataThunk.rejected]: (state, action) => {
@@ -261,5 +356,13 @@ export const {
   resetTicketData,
   updateMapStateDataErrPolygons,
   setMapPosition,
+  setFilter,
+  resetFilters,
+  hideElement,
+  unHideElement,
+  setMapHighlight,
+  resetMapHighlight,
+  setTicketMapHighlight,
+  resetTicketMapHighlight,
 } = planningGisSlice.actions;
 export default planningGisSlice.reducer;

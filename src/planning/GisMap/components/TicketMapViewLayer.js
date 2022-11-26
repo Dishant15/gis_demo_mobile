@@ -8,7 +8,7 @@ import {getPlanningTicketData} from '~planning/data/planningGis.selectors';
 import {LayerKeyMappings} from '../utils';
 import {FEATURE_TYPES, zIndexMapping} from '../layers/common/configuration';
 
-const TicketMapLayers = () => {
+const TicketMapViewLayer = () => {
   const {
     id: ticketId,
     work_orders = [],
@@ -28,7 +28,8 @@ const TicketMapLayers = () => {
           />
         ) : null}
         {work_orders.map(workOrder => {
-          const {id, layer_key, element} = workOrder;
+          const {id, layer_key, element, hidden} = workOrder;
+          if (hidden) return null;
           if (element.id) {
             const featureType = LayerKeyMappings[layer_key]['featureType'];
             const viewOptions =
@@ -78,4 +79,4 @@ const TicketMapLayers = () => {
   return null;
 };
 
-export default TicketMapLayers;
+export default TicketMapViewLayer;
