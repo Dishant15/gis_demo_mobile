@@ -20,9 +20,9 @@ import {
   removeLayerSelect,
   setActiveTab,
 } from '~planning/data/planningState.reducer';
-import {colors} from '~constants/constants';
+import {openElementDetails} from '~planning/data/planning.actions';
+import {colors, screens} from '~constants/constants';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import {openElementDetails} from '~planning/data/event.actions';
 
 const LayerTab = ({layerConfig, regionIdList}) => {
   /**
@@ -113,7 +113,14 @@ const ElementList = ({layerKey}) => {
 
   const handleElementClick = useCallback(
     elementId => () => {
-      dispatch(openElementDetails(layerKey, elementId, navigation));
+      dispatch(setActiveTab(null));
+      dispatch(
+        openElementDetails({
+          layerKey,
+          elementId,
+        }),
+      );
+      navigation.navigate(screens.gisEventScreen);
     },
     [layerKey],
   );

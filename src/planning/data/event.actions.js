@@ -91,23 +91,6 @@ export const onAddElementDetails =
     navigation.navigate(screens.gisEventScreen);
   };
 
-/**
- * click on layer tab -> layer -> element
- * close tab, set layer element id, navigate to event screen
- */
-export const openElementDetails =
-  (layerKey, elementId, navigation) => dispatch => {
-    dispatch(setActiveTab(null));
-    dispatch(
-      setMapState({
-        event: PLANNING_EVENT.showElementDetails,
-        layerKey,
-        data: {elementId},
-      }),
-    );
-    navigation.navigate(screens.gisEventScreen);
-  };
-
 export const onViewMapClick = navigation => (dispatch, getState) => {
   const storeState = getState();
   const ticketData = getPlanningTicketData(storeState);

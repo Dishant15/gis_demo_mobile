@@ -65,6 +65,7 @@ export const colors = {
 
   grey1: '#efefef',
   transparent: 'transparent',
+  dividerColor: 'rgba(0, 0, 0, 0.12)',
 };
 
 export const layout = StyleSheet.create({
@@ -227,6 +228,9 @@ export const THEME_COLORS = {
   success: {
     main: '#4bae4f',
     contrastText: '#fff',
+  },
+  action: {
+    active: 'rgba(0, 0, 0, 0.54)',
   },
 };
 

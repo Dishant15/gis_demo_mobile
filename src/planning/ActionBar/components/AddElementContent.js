@@ -30,6 +30,7 @@ import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
 
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {colors, layout} from '~constants/constants';
+import {onAddElementGeometry} from '~planning/data/planning.actions';
 
 /**
  * Parent:
@@ -83,27 +84,11 @@ const AddElementContent = ({hideModal}) => {
 
   const handleAddElementClick = useCallback(
     layerKey => () => {
-      // show error if one event already running
-      if (event) {
-        showToast(
-          'Please complete current operation before starting new',
-          TOAST_TYPE.INFO,
-        );
-        return;
-      }
       if (layerKey === 'region') {
         showToast('Can not process requested operation', TOAST_TYPE.ERROR);
         return;
       }
-      // start event if no other event running
-      dispatch(
-        setMapState({
-          event: PLANNING_EVENT.addElementGeometry,
-          layerKey,
-          enableMapInterection: true,
-        }),
-      );
-      dispatch(setActiveTab(null));
+      dispatch(onAddElementGeometry({layerKey}));
     },
     [event],
   );
