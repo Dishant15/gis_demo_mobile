@@ -1,6 +1,6 @@
 import React, {useRef, useCallback} from 'react';
 import {View} from 'react-native';
-import {useMutation} from 'react-query';
+import {useMutation, useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
@@ -15,7 +15,6 @@ import {
   editElementDetails,
   editTicketWorkorderElement,
 } from '~planning/data/layer.services';
-import {getLayerSelectedConfiguration} from '~planning/data/planningState.selectors';
 import {
   getPlanningMapState,
   getPlanningTicketId,
@@ -26,6 +25,8 @@ import {
   goBackFromGisEventScreen,
   onElementUpdate,
 } from '~planning/data/event.actions';
+import {fetchLayerListDetails} from '~planning/data/actionBar.services';
+import {onFetchLayerListDetailsSuccess} from '~planning/data/planning.actions';
 
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {
@@ -42,8 +43,7 @@ export const GisLayerForm = ({layerKey}) => {
 
   const workOrderId = useSelector(getPlanningTicketWorkOrderId);
   const ticketId = useSelector(getPlanningTicketId);
-  const {event, data} = useSelector(getPlanningMapState);
-  const configuration = useSelector(getLayerSelectedConfiguration(layerKey));
+  const {event, data: mapStateData} = useSelector(getPlanningMapState);
 
   const isEdit = event === PLANNING_EVENT.editElementForm;
   const formConfig = get(LayerKeyMappings, [layerKey, 'formConfig']);
@@ -52,6 +52,19 @@ export const GisLayerForm = ({layerKey}) => {
     'transformAndValidateData',
   ]);
   const title = get(formConfig, 'sections.0.title', 'Element form');
+  const isConfigurable = !!get(mapStateData, 'configuration');
+
+  const queryRes = useQuery(
+    'planningLayerConfigsDetails',
+    fetchLayerListDetails,
+    {
+      staleTime: Infinity,
+      enabled: isConfigurable,
+      onSuccess: layerConfData => {
+        dispatch(onFetchLayerListDetailsSuccess(layerConfData));
+      },
+    },
+  );
 
   const onSuccessHandler = () => {
     showToast('Element operation completed Successfully', TOAST_TYPE.SUCCESS);
@@ -115,7 +128,11 @@ export const GisLayerForm = ({layerKey}) => {
 
   const {mutate: editElement, isLoading: isEditLoading} = useMutation(
     mutationData =>
-      editElementDetails({data: mutationData, layerKey, elementId: data.id}),
+      editElementDetails({
+        data: mutationData,
+        layerKey,
+        elementId: mapStateData.id,
+      }),
     {
       onSuccess: onSuccessHandler,
       onError: onErrorHandler,
@@ -140,18 +157,12 @@ export const GisLayerForm = ({layerKey}) => {
 
   const onSubmit = (data, setError, clearErrors) => {
     clearErrors();
-    // remove remark from data and pass in workorder data
-    const remark = data.remark;
-    delete data.remark;
-    // if form is edit get configuration if from data otherwise get from redux;
-    const configId = isEdit
-      ? get(data, 'configuration', undefined)
-      : get(configuration, 'id', undefined);
     let validatedData = prepareServerData(data, isEdit, formConfig);
     // convert data to server friendly form
     validatedData = transformAndValidateData
-      ? transformAndValidateData(data, setError, isEdit, configId)
-      : data;
+      ? transformAndValidateData(validatedData, setError, isEdit)
+      : validatedData;
+
     const isWorkOrderUpdate = !!ticketId;
     // call addWorkOrder api if isWorkOrderUpdate, addElement api if not
 
@@ -160,20 +171,20 @@ export const GisLayerForm = ({layerKey}) => {
         // user came from a ticket
         if (workOrderId) {
           // edit work order element api
-          editWorkOrderElementMutation({...validatedData, geometry: undefined});
+          editWorkOrderElementMutation(validatedData);
         } else {
-          handleAddWorkOrder(validatedData, remark);
+          handleAddWorkOrder(validatedData, data.remark);
         }
       } else {
         // user came from planning in drawer
         // directly update element without workorder
-        editElement({...validatedData, geometry: undefined});
+        editElement(validatedData);
       }
     } else {
       // user came from GisMap Add Element tab
       if (isWorkOrderUpdate) {
         // user will add element with a workorder
-        handleAddWorkOrder(validatedData, remark);
+        handleAddWorkOrder(validatedData, data.remark);
       } else {
         // directly add element
         addElement(validatedData);
@@ -192,6 +203,18 @@ export const GisLayerForm = ({layerKey}) => {
     }
     if (isEdit) {
       serverData['id'] = data?.id;
+      delete serverData['geometry'];
+    } else {
+      delete serverData['coordinates'];
+      // add geometry data bcoz, formConfig dont have that field
+      serverData['geometry'] = data?.geometry;
+    }
+    // add configuration id if have
+    if (data?.configuration) {
+      serverData['configuration'] = data?.configuration;
+    }
+    if (data?.association) {
+      serverData['association'] = data.association;
     }
     return serverData;
   }, []);
@@ -209,7 +232,7 @@ export const GisLayerForm = ({layerKey}) => {
       <DynamicForm
         ref={formRef}
         formConfigs={formConfig}
-        data={data}
+        data={mapStateData}
         onSubmit={onSubmit}
         onCancel={handleGoBack}
         isLoading={isLoadingBtn}

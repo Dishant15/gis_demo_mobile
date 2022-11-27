@@ -11,7 +11,9 @@ import {
 import {
   handleLayerSelect,
   handleRegionSelect,
+  selectConfiguration,
   setActiveTab,
+  setLayerConfigurations,
 } from './planningState.reducer';
 import {fetchLayerDataThunk} from './actionBar.services';
 import {
@@ -220,3 +222,28 @@ export const onAddElementDetails =
     dispatch(setMapState(mapStateData));
     navigation.navigate(screens.gisEventScreen);
   };
+
+export const onFetchLayerListDetailsSuccess = layerConfData => dispatch => {
+  // res shape same as layerConfigs bellow
+  if (!!size(layerConfData)) {
+    for (let lc_ind = 0; lc_ind < layerConfData.length; lc_ind++) {
+      const {layer_key, is_configurable, configuration} = layerConfData[lc_ind];
+      if (is_configurable) {
+        // if layerConfData is there set layer configs in redux
+        dispatch(
+          setLayerConfigurations({
+            layerKey: layer_key,
+            configurationList: configuration,
+          }),
+        );
+        // select default configs to show first
+        dispatch(
+          selectConfiguration({
+            layerKey: layer_key,
+            configuration: configuration[0],
+          }),
+        );
+      }
+    }
+  }
+};

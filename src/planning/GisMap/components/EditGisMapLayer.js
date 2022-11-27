@@ -138,8 +138,6 @@ const EditGisLayer = () => {
 
   const handleSubmit = () => {
     const isWorkOrderUpdate = !!ticketId;
-    // remove remark from data
-    delete data.remark;
     // create submit data
     let submitData = {};
     if (featureType === FEATURE_TYPES.POLYLINE) {
@@ -179,7 +177,7 @@ const EditGisLayer = () => {
     }
 
     validateElementMutation(validationData, {
-      onSuccess: () => {
+      onSuccess: res => {
         // update submit data based on validation res
         const children = get(res, 'data.children', {});
         const getDependantFields = get(

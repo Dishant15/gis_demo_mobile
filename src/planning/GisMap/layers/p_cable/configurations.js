@@ -89,20 +89,3 @@ export const ELEMENT_TABLE_FIELDS = [
   {label: 'Specification', field: 'specification', type: 'simple'},
   {label: 'Vendor', field: 'vendor', type: 'simple'},
 ];
-
-export const transformAndValidateData = (
-  formData,
-  setError,
-  isEdit,
-  configurationId,
-) => {
-  if (isEdit) {
-    return formData;
-  } else {
-    return {
-      ...formData,
-      // convert select fields to simple values
-      configuration: configurationId,
-    };
-  }
-};

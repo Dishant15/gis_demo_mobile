@@ -57,7 +57,6 @@ export const LayerKeyMappings = {
     elementTableFields: SplitterLayer.ELEMENT_TABLE_FIELDS,
     elementTableExtraControls: SplitterLayer.ELEMENT_TABLE_EXTRA_CONTROLS,
     formConfig: SplitterLayer.ELEMENT_FORM_TEMPLATE,
-    transformAndValidateData: SplitterLayer.transformAndValidateData,
   },
   [CableLayer.LAYER_KEY]: {
     preUid: CableLayer.PRE_UID,
@@ -66,7 +65,6 @@ export const LayerKeyMappings = {
     initialElementData: CableLayer.INITIAL_ELEMENT_DATA,
     elementTableFields: CableLayer.ELEMENT_TABLE_FIELDS,
     formConfig: CableLayer.ELEMENT_FORM_TEMPLATE,
-    transformAndValidateData: CableLayer.transformAndValidateData,
   },
   [SAreaLayer.LAYER_KEY]: {
     preUid: SAreaLayer.PRE_UID,

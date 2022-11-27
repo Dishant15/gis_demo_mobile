@@ -5,8 +5,6 @@ import {useDispatch, useSelector} from 'react-redux';
 
 import filter from 'lodash/filter';
 import get from 'lodash/get';
-import size from 'lodash/size';
-import noop from 'lodash/noop';
 
 import {Subheading, Divider} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -16,21 +14,18 @@ import Header from './Header';
 import ElementConfigList from './ElementConfigList';
 
 import {fetchLayerListDetails} from '~planning/data/actionBar.services';
-import {setMapState} from '~planning/data/planningGis.reducer';
-import {setActiveTab} from '~planning/data/planningState.reducer';
-import {
-  selectConfiguration,
-  setLayerConfigurations,
-} from '~planning/data/planningState.reducer';
 import {
   getPlanningMapState,
   getSelectedConfigurations,
 } from '~planning/data/planningGis.selectors';
-import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
+import {LayerKeyMappings} from '~planning/GisMap/utils';
 
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {colors, layout} from '~constants/constants';
-import {onAddElementGeometry} from '~planning/data/planning.actions';
+import {
+  onAddElementGeometry,
+  onFetchLayerListDetailsSuccess,
+} from '~planning/data/planning.actions';
 
 /**
  * Parent:
@@ -43,29 +38,7 @@ const AddElementContent = ({hideModal}) => {
     {
       staleTime: Infinity,
       onSuccess: layerConfData => {
-        // res shape same as layerConfigs bellow
-        if (!!size(layerConfData)) {
-          for (let lc_ind = 0; lc_ind < layerConfData.length; lc_ind++) {
-            const {layer_key, is_configurable, configuration} =
-              layerConfData[lc_ind];
-            if (is_configurable) {
-              // if layerConfData is there set layer configs in redux
-              dispatch(
-                setLayerConfigurations({
-                  layerKey: layer_key,
-                  configurationList: configuration,
-                }),
-              );
-              // select default configs to show first
-              dispatch(
-                selectConfiguration({
-                  layerKey: layer_key,
-                  configuration: configuration[0],
-                }),
-              );
-            }
-          }
-        }
+        dispatch(onFetchLayerListDetailsSuccess(layerConfData));
       },
     },
   );
