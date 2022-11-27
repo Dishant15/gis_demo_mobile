@@ -109,7 +109,7 @@ const AddElementContent = ({hideModal}) => {
       <View>
         {isLoading ? <Loader /> : null}
         <Header text="ADD ELEMENT" icon="add-location" onClose={hideModal} />
-        <ScrollView style={styles.container}>
+        <ScrollView contentContainerStyle={styles.wrapper}>
           {layerCofigs.map(config => {
             const {
               layer_key,
@@ -175,7 +175,7 @@ const AddElementContent = ({hideModal}) => {
       <View>
         {isLoading ? <Loader /> : null}
         <Header text="ADD ELEMENT" icon="add-location" onClose={hideModal} />
-        <View style={styles.container}>
+        <View style={styles.wrapper}>
           {isLoading ? null : (
             <Subheading style={layout.textCenter}>
               No elements created yet.
@@ -188,8 +188,9 @@ const AddElementContent = ({hideModal}) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     paddingHorizontal: 12,
+    paddingBottom: 40,
   },
   elementContent: {
     flexDirection: 'row',

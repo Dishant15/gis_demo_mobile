@@ -50,17 +50,10 @@ const MapCard = ({
           {title}
         </Title>
       </View>
-      {!!subTitle ? <Paragraph>{subTitle}</Paragraph> : null}
-      <View style={styles.actionWrapper}>
-        {actionContent}
-        {/* {primaryAction}
-        {secondaryAction ? (
-          <>
-            <View style={styles.actionGap} />
-            {secondaryAction}
-          </>
-        ) : null} */}
-      </View>
+      {!!subTitle ? (
+        <Paragraph style={styles.subTitleStyle}>{subTitle}</Paragraph>
+      ) : null}
+      <View style={styles.actionWrapper}>{actionContent}</View>
     </View>
   );
 };
@@ -99,11 +92,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionWrapper: {
+    paddingTop: 2,
     justifyContent: 'flex-end',
     flexDirection: 'row',
   },
-  actionGap: {
-    marginLeft: 8,
+  subTitleStyle: {
+    color: colors.offWhite,
   },
 });
 

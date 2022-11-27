@@ -8,7 +8,7 @@ import {Button} from 'react-native-paper';
 import get from 'lodash/get';
 import round from 'lodash/round';
 import size from 'lodash/size';
-import {lineString, length} from '@turf/turf';
+import {lineString, length, area, polygon, convertArea} from '@turf/turf';
 
 import MapCard from '~Common/components/MapCard';
 
@@ -34,8 +34,16 @@ import {onElementUpdate} from '~planning/data/event.actions';
 
 import {FEATURE_TYPES} from '../layers/common/configuration';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import {latLongMapToCoords, latLongMapToLineCoords} from '~utils/map.utils';
-import {LayerKeyMappings, TICKET_WORKORDER_TYPE} from '../utils';
+import {
+  latLongMapToCoords,
+  latLongMapToLineCoords,
+  pointLatLongMapToCoords,
+} from '~utils/map.utils';
+import {
+  LayerKeyMappings,
+  PLANNING_EVENT,
+  TICKET_WORKORDER_TYPE,
+} from '../utils';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
 
 const EditGisLayer = () => {
@@ -48,14 +56,15 @@ const EditGisLayer = () => {
   const ticketData = useSelector(getPlanningTicketData);
   const workOrderId = useSelector(getPlanningTicketWorkOrderId);
   const {
-    geometry: coordinates,
-    data,
+    geometry: featureCoords,
+    data: mapStateData,
     layerKey,
   } = useSelector(getPlanningMapState);
 
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
   const ticketId = get(ticketData, 'id');
   const ticketName = get(ticketData, 'name');
+  const {elementId, remark} = mapStateData;
 
   const onSuccessHandler = () => {
     showToast('Element location updated Successfully', TOAST_TYPE.SUCCESS);
@@ -106,7 +115,7 @@ const EditGisLayer = () => {
 
   const {mutate: editElement, isLoading: isEditLoading} = useMutation(
     mutationData =>
-      editElementDetails({data: mutationData, layerKey, elementId: data.id}),
+      editElementDetails({data: mutationData, layerKey, elementId}),
     {
       onSuccess: onSuccessHandler,
       onError: onErrorHandler,
@@ -121,41 +130,45 @@ const EditGisLayer = () => {
         layer_key: layerKey,
         remark,
       },
-      element: {...submitData, id: data?.id},
+      element: {...submitData, id: elementId},
     };
     // add workorder data to validatedData
     addWorkOrder(workOrderData);
   };
 
-  const handleUpdate = () => {
+  const handleSubmit = () => {
     const isWorkOrderUpdate = !!ticketId;
-    // remove remark from data and pass in workorder data
-    const remark = data.remark;
+    // remove remark from data
     delete data.remark;
     // create submit data
     let submitData = {};
     if (featureType === FEATURE_TYPES.POLYLINE) {
-      const geometry = latLongMapToLineCoords(coordinates);
-      submitData = {
-        geometry,
-        gis_len: round(length(lineString(geometry)), 4),
-      };
-    } else if (featureType === FEATURE_TYPES.POLYGON) {
-      submitData = {
-        geometry: latLongMapToCoords(coordinates),
-      };
-    } else if (featureType === FEATURE_TYPES.POINT) {
-      submitData = {
-        geometry: latLongMapToCoords([coordinates])[0],
-      };
-    } else {
+      submitData.geometry = latLongMapToLineCoords(featureCoords);
+      submitData.gis_len = round(length(lineString(submitData.geometry)), 4);
+    }
+    //
+    else if (featureType === FEATURE_TYPES.POLYGON) {
+      submitData.geometry = latLongMapToCoords(featureCoords);
+      // get area of polygon
+      const areaInMeters = area(polygon([submitData.geometry]));
+      submitData.gis_area = round(
+        convertArea(areaInMeters, 'meters', 'kilometers'),
+        4,
+      );
+    }
+    //
+    else if (featureType === FEATURE_TYPES.POINT) {
+      submitData.geometry = pointLatLongMapToCoords(featureCoords);
+    }
+    //
+    else {
       throw new Error('feature type is invalid');
     }
 
     // server side validate geometry
     let validationData = {
       layerKey,
-      element_id: data?.elementId,
+      element_id: elementId,
       featureType,
       geometry: submitData.geometry,
     };
@@ -167,6 +180,16 @@ const EditGisLayer = () => {
 
     validateElementMutation(validationData, {
       onSuccess: () => {
+        // update submit data based on validation res
+        const children = get(res, 'data.children', {});
+        const getDependantFields = get(
+          LayerKeyMappings,
+          [layerKey, 'getDependantFields'],
+          ({submitData}) => submitData,
+        );
+        submitData = getDependantFields({submitData, children});
+        submitData.association = get(res, 'data', {});
+
         if (isWorkOrderUpdate) {
           // user came from a ticket
           if (workOrderId) {
@@ -186,15 +209,23 @@ const EditGisLayer = () => {
   };
 
   const handleCancel = useCallback(() => {
-    dispatch(setMapState({}));
+    // unhide element from layerData
     dispatch(
       unHideElement({
         layerKey,
-        elementId: data.elementId,
+        elementId: elementId,
         isTicket: !!ticketId,
       }),
     );
-  }, [layerKey, ticketId, data]);
+    // go back to details
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.showElementDetails,
+        layerKey,
+        data: {elementId},
+      }),
+    );
+  }, [layerKey, ticketId, elementId]);
 
   // helpText show in popup based on featureType
   const mapCardTitle = useMemo(() => {
@@ -214,13 +245,13 @@ const EditGisLayer = () => {
     isLoading || isEditLoading || isEditTicketLoading || isValidationLoading;
   const ActionContent = (
     <>
-      <TouchableOpacity onPress={handleUpdate}>
+      <TouchableOpacity onPress={handleSubmit}>
         <Button
           mode="text"
           color={colors.white}
           style={{backgroundColor: THEME_COLORS.secondary.main}}
           loading={isLoadingBtn}>
-          Update
+          Submit
         </Button>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleCancel}>

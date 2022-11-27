@@ -1,6 +1,13 @@
 import get from 'lodash/get';
+import last from 'lodash/last';
+import size from 'lodash/size';
+import isEmpty from 'lodash/isEmpty';
+import merge from 'lodash/merge';
 
-import {getSelectedLayerKeys} from './planningState.selectors';
+import {
+  getLayerSelectedConfiguration,
+  getSelectedLayerKeys,
+} from './planningState.selectors';
 import {
   handleLayerSelect,
   handleRegionSelect,
@@ -14,8 +21,13 @@ import {
   setMapPosition,
   setMapState,
 } from './planningGis.reducer';
-import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
+import {
+  generateElementUid,
+  LayerKeyMappings,
+  PLANNING_EVENT,
+} from '~planning/GisMap/utils';
 import {FEATURE_TYPES} from '~planning/GisMap/layers/common/configuration';
+import {getPlanningTicketData} from './planningGis.selectors';
 import {coordsToLatLongMap, pointCoordsToLatLongMap} from '~utils/map.utils';
 import {screens} from '~constants/constants';
 
@@ -136,7 +148,75 @@ export const onAddElementGeometry =
         event: PLANNING_EVENT.addElementGeometry,
         layerKey,
         data: {restriction_ids},
+        enableMapInterection: true,
       }),
     );
     dispatch(setActiveTab(null));
+  };
+
+export const onAddElementDetails =
+  ({layerKey, submitData, validationRes, extraParent, navigation}) =>
+  (dispatch, getState) => {
+    const initialData = get(LayerKeyMappings, [layerKey, 'initialElementData']);
+    const storeState = getState();
+    const selectedConfig = getLayerSelectedConfiguration(layerKey)(storeState);
+
+    // generate ids
+    let unique_id = generateElementUid(layerKey);
+    let network_id = '';
+
+    let region_list;
+    // generate parent association data from parents res
+    // shape: { layerKey : [{id, name, uid, netid}, ... ], ...]
+    const parents = get(validationRes, 'data.parents', {});
+    if (isEmpty(parents)) {
+      // generate from region
+      region_list = get(validationRes, 'data.region_list');
+      // get region uid
+      const reg_uid = !!size(region_list) ? last(region_list).unique_id : 'RGN';
+      network_id = `${reg_uid}-${unique_id}`;
+    } else {
+      // generate network id from parent list, get first key
+      const firstLayerKey = Object.keys(parents)[0];
+      const parentNetId = get(
+        parents,
+        [firstLayerKey, '0', 'network_id'],
+        'PNI',
+      );
+      network_id = `${parentNetId}-${unique_id}`;
+    }
+    // generate children association data from children res
+    const children = get(validationRes, 'data.children', {});
+
+    const getDependantFields = get(
+      LayerKeyMappings,
+      [layerKey, 'getDependantFields'],
+      ({submitData}) => submitData,
+    );
+    submitData = getDependantFields({submitData, children, region_list});
+
+    // add config id if layer is configurable
+    const configuration = selectedConfig?.id;
+
+    let mapStateData = {
+      event: PLANNING_EVENT.addElementForm, // event for "layerForm"
+      layerKey,
+      data: {
+        ...initialData,
+        // submit data will have all geometry related fields submitted by AddGisMapLayer
+        ...submitData,
+        unique_id,
+        network_id,
+        association: {parents: merge(parents, extraParent), children},
+        configuration,
+      },
+    };
+    const ticketData = getPlanningTicketData(storeState);
+    // assign new status as per ticket network_type
+    if (ticketData?.network_type) {
+      mapStateData.data['status'] = ticketData.network_type;
+    }
+    // complete current event -> fire next event
+    dispatch(setMapState(mapStateData));
+    navigation.navigate(screens.gisEventScreen);
   };

@@ -42,6 +42,7 @@ export const fonts = {
 export const colors = {
   black: '#000',
   white: '#fff',
+  offWhite: 'rgb(239, 239, 239)',
   blackWithOp: 'rgba(0,0,0,0.3)',
   primeFontColor: 'rgba(0, 0, 0, 0.6)',
   disabledBackground: '#d1d1d1',

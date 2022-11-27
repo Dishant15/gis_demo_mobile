@@ -1,13 +1,15 @@
 import React, {useCallback, useMemo} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {Button} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {lineString, length} from '@turf/turf';
+
+import {lineString, length, area, polygon, convertArea} from '@turf/turf';
 
 import get from 'lodash/get';
 import size from 'lodash/size';
 import round from 'lodash/round';
+
+import {Button} from 'react-native-paper';
 
 import MapCard from '~Common/components/MapCard';
 
@@ -28,9 +30,9 @@ import {
 import {LayerKeyMappings} from '../utils';
 import {FEATURE_TYPES} from '../layers/common/configuration';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
-import {onAddElementDetails} from '~planning/data/event.actions';
 import useValidateGeometry from '../hooks/useValidateGeometry';
 import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
+import {onAddElementDetails} from '~planning/data/planning.actions';
 
 const AddGisMapLayer = () => {
   const dispatch = useDispatch();
@@ -42,45 +44,75 @@ const AddGisMapLayer = () => {
   const ticketData = useSelector(getPlanningTicketData);
   const selectedRegionIds = useSelector(getSelectedRegionIds);
   const {
-    geometry: coordinates,
+    geometry: featureCoords,
     layerKey,
     data,
   } = useSelector(getPlanningMapState);
+
+  const {restriction_ids = null} = data;
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
   const ticketId = get(ticketData, 'id');
 
+  /**************************** */
+  //        Handlers            //
+  /**************************** */
+
   const handleAddComplete = () => {
-    let submitData = {};
-    if (featureType === FEATURE_TYPES.POLYLINE) {
-      if (size(coordinates) < 2) {
+    // geometry validation
+    if (
+      featureType === FEATURE_TYPES.POLYLINE ||
+      featureType === FEATURE_TYPES.POLYGON
+    ) {
+      if (size(featureCoords) < 2) {
         showToast('Invalid line', TOAST_TYPE.ERROR);
         return;
       }
-      submitData.geometry = latLongMapToLineCoords(coordinates);
+    }
+    // set coords to form data
+    let submitData = {};
+    if (featureType === FEATURE_TYPES.POLYLINE) {
+      submitData.geometry = latLongMapToLineCoords(featureCoords);
+      // get length and round to 4 decimals
       const gis_len = length(lineString(submitData.geometry));
       submitData.gis_len = String(round(gis_len, 4));
-    } else if (featureType === FEATURE_TYPES.POLYGON) {
-      submitData.geometry = latLongMapToCoords(coordinates);
-    } else if (featureType === FEATURE_TYPES.POINT) {
-      submitData.geometry = pointLatLongMapToCoords(coordinates);
-    } else {
+    }
+    //
+    else if (featureType === FEATURE_TYPES.POLYGON) {
+      submitData.geometry = latLongMapToCoords(featureCoords);
+      // get area of polygon
+      const areaInMeters = area(polygon([submitData.geometry]));
+      submitData.gis_area = String(
+        round(convertArea(areaInMeters, 'meters', 'kilometers'), 4),
+      );
+    }
+    //
+    else if (featureType === FEATURE_TYPES.POINT) {
+      submitData.geometry = pointLatLongMapToCoords(featureCoords);
+    }
+    //
+    else {
       throw new Error('feature type is invalid');
     }
 
     // server side validate geometry
-    let validationData = {
+    let mutationData = {
       layerKey,
       element_id: data?.elementId,
       featureType,
       geometry: submitData.geometry,
     };
     if (ticketId) {
-      validationData['ticket_id'] = ticketId;
+      mutationData['ticket_id'] = ticketId;
     } else if (size(selectedRegionIds)) {
-      validationData['region_id_list'] = selectedRegionIds;
+      mutationData['region_id_list'] = selectedRegionIds;
     }
 
-    validateElementMutation(validationData, {
+    if (!!restriction_ids) {
+      // validate with parent geometry contains check
+      mutationData['restriction_ids'] = restriction_ids;
+    }
+
+    validateElementMutation(mutationData, {
       onSuccess: res => {
         // complete current event -> fire next event
         dispatch(

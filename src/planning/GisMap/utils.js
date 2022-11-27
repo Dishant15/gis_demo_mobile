@@ -76,6 +76,7 @@ export const LayerKeyMappings = {
     elementTableFields: SAreaLayer.ELEMENT_TABLE_FIELDS,
     formConfig: SAreaLayer.ELEMENT_FORM_TEMPLATE,
     elementTableExtraControls: SAreaLayer.ELEMENT_TABLE_EXTRA_CONTROLS,
+    getDependantFields: SAreaLayer.getDependantFields,
   },
   [BuildingLayer.LAYER_KEY]: {
     preUid: BuildingLayer.PRE_UID,
