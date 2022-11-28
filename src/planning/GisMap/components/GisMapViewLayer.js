@@ -9,6 +9,22 @@ import {getSelectedLayerKeys} from '~planning/data/planningState.selectors';
 import {LayerKeyMappings} from '../utils';
 import {FEATURE_TYPES, zIndexMapping} from '../layers/common/configuration';
 
+const COMMON_POLYGON_OPTIONS = {
+  strokeWeight: 2,
+};
+
+const COMMON_POLYLINE_OPTIONS = {
+  strokeWeight: 2,
+};
+
+const COMMON_MARKER_OPTIONS = {
+  tappable: false,
+  draggable: false,
+  stopPropagation: true,
+  flat: true,
+  tracksInfoWindowChanges: false,
+};
+
 const GisMapViewLayer = () => {
   // get list of selected layer-keys
   const mapLayers = useSelector(getSelectedLayerKeys);
@@ -35,10 +51,8 @@ const ViewLayer = ({layerKey}) => {
           <Marker
             key={id}
             coordinate={coordinates}
+            {...COMMON_MARKER_OPTIONS}
             {...viewOptions}
-            stopPropagation
-            flat
-            tracksInfoWindowChanges={false}
             zIndex={zIndexMapping[layerKey]}>
             <viewOptions.icon />
           </Marker>
@@ -79,6 +93,7 @@ const ViewLayer = ({layerKey}) => {
           <Polygon
             key={id}
             coordinates={coordinates}
+            {...COMMON_POLYGON_OPTIONS}
             {...viewOptions}
             zIndex={zIndexMapping[layerKey]}
           />
@@ -96,6 +111,7 @@ const ViewLayer = ({layerKey}) => {
           <Polyline
             key={id}
             coordinates={coordinates}
+            {...COMMON_POLYLINE_OPTIONS}
             {...viewOptions}
             zIndex={zIndexMapping[layerKey]}
           />

@@ -13,7 +13,6 @@ export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POLYLINE;
 export const getViewOptions = ({color_on_map}) => {
   return {
     strokeColor: color_on_map,
-    strokeWidth: 2,
     icon: CableIcon,
     pin: CableIcon,
   };

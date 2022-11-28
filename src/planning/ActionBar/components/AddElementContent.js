@@ -19,13 +19,13 @@ import {
   getSelectedConfigurations,
 } from '~planning/data/planningGis.selectors';
 import {LayerKeyMappings} from '~planning/GisMap/utils';
-
-import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import {colors, layout} from '~constants/constants';
 import {
   onAddElementGeometry,
   onFetchLayerListDetailsSuccess,
 } from '~planning/data/planning.actions';
+
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {colors, layout} from '~constants/constants';
 
 /**
  * Parent:
@@ -163,7 +163,7 @@ const AddElementContent = ({hideModal}) => {
 const styles = StyleSheet.create({
   wrapper: {
     paddingHorizontal: 12,
-    paddingBottom: 40,
+    paddingBottom: 50,
   },
   elementContent: {
     flexDirection: 'row',

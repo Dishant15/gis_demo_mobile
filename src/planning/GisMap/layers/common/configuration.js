@@ -1,25 +1,35 @@
 import {FIELD_TYPES} from '~Common/DynamicForm';
 
+export const zIndexMapping = {
+  region: 1,
+  p_survey_area: 2,
+  // 3 - 5 -> Polygons at the bottom
+  // 6 - 7 -> Polylines at the bottom
+  p_survey_building: 8,
+  p_pop: 9,
+  p_spop: 10,
+  p_fsa: 11,
+  p_dsa: 12,
+  p_csa: 13,
+  p_pole: 14,
+  p_manhole: 15,
+  p_jointcloser: 16,
+  p_olt: 17,
+  p_splitter: 18,
+  p_dp: 19,
+  p_cable: 20,
+
+  edit: 50,
+  highlighted: 60,
+  mapType: 61,
+};
+
 export const LAYER_STATUS_OPTIONS = [
   {value: 'L1', label: 'L1 Design'},
   {value: 'L2', label: 'L2 Design'},
   {value: 'RFS', label: 'Ready For Service'},
   {value: 'IA', label: 'In Active'},
 ];
-
-export const zIndexMapping = {
-  region: 1,
-  p_survey_area: 2,
-  // 3 - 5 -> Polygons at the bottom
-  // 6 - 7 -> Polylines at the bottom
-  p_cable: 8,
-  p_survey_building: 9,
-  p_dp: 10,
-  p_splitter: 11,
-
-  edit: 50,
-  mapType: 51,
-};
 
 export const FEATURE_TYPES = {
   POLYLINE: 'polyline',
