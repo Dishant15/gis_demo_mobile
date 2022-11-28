@@ -82,7 +82,6 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
             elementId: elemData.id,
           },
           geometry,
-          enableMapInterection: true,
         },
         featureType,
         navigation,

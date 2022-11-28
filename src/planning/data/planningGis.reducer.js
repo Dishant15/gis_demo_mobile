@@ -42,7 +42,7 @@ const initialState = {
    * shape: {
    *    event: "addElement" | "editElement",
    *    data: { **Edit / init form data },
-   *    layerKey, enableMapInterection,
+   *    layerKey,
    *    geometry: null | {} | [{},{},...]
    * }
    */

@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef, forwardRef} from 'react';
 import {View, InteractionManager} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import * as Animatable from 'react-native-animatable';
@@ -11,10 +11,10 @@ import TicketMapViewLayer from './components/TicketMapViewLayer';
 import Map from '~Common/components/Map';
 import GisMapViewLayer from './components/GisMapViewLayer';
 import AddEditGeometryLayer from './components/AddEditGeometryLayer';
+import GisMapSpecialLayer from './components/GisMapSpecialLayer';
 
 import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
 import {
-  getGisMapInterectionEnable,
   getPlanningMapPosition,
   getPlanningMapState,
 } from '~planning/data/planningGis.selectors';
@@ -27,6 +27,7 @@ import {INIT_MAP_LOCATION, layout} from '~constants/constants';
 import {getEdgePadding} from '~utils/app.utils';
 import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
 import {MY_LOCATION_BUTTON_POSITION} from '~Common/components/Map/map.constants';
+import {onGisMapClick} from '~planning/data/planning.actions';
 
 /**
  * Parent
@@ -37,12 +38,12 @@ const GisMap = props => {
   const [showMapRender, setMapRender] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
 
+  const navigation = useNavigation();
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const {bottom} = useSafeAreaInsets();
   const mapRef = useRef();
 
-  const enableInterection = useSelector(getGisMapInterectionEnable);
   const {geometry, layerKey, event} = useSelector(getPlanningMapState);
   const mapType = useSelector(getMapType);
   const locationPermType = useSelector(getLocationPermissionType);
@@ -57,11 +58,19 @@ const GisMap = props => {
   }, []);
 
   const handleMapClick = e => {
-    if (!enableInterection) return;
     if (!e.nativeEvent.coordinate) return;
     let coords = e.nativeEvent.coordinate;
-    coords = getElementCoordinates(coords, geometry, featureType);
-    dispatch(updateMapStateCoordinates(coords));
+    if (
+      event === PLANNING_EVENT.addElementGeometry ||
+      event === PLANNING_EVENT.editElementGeometry
+    ) {
+      coords = getElementCoordinates(coords, geometry, featureType);
+      dispatch(updateMapStateCoordinates(coords));
+    }
+
+    if (event === PLANNING_EVENT.selectElementsOnMapClick) {
+      dispatch(onGisMapClick(coords, navigation));
+    }
   };
 
   const onMapReady = () => {
@@ -118,6 +127,7 @@ const GisMap = props => {
                 <GisMapViewLayer />
                 <TicketMapViewLayer />
                 <AddEditGeometryLayer />
+                <GisMapSpecialLayer />
               </>
             ) : null}
           </Map>

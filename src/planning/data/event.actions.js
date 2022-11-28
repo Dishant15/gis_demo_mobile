@@ -6,6 +6,7 @@ import {
 } from './planningGis.reducer';
 import {
   getPlanningMapStateData,
+  getPlanningMapStateEvent,
   getPlanningTicketData,
   getPlanningTicketId,
 } from './planningGis.selectors';
@@ -162,3 +163,19 @@ export const showAssociatiationList =
       }),
     );
   };
+
+export const selectElementsOnMapClick = (dispatch, getState) => {
+  const event = getPlanningMapStateEvent(getState());
+
+  if (event === PLANNING_EVENT.selectElementsOnMapClick) {
+    // reset event
+    dispatch(setMapState({}));
+  } else {
+    // start event
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.selectElementsOnMapClick,
+      }),
+    );
+  }
+};

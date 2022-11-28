@@ -11,10 +11,15 @@ import {CustomBottomPopup} from '~Common/CustomPopup';
 import Checkbox from '~Common/components/Checkbox';
 import Header from '~planning/ActionBar/components/Header';
 
-import {getPlanningMapFilters} from '~planning/data/planningGis.selectors';
+import {
+  getPlanningMapFilters,
+  getPlanningMapStateEvent,
+} from '~planning/data/planningGis.selectors';
 import {resetFilters, setFilter} from '~planning/data/planningGis.reducer';
+import {selectElementsOnMapClick} from '~planning/data/event.actions';
 import {LAYER_STATUS_OPTIONS} from '../layers/common/configuration';
 import {colors} from '~constants/constants';
+import {PLANNING_EVENT} from '../utils';
 
 // increament as per how many btns added below this ActionBar
 const ACTION_BUTTON_SIZE = 84;
@@ -24,6 +29,9 @@ const ACTION_BUTTON_SIZE = 84;
  *    PlanningScreen
  */
 const MapActionBar = () => {
+  const dispatch = useDispatch();
+  const mapStateEvent = useSelector(getPlanningMapStateEvent);
+
   const [showFilter, setShowFilter] = useState(false);
   const {bottom} = useSafeAreaInsets();
   const {status} = useSelector(getPlanningMapFilters);
@@ -43,11 +51,17 @@ const MapActionBar = () => {
             ),
           },
         ]}>
-        <TouchableOpacity style={[styles.action]}>
+        <TouchableOpacity
+          style={[styles.action]}
+          onPress={() => dispatch(selectElementsOnMapClick)}>
           <MaterialIcons
             size={30}
             name="touch-app"
-            color={status ? colors.secondaryMain : colors.primaryFontColor}
+            color={
+              mapStateEvent === PLANNING_EVENT.selectElementsOnMapClick
+                ? colors.secondaryMain
+                : colors.primaryFontColor
+            }
           />
         </TouchableOpacity>
         <TouchableOpacity style={[styles.action]} onPress={handleShowFilter}>

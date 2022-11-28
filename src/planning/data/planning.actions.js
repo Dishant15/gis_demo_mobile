@@ -5,6 +5,16 @@ import isEmpty from 'lodash/isEmpty';
 import merge from 'lodash/merge';
 
 import {
+  circle,
+  point,
+  lineString,
+  polygon,
+  multiPolygon,
+  booleanIntersects,
+  distance,
+} from '@turf/turf';
+
+import {
   getLayerSelectedConfiguration,
   getSelectedLayerKeys,
 } from './planningState.selectors';
@@ -29,8 +39,16 @@ import {
   PLANNING_EVENT,
 } from '~planning/GisMap/utils';
 import {FEATURE_TYPES} from '~planning/GisMap/layers/common/configuration';
-import {getPlanningTicketData} from './planningGis.selectors';
-import {coordsToLatLongMap, pointCoordsToLatLongMap} from '~utils/map.utils';
+import {
+  getAllLayersData,
+  getPlanningMapStateEvent,
+  getPlanningTicketData,
+} from './planningGis.selectors';
+import {
+  coordsToLatLongMap,
+  pointCoordsToLatLongMap,
+  pointLatLongMapToCoords,
+} from '~utils/map.utils';
 import {screens} from '~constants/constants';
 
 export const onRegionSelectionUpdate =
@@ -150,7 +168,6 @@ export const onAddElementGeometry =
         event: PLANNING_EVENT.addElementGeometry,
         layerKey,
         data: {restriction_ids},
-        enableMapInterection: true,
       }),
     );
     dispatch(setActiveTab(null));
@@ -247,3 +264,85 @@ export const onFetchLayerListDetailsSuccess = layerConfData => dispatch => {
     }
   }
 };
+
+export const onGisMapClick =
+  (clickLatLong, navigation) => (dispatch, getState) => {
+    const storeState = getState();
+    const mapStateEvent = getPlanningMapStateEvent(storeState);
+    const layerData = getAllLayersData(storeState);
+
+    if (mapStateEvent === PLANNING_EVENT.selectElementsOnMapClick) {
+      // if ths is select elements event get list of elements around user click
+      const clickPoint = pointLatLongMapToCoords(clickLatLong);
+      // create a circle at user click location
+      const circPoly = circle(clickPoint, 0.01, {
+        steps: 10,
+        units: 'kilometers',
+      });
+      const elementResultList = [];
+      // loop over layerData
+      const layerKeyList = Object.keys(layerData);
+      // check intersects
+      for (let lkInd = 0; lkInd < layerKeyList.length; lkInd++) {
+        const currLayerKey = layerKeyList[lkInd];
+
+        if (currLayerKey === 'region') continue;
+        const currLayerData = layerData[currLayerKey];
+        const featureType = LayerKeyMappings[currLayerKey]['featureType'];
+
+        for (let elemInd = 0; elemInd < currLayerData.length; elemInd++) {
+          const element = currLayerData[elemInd];
+          // create turf geom for each element
+          let turfGeom;
+          if (featureType === FEATURE_TYPES.POINT) {
+            turfGeom = point(element.geometry);
+          } else if (featureType === FEATURE_TYPES.POLYLINE) {
+            turfGeom = lineString(element.geometry);
+          } else if (featureType === FEATURE_TYPES.POLYGON) {
+            turfGeom = polygon([element.geometry]);
+          } else {
+            // multi polygon
+            turfGeom = multiPolygon(element.geometry);
+          }
+          // check intersects
+          const isIntersecting = booleanIntersects(circPoly, turfGeom);
+          // add to list if intersect true
+          if (isIntersecting) {
+            elementResultList.push({
+              ...element,
+              layerKey: currLayerKey,
+            });
+          }
+        }
+      }
+      const filterCoords = coordsToLatLongMap(circPoly.geometry.coordinates[0]);
+      // fire next event : listElementsOnMap, with new list data
+      dispatch(
+        listElementsOnMap({elementList: elementResultList, filterCoords}),
+      );
+      navigation.navigate(screens.gisEventScreen);
+    }
+  };
+
+export const listElementsOnMap =
+  ({elementList, filterCoords}) =>
+  dispatch => {
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.listElementsOnMap,
+        data: {elementList, filterCoords},
+      }),
+    );
+  };
+
+export const onElementListItemClick =
+  (elementId, layerKey, navigation) => dispatch => {
+    dispatch(
+      setMapHighlight({
+        layerKey,
+        elementId,
+      }),
+    );
+    dispatch(resetTicketMapHighlight());
+    navigation.navigate(screens.planningScreen);
+  };
