@@ -129,7 +129,13 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
             />
           </>
         ) : null}
-        <IconButton iconName="language" label="Map" onPress={handleShowOnMap} />
+        {layerKey === 'region' ? null : (
+          <IconButton
+            iconName="language"
+            label="Map"
+            onPress={handleShowOnMap}
+          />
+        )}
         {extraControls.map(({control, data}) => {
           switch (control) {
             case 'connections':
