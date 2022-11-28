@@ -16,6 +16,9 @@ import {resetFilters, setFilter} from '~planning/data/planningGis.reducer';
 import {LAYER_STATUS_OPTIONS} from '../layers/common/configuration';
 import {colors} from '~constants/constants';
 
+// increament as per how many btns added below this ActionBar
+const ACTION_BUTTON_SIZE = 84;
+
 /**
  * Parent:
  *    PlanningScreen
@@ -27,13 +30,30 @@ const MapActionBar = () => {
 
   const handleShowFilter = useCallback(() => setShowFilter(true), []);
   const handleHideFilter = useCallback(() => setShowFilter(false), []);
+
   return (
     <>
-      <View style={[styles.actionWrapper, {bottom: Math.max(bottom + 84, 84)}]}>
+      <View
+        style={[
+          styles.actionWrapper,
+          {
+            bottom: Math.max(
+              bottom + ACTION_BUTTON_SIZE * 3.7,
+              ACTION_BUTTON_SIZE * 3.7,
+            ),
+          },
+        ]}>
+        <TouchableOpacity style={[styles.action]}>
+          <MaterialIcons
+            size={30}
+            name="touch-app"
+            color={status ? colors.secondaryMain : colors.primaryFontColor}
+          />
+        </TouchableOpacity>
         <TouchableOpacity style={[styles.action]} onPress={handleShowFilter}>
           <MaterialIcons
             size={30}
-            name={'filter-alt'}
+            name="filter-alt"
             color={status ? colors.secondaryMain : colors.primaryFontColor}
           />
         </TouchableOpacity>

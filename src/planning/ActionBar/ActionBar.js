@@ -58,10 +58,7 @@ const ActionBar = () => {
         style={[
           styles.actionWrapper,
           {
-            bottom: Math.max(
-              bottom + ACTION_BUTTON_SIZE * 2,
-              ACTION_BUTTON_SIZE * 2,
-            ),
+            bottom: Math.max(bottom + ACTION_BUTTON_SIZE, ACTION_BUTTON_SIZE),
           },
         ]}>
         <TouchableOpacity style={[styles.action]} onPress={handleTabChange(0)}>
