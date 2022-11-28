@@ -2,9 +2,17 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {View, FlatList, StyleSheet, Pressable, BackHandler} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {Card, Subheading, Paragraph, Button, Avatar} from 'react-native-paper';
+import {
+  Card,
+  Subheading,
+  Paragraph,
+  Button,
+  Avatar,
+  Caption,
+  Divider,
+} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import get from 'lodash/get';
 import filter from 'lodash/filter';
@@ -27,6 +35,11 @@ import {
   onViewMapClick,
 } from '~planning/data/event.actions';
 import {useFocusEffect} from '@react-navigation/native';
+import {LayerKeyMappings} from '~planning/GisMap/utils';
+import {
+  onElementListItemClick,
+  openElementDetails,
+} from '~planning/data/planning.actions';
 
 /**
  * Parent:
@@ -88,6 +101,26 @@ const TicketWorkorderScreen = props => {
     [],
   );
 
+  const handleShowOnMap = useCallback(
+    (elementId, layerKey) => () => {
+      dispatch(onElementListItemClick(elementId, layerKey, navigation));
+    },
+    [],
+  );
+
+  const handleShowDetails = useCallback(
+    (elementId, layerKey) => () => {
+      dispatch(
+        openElementDetails({
+          layerKey,
+          elementId,
+        }),
+      );
+      navigation.navigate(screens.gisEventScreen);
+    },
+    [],
+  );
+
   const filteredList = useMemo(() => {
     if (statusFilter) {
       return filter(work_orders, ['status', statusFilter]);
@@ -136,29 +169,60 @@ const TicketWorkorderScreen = props => {
         data={filteredList}
         keyExtractor={item => item.id}
         renderItem={({item, index}) => {
-          const {layer_key, status, remark, work_order_type} = item;
+          const {element, layer_key, status, work_order_type} = item;
+          const {name, network_id, id: elementId} = element;
+          const Icon = LayerKeyMappings[layer_key]['getViewOptions'](item).icon;
 
           return (
-            <Pressable
-              style={styles.cardItem}
-              onPress={navigateToWorkorderDetails(index, item)}>
-              <View style={styles.content}>
-                <Card.Title
-                  style={styles.cardTitle}
-                  title={layer_key}
-                  left={props => <StatusAvatar status={status} />}
+            <View style={styles.container}>
+              <View style={styles.wrapper}>
+                <View
+                  style={[
+                    styles.networkStatus,
+                    {
+                      backgroundColor:
+                        work_order_type === 'A'
+                          ? colors.success
+                          : colors.warning,
+                    },
+                  ]}
                 />
-                <Paragraph>Workorder Status - {work_order_type}</Paragraph>
-                {!!remark ? <Paragraph>Remarks - {remark}</Paragraph> : null}
+                <View style={styles.itemIconWrapper}>
+                  <View style={styles.iconBlock}>
+                    <Icon size={30} />
+                  </View>
+                  <View
+                    style={[
+                      styles.statusDot,
+                      {backgroundColor: getStatusColor(status)},
+                    ]}
+                  />
+                </View>
+                <Pressable
+                  style={styles.textWrapper}
+                  onPress={handleShowDetails(elementId, layer_key)}>
+                  <Subheading numberOfLines={3} ellipsizeMode="tail">
+                    {name}
+                  </Subheading>
+                  <Caption numberOfLines={3} ellipsizeMode="tail">
+                    #{network_id}
+                  </Caption>
+                </Pressable>
+                <View style={styles.actionDivider} />
+                <Pressable
+                  style={styles.actionWrapper}
+                  onPress={handleShowOnMap(elementId, layer_key)}>
+                  <View style={styles.squreButton}>
+                    <MaterialIcons
+                      size={28}
+                      name="language"
+                      color={THEME_COLORS.action.active}
+                    />
+                  </View>
+                </Pressable>
               </View>
-              <View style={styles.iconWrapper}>
-                <MaterialCommunityIcons
-                  size={22}
-                  name="chevron-right"
-                  color={'#767676'}
-                />
-              </View>
-            </Pressable>
+              <Divider style={styles.divider} />
+            </View>
           );
         }}
         ListEmptyComponent={
@@ -185,17 +249,6 @@ const TicketWorkorderScreen = props => {
   );
 };
 
-const StatusAvatar = ({status}) => {
-  if (status === 'V') {
-    return <Avatar.Image size={40} source={AcceptImg} />;
-  } else if (status === 'R') {
-    return <Avatar.Image size={40} source={CancelImg} />;
-  } else if (status === 'S') {
-    return <Avatar.Image size={40} source={InprogressImg} />;
-  }
-  return null;
-};
-
 const styles = StyleSheet.create({
   cardTitle: {
     minHeight: 'auto',
@@ -219,7 +272,6 @@ const styles = StyleSheet.create({
   chip: {
     marginRight: 10,
     marginTop: 8,
-    // borderRadius: 4,
   },
   contentContainerStyle: {
     paddingHorizontal: 12,
@@ -241,14 +293,6 @@ const styles = StyleSheet.create({
     padding: 12,
     flexDirection: 'row',
     backgroundColor: colors.white,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
     marginBottom: 2,
   },
   filterblock: {
@@ -287,6 +331,85 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#e0e0e0',
   },
+  container: {
+    // paddingHorizontal: 8,
+  },
+  wrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // borderWidth: 1,
+  },
+  itemIconWrapper: {
+    padding: 5,
+    position: 'relative',
+  },
+  iconBlock: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+    backgroundColor: colors.white,
+    height: 50,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textWrapper: {
+    flex: 1,
+    paddingHorizontal: 6,
+    // borderWidth: 1,
+  },
+  actionDivider: {
+    backgroundColor: colors.dividerColor,
+    width: StyleSheet.hairlineWidth,
+  },
+  actionWrapper: {
+    height: 60,
+    minWidth: 50,
+    alignItems: 'stretch',
+    justifyContent: 'center',
+  },
+  squreButton: {
+    height: 50,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+  },
+  divider: {
+    marginVertical: 8,
+    backgroundColor: colors.dividerColor,
+  },
+  networkStatus: {
+    width: 5,
+    alignSelf: 'stretch',
+    marginRight: 4,
+  },
+  statusDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 12,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
 });
+
+const getStatusColor = status => {
+  switch (status) {
+    case 'V':
+      return colors.success;
+    case 'R':
+      return colors.error;
+    case 'S':
+      return colors.warning;
+    default:
+      return colors.secondaryMain;
+  }
+};
 
 export default TicketWorkorderScreen;
