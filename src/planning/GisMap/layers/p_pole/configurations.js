@@ -8,7 +8,7 @@ import {default as Icon} from '~assets/markers/pole_box.svg';
 import {default as EditIcon} from '~assets/markers/pole_pin.svg';
 
 export const LAYER_KEY = 'p_pole';
-export const PRE_UID = 'POLE';
+export const PRE_UID = 'PL';
 export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POINT;
 
 export const getViewOptions = () => ({

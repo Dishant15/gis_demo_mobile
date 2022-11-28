@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useState, Fragment} from 'react';
 import {View, Pressable, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
@@ -23,6 +23,7 @@ import {
 import {openElementDetails} from '~planning/data/planning.actions';
 import {colors, screens} from '~constants/constants';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {LayerKeyMappings} from '~planning/GisMap/utils';
 
 const LayerTab = ({layerConfig, regionIdList}) => {
   /**
@@ -41,6 +42,10 @@ const LayerTab = ({layerConfig, regionIdList}) => {
   const isSelected = get(layerNetState, 'isSelected', false);
   const isFetched = get(layerNetState, 'isFetched', false);
   const count = get(layerNetState, 'count', 0);
+
+  // get icon
+  const getViewOptions = get(LayerKeyMappings, [layer_key, 'getViewOptions']);
+  const Icon = getViewOptions ? getViewOptions({}).icon : Fragment;
 
   const handleExpandToggle = useCallback(() => {
     setExpanded(expanded => !expanded);
@@ -81,20 +86,25 @@ const LayerTab = ({layerConfig, regionIdList}) => {
             color={colors.primaryFontColor}
           />
         </Pressable>
-        <Pressable style={styles.itemContent} onPress={onLayerClick}>
-          <Subheading>
-            {name} {isFetched ? `(${count})` : ''}
-          </Subheading>
-          {isLoading ? (
-            <Button loading color={colors.secondaryMain} />
-          ) : isSelected ? (
-            <MaterialIcons
-              size={22}
-              name={'check-box'}
-              color={colors.secondaryMain}
-              style={styles.icon}
-            />
-          ) : null}
+        <Pressable style={styles.itemContentWrapper} onPress={onLayerClick}>
+          <View style={styles.iconBox}>
+            <Icon size={20} />
+          </View>
+          <View style={styles.itemContent}>
+            <Subheading>
+              {name} {isFetched ? `(${count})` : ''}
+            </Subheading>
+            {isLoading ? (
+              <Button loading color={colors.secondaryMain} />
+            ) : isSelected ? (
+              <MaterialIcons
+                size={22}
+                name={'check-box'}
+                color={colors.secondaryMain}
+                style={styles.icon}
+              />
+            ) : null}
+          </View>
         </Pressable>
       </View>
 
@@ -135,7 +145,7 @@ const ElementList = ({layerKey}) => {
               <Text>{name}</Text>
               <MaterialIcons
                 size={22}
-                name={'my-location'}
+                name="format-list-bulleted"
                 color={colors.primeFontColor}
                 style={styles.icon}
               />
@@ -160,16 +170,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'stretch',
   },
+  itemContentWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
   itemContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     flex: 1,
     paddingVertical: 10,
+    paddingLeft: 10,
   },
   expandIcon: {
     justifyContent: 'center',
     width: 34,
+  },
+  iconBox: {
+    width: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.blackWithOp,
   },
   icon: {
     width: 30,
