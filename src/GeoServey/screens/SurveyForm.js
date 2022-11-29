@@ -40,6 +40,7 @@ import {
   THEME_COLORS,
   TVProviders,
 } from '~constants/constants';
+import {getFormattedAddressFromGoogleAddress} from '~utils/app.utils';
 
 /**
  * Parent:
@@ -123,35 +124,23 @@ const SurveyForm = props => {
     Api.get(getGoogleAddress(center[0], center[1]))
       .then(res => {
         const data = res.data;
+
         const errorMessage = get(data, 'error_message');
         if (errorMessage) {
           showToast(errorMessage, TOAST_TYPE.ERROR);
           setLoading(false);
           return;
         }
-        const firstAddress = get(data, 'results.0.address_components', []);
-        const address = get(data, 'results.0.formatted_address', '');
-        // get country, state, pincode, city
-        const otherAddressData = groupBy(firstAddress, 'types.0');
-        const pincode = get(otherAddressData, 'postal_code.0.long_name', '');
-        const state = get(
-          otherAddressData,
-          'administrative_area_level_1.0.long_name',
-          '',
-        );
-        const city = get(
-          otherAddressData,
-          'administrative_area_level_2.0.long_name',
-          '',
-        );
-        const area = get(otherAddressData, 'political.0.long_name', '');
-        const premise = get(otherAddressData, 'premise.0.long_name', '');
+
+        const {name, area, city, state, pincode, address} =
+          getFormattedAddressFromGoogleAddress(data);
+
         setValue('address', formData.address || address);
         setValue('pincode', formData.pincode || pincode);
         setValue('state', formData.state || state);
         setValue('city', formData.city || city);
         setValue('area', formData.area || area);
-        setValue('name', formData.name || premise || area);
+        setValue('name', formData.name || name || area);
         setLoading(false);
       })
       .catch(err => {
