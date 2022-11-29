@@ -6,7 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 
 import get from 'lodash/get';
 
-import {Subheading, Caption, Divider} from 'react-native-paper';
+import {Subheading, Caption, Divider, Title} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import BackHeader from '~Common/components/Header/BackHeader';
@@ -103,6 +103,11 @@ const ShowAssociatedElements = () => {
             </View>
           );
         }}
+        ListEmptyComponent={
+          <View style={[layout.center, layout.container]}>
+            <Title style={layout.textCenter}>No associations</Title>
+          </View>
+        }
       />
     </View>
   );
