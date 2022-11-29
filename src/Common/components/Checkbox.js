@@ -1,8 +1,8 @@
 import React from 'react';
-import {Text, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Text} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
 import {colors} from '~constants/constants';
 
 const Checkbox = ({label, checked, onChange, style, textStyle}) => {
