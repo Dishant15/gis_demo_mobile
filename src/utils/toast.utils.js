@@ -63,7 +63,7 @@ export const TOAST_TYPE = {
  * type => 'success | error | info'
  * @returns
  */
-export const showToast = (message, type = 'error', timeout = 30000) => {
+export const showToast = (message, type = 'error', timeout = 3000) => {
   if (size(message) === 0) return;
   if (Toast.show) {
     Toast.show({
