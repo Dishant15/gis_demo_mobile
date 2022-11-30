@@ -17,7 +17,7 @@ import {
   getPlanningTicketData,
 } from '~planning/data/planningGis.selectors';
 
-import {colors, THEME_COLORS} from '~constants/constants';
+import {THEME_COLORS} from '~constants/constants';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
 import {coordsToLatLongMap} from '~utils/map.utils';
 import {
@@ -191,59 +191,6 @@ const IconButton = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-    position: 'relative',
-  },
-  tableRow: {
-    flexDirection: 'row',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
-  tableLabel: {
-    color: colors.primaryMain,
-    flex: 1,
-  },
-  tableValue: {
-    flex: 1.1,
-  },
-  actionWrapper: {
-    padding: 12,
-    flexDirection: 'row',
-  },
-  btn1: {
-    flex: 1,
-    marginRight: 6,
-    borderColor: colors.secondaryMain,
-    alignItems: 'stretch',
-  },
-  btn2: {
-    flex: 1,
-    marginLeft: 6,
-    borderColor: colors.secondaryMain,
-    alignItems: 'stretch',
-  },
-  btnContent: {
-    width: '100%',
-    height: '100%',
-  },
-  chipWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: 4,
-    paddingRight: 12,
-    borderRadius: 16,
-  },
-  chipIcon: {
-    padding: 4,
-  },
-  chipText: {
-    minHeight: 24,
-    lineHeight: 24,
-    marginVertical: 4,
-    color: colors.white,
-  },
   squreButtonContent: {
     justifyContent: 'center',
     alignItems: 'center',

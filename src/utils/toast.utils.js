@@ -14,9 +14,10 @@ export const toastConfig = {
         text1Style={[text1Style, styles.text1Style]}
         style={{
           borderLeftColor: 'green',
+          height: 'auto',
         }}
         text2={null}
-        text1NumberOfLines={3}
+        text1NumberOfLines={null}
         onTrailingIconPress={() => Toast.hide()}
       />
     );
@@ -28,9 +29,10 @@ export const toastConfig = {
         text1Style={[text1Style, styles.text1Style]}
         style={{
           borderLeftColor: 'red',
+          height: 'auto',
         }}
         text2={null}
-        text1NumberOfLines={3}
+        text1NumberOfLines={null}
         onTrailingIconPress={() => Toast.hide()}
       />
     );
@@ -42,9 +44,10 @@ export const toastConfig = {
         text1Style={[text1Style, styles.text1Style]}
         style={{
           borderLeftColor: 'orange',
+          height: 'auto',
         }}
         text2={null}
-        text1NumberOfLines={3}
+        text1NumberOfLines={null}
         onTrailingIconPress={() => Toast.hide()}
       />
     );
@@ -60,7 +63,7 @@ export const TOAST_TYPE = {
  * type => 'success | error | info'
  * @returns
  */
-export const showToast = (message, type = 'error', timeout = 3000) => {
+export const showToast = (message, type = 'error', timeout = 30000) => {
   if (size(message) === 0) return;
   if (Toast.show) {
     Toast.show({
@@ -78,5 +81,6 @@ const styles = StyleSheet.create({
     color: colors.textColor,
     fontFamily: fonts.fontRegular,
     fontWeight: 'normal',
+    paddingVertical: 6,
   },
 });

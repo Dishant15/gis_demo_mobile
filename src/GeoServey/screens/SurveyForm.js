@@ -565,6 +565,7 @@ const styles = StyleSheet.create({
   },
   chipWrapper: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   chip: {
     marginRight: 10,
