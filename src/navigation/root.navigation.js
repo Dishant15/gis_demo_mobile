@@ -24,6 +24,7 @@ import GisEventScreen from '~planning/screens/GisEventScreen';
 import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';
 import LocationProvider from '~Common/LocationProvider';
 import {screens} from '~constants/constants';
+import ChangePasswordScreen from '~Authentication/screens/ChangePasswordScreen';
 
 const Stack = createStackNavigator();
 
@@ -126,6 +127,11 @@ const RootNavigation = () => {
             <Stack.Screen
               name={screens.gisEventScreen}
               component={GisEventScreen}
+              options={options}
+            />
+            <Stack.Screen
+              name={screens.changePasswordScreen}
+              component={ChangePasswordScreen}
               options={options}
             />
           </Stack.Navigator>

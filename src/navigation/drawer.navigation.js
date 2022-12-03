@@ -22,6 +22,7 @@ import DashboardScreen from '~Dashboard/DashboardScreen';
 import SurveyTicketList from '~GeoServey/screens/SurveyTicketList';
 import PlanningTicket from '~planningTicket/screen/PlanningTicketListScreen';
 import PlanningScreen from '~planning/screens/PlanningScreen';
+import ProfileScreen from '~Authentication/screens/ProfileScreen';
 
 import {colors, layout, screens} from '~constants/constants';
 import {
@@ -128,9 +129,12 @@ const DrawerContent = props => {
             />
           ) : null}
           <List.Item
-            title="Logout"
-            left={() => <List.Icon icon="logout" />}
-            onPress={handleLogout}
+            title="Profile"
+            left={() => <List.Icon icon="account" />}
+            onPress={() => {
+              props.navigation.closeDrawer();
+              props.navigation.navigate(screens.profileScreen);
+            }}
           />
         </List.Section>
       </View>
@@ -233,6 +237,19 @@ const DrawerNavigation = () => {
           headerShown: false,
           headerTitleAlign: 'center',
           headerTitle: () => <Title style={styles.headerText}>Planning</Title>,
+          headerLeft: () => <DrawerButton />,
+          headerStyle: {
+            backgroundColor: colors.primaryMain,
+          },
+        }}
+      />
+      <Drawer.Screen
+        name={screens.profileScreen}
+        component={ProfileScreen}
+        options={{
+          headerShown: true,
+          headerTitleAlign: 'center',
+          headerTitle: () => <Title style={styles.headerText}>Profile</Title>,
           headerLeft: () => <DrawerButton />,
           headerStyle: {
             backgroundColor: colors.primaryMain,

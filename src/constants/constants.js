@@ -28,6 +28,8 @@ export const screens = {
 
   networkScreen: 'networkScreen',
   clientScreen: 'clientScreen',
+  profileScreen: 'profileScreen',
+  changePasswordScreen: 'changePasswordScreen',
 };
 
 export const fonts = {
