@@ -19,10 +19,6 @@ export function convertObjectToQueryParams(object) {
 }
 
 export const apiRequestConfig = {
-  // baseURL:
-  //   process.env.NODE_ENV !== 'production'
-  //     ? API_HOST
-  //     : store.getState().appState.hostConfig.value,
   timeout: 40000,
   headers: {
     'Content-Type': 'application/json',

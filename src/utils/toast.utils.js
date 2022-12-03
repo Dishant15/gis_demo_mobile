@@ -12,10 +12,12 @@ export const toastConfig = {
       <BaseToast
         {...restProps}
         text1Style={[text1Style, styles.text1Style]}
-        style={{
-          borderLeftColor: 'green',
-          height: 'auto',
-        }}
+        style={[
+          styles.toastStyle,
+          {
+            borderLeftColor: 'green',
+          },
+        ]}
         text2={null}
         text1NumberOfLines={null}
         onTrailingIconPress={() => Toast.hide()}
@@ -27,10 +29,12 @@ export const toastConfig = {
       <BaseToast
         {...restProps}
         text1Style={[text1Style, styles.text1Style]}
-        style={{
-          borderLeftColor: 'red',
-          height: 'auto',
-        }}
+        style={[
+          styles.toastStyle,
+          {
+            borderLeftColor: 'red',
+          },
+        ]}
         text2={null}
         text1NumberOfLines={null}
         onTrailingIconPress={() => Toast.hide()}
@@ -42,10 +46,12 @@ export const toastConfig = {
       <BaseToast
         {...restProps}
         text1Style={[text1Style, styles.text1Style]}
-        style={{
-          borderLeftColor: 'orange',
-          height: 'auto',
-        }}
+        style={[
+          styles.toastStyle,
+          {
+            borderLeftColor: 'orange',
+          },
+        ]}
         text2={null}
         text1NumberOfLines={null}
         onTrailingIconPress={() => Toast.hide()}
@@ -82,5 +88,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.fontRegular,
     fontWeight: 'normal',
     paddingVertical: 6,
+  },
+  toastStyle: {
+    height: 'auto',
+    minHeight: 60,
   },
 });

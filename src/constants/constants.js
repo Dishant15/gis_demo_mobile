@@ -244,6 +244,6 @@ export const HOST_CONFIG = {
   },
   GPSTECH: {
     label: 'Gtpl',
-    value: 'http://141.148.198.237',
+    value: 'https://gis.gtpl.net',
   },
 };
