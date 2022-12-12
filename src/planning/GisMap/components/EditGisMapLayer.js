@@ -16,6 +16,7 @@ import useValidateGeometry from '../hooks/useValidateGeometry';
 
 import {
   setMapState,
+  setTicketWorkOrderId,
   unHideElement,
   updateMapStateDataErrPolygons,
 } from '~planning/data/planningGis.reducer';
@@ -69,6 +70,7 @@ const EditGisLayer = () => {
   const onSuccessHandler = () => {
     showToast('Element location updated Successfully', TOAST_TYPE.SUCCESS);
     dispatch(onElementUpdate(layerKey));
+    dispatch(setTicketWorkOrderId(null));
   };
 
   const onErrorHandler = err => {

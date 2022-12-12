@@ -346,3 +346,15 @@ export const onElementListItemClick =
     dispatch(resetTicketMapHighlight());
     navigation.navigate(screens.planningScreen);
   };
+
+export const onWorkOrderListItemClick =
+  (elementId, layerKey, navigation) => dispatch => {
+    dispatch(
+      setMapHighlight({
+        layerKey,
+        elementId,
+      }),
+    );
+    dispatch(resetTicketMapHighlight());
+    navigation.navigate(screens.planningStack);
+  };

@@ -21,7 +21,6 @@ import ComingSoon from '~Common/components/ComingSoon';
 import DashboardScreen from '~Dashboard/DashboardScreen';
 import SurveyTicketList from '~GeoServey/screens/SurveyTicketList';
 import PlanningTicket from '~planningTicket/screen/PlanningTicketListScreen';
-import PlanningScreen from '~planning/screens/PlanningScreen';
 import ProfileScreen from '~Authentication/screens/ProfileScreen';
 
 import {colors, layout, screens} from '~constants/constants';
@@ -29,8 +28,8 @@ import {
   getIsSuperAdminUser,
   getUserPermissions,
 } from '~Authentication/data/auth.selectors';
-import {handleLogoutUser} from '~Authentication/data/auth.actions';
 import {resetTicketData} from '~planning/data/planningGis.reducer';
+import {PlanningStack} from './planningStack.navigation';
 
 import GTPL_LOGO from '~assets/img/gtpl.jpeg';
 import GPSTEKLOGO from '~assets/svg/gpstek.svg';
@@ -58,10 +57,6 @@ const DrawerContent = props => {
 
   const canPlanningView =
     get(permissions, 'planning_view', false) || isSuperAdminUser;
-
-  const handleLogout = useCallback(() => {
-    dispatch(handleLogoutUser);
-  }, []);
 
   return (
     <View style={layout.container}>
@@ -124,7 +119,7 @@ const DrawerContent = props => {
               onPress={() => {
                 dispatch(resetTicketData());
                 props.navigation.closeDrawer();
-                props.navigation.navigate(screens.planningScreen);
+                props.navigation.navigate(screens.drawerPlanningStack);
               }}
             />
           ) : null}
@@ -231,8 +226,8 @@ const DrawerNavigation = () => {
         }}
       />
       <Drawer.Screen
-        name={screens.planningScreen}
-        component={PlanningScreen}
+        name={screens.drawerPlanningStack}
+        component={PlanningStack}
         options={{
           headerShown: false,
           headerTitleAlign: 'center',

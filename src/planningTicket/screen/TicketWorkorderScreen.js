@@ -1,13 +1,11 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {View, FlatList, StyleSheet, Pressable, BackHandler} from 'react-native';
+import {View, FlatList, StyleSheet, Pressable} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
 import {
-  Card,
   Subheading,
   Paragraph,
   Button,
-  Avatar,
   Caption,
   Divider,
 } from 'react-native-paper';
@@ -24,22 +22,15 @@ import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 
 import {layout, colors, THEME_COLORS, screens} from '~constants/constants';
 
-import AcceptImg from '~assets/img/accept.png';
-import CancelImg from '~assets/img/cancel.png';
-import InprogressImg from '~assets/img/inprogress.png';
-
 import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
 import {getPlanningTicketData} from '~planning/data/planningGis.selectors';
-import {
-  navigateTicketWorkorderToDetails,
-  onViewMapClick,
-} from '~planning/data/event.actions';
-import {useFocusEffect} from '@react-navigation/native';
+import {onViewMapClick} from '~planning/data/event.actions';
 import {LayerKeyMappings} from '~planning/GisMap/utils';
 import {
-  onElementListItemClick,
+  onWorkOrderListItemClick,
   openElementDetails,
 } from '~planning/data/planning.actions';
+import {setTicketWorkOrderId} from '~planning/data/planningGis.reducer';
 
 /**
  * Parent:
@@ -50,19 +41,6 @@ import {
 const TicketWorkorderScreen = props => {
   const {navigation} = props;
   const ticketId = get(props, 'route.params.ticketId');
-
-  useFocusEffect(
-    useCallback(() => {
-      BackHandler.addEventListener('hardwareBackPress', customGoBack);
-      return () =>
-        BackHandler.removeEventListener('hardwareBackPress', customGoBack);
-    }, []),
-  );
-
-  const customGoBack = () => {
-    navigation.navigate(screens.planningTicketList);
-    return true;
-  };
 
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
@@ -86,37 +64,32 @@ const TicketWorkorderScreen = props => {
     dispatch(onViewMapClick(navigation));
   }, []);
 
-  const navigateToWorkorderDetails = useCallback(
-    (index, item) => () => {
-      dispatch(navigateTicketWorkorderToDetails(item, navigation));
-    },
-    [],
-  );
-
   const toggleStatus = useCallback(
     (isActive, newStatus) => () => {
       setStatusFilter(isActive ? null : newStatus);
-      // dispatch(setFilteredworkorderList(isActive ? null : newStatus));
     },
     [],
   );
 
   const handleShowOnMap = useCallback(
     (elementId, layerKey) => () => {
-      dispatch(onElementListItemClick(elementId, layerKey, navigation));
+      dispatch(onWorkOrderListItemClick(elementId, layerKey, navigation));
     },
     [],
   );
 
   const handleShowDetails = useCallback(
-    (elementId, layerKey) => () => {
+    (workOrderId, elementId, layerKey) => () => {
+      dispatch(setTicketWorkOrderId(workOrderId));
       dispatch(
         openElementDetails({
           layerKey,
           elementId,
         }),
       );
-      navigation.navigate(screens.gisEventScreen);
+      navigation.navigate(screens.planningStack, {
+        screen: screens.gisEventScreen,
+      });
     },
     [],
   );
@@ -135,7 +108,10 @@ const TicketWorkorderScreen = props => {
 
   return (
     <View style={[layout.container, layout.relative]}>
-      <BackHeader title={get(ticketData, 'name', '')} onGoBack={customGoBack} />
+      <BackHeader
+        title={get(ticketData, 'name', '')}
+        onGoBack={navigation.goBack}
+      />
       <View style={styles.filterWrapper}>
         <Pressable
           style={[styles.filterblock, isSubmitted && styles.filterSubmited]}
@@ -169,7 +145,13 @@ const TicketWorkorderScreen = props => {
         data={filteredList}
         keyExtractor={item => item.id}
         renderItem={({item, index}) => {
-          const {element, layer_key, status, work_order_type} = item;
+          const {
+            id: workOrderId,
+            element,
+            layer_key,
+            status,
+            work_order_type,
+          } = item;
           const {name, network_id, id: elementId} = element;
           const Icon = LayerKeyMappings[layer_key]['getViewOptions'](item).icon;
 
@@ -200,7 +182,11 @@ const TicketWorkorderScreen = props => {
                 </View>
                 <Pressable
                   style={styles.textWrapper}
-                  onPress={handleShowDetails(elementId, layer_key)}>
+                  onPress={handleShowDetails(
+                    workOrderId,
+                    elementId,
+                    layer_key,
+                  )}>
                   <Subheading numberOfLines={3} ellipsizeMode="tail">
                     {name}
                   </Subheading>

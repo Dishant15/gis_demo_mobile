@@ -108,7 +108,7 @@ const planningGisSlice = createSlice({
     },
     // payload: { layerKey, elementId, isTicket }
     hideElement: (state, {payload}) => {
-      const {layerKey, elementId} = payload;
+      const {layerKey, elementId, isTicket} = payload;
       // hide current element from layerData
       const elemLayerDataInd = findIndex(state.layerData[layerKey], [
         'id',
@@ -117,10 +117,19 @@ const planningGisSlice = createSlice({
       if (elemLayerDataInd !== -1) {
         state.layerData[layerKey][elemLayerDataInd].hidden = true;
       }
+      if (isTicket) {
+        const workorderCurrIndex = findIndex(
+          state.ticketData.work_orders,
+          item => item.layer_key === layerKey && item.element.id === elementId,
+        );
+        if (workorderCurrIndex !== -1) {
+          state.ticketData.work_orders[workorderCurrIndex].hidden = true;
+        }
+      }
     },
     // payload: { layerKey, elementId, isTicket }
     unHideElement: (state, {payload}) => {
-      const {layerKey, elementId} = payload;
+      const {layerKey, elementId, isTicket} = payload;
       // hide current element from layerData
       const elemLayerDataInd = findIndex(state.layerData[layerKey], [
         'id',
@@ -128,6 +137,15 @@ const planningGisSlice = createSlice({
       ]);
       if (elemLayerDataInd !== -1) {
         state.layerData[layerKey][elemLayerDataInd].hidden = false;
+      }
+      if (isTicket) {
+        const workorderCurrIndex = findIndex(
+          state.ticketData.work_orders,
+          item => item.layer_key === layerKey && item.element.id === elementId,
+        );
+        if (workorderCurrIndex !== -1) {
+          state.ticketData.work_orders[workorderCurrIndex].hidden = false;
+        }
       }
     },
     // payload : { event, layerKey, data }
