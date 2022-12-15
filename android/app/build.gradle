@@ -164,6 +164,7 @@ android {
     }
     buildTypes {
         debug {
+            resValue 'string', 'map_key', 'AIzaSyC48GaW4j9_9Qz2ibOow94iRr1_-xP2Gv8'
             signingConfig signingConfigs.debug
             if (nativeArchitectures) {
                 ndk {
@@ -172,6 +173,7 @@ android {
             }
         }
         release {
+            resValue 'string', 'map_key', 'AIzaSyDvQPcJzXXkb_HC81hYwyLb9sQdAV4Eiuc'
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.release

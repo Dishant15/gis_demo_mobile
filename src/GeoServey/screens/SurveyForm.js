@@ -124,6 +124,7 @@ const SurveyForm = props => {
     Api.get(getGoogleAddress(center[0], center[1]))
       .then(res => {
         const data = res.data;
+        console.log('🚀 ~ file: SurveyForm.js:127 ~ useEffect ~ data', data);
 
         const errorMessage = get(data, 'error_message');
         if (errorMessage) {
