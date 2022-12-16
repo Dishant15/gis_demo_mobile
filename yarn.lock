@@ -7274,6 +7274,11 @@ react-native-fast-image@^8.6.1:
   resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.6.1.tgz#6a3a11b8ebc7629919265d33a420a04d13c897e0"
   integrity sha512-ILuP7EuakqHNzTr8ZbumhuxG4tE/wGQ66z4nEEuzc0FlqY6rYaPsnq/UD2ahoyFj6QP1WvA2RIK3odib+VcqWg==
 
+react-native-geocoding@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-geocoding/-/react-native-geocoding-0.5.0.tgz#69748f896047a63d1c3c1d55255f9d67c8e275c2"
+  integrity sha512-peTXRpRxPLiZpbTW43AOvoXXAEoS+eLnSo4KRY0hcL9F2hulWE5r7o5KiaLx8AWj35c6EJP3fdGHe754q2Gd2Q==
+
 react-native-geolocation-service@^5.3.0-beta.4:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/react-native-geolocation-service/-/react-native-geolocation-service-5.3.1.tgz#4ce1017789da6fdfcf7576eb6f59435622af4289"
