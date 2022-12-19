@@ -23,6 +23,7 @@ import ChangePasswordScreen from '~Authentication/screens/ChangePasswordScreen';
 
 import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';
 import {screens} from '~constants/constants';
+import VersionUpdateProvider from '~Common/VersionUpdateProvider';
 
 const Stack = createStackNavigator();
 
@@ -66,64 +67,66 @@ const RootNavigation = () => {
       <StatusBar barStyle="light-content" />
       {isUserLoggedIn ? (
         <LocationProvider>
-          <Stack.Navigator>
-            <Stack.Screen
-              name={screens.drawerStack}
-              component={DrawerStack}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.workorderScreen}
-              component={WorkorderScreen}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.surveyMap}
-              component={SurveyMap}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.surveyForm}
-              component={SurveyForm}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.unitList}
-              component={UnitList}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.unitMap}
-              component={UnitMap}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.unitForm}
-              component={UnitForm}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.reviewScreen}
-              component={ReviewScreen}
-              options={options}
-            />
-            {/* planning */}
-            <Stack.Screen
-              name={screens.planningTicketWorkorder}
-              component={TicketWorkorder}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.planningStack}
-              component={PlanningStack}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.changePasswordScreen}
-              component={ChangePasswordScreen}
-              options={options}
-            />
-          </Stack.Navigator>
+          <VersionUpdateProvider>
+            <Stack.Navigator>
+              <Stack.Screen
+                name={screens.drawerStack}
+                component={DrawerStack}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.workorderScreen}
+                component={WorkorderScreen}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.surveyMap}
+                component={SurveyMap}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.surveyForm}
+                component={SurveyForm}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.unitList}
+                component={UnitList}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.unitMap}
+                component={UnitMap}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.unitForm}
+                component={UnitForm}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.reviewScreen}
+                component={ReviewScreen}
+                options={options}
+              />
+              {/* planning */}
+              <Stack.Screen
+                name={screens.planningTicketWorkorder}
+                component={TicketWorkorder}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.planningStack}
+                component={PlanningStack}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.changePasswordScreen}
+                component={ChangePasswordScreen}
+                options={options}
+              />
+            </Stack.Navigator>
+          </VersionUpdateProvider>
         </LocationProvider>
       ) : (
         <Stack.Navigator>

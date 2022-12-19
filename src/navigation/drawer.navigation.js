@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import {Dimensions, View, StyleSheet} from 'react-native';
+import {Dimensions, View, StyleSheet, Platform} from 'react-native';
 import {
   Title,
   List,

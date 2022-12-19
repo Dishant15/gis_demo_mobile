@@ -1,5 +1,7 @@
 import {GOOGLE_API_KEY} from '@env';
 
+export const apiGetVersion = () => `/api/version/`;
+
 export const apiPostLogin = () => `/api/token/`;
 export const apiPostChangePassword = () => '/api/user/change-password/';
 

@@ -1,5 +1,9 @@
 import Api from '~utils/api.utils';
-import {apiGetDashboardData, apiGetTicketList} from '~constants/url.constants';
+import {
+  apiGetDashboardData,
+  apiGetTicketList,
+  apiGetVersion,
+} from '~constants/url.constants';
 
 export const fetchTicketList = async () => {
   const res = await Api.get(apiGetTicketList());
@@ -8,5 +12,10 @@ export const fetchTicketList = async () => {
 
 export const fetchDashboardData = async () => {
   const res = await Api.get(apiGetDashboardData());
+  return res.data;
+};
+
+export const fetchVersionData = async () => {
+  const res = await Api.get(apiGetVersion());
   return res.data;
 };
