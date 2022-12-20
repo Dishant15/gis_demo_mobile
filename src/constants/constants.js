@@ -241,7 +241,7 @@ export const THEME_COLORS = {
 export const HOST_CONFIG = {
   NETGIS: {
     label: 'Netgis',
-    value: 'http://netgis.chavda-erp.com',
+    value: 'http://64.227.132.147',
   },
   GPSTECH: {
     label: 'Gtpl',
