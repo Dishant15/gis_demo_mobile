@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {View, Platform, AppState, Linking, StyleSheet} from 'react-native';
 import {useQuery} from 'react-query';
 import VersionInfo from 'react-native-version-info';
-import {Headline, Button} from 'react-native-paper';
+import {Headline, Subheading, Button} from 'react-native-paper';
 import {get} from 'lodash';
 
 import {FullScreenLoader} from './Loader';
@@ -34,12 +34,12 @@ const VersionUpdateProvider = ({children}) => {
     };
   }, [refetch]);
 
-  const updated = useMemo(() => {
+  const {updated, appVersion, buildVersion} = useMemo(() => {
     const {appVersion, buildVersion} = get(data, Platform.OS, {});
-    return (
+    const updated =
       VersionInfo.appVersion === appVersion &&
-      VersionInfo.buildVersion === buildVersion
-    );
+      VersionInfo.buildVersion === buildVersion;
+    return {updated, appVersion, buildVersion};
   }, [data]);
 
   const handleClick = useCallback(() => {
@@ -64,6 +64,9 @@ const VersionUpdateProvider = ({children}) => {
             <DownloadApp width={200} />
           </View>
           <Headline>Update Your App</Headline>
+          <Subheading style={styles.subheadingText}>
+            {`Your current version is v ${VersionInfo.appVersion} (${VersionInfo.buildVersion}) \n and latest version is v ${appVersion} (${buildVersion})`}
+          </Subheading>
           <Button
             style={styles.button}
             contentStyle={layout.button}
