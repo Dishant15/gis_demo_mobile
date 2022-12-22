@@ -173,7 +173,7 @@ android {
             }
         }
         release {
-            resValue 'string', 'map_key', 'AIzaSyDvQPcJzXXkb_HC81hYwyLb9sQdAV4Eiuc'
+            resValue 'string', 'map_key', 'AIzaSyCEiCOCXdiUKsBAlATMiBL72xC2xb-R8uk'
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.release

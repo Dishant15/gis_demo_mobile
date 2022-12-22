@@ -11,6 +11,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Button, Headline, Subheading} from 'react-native-paper';
 import Geolocation from 'react-native-geolocation-service';
 import FastImage from 'react-native-fast-image';
+import Geocoder from 'react-native-geocoding';
 
 import {colors, layout} from '~constants/constants';
 import {
@@ -124,6 +125,22 @@ const LocationProvider = ({children}) => {
             longitude,
           }),
         );
+        Geocoder.from({
+          latitude,
+          longitude,
+        })
+          .then(res => {
+            console.log(
+              '🚀 ~ file: LocationProvider.js:132 ~ getCurrentLocation ~ res',
+              res,
+            );
+          })
+          .catch(err => {
+            console.log(
+              '🚀 ~ file: LocationProvider.js:135 ~ getCurrentLocation ~ err',
+              err,
+            );
+          });
       },
       error => {
         dispatch(setCurrentLocation(null));
