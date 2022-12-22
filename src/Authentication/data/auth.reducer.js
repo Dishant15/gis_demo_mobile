@@ -21,11 +21,14 @@ const authSlice = createSlice({
         get(payload, 'user.is_staff') || get(payload, 'user.is_superuser')
       );
     },
+    updateUserDetails: (state, {payload}) => {
+      state.user = payload;
+    },
     logout: state => {
       return initialState;
     },
   },
 });
 
-export const {login, logout} = authSlice.actions;
+export const {login, logout, updateUserDetails} = authSlice.actions;
 export default authSlice.reducer;

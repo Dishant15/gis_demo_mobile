@@ -4,6 +4,7 @@ export const apiGetVersion = () => `/api/version/`;
 
 export const apiPostLogin = () => `/api/token/`;
 export const apiPostChangePassword = () => '/api/user/change-password/';
+export const apiPostProfileEdit = () => '/api/user/profile-edit/';
 
 export const apiAddSurvey = () => `/api/geo/survey/add/`;
 
