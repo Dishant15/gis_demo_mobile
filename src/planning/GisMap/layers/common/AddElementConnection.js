@@ -17,7 +17,10 @@ import {
   fetchElementConnections,
 } from '~planning/data/layer.services';
 import {setMapState} from '~planning/data/planningGis.reducer';
-import {getPlanningMapStateData} from '~planning/data/planningGis.selectors';
+import {
+  getPlanningMapStateData,
+  getPlanningTicketId,
+} from '~planning/data/planningGis.selectors';
 import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
 import {onElementListItemClick} from '~planning/data/planning.actions';
@@ -33,6 +36,8 @@ import {colors, layout, THEME_COLORS} from '~constants/constants';
 const AddElementConnection = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  const ticketId = useSelector(getPlanningTicketId);
   const selectedRegionIds = useSelector(getSelectedRegionIds);
   const {elementId, layerKey, elementList} = useSelector(
     getPlanningMapStateData,
@@ -109,9 +114,13 @@ const AddElementConnection = () => {
           cable_end,
         },
       };
-      updateConnectionMutation({data, cableId});
+      if (ticketId) {
+        // TODO
+      } else {
+        updateConnectionMutation({data, cableId});
+      }
     },
-    [elementId, layerKey],
+    [elementId, layerKey, ticketId],
   );
 
   const handleRemove = useCallback(
@@ -124,9 +133,13 @@ const AddElementConnection = () => {
           is_delete: true,
         },
       };
-      updateConnectionMutation({data, cableId});
+      if (ticketId) {
+        // TODO
+      } else {
+        updateConnectionMutation({data, cableId});
+      }
     },
-    [elementId, layerKey],
+    [elementId, layerKey, ticketId],
   );
 
   return (
