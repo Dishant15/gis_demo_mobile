@@ -140,8 +140,6 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
           switch (control) {
             case 'connections':
               return null;
-            case 'workorders':
-              return null;
             case 'add_associations':
               return null;
             case 'association_list':
