@@ -52,3 +52,9 @@ export const ELEMENT_TABLE_FIELDS = [
   ...ELEMENT_TABLE_ABSTRACT_FIELDS,
   {label: 'Address', field: 'address', type: 'simple'},
 ];
+
+export const ELEMENT_TABLE_EXTRA_CONTROLS = [
+  {
+    control: 'connections',
+  },
+];

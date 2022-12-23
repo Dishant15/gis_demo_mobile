@@ -41,6 +41,7 @@ import {
 import {FEATURE_TYPES} from '~planning/GisMap/layers/common/configuration';
 import {
   getAllLayersData,
+  getLayerViewData,
   getPlanningMapStateEvent,
   getPlanningTicketData,
 } from './planningGis.selectors';
@@ -50,6 +51,7 @@ import {
   pointLatLongMapToCoords,
 } from '~utils/map.utils';
 import {screens} from '~constants/constants';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
 export const onRegionSelectionUpdate =
   updatedRegionIdList => (dispatch, getState) => {
@@ -357,4 +359,60 @@ export const onWorkOrderListItemClick =
     );
     dispatch(resetTicketMapHighlight());
     navigation.navigate(screens.planningStack);
+  };
+
+export const onElementAddConnectionEvent =
+  ({layerKey, elementId, elementGeometry}) =>
+  (dispatch, getState) => {
+    const storeState = getState();
+    // check if cable layer is selected in layers tab
+    const selectedLayerKeys = getSelectedLayerKeys(storeState);
+    if (selectedLayerKeys.indexOf('p_cable') === -1) {
+      // dispatch error notification if not
+      showToast(
+        'Please select Cable layer, Cable layer needs to be selected to add connections',
+        TOAST_TYPE.SUCCESS,
+      );
+      return;
+    }
+    let resultCableList = [];
+    // if point element
+    const elementPoint = point(elementGeometry);
+    // create a circle around element
+    const circPoly = circle(elementGeometry, 0.01, {
+      steps: 10,
+      units: 'kilometers',
+    });
+    // get all cables intersecting that polygon
+    const cableList = getLayerViewData('p_cable')(storeState);
+    for (let c_ind = 0; c_ind < cableList.length; c_ind++) {
+      const c_cable = cableList[c_ind];
+      const isIntersecting = booleanIntersects(
+        circPoly,
+        lineString(c_cable.geometry),
+      );
+      if (isIntersecting) {
+        // calculate which end of this cable is nearest to current point
+        const Aend = c_cable.geometry[0];
+        const Bend = c_cable.geometry[c_cable.geometry.length - 1];
+
+        const distanceA = distance(elementPoint, point(Aend));
+        const distanceB = distance(elementPoint, point(Bend));
+        const cable_end = distanceA > distanceB ? 'B' : 'A';
+        // add list of cables into data of current element, with cable end marker
+        resultCableList.push({...c_cable, cable_end, layerKey: 'p_cable'});
+      }
+    }
+    // dispatch addElementConection
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.addElementConnection,
+        layerKey,
+        data: {
+          elementList: resultCableList,
+          elementId,
+          layerKey,
+        },
+      }),
+    );
   };

@@ -1,6 +1,7 @@
 import Api from '~utils/api.utils';
 import {
   apiGetElementAssociations,
+  apiGetElementConnections,
   apiGetElementDetails,
   apiGetRegionDetails,
   apiPostAddElement,
@@ -8,6 +9,7 @@ import {
   apiPostValidateElementGeometry,
   apiPutEditElement,
   apiPutTicketWorkorderElementEdit,
+  apiUpdateElementConnections,
 } from '~constants/url.constants';
 
 export const addNewElement = async ({data, layerKey}) => {
@@ -53,5 +55,16 @@ export const validateElementGeometry = async data => {
 export const fetchElementAssociations = async ({queryKey}) => {
   const [_key, layerKey, elementId] = queryKey;
   const res = await Api.get(apiGetElementAssociations(layerKey, elementId));
+  return res.data;
+};
+
+export const fetchElementConnections = async ({queryKey}) => {
+  const [_key, layerKey, elementId] = queryKey;
+  const res = await Api.get(apiGetElementConnections(layerKey, elementId));
+  return res.data;
+};
+
+export const addElementConnection = async ({data, cableId}) => {
+  const res = await Api.put(apiUpdateElementConnections(cableId), data);
   return res.data;
 };

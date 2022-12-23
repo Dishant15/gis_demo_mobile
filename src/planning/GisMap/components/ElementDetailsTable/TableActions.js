@@ -139,7 +139,26 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
         {extraControls.map(({control, data}) => {
           switch (control) {
             case 'connections':
-              return null;
+              return (
+                <IconButton
+                  key={control}
+                  iconName="cable-data"
+                  label={'Connections'}
+                  onPress={() =>
+                    dispatch(
+                      setMapState({
+                        event: PLANNING_EVENT.showElementConnections,
+                        layerKey,
+                        data: {
+                          elementId: elemData.id,
+                          elementGeometry: elemData.coordinates,
+                        },
+                      }),
+                    )
+                  }
+                  IconComponent={MaterialCommunityIcons}
+                />
+              );
             case 'add_associations':
               return null;
             case 'association_list':
@@ -168,7 +187,7 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
   );
 };
 
-const IconButton = ({
+export const IconButton = ({
   onPress,
   iconName,
   label,

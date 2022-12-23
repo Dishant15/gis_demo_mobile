@@ -7,6 +7,8 @@ import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
 import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
 import ShowAssociatedElements from '~planning/GisMap/components/ShowAssociatedElements';
 import ElementList from '~planning/GisMap/components/ElementList';
+import ListElementConnections from '~planning/GisMap/layers/common/ListElementConnections';
+import AddElementConnection from '~planning/GisMap/layers/common/AddElementConnection';
 
 import {getPlanningMapState} from '~planning/data/planningGis.selectors';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
@@ -35,10 +37,19 @@ const GisEventScreen = props => {
 
     case PLANNING_EVENT.showElementDetails:
       return <ElementDetailsTable layerKey={layerKey} />;
+
     case PLANNING_EVENT.showAssociatedElements:
       return <ShowAssociatedElements />;
+
     case PLANNING_EVENT.listElementsOnMap:
       return <ElementList />;
+
+    case PLANNING_EVENT.showElementConnections:
+      return <ListElementConnections layerKey={layerKey} />;
+
+    case PLANNING_EVENT.addElementConnection:
+      return <AddElementConnection />;
+
     default:
       return null;
   }
