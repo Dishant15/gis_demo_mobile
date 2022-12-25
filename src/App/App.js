@@ -6,6 +6,9 @@ import {NavigationContainer} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {PersistGate} from 'redux-persist/integration/react';
 import Toast from 'react-native-toast-message';
+import Geocoder from 'react-native-geocoding';
+import {Platform} from 'react-native';
+import {GM_IOS_API_KEY, GM_ANDROID_API_KEY} from '@env';
 
 import RootNavigation from '~navigation/root.navigation';
 import {colors} from '~constants/constants';
@@ -23,6 +26,9 @@ const theme = {
 };
 
 export const queryClient = new QueryClient();
+
+// Initialize the module (needs to be done only once)
+Geocoder.init(Platform.OS === 'ios' ? GM_IOS_API_KEY : GM_ANDROID_API_KEY); // use a valid API key
 
 /**
  * Renders:

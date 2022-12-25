@@ -1,4 +1,5 @@
-import {GOOGLE_API_KEY} from '@env';
+import {Platform} from 'react-native';
+import {GM_IOS_API_KEY, GM_ANDROID_API_KEY} from '@env';
 
 export const apiGetVersion = () => `/api/version/`;
 
@@ -9,7 +10,9 @@ export const apiPostProfileEdit = () => '/api/user/profile-edit/';
 export const apiAddSurvey = () => `/api/geo/survey/add/`;
 
 export const getGoogleAddress = (long, lat) =>
-  `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${GOOGLE_API_KEY}`;
+  `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${long}&key=${
+    Platform.OS === 'ios' ? GM_IOS_API_KEY : GM_ANDROID_API_KEY
+  }`;
 
 /* External server apis **/
 export const apiGetAreaPocketList = () => '/api/geo/survey/area-pocket/list/';
