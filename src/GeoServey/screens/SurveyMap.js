@@ -165,7 +165,7 @@ const SurveyMap = ({navigation}) => {
 
     // server side validate geometry
     let validationData = {
-      layerKey: 'p_survey_area',
+      layerKey: 'survey_workorder',
       featureType: 'polygon',
       geometry: latLongMapToCoords(coordinates),
       ticket_id: ticketId,
