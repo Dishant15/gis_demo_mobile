@@ -28,11 +28,10 @@ const PlanningTicketListScreen = props => {
   const dispatch = useDispatch();
   const {navigation} = props;
 
-  const {isLoading, data, refetch} = useQuery('ticketList', fetchTicketList, {
-    select: queryData => {
-      return filter(queryData, ['ticket_type', 'P']);
-    },
-  });
+  const {isLoading, data, refetch} = useQuery(
+    ['ticketList', 'P'],
+    fetchTicketList,
+  );
 
   useRefreshOnFocus(refetch);
 

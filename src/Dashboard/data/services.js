@@ -5,8 +5,13 @@ import {
   apiGetVersion,
 } from '~constants/url.constants';
 
-export const fetchTicketList = async () => {
-  const res = await Api.get(apiGetTicketList());
+export const fetchTicketList = async ({queryKey}) => {
+  const [_key, ticketType] = queryKey;
+  const res = await Api.get(apiGetTicketList(), {
+    assignee: 1,
+    ticket_type: ticketType,
+    status: 'A',
+  });
   return res.data;
 };
 
