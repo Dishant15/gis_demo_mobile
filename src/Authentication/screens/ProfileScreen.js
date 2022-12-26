@@ -66,6 +66,17 @@ const ProfileScreen = ({navigation}) => {
         </HelperText>
       ) : null}
       <Input
+        label="Role"
+        value={get(loggedUserDetails, 'role_name', '')}
+        underlineColorAndroid="transparent"
+        autoCapitalize="none"
+        autoCorrect={false}
+        returnKeyType="next"
+        blurOnSubmit={false}
+        editable={false}
+        disabled={true}
+      />
+      <Input
         label="Username"
         value={get(loggedUserDetails, 'username', '')}
         underlineColorAndroid="transparent"
