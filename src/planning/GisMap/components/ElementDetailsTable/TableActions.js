@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {View, StyleSheet, Pressable} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
@@ -15,6 +15,7 @@ import {hideElement, setMapState} from '~planning/data/planningGis.reducer';
 import {
   getPlanningMapStateData,
   getPlanningTicketData,
+  getPlanningTicketWorkOrderId,
 } from '~planning/data/planningGis.selectors';
 
 import {THEME_COLORS} from '~constants/constants';
@@ -28,6 +29,7 @@ import {
 } from '~planning/data/event.actions';
 import {FEATURE_TYPES} from '../../layers/common/configuration';
 import {checkUserPermission} from '~Authentication/data/auth.selectors';
+import {find} from 'lodash';
 
 const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
   const navigation = useNavigation();
@@ -35,12 +37,20 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
   const dispatch = useDispatch();
 
   const ticketData = useSelector(getPlanningTicketData);
+  const workOrderId = useSelector(getPlanningTicketWorkOrderId);
   const {elementId} = useSelector(getPlanningMapStateData);
   const hasLayerEditPermission = useSelector(
     checkUserPermission(`${layerKey}_edit`),
   );
+  const isVerifiedWorkorder = useMemo(() => {
+    const currWorkorder = find(ticketData.work_orders, ['id', workOrderId]);
+    const verified = get(currWorkorder, 'status') === 'V';
+    return Boolean(ticketData?.id && verified);
+  }, [ticketData, workOrderId]);
+
   // User can not edit region on mobile application
-  const hasEditPermission = layerKey !== 'region' && hasLayerEditPermission;
+  const hasEditPermission =
+    layerKey !== 'region' && hasLayerEditPermission && !isVerifiedWorkorder;
 
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
   const extraControls = get(

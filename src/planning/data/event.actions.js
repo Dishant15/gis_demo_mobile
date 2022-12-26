@@ -69,6 +69,7 @@ export const onViewMapClick = navigation => (dispatch, getState) => {
     );
   }
   dispatch(setMapState({}));
+  dispatch(setTicketWorkOrderId(null));
   navigation.navigate(screens.planningStack);
 };
 
