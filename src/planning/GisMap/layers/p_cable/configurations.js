@@ -1,5 +1,6 @@
 import {
   ELEMENT_FORM_ABSTRACT_TEMPLATE,
+  ELEMENT_FORM_CONFIG_ABSTRACT_SECTION,
   ELEMENT_TABLE_ABSTRACT_FIELDS,
   FEATURE_TYPES,
 } from '../common/configuration';
@@ -37,6 +38,11 @@ export const CABLE_TYPE_OPTIONS = [
 
 export const ELEMENT_FORM_TEMPLATE = {
   sections: [
+    // {
+    //   ...ELEMENT_FORM_CONFIG_ABSTRACT_SECTION,
+    //   title: 'Cable Configuration',
+    //   table_fields: [],
+    // },
     {
       title: 'Cable Form',
       fieldConfigs: [
@@ -52,6 +58,7 @@ export const ELEMENT_FORM_TEMPLATE = {
           label: 'Gis Length (Km)',
           field_type: FIELD_TYPES.Input,
           type: 'number',
+          disabled: true,
         },
         {
           field_key: 'actual_len',
@@ -74,6 +81,13 @@ export const ELEMENT_FORM_TEMPLATE = {
       ],
     },
   ],
+  // this shows where dependant template data comes from
+  metaData: {
+    geometryUpdateFields: ['gis_len'],
+    getElementAddressData: (address, submitData) => {
+      submitData.address = address.address;
+    },
+  },
 };
 
 export const ELEMENT_TABLE_FIELDS = [

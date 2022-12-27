@@ -43,6 +43,7 @@ export const ELEMENT_FORM_TEMPLATE = {
           field_key: 'building_count',
           label: 'Building Count',
           field_type: FIELD_TYPES.Input,
+          disabled: true,
         },
         {
           field_key: 'home_pass',
@@ -54,10 +55,15 @@ export const ELEMENT_FORM_TEMPLATE = {
           field_key: 'gis_area',
           label: 'Gis Area',
           field_type: FIELD_TYPES.Input,
+          disabled: true,
         },
       ],
     },
   ],
+  // this shows where dependant template data comes from
+  metaData: {
+    geometryUpdateFields: ['gis_area'],
+  },
 };
 
 export const ELEMENT_TABLE_FIELDS = [

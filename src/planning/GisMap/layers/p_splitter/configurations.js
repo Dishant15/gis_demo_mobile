@@ -1,5 +1,6 @@
 import {
   ELEMENT_FORM_ABSTRACT_TEMPLATE,
+  ELEMENT_FORM_CONFIG_ABSTRACT_SECTION,
   ELEMENT_TABLE_ABSTRACT_FIELDS,
   FEATURE_TYPES,
 } from '../common/configuration';
@@ -35,6 +36,10 @@ export const INITIAL_ELEMENT_DATA = {
 
 export const ELEMENT_FORM_TEMPLATE = {
   sections: [
+    // {
+    //   ...ELEMENT_FORM_CONFIG_ABSTRACT_SECTION,
+    //   title: 'Spliter Configuration',
+    // },
     {
       title: 'Splitter Form',
       fieldConfigs: [
@@ -53,6 +58,12 @@ export const ELEMENT_FORM_TEMPLATE = {
       ],
     },
   ],
+  // this shows where dependant template data comes from
+  metaData: {
+    getElementAddressData: (address, submitData) => {
+      submitData.address = address.address;
+    },
+  },
 };
 
 export const ELEMENT_TABLE_FIELDS = [

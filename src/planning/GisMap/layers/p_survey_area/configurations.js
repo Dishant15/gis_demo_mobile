@@ -174,6 +174,17 @@ export const ELEMENT_FORM_TEMPLATE = {
       ],
     },
   ],
+  // this shows where dependant template data comes from
+  metaData: {
+    getElementAddressData: (address, submitData) => {
+      submitData.address = address.address;
+      submitData.pincode = address.pincode;
+      submitData.state = address.state;
+      submitData.city = address.city;
+      submitData.area = address.area;
+      submitData.name = address.name || address.area;
+    },
+  },
 };
 
 export const ELEMENT_TABLE_FIELDS = [
