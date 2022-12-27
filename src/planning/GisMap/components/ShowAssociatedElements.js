@@ -9,7 +9,7 @@ import groupBy from 'lodash/groupBy';
 import map from 'lodash/map';
 import size from 'lodash/size';
 
-import {Subheading, Caption, Divider} from 'react-native-paper';
+import {Subheading, Caption, Divider, Title} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import BackHeader from '~Common/components/Header/BackHeader';
 
@@ -57,6 +57,17 @@ const ShowAssociatedElements = () => {
   );
 
   const groupedAssociations = groupBy(associations, 'layer_info.layer_key');
+
+  if (!size(associations)) {
+    return (
+      <View style={[layout.container, layout.relative]}>
+        <BackHeader title="Associated Elements" onGoBack={navigation.goBack} />
+        <View style={[layout.box, layout.center]}>
+          <Title style={layout.textCenter}>No associations</Title>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[layout.container, layout.relative]}>
