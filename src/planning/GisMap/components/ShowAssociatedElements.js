@@ -132,6 +132,7 @@ const CollapsibleContent = ({
         <View style={styles.elementListWrapper}>
           {data.map(item => (
             <ElementItem
+              key={get(item, 'element.network_id', '')}
               item={item}
               handleShowOnMap={handleShowOnMap}
               handleShowDetails={handleShowDetails}
