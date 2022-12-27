@@ -182,6 +182,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 10,
     paddingLeft: 10,
+    minHeight: 58,
   },
   expandIcon: {
     justifyContent: 'center',

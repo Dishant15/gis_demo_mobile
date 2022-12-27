@@ -80,7 +80,6 @@ const AddElementContent = ({hideModal}) => {
   if (layerCofigs.length) {
     return (
       <View>
-        {isLoading ? <Loader /> : null}
         <Header text="ADD ELEMENT" icon="add-location" onClose={hideModal} />
         <ScrollView contentContainerStyle={styles.wrapper}>
           {layerCofigs.map(config => {
@@ -143,17 +142,21 @@ const AddElementContent = ({hideModal}) => {
         </ScrollView>
       </View>
     );
+  } else if (isLoading) {
+    return (
+      <View style={layout.box}>
+        {isLoading ? <Loader /> : null}
+        <Header text="ADD ELEMENT" icon="add-location" onClose={hideModal} />
+      </View>
+    );
   } else {
     return (
       <View>
-        {isLoading ? <Loader /> : null}
         <Header text="ADD ELEMENT" icon="add-location" onClose={hideModal} />
         <View style={styles.wrapper}>
-          {isLoading ? null : (
-            <Subheading style={layout.textCenter}>
-              No elements created yet.
-            </Subheading>
-          )}
+          <Subheading style={layout.textCenter}>
+            No elements created yet.
+          </Subheading>
         </View>
       </View>
     );
