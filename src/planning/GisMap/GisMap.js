@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef, forwardRef} from 'react';
 import {View, InteractionManager} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import * as Animatable from 'react-native-animatable';
@@ -39,7 +39,6 @@ const GisMap = props => {
   const [isMapReady, setIsMapReady] = useState(false);
 
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const {bottom} = useSafeAreaInsets();
   const mapRef = useRef();
@@ -104,8 +103,6 @@ const GisMap = props => {
       });
     }
   };
-
-  if (!isFocused) return null;
 
   return (
     <View style={[layout.container, layout.relative]}>

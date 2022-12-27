@@ -42,7 +42,6 @@ const {width, height} = Dimensions.get('window');
  *    root.navigation
  */
 const ReviewScreen = ({navigation}) => {
-  const isFocused = useIsFocused();
   const mapRef = useRef();
   const formData = useSelector(getGeoSurveyFormData);
   const unitList = get(formData, 'units', []);
@@ -198,8 +197,6 @@ const ReviewScreen = ({navigation}) => {
       setMapRender(true);
     }, 10);
   };
-
-  if (!isFocused) return null;
 
   const status = get(formData, 'status');
   let strokeColor = colors.warning; // Submited, status "S"
