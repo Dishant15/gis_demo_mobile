@@ -36,6 +36,8 @@ export const apiGetTicketWorkorders = ticketId =>
   `/api/ticket/${ticketId}/workorders/`;
 
 export const apiGetDashboardData = () => '/api/dashboard/';
+export const apiGetDashboardSurveyTicketSummery = () =>
+  '/api/survey-ticket-summery/';
 
 // region apis
 
