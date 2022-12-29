@@ -1,13 +1,15 @@
 import React, {useCallback} from 'react';
-import {View, FlatList, StyleSheet, BackHandler} from 'react-native';
+import {View, FlatList, StyleSheet, BackHandler, Pressable} from 'react-native';
 import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import get from 'lodash/get';
 
 import {Title, Subheading, Caption, Divider} from 'react-native-paper';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 import Loader from '~Common/Loader';
 import BackHeader from '~Common/components/Header/BackHeader';
 import {IconButton} from '~planning/GisMap/components/ElementDetailsTable/TableActions';
@@ -16,9 +18,12 @@ import {fetchElementConnections} from '~planning/data/layer.services';
 import {getPlanningMapStateData} from '~planning/data/planningGis.selectors';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
 import {setMapState} from '~planning/data/planningGis.reducer';
-import {onElementAddConnectionEvent} from '~planning/data/planning.actions';
+import {
+  onElementAddConnectionEvent,
+  onElementListItemClick,
+} from '~planning/data/planning.actions';
 
-import {colors, layout} from '~constants/constants';
+import {colors, layout, THEME_COLORS} from '~constants/constants';
 
 import SwipeRightAltIcon from '~assets/svg/swipe_right_alt.svg';
 import SwipeLeftAltIcon from '~assets/svg/swipe_left_alt.svg';
@@ -28,6 +33,7 @@ import SwipeLeftAltIcon from '~assets/svg/swipe_left_alt.svg';
  *    GisEventScreen
  */
 const ListElementConnections = ({layerKey}) => {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const {bottom} = useSafeAreaInsets();
 
@@ -44,6 +50,13 @@ const ListElementConnections = ({layerKey}) => {
       return () =>
         BackHandler.removeEventListener('hardwareBackPress', handleGoBack);
     }, []),
+  );
+
+  const handleShowOnMap = useCallback(
+    (elementId, layerKey) => () => {
+      dispatch(onElementListItemClick(elementId, layerKey, navigation));
+    },
+    [],
   );
 
   const handleAddConnection = useCallback(() => {
@@ -103,6 +116,16 @@ const ListElementConnections = ({layerKey}) => {
                     #{get(element, 'network_id', '')}
                   </Caption>
                 </View>
+
+                <Pressable
+                  style={styles.globIcon}
+                  onPress={handleShowOnMap(element.id, layer_info.layer_key)}>
+                  <MaterialIcons
+                    size={28}
+                    name="language"
+                    color={THEME_COLORS.action.active}
+                  />
+                </Pressable>
 
                 <View style={styles.rightContent}>
                   <Caption numberOfLines={3} ellipsizeMode="tail">
@@ -173,6 +196,11 @@ const styles = StyleSheet.create({
   divider: {
     marginVertical: 8,
     backgroundColor: colors.dividerColor,
+  },
+  globIcon: {
+    paddingHorizontal: 6,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
   },
   rightContent: {
     paddingLeft: 6,

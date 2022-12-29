@@ -108,6 +108,7 @@ const GisMap = props => {
     <View style={[layout.container, layout.relative]}>
       {showMap ? (
         <Animatable.View animation="fadeIn" style={layout.container}>
+          <MapController ref={mapRef} mapPosition={mapPosition} />
           <Map
             ref={mapRef}
             onMapReady={onMapReady}
@@ -135,19 +136,27 @@ const GisMap = props => {
 };
 
 const MapController = forwardRef((props, ref) => {
-  const {mapState} = props;
+  const {mapPosition = {}} = props;
+  const {center, zoom} = mapPosition;
 
   useEffect(() => {
-    if (mapState.event === PLANNING_EVENT.editElementGeometry) {
-      // geometry can be Array or object
-      if (!Array.isArray(mapState.geometry)) {
-        ref.current.animateToRegion(
-          {...INIT_MAP_LOCATION, ...mapState.geometry},
-          100,
-        );
-      }
+    if (ref && ref.current && center && zoom) {
+      console.log({center, zoom});
+      ref.current.animateCamera({center, zoom}, {duration: 100});
     }
-  }, [mapState.event]);
+  }, [ref, center, zoom]);
+
+  // useEffect(() => {
+  //   if (mapState.event === PLANNING_EVENT.editElementGeometry) {
+  //     // geometry can be Array or object
+  //     if (!Array.isArray(mapState.geometry)) {
+  //       ref.current.animateToRegion(
+  //         {...INIT_MAP_LOCATION, ...mapState.geometry},
+  //         100,
+  //       );
+  //     }
+  //   }
+  // }, [mapState.event]);
 
   return null;
 });
