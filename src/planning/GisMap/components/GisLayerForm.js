@@ -38,11 +38,16 @@ import {
   TICKET_WORKORDER_TYPE,
 } from '../utils';
 import {layout} from '~constants/constants';
+import useValidateGeometry from '../hooks/useValidateGeometry';
 
 export const GisLayerForm = ({layerKey}) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const formRef = useRef();
+
+  const {validateElementMutation, isValidationLoading} = useValidateGeometry(
+    {},
+  );
 
   const workOrderId = useSelector(getPlanningTicketWorkOrderId);
   const ticketId = useSelector(getPlanningTicketId);
@@ -143,20 +148,46 @@ export const GisLayerForm = ({layerKey}) => {
     },
   );
 
-  const handleAddWorkOrder = (submitData, remark) => {
-    // create workOrder data if isWorkOrderUpdate
-    let workOrderData = {
-      workOrder: {
-        work_order_type: isEdit
-          ? TICKET_WORKORDER_TYPE.EDIT
-          : TICKET_WORKORDER_TYPE.ADD,
-        layer_key: layerKey,
-        remark,
-      },
-      element: submitData,
+  const handleAddWorkOrder = (submitData, remark, geometry) => {
+    const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
+
+    // @todo : dishant => improve comments
+    // server side validate geometry
+    let geomValidationData = {
+      layerKey,
+      element_id: mapStateData.id,
+      featureType,
+      geometry,
+      ticket_id: ticketId,
     };
-    // add workorder data to validatedData
-    addWorkOrder(workOrderData);
+
+    validateElementMutation(geomValidationData, {
+      onSuccess: res => {
+        // update submit data based on validation res
+        const children = get(res, 'data.children', {});
+        const getDependantFields = get(
+          LayerKeyMappings,
+          [layerKey, 'getDependantFields'],
+          ({submitData}) => submitData,
+        );
+        submitData = getDependantFields({submitData, children});
+        submitData.association = get(res, 'data', {});
+
+        // create workOrder data if isWorkOrderUpdate
+        let workOrderData = {
+          workOrder: {
+            work_order_type: isEdit
+              ? TICKET_WORKORDER_TYPE.EDIT
+              : TICKET_WORKORDER_TYPE.ADD,
+            layer_key: layerKey,
+            remark,
+          },
+          element: submitData,
+        };
+        // add workorder data to validatedData
+        addWorkOrder(workOrderData);
+      },
+    });
   };
 
   const onSubmit = (data, setError, clearErrors) => {
@@ -177,7 +208,7 @@ export const GisLayerForm = ({layerKey}) => {
           // edit work order element api
           editWorkOrderElementMutation(validatedData);
         } else {
-          handleAddWorkOrder(validatedData, data.remark);
+          handleAddWorkOrder(validatedData, data.remark, data.geometry);
         }
       } else {
         // user came from planning in drawer
@@ -188,7 +219,7 @@ export const GisLayerForm = ({layerKey}) => {
       // user came from GisMap Add Element tab
       if (isWorkOrderUpdate) {
         // user will add element with a workorder
-        handleAddWorkOrder(validatedData, data.remark);
+        handleAddWorkOrder(validatedData, data.remark, data.geometry);
       } else {
         // directly add element
         addElement(validatedData);
@@ -229,7 +260,11 @@ export const GisLayerForm = ({layerKey}) => {
     dispatch(goBackFromGisEventScreen(navigation));
   };
   const isLoadingBtn =
-    isLoading || isAddLoading || isEditLoading || isEditTicketLoading;
+    isLoading ||
+    isAddLoading ||
+    isEditLoading ||
+    isEditTicketLoading ||
+    isValidationLoading;
 
   return (
     <View style={layout.container}>
