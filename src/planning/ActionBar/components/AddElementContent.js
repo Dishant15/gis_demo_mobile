@@ -100,7 +100,7 @@ const AddElementContent = ({hideModal}) => {
             ]);
             if (is_configurable) {
               let currConfig = get(selectedConfigurations, layer_key, false);
-              if (!currConfig) currConfig = configuration[0];
+              if (!currConfig) currConfig = get(configuration, '0', {});
               // configurable layers will have getIcon function
               Icon = getViewOptions ? getViewOptions(currConfig).icon : null;
             } else {
