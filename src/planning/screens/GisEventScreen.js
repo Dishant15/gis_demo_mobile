@@ -9,6 +9,7 @@ import ShowAssociatedElements from '~planning/GisMap/components/ShowAssociatedEl
 import ElementList from '~planning/GisMap/components/ElementList';
 import ListElementConnections from '~planning/GisMap/layers/common/ListElementConnections';
 import AddElementConnection from '~planning/GisMap/layers/common/AddElementConnection';
+import ShowPossibleAddAssociation from '~planning/GisMap/components/ShowPossibleAddAssociation';
 
 import {getPlanningMapState} from '~planning/data/planningGis.selectors';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
@@ -40,6 +41,9 @@ const GisEventScreen = props => {
 
     case PLANNING_EVENT.showAssociatedElements:
       return <ShowAssociatedElements />;
+
+    case PLANNING_EVENT.showPossibleAddAssociatiation:
+      return <ShowPossibleAddAssociation />;
 
     case PLANNING_EVENT.listElementsOnMap:
       return <ElementList />;

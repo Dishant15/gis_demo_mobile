@@ -174,3 +174,15 @@ export const selectElementsOnMapClick = (dispatch, getState) => {
     );
   }
 };
+
+export const showPossibleAddAssociatiation =
+  ({layerKey, elementData, listOfLayers}) =>
+  dispatch => {
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.showPossibleAddAssociatiation,
+        layerKey,
+        data: {elementData, listOfLayers},
+      }),
+    );
+  };

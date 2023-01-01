@@ -26,6 +26,7 @@ import {
   onShowAreaOnMapPress,
   onShowMarkerOnMapPress,
   showAssociatiationList,
+  showPossibleAddAssociatiation,
 } from '~planning/data/event.actions';
 import {FEATURE_TYPES} from '../../layers/common/configuration';
 import {checkUserPermission} from '~Authentication/data/auth.selectors';
@@ -170,7 +171,23 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
                 />
               );
             case 'add_associations':
-              return null;
+              return (
+                <IconButton
+                  key={control}
+                  iconName="plus"
+                  label={'Add\nAssociated\nElements'}
+                  onPress={() =>
+                    dispatch(
+                      showPossibleAddAssociatiation({
+                        layerKey,
+                        elementData: elemData,
+                        listOfLayers: data,
+                      }),
+                    )
+                  }
+                  IconComponent={MaterialCommunityIcons}
+                />
+              );
             case 'association_list':
               return (
                 <IconButton
@@ -234,6 +251,7 @@ const styles = StyleSheet.create({
   squreButtonWrapper: {
     justifyContent: 'space-around',
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'flex-start',
     padding: 12,
   },
