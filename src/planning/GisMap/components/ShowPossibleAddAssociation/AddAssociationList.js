@@ -3,6 +3,7 @@ import {View, StyleSheet, Pressable, ScrollView} from 'react-native';
 import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 import {Subheading, Divider} from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
 
 import filter from 'lodash/filter';
 import get from 'lodash/get';
@@ -19,11 +20,19 @@ import {
   getSelectedConfigurations,
 } from '~planning/data/planningGis.selectors';
 import {LayerKeyMappings} from '~planning/GisMap/utils';
-import {onFetchLayerListDetailsSuccess} from '~planning/data/planning.actions';
+import {
+  onAddElementDetails,
+  onAddElementGeometry,
+  onFetchLayerListDetailsSuccess,
+} from '~planning/data/planning.actions';
 
-import {colors, layout} from '~constants/constants';
+import {colors, layout, screens} from '~constants/constants';
+import useValidateGeometry from '~planning/GisMap/hooks/useValidateGeometry';
 
 const AddAssociationList = ({listOfLayers, parentData, parentLayerKey}) => {
+  const {validateElementMutation, isValidationLoading} = useValidateGeometry(
+    {},
+  );
   const {isLoading, data} = useQuery(
     'planningLayerConfigsDetails',
     fetchLayerListDetails,
@@ -35,6 +44,8 @@ const AddAssociationList = ({listOfLayers, parentData, parentLayerKey}) => {
     },
   );
   const dispatch = useDispatch();
+  const navigation = useNavigation();
+
   // if popup open : layerKey of selected configs, null if closed
   const [layerConfigKey, setLayerConfigKey] = useState(null);
   const {event} = useSelector(getPlanningMapState);
@@ -51,7 +62,50 @@ const AddAssociationList = ({listOfLayers, parentData, parentLayerKey}) => {
   }, [data]);
 
   const handleAddElementClick = useCallback(
-    layerKey => () => {},
+    layerKey => () => {
+      const childFeatureType = LayerKeyMappings[layerKey]['featureType'];
+      const parentFeatureType = LayerKeyMappings[parentLayerKey]['featureType'];
+
+      // when adding child region featureType will be same but need to draw new child region so go to else branch
+      if (childFeatureType === parentFeatureType && layerKey !== 'region') {
+        // if both layer has same geometry copy geometry of parent to child and go to form directly
+        const extraParent = {
+          [parentLayerKey]: [{...parentData}],
+        };
+        // call validate geometry to get relations for new element
+        validateElementMutation(
+          {
+            layerKey,
+            featureType: childFeatureType,
+            geometry: parentData.coordinates,
+          },
+          {
+            onSuccess: res => {
+              dispatch(
+                onAddElementDetails({
+                  layerKey,
+                  validationRes: res,
+                  submitData: {geometry: parentData.coordinates},
+                  extraParent,
+                }),
+              );
+            },
+          },
+        );
+      } else {
+        // else go to map with extra contains by id check
+        dispatch(
+          onAddElementGeometry({
+            layerKey,
+            // check if new geometry will be inside parent
+            restriction_ids: {
+              [parentLayerKey]: parentData.id,
+            },
+          }),
+        );
+        navigation.navigate(screens.planningScreen);
+      }
+    },
     [parentLayerKey, parentData],
   );
 
@@ -68,65 +122,68 @@ const AddAssociationList = ({listOfLayers, parentData, parentLayerKey}) => {
 
   if (layerCofigs.length) {
     return (
-      <ScrollView contentContainerStyle={styles.wrapper}>
-        {layerCofigs.map(config => {
-          const {
-            layer_key,
-            name,
-            is_configurable,
-            configuration,
-            can_add_on_mobile,
-          } = config;
-          // do not show
-          if (!can_add_on_mobile) return null;
-          // get icon
-          let Icon;
-          const getViewOptions = get(LayerKeyMappings, [
-            layer_key,
-            'getViewOptions',
-          ]);
-          if (is_configurable) {
-            let currConfig = get(selectedConfigurations, layer_key, false);
-            if (!currConfig) currConfig = get(configuration, '0', {});
-            // configurable layers will have getIcon function
-            Icon = getViewOptions ? getViewOptions(currConfig).icon : null;
-          } else {
-            Icon = getViewOptions ? getViewOptions().icon : null;
-          }
+      <>
+        <ScrollView contentContainerStyle={styles.wrapper}>
+          {layerCofigs.map(config => {
+            const {
+              layer_key,
+              name,
+              is_configurable,
+              configuration,
+              can_add_on_mobile,
+            } = config;
+            // do not show
+            if (!can_add_on_mobile) return null;
+            // get icon
+            let Icon;
+            const getViewOptions = get(LayerKeyMappings, [
+              layer_key,
+              'getViewOptions',
+            ]);
+            if (is_configurable) {
+              let currConfig = get(selectedConfigurations, layer_key, false);
+              if (!currConfig) currConfig = get(configuration, '0', {});
+              // configurable layers will have getIcon function
+              Icon = getViewOptions ? getViewOptions(currConfig).icon : null;
+            } else {
+              Icon = getViewOptions ? getViewOptions().icon : null;
+            }
 
-          return (
-            <View key={layer_key}>
-              <View style={styles.elementContent}>
-                <Pressable
-                  style={styles.elementTitleContent}
-                  onPress={handleAddElementClick(layer_key)}>
-                  {Icon ? <Icon width={26} /> : null}
-                  <Subheading style={styles.title}>{name}</Subheading>
-                </Pressable>
-                {is_configurable ? (
+            return (
+              <View key={layer_key}>
+                <View style={styles.elementContent}>
                   <Pressable
-                    style={styles.iconWrap}
-                    onPress={handleLayerConfigShow(layer_key)}>
-                    <MaterialIcons
-                      size={22}
-                      name={'settings'}
-                      color={colors.primaryFontColor}
-                    />
+                    style={styles.elementTitleContent}
+                    onPress={handleAddElementClick(layer_key)}>
+                    {Icon ? <Icon width={26} /> : null}
+                    <Subheading style={styles.title}>{name}</Subheading>
                   </Pressable>
+                  {is_configurable ? (
+                    <Pressable
+                      style={styles.iconWrap}
+                      onPress={handleLayerConfigShow(layer_key)}>
+                      <MaterialIcons
+                        size={22}
+                        name={'settings'}
+                        color={colors.primaryFontColor}
+                      />
+                    </Pressable>
+                  ) : null}
+                </View>
+                <Divider />
+
+                {layer_key === layerConfigKey ? (
+                  <ElementConfigList
+                    onClose={handleLayerConfigHide}
+                    layerKey={layerConfigKey}
+                  />
                 ) : null}
               </View>
-              <Divider />
-
-              {layer_key === layerConfigKey ? (
-                <ElementConfigList
-                  onClose={handleLayerConfigHide}
-                  layerKey={layerConfigKey}
-                />
-              ) : null}
-            </View>
-          );
-        })}
-      </ScrollView>
+            );
+          })}
+        </ScrollView>
+        {isValidationLoading ? <Loader /> : null}
+      </>
     );
   } else if (isLoading) {
     return (
@@ -151,6 +208,7 @@ const styles = StyleSheet.create({
   wrapper: {
     paddingHorizontal: 12,
     paddingBottom: 50,
+    flex: 1,
   },
   elementContent: {
     flexDirection: 'row',

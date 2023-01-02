@@ -240,7 +240,9 @@ export const onAddElementDetails =
     }
     // complete current event -> fire next event
     dispatch(setMapState(mapStateData));
-    navigation.navigate(screens.gisEventScreen);
+    if (navigation) {
+      navigation.navigate(screens.gisEventScreen);
+    }
   };
 
 export const onFetchLayerListDetailsSuccess = layerConfData => dispatch => {
