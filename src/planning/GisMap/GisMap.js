@@ -137,14 +137,22 @@ const GisMap = props => {
 
 const MapController = forwardRef((props, ref) => {
   const {mapPosition = {}} = props;
-  const {center, zoom} = mapPosition;
 
   useEffect(() => {
-    if (ref && ref.current && center && zoom) {
-      console.log({center, zoom});
-      ref.current.animateCamera({center, zoom}, {duration: 100});
+    if (ref && ref.current) {
+      if (mapPosition.center) {
+        ref.current.animateCamera(
+          {center: mapPosition.center, zoom: mapPosition.zoom},
+          {duration: 100},
+        );
+      } else if (mapPosition.coordinates) {
+        ref.current.fitToCoordinates(mapPosition.coordinates, {
+          edgePadding: getEdgePadding(),
+          animated: true,
+        });
+      }
     }
-  }, [ref, center, zoom]);
+  }, [ref, mapPosition]);
 
   // useEffect(() => {
   //   if (mapState.event === PLANNING_EVENT.editElementGeometry) {
