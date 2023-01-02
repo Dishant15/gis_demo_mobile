@@ -1,5 +1,5 @@
-import React, {useCallback} from 'react';
-import {Dimensions, View, StyleSheet, Platform} from 'react-native';
+import React from 'react';
+import {Dimensions, View, StyleSheet} from 'react-native';
 import {
   Title,
   List,
@@ -14,7 +14,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import FastImage from 'react-native-fast-image';
 import VersionInfo from 'react-native-version-info';
-import {get} from 'lodash';
+
+import get from 'lodash/get';
 
 import {DrawerButton} from '~Common/components/Header/ActionButtons';
 import ComingSoon from '~Common/components/ComingSoon';
@@ -210,6 +211,7 @@ const DrawerNavigation = () => {
           headerStyle: {
             backgroundColor: colors.primaryMain,
           },
+          unmountOnBlur: true,
         }}
       />
       <Drawer.Screen
@@ -236,6 +238,7 @@ const DrawerNavigation = () => {
           headerStyle: {
             backgroundColor: colors.primaryMain,
           },
+          unmountOnBlur: true,
         }}
       />
       <Drawer.Screen
