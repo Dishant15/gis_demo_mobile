@@ -13,7 +13,7 @@ import {fetchLayerDataThunk} from './actionBar.services';
 import {handleLayerSelect, removeLayerSelect} from './planningState.reducer';
 import {convertLayerServerData} from '../GisMap/utils';
 import {fetchTicketWorkorderDataThunk} from './ticket.services';
-import {coordsToLatLongMap} from '~utils/map.utils';
+import {coordsToLatLongMap, getMapBoundsFromRegion} from '~utils/map.utils';
 import {logout} from '~Authentication/data/auth.reducer';
 import {
   DEFAULT_MAP_CENTER,
@@ -51,6 +51,8 @@ const initialState = {
     center: DEFAULT_MAP_CENTER,
     zoom: DEFAULT_MAP_ZOOM,
   },
+  // coords of 4 corners [latlon1,latlon2,latlon3,latlon4]
+  mapBounds: [],
   // shape { layerKey, elementId }
   mapHighlight: {},
   // ticket related fields
@@ -186,6 +188,11 @@ const planningGisSlice = createSlice({
     setMapPosition: (state, {payload}) => {
       // can not be partial as web
       state.mapPosition = {...payload};
+    },
+    setMapBounds: (state, {payload}) => {
+      const {region, zoom} = payload;
+      const mapBounds = getMapBoundsFromRegion(region);
+      state.mapBounds = mapBounds;
     },
     setMapHighlight: (state, {payload}) => {
       // check previously any element is highlighted or not
@@ -382,5 +389,6 @@ export const {
   resetMapHighlight,
   setTicketMapHighlight,
   resetTicketMapHighlight,
+  setMapBounds,
 } = planningGisSlice.actions;
 export default planningGisSlice.reducer;

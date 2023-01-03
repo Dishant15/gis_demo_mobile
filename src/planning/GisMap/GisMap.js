@@ -1,4 +1,10 @@
-import React, {useState, useEffect, useRef, forwardRef} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useCallback,
+} from 'react';
 import {View, InteractionManager} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
@@ -13,7 +19,10 @@ import GisMapViewLayer from './components/GisMapViewLayer';
 import AddEditGeometryLayer from './components/AddEditGeometryLayer';
 import GisMapSpecialLayer from './components/GisMapSpecialLayer';
 
-import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
+import {
+  setMapBounds,
+  updateMapStateCoordinates,
+} from '~planning/data/planningGis.reducer';
 import {
   getPlanningMapPosition,
   getPlanningMapState,
@@ -104,6 +113,14 @@ const GisMap = props => {
     }
   };
 
+  const handleRegionChangeComplete = useCallback(
+    async region => {
+      const camera = await mapRef.current.getCamera();
+      dispatch(setMapBounds({region, zoom: camera.zoom}));
+    },
+    [mapRef.current],
+  );
+
   return (
     <View style={[layout.container, layout.relative]}>
       {showMap ? (
@@ -118,6 +135,7 @@ const GisMap = props => {
             onPress={handleMapClick}
             onPoiClick={handleMapClick}
             onMarkerPress={handleMapClick}
+            onRegionChangeComplete={handleRegionChangeComplete}
             showsUserLocation={locationPermType === PERMISSIONS_TYPE.ALLOW}
             myLocationButtonPosition={MY_LOCATION_BUTTON_POSITION.BOTTOM_RIGHT}>
             {showMapRender ? (
