@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Text} from 'react-native-paper';
 
 import get from 'lodash/get';
+import find from 'lodash/find';
 
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
@@ -17,20 +18,21 @@ import {
   getPlanningTicketData,
   getPlanningTicketWorkOrderId,
 } from '~planning/data/planningGis.selectors';
+import {
+  onPointShowOnMap,
+  onPolygonShowOnMap,
+} from '~planning/data/planning.actions';
 
 import {THEME_COLORS} from '~constants/constants';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
 import {coordsToLatLongMap} from '~utils/map.utils';
 import {
   onEditElementGeometry,
-  onShowAreaOnMapPress,
-  onShowMarkerOnMapPress,
   showAssociatiationList,
   showPossibleAddAssociatiation,
 } from '~planning/data/event.actions';
 import {FEATURE_TYPES} from '../../layers/common/configuration';
 import {checkUserPermission} from '~Authentication/data/auth.selectors';
-import {find} from 'lodash';
 
 const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
   const navigation = useNavigation();
@@ -111,12 +113,26 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
     const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
     switch (featureType) {
       case FEATURE_TYPES.POINT:
-        dispatch(onShowMarkerOnMapPress(elemData.coordinates, navigation));
+        dispatch(
+          onPointShowOnMap(
+            elemData.coordinates,
+            elemData.id,
+            layerKey,
+            navigation,
+          ),
+        );
         break;
       case FEATURE_TYPES.POLYGON:
       case FEATURE_TYPES.POLYLINE:
       case FEATURE_TYPES.MULTI_POLYGON:
-        dispatch(onShowAreaOnMapPress(elemData.coordinates, navigation));
+        dispatch(
+          onPolygonShowOnMap(
+            elemData.coordinates,
+            elemData.id,
+            layerKey,
+            navigation,
+          ),
+        );
         break;
       default:
         break;

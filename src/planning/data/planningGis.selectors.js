@@ -30,3 +30,8 @@ export const getPlanningTicketWorkOrderId = store =>
 
 export const getPlanningMapPosition = store => store.planningGis.mapPosition;
 export const getPlanningMapFilters = store => store.planningGis.filters;
+
+export const getMapHighlighted = store => store.planningGis.mapHighlight;
+
+export const getTicketMapHighlighted = store =>
+  store.planningGis.ticketData.ticketHighlightedWo;

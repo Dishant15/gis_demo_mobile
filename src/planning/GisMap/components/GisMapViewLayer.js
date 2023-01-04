@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import {useSelector} from 'react-redux';
 
 import {Polyline, Polygon} from 'react-native-maps';
 
 import MapMarker from '~Common/components/Map/MapMarker';
+import HighlightedPolyline from '~Common/components/Map/HighlightedPolyline';
 
 import {getLayerViewData} from '~planning/data/planningGis.selectors';
 import {getSelectedLayerKeys} from '~planning/data/planningState.selectors';
@@ -18,6 +19,8 @@ const COMMON_POLYGON_OPTIONS = {
 const COMMON_POLYLINE_OPTIONS = {
   strokeWeight: 2,
 };
+
+const HIGHLIGHT_COLOR = '#446eca';
 
 const GisMapViewLayer = () => {
   // get list of selected layer-keys
@@ -36,7 +39,7 @@ const ViewLayer = ({layerKey}) => {
   switch (featureType) {
     case FEATURE_TYPES.POINT:
       return layerData.map(element => {
-        const {id, hidden, coordinates} = element;
+        const {id, hidden, coordinates, highlighted} = element;
         const viewOptions =
           LayerKeyMappings[layerKey]['getViewOptions'](element);
 
@@ -54,7 +57,7 @@ const ViewLayer = ({layerKey}) => {
 
     case FEATURE_TYPES.MULTI_POLYGON:
       return layerData.map(element => {
-        const {id, hidden, coordinates} = element;
+        const {id, hidden, coordinates, highlighted} = element;
         const viewOptions =
           LayerKeyMappings[layerKey]['getViewOptions'](element);
 
@@ -67,7 +70,18 @@ const ViewLayer = ({layerKey}) => {
                   key={ind}
                   coordinates={polyCoord}
                   {...viewOptions}
-                  zIndex={zIndexMapping[layerKey]}
+                  {...(highlighted
+                    ? {
+                        strokeColor: HIGHLIGHT_COLOR,
+                        strokeOpacity: 1,
+                        strokeWeight: 4,
+                      }
+                    : {})}
+                  zIndex={
+                    highlighted
+                      ? zIndexMapping.highlighted
+                      : zIndexMapping[layerKey]
+                  }
                 />
               );
             })}
@@ -77,38 +91,68 @@ const ViewLayer = ({layerKey}) => {
 
     case FEATURE_TYPES.POLYGON:
       return layerData.map(element => {
-        const {id, hidden, coordinates} = element;
+        const {id, hidden, coordinates, highlighted} = element;
         const viewOptions =
           LayerKeyMappings[layerKey]['getViewOptions'](element);
 
         if (hidden) return null;
         return (
-          <Polygon
-            key={id}
-            coordinates={coordinates}
-            {...COMMON_POLYGON_OPTIONS}
-            {...viewOptions}
-            zIndex={zIndexMapping[layerKey]}
-          />
+          <Fragment key={id}>
+            <Polygon
+              key={id}
+              coordinates={coordinates}
+              {...COMMON_POLYGON_OPTIONS}
+              {...viewOptions}
+              {...(highlighted
+                ? {
+                    strokeOpacity: 0,
+                    strokeWeight: 0,
+                  }
+                : {})}
+              zIndex={
+                highlighted
+                  ? zIndexMapping.highlighted
+                  : zIndexMapping[layerKey]
+              }
+            />
+            {highlighted ? (
+              <HighlightedPolyline
+                coordinates={coordinates}
+                zIndex={zIndexMapping.highlighted}
+                strokeColor={HIGHLIGHT_COLOR}
+              />
+            ) : null}
+          </Fragment>
         );
       });
 
     case FEATURE_TYPES.POLYLINE:
       return layerData.map(element => {
-        const {id, hidden, coordinates} = element;
+        const {id, hidden, coordinates, highlighted} = element;
         const viewOptions =
           LayerKeyMappings[layerKey]['getViewOptions'](element);
 
         if (hidden) return null;
-        return (
-          <Polyline
-            key={id}
-            coordinates={coordinates}
-            {...COMMON_POLYLINE_OPTIONS}
-            {...viewOptions}
-            zIndex={zIndexMapping[layerKey]}
-          />
-        );
+        if (highlighted) {
+          return (
+            <HighlightedPolyline
+              key={id}
+              coordinates={coordinates}
+              zIndex={zIndexMapping.highlighted}
+              strokeColor={HIGHLIGHT_COLOR}
+            />
+          );
+        } else {
+          return (
+            <Polyline
+              key={id}
+              coordinates={coordinates}
+              {...COMMON_POLYLINE_OPTIONS}
+              {...viewOptions}
+              zIndex={zIndexMapping[layerKey]}
+            />
+          );
+        }
       });
 
     default:
