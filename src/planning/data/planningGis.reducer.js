@@ -6,20 +6,29 @@ import difference from 'lodash/difference';
 import cloneDeep from 'lodash/cloneDeep';
 import countBy from 'lodash/countBy';
 import findIndex from 'lodash/findIndex';
-import filter from 'lodash/filter';
 import isNumber from 'lodash/isNumber';
+
+import {polygon} from '@turf/turf';
 
 import {fetchLayerDataThunk} from './actionBar.services';
 import {handleLayerSelect, removeLayerSelect} from './planningState.reducer';
-import {filterGisDataByPolygon} from './planning.utils';
+import {
+  filterGisDataByPolygon,
+  filterLayerDataByLayerKeys,
+} from './planning.utils';
 import {convertLayerServerData} from '../GisMap/utils';
 import {fetchTicketWorkorderDataThunk} from './ticket.services';
-import {coordsToLatLongMap, getMapBoundsFromRegion} from '~utils/map.utils';
+import {
+  coordsToLatLongMap,
+  getMapBoundsFromRegion,
+  latLongMapToCoords,
+} from '~utils/map.utils';
 import {logout} from '~Authentication/data/auth.reducer';
 import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_ZOOM,
 } from '~Common/components/Map/map.constants';
+import {map} from 'lodash';
 
 // if layer data elements go above this size data will be stored in cache first
 const MAX_ALLOWED_DATA_COUNT = 200;
@@ -61,7 +70,7 @@ const initialState = {
     zoom: DEFAULT_MAP_ZOOM,
   },
   // coords of 4 corners [latlon1,latlon2,latlon3,latlon4]
-  mapBounds: [],
+  mapBounds: getMapBoundsFromRegion(DEFAULT_MAP_CENTER),
   // shape { layerKey, elementId }
   mapHighlight: {},
   // ticket related fields
@@ -89,24 +98,12 @@ const planningGisSlice = createSlice({
     // payload : { filterKey, filterValue }
     setFilter: (state, {payload}) => {
       const {filterKey, filterValue} = payload;
-      // filter layerData based on filter value
-      let filteredGisLayerData = {};
-      // filter elements by status
-      if (filterKey === 'status') {
-        // get keys of layerData
-        const layerKeyList = Object.keys(state.masterGisData);
-        // loop over layerKeys
-        for (let lkInd = 0; lkInd < layerKeyList.length; lkInd++) {
-          const currLayerKey = layerKeyList[lkInd];
-          // filter list of elements of each layer key
-          filteredGisLayerData[currLayerKey] = filter(
-            state.masterGisData[currLayerKey],
-            ['status', filterValue],
-          );
-        }
-      }
-      // update states
-      state.layerData = filteredGisLayerData;
+      // filter layerData based on filter value and update states
+      state.layerData = filterLayerDataByLayerKeys(
+        filterKey,
+        filterValue,
+        state.masterGisData,
+      );
       state.filters[filterKey] = filterValue;
     },
     resetFilters: state => {
@@ -202,17 +199,38 @@ const planningGisSlice = createSlice({
       const {region, zoom} = payload;
       const mapBounds = getMapBoundsFromRegion(region);
       state.mapBounds = mapBounds;
-      const filterPolygon = null;
+
+      const selectedLayerKeys = [];
+      for (const key in state.layerNetworkState) {
+        if (Object.hasOwnProperty.call(state.layerNetworkState, key)) {
+          const currLayer = state.layerNetworkState[key];
+          if (currLayer.isSelected) {
+            selectedLayerKeys.push(key);
+          }
+        }
+      }
+
+      const filterPolygon = polygon([latLongMapToCoords(mapBounds)]);
       // loop over LAYER_GIS_CACHE and update masterGisData with filterPolygon
       const filteredData = filterGisDataByPolygon({
         filterPolygon,
         gisData: LAYER_GIS_CACHE,
         // whitelist only selected layers
-        // whiteList: [],
+        whiteList: selectedLayerKeys,
         groupByLayerKey: true,
       });
-      state.masterGisData[layerKey] = filteredData;
-      // apply filters if available and set layerData
+
+      state.masterGisData = filteredData;
+      // // apply filters if available and set layerData
+      if (state.filters.status) {
+        state.layerData = filterLayerDataByLayerKeys(
+          'status',
+          state.filters.status,
+          filteredData,
+        );
+      } else {
+        state.layerData = filteredData;
+      }
     },
     setMapHighlight: (state, {payload}) => {
       // check previously any element is highlighted or not
@@ -343,15 +361,16 @@ const planningGisSlice = createSlice({
       if (shouldCacheData) {
         // filter data by user viewport
         LAYER_GIS_CACHE[layerKey] = convertedLayerGisData;
-        const filterPolygon = null;
+        const filterPolygon = polygon([latLongMapToCoords(state.mapBounds)]);
         const filteredData = filterGisDataByPolygon({
           filterPolygon,
           gisData: LAYER_GIS_CACHE,
           whiteList: [layerKey],
           groupByLayerKey: true,
         });
-        state.masterGisData[layerKey] = filteredData;
-        state.layerData[layerKey] = filteredData;
+
+        state.masterGisData[layerKey] = filteredData[layerKey];
+        state.layerData[layerKey] = filteredData[layerKey];
       } else {
         state.masterGisData[layerKey] = convertedLayerGisData;
         state.layerData[layerKey] = convertedLayerGisData;
