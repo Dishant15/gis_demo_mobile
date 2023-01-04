@@ -14,11 +14,6 @@ export const PRE_UID = 'SB';
 export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POINT;
 
 export const getViewOptions = () => ({
-  tappable: false,
-  draggable: false,
-  stopPropagation: true,
-  flat: true,
-  tracksInfoWindowChanges: false,
   icon: Icon,
   pin: EditIcon,
 });

@@ -1,7 +1,9 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
 
-import {Polyline, Polygon, Marker} from 'react-native-maps';
+import {Polyline, Polygon} from 'react-native-maps';
+
+import MapMarker from '~Common/components/Map/MapMarker';
 
 import {getLayerViewData} from '~planning/data/planningGis.selectors';
 import {getSelectedLayerKeys} from '~planning/data/planningState.selectors';
@@ -15,14 +17,6 @@ const COMMON_POLYGON_OPTIONS = {
 
 const COMMON_POLYLINE_OPTIONS = {
   strokeWeight: 2,
-};
-
-const COMMON_MARKER_OPTIONS = {
-  tappable: false,
-  draggable: false,
-  stopPropagation: true,
-  flat: true,
-  tracksInfoWindowChanges: false,
 };
 
 const GisMapViewLayer = () => {
@@ -48,14 +42,13 @@ const ViewLayer = ({layerKey}) => {
 
         if (hidden) return null;
         return (
-          <Marker
+          <MapMarker
             key={id}
             coordinate={coordinates}
-            {...COMMON_MARKER_OPTIONS}
             {...viewOptions}
             zIndex={zIndexMapping[layerKey]}>
             <viewOptions.icon />
-          </Marker>
+          </MapMarker>
         );
       });
 
