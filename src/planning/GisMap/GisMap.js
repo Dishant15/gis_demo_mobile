@@ -1,7 +1,13 @@
-import React, {useState, useEffect, useRef, forwardRef} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useCallback,
+} from 'react';
 import {View, InteractionManager} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import * as Animatable from 'react-native-animatable';
@@ -13,7 +19,10 @@ import GisMapViewLayer from './components/GisMapViewLayer';
 import AddEditGeometryLayer from './components/AddEditGeometryLayer';
 import GisMapSpecialLayer from './components/GisMapSpecialLayer';
 
-import {updateMapStateCoordinates} from '~planning/data/planningGis.reducer';
+import {
+  setMapBounds,
+  updateMapStateCoordinates,
+} from '~planning/data/planningGis.reducer';
 import {
   getPlanningMapPosition,
   getPlanningMapState,
@@ -39,14 +48,15 @@ const GisMap = props => {
   const [isMapReady, setIsMapReady] = useState(false);
 
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const {bottom} = useSafeAreaInsets();
   const mapRef = useRef();
 
+  // @TODO: move to Map component
   const {geometry, layerKey, event} = useSelector(getPlanningMapState);
   const mapType = useSelector(getMapType);
   const locationPermType = useSelector(getLocationPermissionType);
+
   const mapPosition = useSelector(getPlanningMapPosition);
 
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
@@ -57,6 +67,7 @@ const GisMap = props => {
     });
   }, []);
 
+  // @TODO: move to Map component
   const handleMapClick = e => {
     if (!e.nativeEvent.coordinate) return;
     let coords = e.nativeEvent.coordinate;
@@ -105,12 +116,16 @@ const GisMap = props => {
     }
   };
 
-  if (!isFocused) return null;
+  const handleRegionChangeComplete = useCallback(async region => {
+    const camera = await mapRef.current.getCamera();
+    dispatch(setMapBounds({region, zoom: camera.zoom}));
+  }, []);
 
   return (
     <View style={[layout.container, layout.relative]}>
       {showMap ? (
         <Animatable.View animation="fadeIn" style={layout.container}>
+          <MapController ref={mapRef} mapPosition={mapPosition} />
           <Map
             ref={mapRef}
             onMapReady={onMapReady}
@@ -120,6 +135,7 @@ const GisMap = props => {
             onPress={handleMapClick}
             onPoiClick={handleMapClick}
             onMarkerPress={handleMapClick}
+            onRegionChangeComplete={handleRegionChangeComplete}
             showsUserLocation={locationPermType === PERMISSIONS_TYPE.ALLOW}
             myLocationButtonPosition={MY_LOCATION_BUTTON_POSITION.BOTTOM_RIGHT}>
             {showMapRender ? (
@@ -138,19 +154,35 @@ const GisMap = props => {
 };
 
 const MapController = forwardRef((props, ref) => {
-  const {mapState} = props;
+  const {mapPosition = {}} = props;
 
   useEffect(() => {
-    if (mapState.event === PLANNING_EVENT.editElementGeometry) {
-      // geometry can be Array or object
-      if (!Array.isArray(mapState.geometry)) {
-        ref.current.animateToRegion(
-          {...INIT_MAP_LOCATION, ...mapState.geometry},
-          100,
+    if (ref && ref.current) {
+      if (mapPosition.center) {
+        ref.current.animateCamera(
+          {center: mapPosition.center, zoom: mapPosition.zoom},
+          {duration: 100},
         );
+      } else if (mapPosition.coordinates) {
+        ref.current.fitToCoordinates(mapPosition.coordinates, {
+          edgePadding: getEdgePadding(),
+          animated: true,
+        });
       }
     }
-  }, [mapState.event]);
+  }, [ref, mapPosition]);
+
+  // useEffect(() => {
+  //   if (mapState.event === PLANNING_EVENT.editElementGeometry) {
+  //     // geometry can be Array or object
+  //     if (!Array.isArray(mapState.geometry)) {
+  //       ref.current.animateToRegion(
+  //         {...INIT_MAP_LOCATION, ...mapState.geometry},
+  //         100,
+  //       );
+  //     }
+  //   }
+  // }, [mapState.event]);
 
   return null;
 });

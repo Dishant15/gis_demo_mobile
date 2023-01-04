@@ -16,6 +16,7 @@ import useValidateGeometry from '../hooks/useValidateGeometry';
 
 import {
   setMapState,
+  setTicketWorkOrderId,
   unHideElement,
   updateMapStateDataErrPolygons,
 } from '~planning/data/planningGis.reducer';
@@ -66,9 +67,16 @@ const EditGisLayer = () => {
   const ticketName = get(ticketData, 'name');
   const {elementId, remark} = mapStateData;
 
+  const formMetaData = get(
+    LayerKeyMappings,
+    [layerKey, 'formConfig', 'metaData'],
+    {},
+  );
+
   const onSuccessHandler = () => {
     showToast('Element location updated Successfully', TOAST_TYPE.SUCCESS);
     dispatch(onElementUpdate(layerKey));
+    dispatch(setTicketWorkOrderId(null));
   };
 
   const onErrorHandler = err => {
@@ -142,17 +150,10 @@ const EditGisLayer = () => {
     let submitData = {};
     if (featureType === FEATURE_TYPES.POLYLINE) {
       submitData.geometry = latLongMapToLineCoords(featureCoords);
-      submitData.gis_len = round(length(lineString(submitData.geometry)), 4);
     }
     //
     else if (featureType === FEATURE_TYPES.POLYGON) {
       submitData.geometry = latLongMapToCoords(featureCoords);
-      // get area of polygon
-      const areaInMeters = area(polygon([submitData.geometry]));
-      submitData.gis_area = round(
-        convertArea(areaInMeters, 'meters', 'kilometers'),
-        4,
-      );
     }
     //
     else if (featureType === FEATURE_TYPES.POINT) {
@@ -161,6 +162,30 @@ const EditGisLayer = () => {
     //
     else {
       throw new Error('feature type is invalid');
+    }
+
+    /**
+     * get form config from LayerKeyMappings > layerKey
+     * check form config have meta data and geometryFields exist
+     * geometryFields used to auto calculate some fields and pre-fields into form
+     */
+    const geometryFields = Array.isArray(formMetaData.geometryUpdateFields)
+      ? formMetaData.geometryUpdateFields
+      : [];
+
+    for (let index = 0; index < geometryFields.length; index++) {
+      const field = geometryFields[index];
+      if (field === 'gis_len') {
+        // get length and round to 4 decimals
+        submitData.gis_len = round(length(lineString(submitData.geometry)), 4);
+      } else if (field === 'gis_area') {
+        // get area of polygon
+        const areaInMeters = area(polygon([submitData.geometry]));
+        submitData.gis_area = round(
+          convertArea(areaInMeters, 'meters', 'kilometers'),
+          4,
+        );
+      }
     }
 
     // server side validate geometry

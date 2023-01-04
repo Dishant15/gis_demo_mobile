@@ -41,6 +41,7 @@ import {
 import {FEATURE_TYPES} from '~planning/GisMap/layers/common/configuration';
 import {
   getAllLayersData,
+  getLayerViewData,
   getPlanningMapStateEvent,
   getPlanningTicketData,
 } from './planningGis.selectors';
@@ -50,6 +51,8 @@ import {
   pointLatLongMapToCoords,
 } from '~utils/map.utils';
 import {screens} from '~constants/constants';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {filterGisDataByPolygon} from './planning.utils';
 
 export const onRegionSelectionUpdate =
   updatedRegionIdList => (dispatch, getState) => {
@@ -237,7 +240,9 @@ export const onAddElementDetails =
     }
     // complete current event -> fire next event
     dispatch(setMapState(mapStateData));
-    navigation.navigate(screens.gisEventScreen);
+    if (navigation) {
+      navigation.navigate(screens.gisEventScreen);
+    }
   };
 
 export const onFetchLayerListDetailsSuccess = layerConfData => dispatch => {
@@ -270,6 +275,7 @@ export const onGisMapClick =
     const storeState = getState();
     const mapStateEvent = getPlanningMapStateEvent(storeState);
     const layerData = getAllLayersData(storeState);
+    const selectedLayerKeys = getSelectedLayerKeys(storeState);
 
     if (mapStateEvent === PLANNING_EVENT.selectElementsOnMapClick) {
       // if ths is select elements event get list of elements around user click
@@ -279,42 +285,14 @@ export const onGisMapClick =
         steps: 10,
         units: 'kilometers',
       });
-      const elementResultList = [];
-      // loop over layerData
-      const layerKeyList = Object.keys(layerData);
-      // check intersects
-      for (let lkInd = 0; lkInd < layerKeyList.length; lkInd++) {
-        const currLayerKey = layerKeyList[lkInd];
 
-        if (currLayerKey === 'region') continue;
-        const currLayerData = layerData[currLayerKey];
-        const featureType = LayerKeyMappings[currLayerKey]['featureType'];
+      const elementResultList = filterGisDataByPolygon({
+        filterPolygon: circPoly,
+        gisData: layerData,
+        whiteList: selectedLayerKeys,
+        blackList: ['region'],
+      });
 
-        for (let elemInd = 0; elemInd < currLayerData.length; elemInd++) {
-          const element = currLayerData[elemInd];
-          // create turf geom for each element
-          let turfGeom;
-          if (featureType === FEATURE_TYPES.POINT) {
-            turfGeom = point(element.geometry);
-          } else if (featureType === FEATURE_TYPES.POLYLINE) {
-            turfGeom = lineString(element.geometry);
-          } else if (featureType === FEATURE_TYPES.POLYGON) {
-            turfGeom = polygon([element.geometry]);
-          } else {
-            // multi polygon
-            turfGeom = multiPolygon(element.geometry);
-          }
-          // check intersects
-          const isIntersecting = booleanIntersects(circPoly, turfGeom);
-          // add to list if intersect true
-          if (isIntersecting) {
-            elementResultList.push({
-              ...element,
-              layerKey: currLayerKey,
-            });
-          }
-        }
-      }
       const filterCoords = coordsToLatLongMap(circPoly.geometry.coordinates[0]);
       // fire next event : listElementsOnMap, with new list data
       dispatch(
@@ -345,4 +323,72 @@ export const onElementListItemClick =
     );
     dispatch(resetTicketMapHighlight());
     navigation.navigate(screens.planningScreen);
+  };
+
+export const onWorkOrderListItemClick =
+  (elementId, layerKey, navigation) => dispatch => {
+    dispatch(
+      setMapHighlight({
+        layerKey,
+        elementId,
+      }),
+    );
+    dispatch(resetTicketMapHighlight());
+    navigation.navigate(screens.planningStack);
+  };
+
+export const onElementAddConnectionEvent =
+  ({layerKey, elementId, elementGeometry}) =>
+  (dispatch, getState) => {
+    const storeState = getState();
+    // check if cable layer is selected in layers tab
+    const selectedLayerKeys = getSelectedLayerKeys(storeState);
+    if (selectedLayerKeys.indexOf('p_cable') === -1) {
+      // dispatch error notification if not
+      showToast(
+        'Please select Cable layer, Cable layer needs to be selected to add connections',
+        TOAST_TYPE.SUCCESS,
+      );
+      return;
+    }
+    let resultCableList = [];
+    // if point element
+    const elementPoint = point(elementGeometry);
+    // create a circle around element
+    const circPoly = circle(elementGeometry, 0.01, {
+      steps: 10,
+      units: 'kilometers',
+    });
+    // get all cables intersecting that polygon
+    const cableList = getLayerViewData('p_cable')(storeState);
+    for (let c_ind = 0; c_ind < cableList.length; c_ind++) {
+      const c_cable = cableList[c_ind];
+      const isIntersecting = booleanIntersects(
+        circPoly,
+        lineString(c_cable.geometry),
+      );
+      if (isIntersecting) {
+        // calculate which end of this cable is nearest to current point
+        const Aend = c_cable.geometry[0];
+        const Bend = c_cable.geometry[c_cable.geometry.length - 1];
+
+        const distanceA = distance(elementPoint, point(Aend));
+        const distanceB = distance(elementPoint, point(Bend));
+        const cable_end = distanceA > distanceB ? 'B' : 'A';
+        // add list of cables into data of current element, with cable end marker
+        resultCableList.push({...c_cable, cable_end, layerKey: 'p_cable'});
+      }
+    }
+    // dispatch addElementConection
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.addElementConnection,
+        layerKey,
+        data: {
+          elementList: resultCableList,
+          elementId,
+          layerKey,
+        },
+      }),
+    );
   };

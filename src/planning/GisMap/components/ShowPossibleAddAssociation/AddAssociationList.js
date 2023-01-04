@@ -2,16 +2,17 @@ import React, {useMemo, useState, useCallback} from 'react';
 import {View, StyleSheet, Pressable, ScrollView} from 'react-native';
 import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
+import {Subheading, Divider} from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
 
 import filter from 'lodash/filter';
 import get from 'lodash/get';
+import size from 'lodash/size';
+import includes from 'lodash/includes';
 
-import {Subheading, Divider} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
+import ElementConfigList from '~planning/ActionBar/components/ElementConfigList';
 import Loader from '~Common/Loader';
-import Header from './Header';
-import ElementConfigList from './ElementConfigList';
 
 import {fetchLayerListDetails} from '~planning/data/actionBar.services';
 import {
@@ -20,18 +21,18 @@ import {
 } from '~planning/data/planningGis.selectors';
 import {LayerKeyMappings} from '~planning/GisMap/utils';
 import {
+  onAddElementDetails,
   onAddElementGeometry,
   onFetchLayerListDetailsSuccess,
 } from '~planning/data/planning.actions';
 
-import {showToast, TOAST_TYPE} from '~utils/toast.utils';
-import {colors, layout} from '~constants/constants';
+import {colors, layout, screens} from '~constants/constants';
+import useValidateGeometry from '~planning/GisMap/hooks/useValidateGeometry';
 
-/**
- * Parent:
- *    ActionBar
- */
-const AddElementContent = ({hideModal}) => {
+const AddAssociationList = ({listOfLayers, parentData, parentLayerKey}) => {
+  const {validateElementMutation, isValidationLoading} = useValidateGeometry(
+    {},
+  );
   const {isLoading, data} = useQuery(
     'planningLayerConfigsDetails',
     fetchLayerListDetails,
@@ -42,8 +43,9 @@ const AddElementContent = ({hideModal}) => {
       },
     },
   );
-
   const dispatch = useDispatch();
+  const navigation = useNavigation();
+
   // if popup open : layerKey of selected configs, null if closed
   const [layerConfigKey, setLayerConfigKey] = useState(null);
   const {event} = useSelector(getPlanningMapState);
@@ -52,18 +54,59 @@ const AddElementContent = ({hideModal}) => {
   // shape: [ { layer_key, name, is_configurable, can_add, can_edit,
   //              configuration: [ **list of layer wise configs] }, ... ]
   const layerCofigs = useMemo(() => {
-    return filter(data, ['can_add', true]);
+    return filter(data, item => {
+      if (item.can_add && includes(listOfLayers, item.layer_key)) {
+        return item;
+      }
+    });
   }, [data]);
 
   const handleAddElementClick = useCallback(
     layerKey => () => {
-      if (layerKey === 'region') {
-        showToast('Can not process requested operation', TOAST_TYPE.ERROR);
-        return;
+      const childFeatureType = LayerKeyMappings[layerKey]['featureType'];
+      const parentFeatureType = LayerKeyMappings[parentLayerKey]['featureType'];
+
+      // when adding child region featureType will be same but need to draw new child region so go to else branch
+      if (childFeatureType === parentFeatureType && layerKey !== 'region') {
+        // if both layer has same geometry copy geometry of parent to child and go to form directly
+        const extraParent = {
+          [parentLayerKey]: [{...parentData}],
+        };
+        // call validate geometry to get relations for new element
+        validateElementMutation(
+          {
+            layerKey,
+            featureType: childFeatureType,
+            geometry: parentData.coordinates,
+          },
+          {
+            onSuccess: res => {
+              dispatch(
+                onAddElementDetails({
+                  layerKey,
+                  validationRes: res,
+                  submitData: {geometry: parentData.coordinates},
+                  extraParent,
+                }),
+              );
+            },
+          },
+        );
+      } else {
+        // else go to map with extra contains by id check
+        dispatch(
+          onAddElementGeometry({
+            layerKey,
+            // check if new geometry will be inside parent
+            restriction_ids: {
+              [parentLayerKey]: parentData.id,
+            },
+          }),
+        );
+        navigation.navigate(screens.planningScreen);
       }
-      dispatch(onAddElementGeometry({layerKey}));
     },
-    [event],
+    [parentLayerKey, parentData],
   );
 
   const handleLayerConfigShow = useCallback(
@@ -79,8 +122,7 @@ const AddElementContent = ({hideModal}) => {
 
   if (layerCofigs.length) {
     return (
-      <View>
-        <Header text="ADD ELEMENT" icon="add-location" onClose={hideModal} />
+      <>
         <ScrollView contentContainerStyle={styles.wrapper}>
           {layerCofigs.map(config => {
             const {
@@ -140,33 +182,33 @@ const AddElementContent = ({hideModal}) => {
             );
           })}
         </ScrollView>
-      </View>
+        {isValidationLoading ? <Loader /> : null}
+      </>
     );
   } else if (isLoading) {
     return (
-      <View style={layout.box}>
-        {isLoading ? <Loader /> : null}
-        <Header text="ADD ELEMENT" icon="add-location" onClose={hideModal} />
+      <View style={styles.wrapper}>
+        <Loader />
       </View>
     );
   } else {
     return (
-      <View>
-        <Header text="ADD ELEMENT" icon="add-location" onClose={hideModal} />
-        <View style={styles.wrapper}>
-          <Subheading style={layout.textCenter}>
-            No elements created yet.
-          </Subheading>
-        </View>
+      <View style={styles.wrapper}>
+        <Subheading style={layout.textCenter}>
+          There are no elements you can add to network !!
+        </Subheading>
       </View>
     );
   }
 };
 
+export default AddAssociationList;
+
 const styles = StyleSheet.create({
   wrapper: {
     paddingHorizontal: 12,
     paddingBottom: 50,
+    flex: 1,
   },
   elementContent: {
     flexDirection: 'row',
@@ -187,5 +229,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
-export default AddElementContent;

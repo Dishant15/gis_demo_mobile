@@ -56,6 +56,7 @@ export const onEditElementGeometry =
     navigation.navigate(screens.planningScreen);
   };
 
+// clicked from ticket WO screen
 export const onViewMapClick = navigation => (dispatch, getState) => {
   const storeState = getState();
   const ticketData = getPlanningTicketData(storeState);
@@ -68,7 +69,8 @@ export const onViewMapClick = navigation => (dispatch, getState) => {
     );
   }
   dispatch(setMapState({}));
-  navigation.navigate(screens.planningTicketMap);
+  dispatch(setTicketWorkOrderId(null));
+  navigation.navigate(screens.planningStack);
 };
 
 export const onElementUpdate = layerKey => (dispatch, getState) => {
@@ -129,15 +131,8 @@ export const onShowAreaOnMapPress = (coordinates, navigation) => dispatch => {
   navigation.navigate(screens.planningScreen);
 };
 
-export const goBackFromGisEventScreen = navigation => (dispatch, getState) => {
-  const storeState = getState();
-  const ticketId = getPlanningTicketId(storeState);
-
-  if (ticketId) {
-    navigation.navigate(screens.planningTicketMap);
-  } else {
-    navigation.navigate(screens.planningScreen);
-  }
+export const goBackFromGisEventScreen = navigation => () => {
+  navigation.goBack();
 };
 
 export const goBackFromPlanningScreen = navigation => (dispatch, getState) => {
@@ -179,3 +174,15 @@ export const selectElementsOnMapClick = (dispatch, getState) => {
     );
   }
 };
+
+export const showPossibleAddAssociatiation =
+  ({layerKey, elementData, listOfLayers}) =>
+  dispatch => {
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.showPossibleAddAssociatiation,
+        layerKey,
+        data: {elementData, listOfLayers},
+      }),
+    );
+  };

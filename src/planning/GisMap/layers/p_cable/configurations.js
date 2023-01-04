@@ -10,12 +10,24 @@ export const LAYER_KEY = 'p_cable';
 export const PRE_UID = 'CBL';
 export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POLYLINE;
 
-export const getViewOptions = ({color_on_map}) => {
-  return {
+export const getViewOptions = ({color_on_map, cable_type}) => {
+  let options = {
     strokeColor: color_on_map,
     icon: CableIcon,
     pin: CableIcon,
+    geodesic: true,
   };
+  if (cable_type === 'U') {
+    // dot line
+    options.lineDashPattern = [5, 10];
+    options.lineCap = 'round';
+    options.strokeWidth = 5;
+  } else if (cable_type === 'W') {
+    // dash line
+    options.lineDashPattern = [0, 15, 30];
+    options.lineCap = 'square';
+  }
+  return options;
 };
 
 export const INITIAL_ELEMENT_DATA = {
@@ -37,6 +49,11 @@ export const CABLE_TYPE_OPTIONS = [
 
 export const ELEMENT_FORM_TEMPLATE = {
   sections: [
+    // {
+    //   ...ELEMENT_FORM_CONFIG_ABSTRACT_SECTION,
+    //   title: 'Cable Configuration',
+    //   table_fields: [],
+    // },
     {
       title: 'Cable Form',
       fieldConfigs: [
@@ -52,6 +69,7 @@ export const ELEMENT_FORM_TEMPLATE = {
           label: 'Gis Length (Km)',
           field_type: FIELD_TYPES.Input,
           type: 'number',
+          disabled: true,
         },
         {
           field_key: 'actual_len',
@@ -74,6 +92,13 @@ export const ELEMENT_FORM_TEMPLATE = {
       ],
     },
   ],
+  // this shows where dependant template data comes from
+  metaData: {
+    geometryUpdateFields: ['gis_len'],
+    getElementAddressData: (address, submitData) => {
+      submitData.address = address.address;
+    },
+  },
 };
 
 export const ELEMENT_TABLE_FIELDS = [

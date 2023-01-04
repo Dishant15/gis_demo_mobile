@@ -67,7 +67,6 @@ const errPolygonsFillColor = '#FF0000' + percentToHex(50);
  *    root.navigation
  */
 const SurveyMap = ({navigation}) => {
-  const isFocused = useIsFocused();
   const {bottom, top} = useSafeAreaInsets();
   const {validateElementMutation, isValidationLoading} = useValidateGeometry({
     setErrPolygonAction: setErrPolygons,
@@ -165,10 +164,11 @@ const SurveyMap = ({navigation}) => {
 
     // server side validate geometry
     let validationData = {
-      layerKey: 'p_survey_area',
+      layerKey: 'survey_workorder',
       featureType: 'polygon',
       geometry: latLongMapToCoords(coordinates),
       ticket_id: ticketId,
+      element_id: formData?.id,
     };
 
     validateElementMutation(validationData, {
@@ -245,8 +245,6 @@ const SurveyMap = ({navigation}) => {
         );
       })
     : null;
-
-  if (!isFocused) return null;
 
   return (
     <View style={layout.container}>

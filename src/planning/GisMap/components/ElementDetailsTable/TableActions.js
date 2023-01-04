@@ -1,10 +1,11 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {View, StyleSheet, Pressable} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
 import {Text} from 'react-native-paper';
 
 import get from 'lodash/get';
+import find from 'lodash/find';
 
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
@@ -15,16 +16,20 @@ import {hideElement, setMapState} from '~planning/data/planningGis.reducer';
 import {
   getPlanningMapStateData,
   getPlanningTicketData,
+  getPlanningTicketWorkOrderId,
 } from '~planning/data/planningGis.selectors';
+import {
+  onPointShowOnMap,
+  onPolygonShowOnMap,
+} from '~planning/data/planning.actions';
 
 import {THEME_COLORS} from '~constants/constants';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
 import {coordsToLatLongMap} from '~utils/map.utils';
 import {
   onEditElementGeometry,
-  onShowAreaOnMapPress,
-  onShowMarkerOnMapPress,
   showAssociatiationList,
+  showPossibleAddAssociatiation,
 } from '~planning/data/event.actions';
 import {FEATURE_TYPES} from '../../layers/common/configuration';
 import {checkUserPermission} from '~Authentication/data/auth.selectors';
@@ -35,12 +40,20 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
   const dispatch = useDispatch();
 
   const ticketData = useSelector(getPlanningTicketData);
+  const workOrderId = useSelector(getPlanningTicketWorkOrderId);
   const {elementId} = useSelector(getPlanningMapStateData);
   const hasLayerEditPermission = useSelector(
     checkUserPermission(`${layerKey}_edit`),
   );
+  const isVerifiedWorkorder = useMemo(() => {
+    const currWorkorder = find(ticketData.work_orders, ['id', workOrderId]);
+    const verified = get(currWorkorder, 'status') === 'V';
+    return Boolean(ticketData?.id && verified);
+  }, [ticketData, workOrderId]);
+
   // User can not edit region on mobile application
-  const hasEditPermission = layerKey !== 'region' && hasLayerEditPermission;
+  const hasEditPermission =
+    layerKey !== 'region' && hasLayerEditPermission && !isVerifiedWorkorder;
 
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
   const extraControls = get(
@@ -100,12 +113,26 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
     const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
     switch (featureType) {
       case FEATURE_TYPES.POINT:
-        dispatch(onShowMarkerOnMapPress(elemData.coordinates, navigation));
+        dispatch(
+          onPointShowOnMap(
+            elemData.coordinates,
+            elemData.id,
+            layerKey,
+            navigation,
+          ),
+        );
         break;
       case FEATURE_TYPES.POLYGON:
       case FEATURE_TYPES.POLYLINE:
       case FEATURE_TYPES.MULTI_POLYGON:
-        dispatch(onShowAreaOnMapPress(elemData.coordinates, navigation));
+        dispatch(
+          onPolygonShowOnMap(
+            elemData.coordinates,
+            elemData.id,
+            layerKey,
+            navigation,
+          ),
+        );
         break;
       default:
         break;
@@ -139,11 +166,44 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
         {extraControls.map(({control, data}) => {
           switch (control) {
             case 'connections':
-              return null;
-            case 'workorders':
-              return null;
+              return (
+                <IconButton
+                  key={control}
+                  iconName="cable-data"
+                  label={'Connections'}
+                  onPress={() =>
+                    dispatch(
+                      setMapState({
+                        event: PLANNING_EVENT.showElementConnections,
+                        layerKey,
+                        data: {
+                          elementId: elemData.id,
+                          elementGeometry: elemData.coordinates,
+                        },
+                      }),
+                    )
+                  }
+                  IconComponent={MaterialCommunityIcons}
+                />
+              );
             case 'add_associations':
-              return null;
+              return (
+                <IconButton
+                  key={control}
+                  iconName="plus"
+                  label={'Add\nAssociated\nElements'}
+                  onPress={() =>
+                    dispatch(
+                      showPossibleAddAssociatiation({
+                        layerKey,
+                        elementData: elemData,
+                        listOfLayers: data,
+                      }),
+                    )
+                  }
+                  IconComponent={MaterialCommunityIcons}
+                />
+              );
             case 'association_list':
               return (
                 <IconButton
@@ -170,7 +230,7 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
   );
 };
 
-const IconButton = ({
+export const IconButton = ({
   onPress,
   iconName,
   label,
@@ -207,6 +267,7 @@ const styles = StyleSheet.create({
   squreButtonWrapper: {
     justifyContent: 'space-around',
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'flex-start',
     padding: 12,
   },

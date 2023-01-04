@@ -48,7 +48,6 @@ import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
 const UnitMap = ({navigation}) => {
   const {bottom} = useSafeAreaInsets();
 
-  const isFocused = useIsFocused();
   const isReviewed = useSelector(getIsReviewed);
   const unitList = useSelector(getGeoSurveyUnitList);
   const unitData = useSelector(getGeoSurveyUnitFormData);
@@ -197,8 +196,6 @@ const UnitMap = ({navigation}) => {
       navigation.goBack();
     }
   };
-
-  if (!isFocused) return null;
 
   let strokeColor = colors.warning; // Submited, status "S"
   if (surveyStatus === 'V') {

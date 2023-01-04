@@ -1,15 +1,24 @@
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-import {lineString, length, area, polygon, convertArea} from '@turf/turf';
-
+import {
+  lineString,
+  length,
+  area,
+  polygon,
+  convertArea,
+  centroid,
+  points,
+  center as centerFn,
+} from '@turf/turf';
 import get from 'lodash/get';
 import size from 'lodash/size';
 import round from 'lodash/round';
 
 import {Button} from 'react-native-paper';
+import Geocoder from 'react-native-geocoding';
 
 import MapCard from '~Common/components/MapCard';
 
@@ -33,10 +42,13 @@ import {colors, layout, THEME_COLORS} from '~constants/constants';
 import useValidateGeometry from '../hooks/useValidateGeometry';
 import {getSelectedRegionIds} from '~planning/data/planningState.selectors';
 import {onAddElementDetails} from '~planning/data/planning.actions';
+import {getFormattedAddressFromGoogleAddress} from '~utils/app.utils';
 
 const AddGisMapLayer = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const [fetchingAddress, setFetchingAddress] = useState(false);
+
   const {validateElementMutation, isValidationLoading} = useValidateGeometry({
     setErrPolygonAction: updateMapStateDataErrPolygons,
   }); // once user adds marker go in edit mode
@@ -52,6 +64,12 @@ const AddGisMapLayer = () => {
   const {restriction_ids = null} = data;
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
   const ticketId = get(ticketData, 'id');
+
+  const formMetaData = get(
+    LayerKeyMappings,
+    [layerKey, 'formConfig', 'metaData'],
+    {},
+  );
 
   /**************************** */
   //        Handlers            //
@@ -72,18 +90,10 @@ const AddGisMapLayer = () => {
     let submitData = {};
     if (featureType === FEATURE_TYPES.POLYLINE) {
       submitData.geometry = latLongMapToLineCoords(featureCoords);
-      // get length and round to 4 decimals
-      const gis_len = length(lineString(submitData.geometry));
-      submitData.gis_len = String(round(gis_len, 4));
     }
     //
     else if (featureType === FEATURE_TYPES.POLYGON) {
       submitData.geometry = latLongMapToCoords(featureCoords);
-      // get area of polygon
-      const areaInMeters = area(polygon([submitData.geometry]));
-      submitData.gis_area = String(
-        round(convertArea(areaInMeters, 'meters', 'kilometers'), 4),
-      );
     }
     //
     else if (featureType === FEATURE_TYPES.POINT) {
@@ -92,6 +102,30 @@ const AddGisMapLayer = () => {
     //
     else {
       throw new Error('feature type is invalid');
+    }
+
+    /**
+     * get form config from LayerKeyMappings > layerKey
+     * check form config have meta data and geometryFields exist
+     * geometryFields used to auto calculate some fields and pre-fields into form
+     */
+    const geometryFields = Array.isArray(formMetaData.geometryUpdateFields)
+      ? formMetaData.geometryUpdateFields
+      : [];
+
+    for (let index = 0; index < geometryFields.length; index++) {
+      const field = geometryFields[index];
+      if (field === 'gis_len') {
+        // get length and round to 4 decimals
+        submitData.gis_len = round(length(lineString(submitData.geometry)), 4);
+      } else if (field === 'gis_area') {
+        // get area of polygon
+        const areaInMeters = area(polygon([submitData.geometry]));
+        submitData.gis_area = round(
+          convertArea(areaInMeters, 'meters', 'kilometers'),
+          4,
+        );
+      }
     }
 
     // server side validate geometry
@@ -114,15 +148,80 @@ const AddGisMapLayer = () => {
 
     validateElementMutation(mutationData, {
       onSuccess: res => {
-        // complete current event -> fire next event
-        dispatch(
-          onAddElementDetails({
-            layerKey,
-            submitData,
-            validationRes: res,
-            navigation,
-          }),
-        );
+        /**
+         * get form config from LayerKeyMappings > layerKey
+         * check form config have meta data and getElementAddressData exist
+         * getElementAddressData used to fetch address from lat, lng
+         */
+        if (formMetaData.getElementAddressData) {
+          let latLong; // [lat, lng]
+          if (featureType === FEATURE_TYPES.POLYLINE) {
+            const features = points(submitData.geometry);
+            const centerRes = centerFn(features);
+            const center = centerRes.geometry.coordinates;
+            latLong = [center[1], center[0]];
+          }
+          //
+          else if (featureType === FEATURE_TYPES.POLYGON) {
+            const turfPoint = polygon([submitData.geometry]);
+            const centerRes = centroid(turfPoint);
+            const center = centerRes.geometry.coordinates;
+            latLong = [center[1], center[0]];
+          }
+          //
+          else if (featureType === FEATURE_TYPES.POINT) {
+            latLong = [submitData.geometry[1], submitData.geometry[0]];
+          }
+          setFetchingAddress(true);
+          // Get address from latitude, longitude.
+          Geocoder.from({
+            latitude: latLong[0],
+            longitude: latLong[1],
+          }).then(
+            response => {
+              console.log('🚀 ~ file: handleAddComplete ~ response', response);
+
+              const formattedAddress =
+                getFormattedAddressFromGoogleAddress(response);
+
+              formMetaData.getElementAddressData(formattedAddress, submitData);
+              setFetchingAddress(false);
+              // complete current event -> fire next event
+              dispatch(
+                onAddElementDetails({
+                  layerKey,
+                  submitData,
+                  validationRes: res,
+                  navigation,
+                }),
+              );
+            },
+            error => {
+              setFetchingAddress(false);
+              // address can not be fetched
+              console.log('address can not be fetched ', error);
+              // complete current event -> fire next event
+              dispatch(
+                onAddElementDetails({
+                  layerKey,
+                  submitData,
+                  validationRes: res,
+                  navigation,
+                }),
+              );
+            },
+          );
+        } else {
+          // complete current event -> fire next event
+          dispatch(
+            onAddElementDetails({
+              layerKey,
+              submitData,
+              validationRes: res,
+              navigation,
+            }),
+          );
+        }
       },
     });
   };
@@ -152,7 +251,7 @@ const AddGisMapLayer = () => {
           mode="text"
           color={colors.white}
           style={{backgroundColor: THEME_COLORS.secondary.main}}
-          loading={isValidationLoading}>
+          loading={isValidationLoading || fetchingAddress}>
           Submit
         </Button>
       </TouchableOpacity>

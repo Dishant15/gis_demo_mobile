@@ -144,3 +144,30 @@ export const uniq_colors = [
   '#386cb0',
   '#f0027f',
 ];
+
+/**
+ * create screen boundary from region
+ * region shape : { latitude: Number, longitude: Number, latitudeDelta: Number, longitudeDelta: Number }
+ *
+ * how calculation work, explaination of latitudeDelta, longitudeDelta
+ * https://stackoverflow.com/a/36688156
+ */
+export const getMapBoundsFromRegion = region => {
+  const topLeft = {
+    latitude: region.latitude - region.latitudeDelta / 2,
+    longitude: region.longitude - region.longitudeDelta / 2,
+  };
+  const topRight = {
+    latitude: region.latitude - region.latitudeDelta / 2,
+    longitude: region.longitude + region.longitudeDelta / 2,
+  };
+  const bottomLeft = {
+    latitude: region.latitude + region.latitudeDelta / 2,
+    longitude: region.longitude - region.longitudeDelta / 2,
+  };
+  const bottomRight = {
+    latitude: region.latitude + region.latitudeDelta / 2,
+    longitude: region.longitude + region.longitudeDelta / 2,
+  };
+  return [topLeft, topRight, bottomRight, bottomLeft];
+};

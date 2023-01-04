@@ -8,6 +8,7 @@ import {Button, HelperText, Chip, Caption, Text} from 'react-native-paper';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {groupBy, get, join, split, size} from 'lodash';
 import {polygon, centroid} from '@turf/turf';
+import Geocoder from 'react-native-geocoding';
 
 import Input from '~Common/Input';
 import BackHeader from '~Common/components/Header/BackHeader';
@@ -121,11 +122,12 @@ const SurveyForm = props => {
     // center: [longitude, latitude]
     const center = centerRes.geometry.coordinates;
 
-    Api.get(getGoogleAddress(center[0], center[1]))
+    Geocoder.from({
+      latitude: center[1],
+      longitude: center[0],
+    })
       .then(res => {
-        const data = res.data;
-
-        const errorMessage = get(data, 'error_message');
+        const errorMessage = get(res, 'error_message');
         if (errorMessage) {
           showToast(errorMessage, TOAST_TYPE.ERROR);
           setLoading(false);
@@ -133,7 +135,7 @@ const SurveyForm = props => {
         }
 
         const {name, area, city, state, pincode, address} =
-          getFormattedAddressFromGoogleAddress(data);
+          getFormattedAddressFromGoogleAddress(res);
 
         setValue('address', formData.address || address);
         setValue('pincode', formData.pincode || pincode);

@@ -1,7 +1,5 @@
-import React, {memo, useCallback} from 'react';
-import {BackHandler} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {useFocusEffect} from '@react-navigation/native';
+import React, {memo} from 'react';
+import {useSelector} from 'react-redux';
 
 import get from 'lodash/get';
 
@@ -9,27 +7,15 @@ import {GisLayerForm} from '~planning/GisMap/components/GisLayerForm';
 import ElementDetailsTable from '~planning/GisMap/components/ElementDetailsTable';
 import ShowAssociatedElements from '~planning/GisMap/components/ShowAssociatedElements';
 import ElementList from '~planning/GisMap/components/ElementList';
+import ListElementConnections from '~planning/GisMap/layers/common/ListElementConnections';
+import AddElementConnection from '~planning/GisMap/layers/common/AddElementConnection';
+import ShowPossibleAddAssociation from '~planning/GisMap/components/ShowPossibleAddAssociation';
 
 import {getPlanningMapState} from '~planning/data/planningGis.selectors';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
-import {goBackFromGisEventScreen} from '~planning/data/event.actions';
 
 const GisEventScreen = props => {
-  const dispatch = useDispatch();
-  useFocusEffect(
-    useCallback(() => {
-      BackHandler.addEventListener('hardwareBackPress', customGoBack);
-      return () =>
-        BackHandler.removeEventListener('hardwareBackPress', customGoBack);
-    }, []),
-  );
-
   const {layerKey, event} = useSelector(getPlanningMapState);
-
-  const customGoBack = () => {
-    dispatch(goBackFromGisEventScreen(props.navigation));
-    return true;
-  };
 
   switch (event) {
     case PLANNING_EVENT.addElementForm:
@@ -52,10 +38,22 @@ const GisEventScreen = props => {
 
     case PLANNING_EVENT.showElementDetails:
       return <ElementDetailsTable layerKey={layerKey} />;
+
     case PLANNING_EVENT.showAssociatedElements:
       return <ShowAssociatedElements />;
+
+    case PLANNING_EVENT.showPossibleAddAssociatiation:
+      return <ShowPossibleAddAssociation />;
+
     case PLANNING_EVENT.listElementsOnMap:
       return <ElementList />;
+
+    case PLANNING_EVENT.showElementConnections:
+      return <ListElementConnections layerKey={layerKey} />;
+
+    case PLANNING_EVENT.addElementConnection:
+      return <AddElementConnection />;
+
     default:
       return null;
   }

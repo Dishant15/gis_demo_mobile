@@ -131,6 +131,7 @@ export const ELEMENT_FORM_TEMPLATE = {
           label: 'Home Pass',
           field_type: FIELD_TYPES.Input,
           type: 'number',
+          disabled: true,
         },
         {
           field_key: 'over_head_cable',
@@ -174,6 +175,17 @@ export const ELEMENT_FORM_TEMPLATE = {
       ],
     },
   ],
+  // this shows where dependant template data comes from
+  metaData: {
+    getElementAddressData: (address, submitData) => {
+      submitData.address = address.address;
+      submitData.pincode = address.pincode;
+      submitData.state = address.state;
+      submitData.city = address.city;
+      submitData.area = address.area;
+      submitData.name = address.name || address.area;
+    },
+  },
 };
 
 export const ELEMENT_TABLE_FIELDS = [

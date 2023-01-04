@@ -1,14 +1,16 @@
-import React, {useCallback} from 'react';
-import {View, FlatList, Pressable, StyleSheet} from 'react-native';
+import React, {useCallback, Fragment, useState} from 'react';
+import {View, Pressable, StyleSheet, ScrollView} from 'react-native';
 import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
 import get from 'lodash/get';
+import groupBy from 'lodash/groupBy';
+import map from 'lodash/map';
+import size from 'lodash/size';
 
 import {Subheading, Caption, Divider, Title} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
 import BackHeader from '~Common/components/Header/BackHeader';
 
 import {fetchElementAssociations} from '~planning/data/layer.services';
@@ -54,61 +56,132 @@ const ShowAssociatedElements = () => {
     [],
   );
 
+  const groupedAssociations = groupBy(associations, 'layer_info.layer_key');
+
+  if (!size(associations)) {
+    return (
+      <View style={[layout.container, layout.relative]}>
+        <BackHeader title="Associated Elements" onGoBack={navigation.goBack} />
+        <View style={[layout.box, layout.center]}>
+          <Title style={layout.textCenter}>No associations</Title>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={[layout.container, layout.relative]}>
       <BackHeader title="Associated Elements" onGoBack={navigation.goBack} />
-      <FlatList
-        contentContainerStyle={styles.contentContainerStyle}
-        data={associations}
-        keyExtractor={item => String(item.element.id)}
-        renderItem={({item}) => {
-          const {element, layer_info} = item;
-          const {layer_key} = layer_info;
-          const Icon =
-            LayerKeyMappings[layer_key]['getViewOptions'](element).icon;
-          const networkId = get(element, 'network_id', '');
-
+      <ScrollView contentContainerStyle={styles.contentContainerStyle}>
+        {map(groupedAssociations, (item, key) => {
           return (
-            <View style={styles.container}>
-              <View style={styles.wrapper}>
-                <View style={styles.iconWrapper}>
-                  <View style={styles.iconBlock}>
-                    <Icon size={30} />
-                  </View>
-                </View>
-                <Pressable
-                  style={styles.textWrapper}
-                  onPress={handleShowDetails(element.id, layer_key)}>
-                  <Subheading numberOfLines={3} ellipsizeMode="tail">
-                    {get(element, 'name', '')}
-                  </Subheading>
-                  <Caption numberOfLines={3} ellipsizeMode="tail">
-                    #{networkId}
-                  </Caption>
-                </Pressable>
-                <View style={styles.actionDivider} />
-                <Pressable
-                  style={styles.actionWrapper}
-                  onPress={handleShowOnMap(element, layer_key)}>
-                  <View style={styles.squreButton}>
-                    <MaterialIcons
-                      size={28}
-                      name="language"
-                      color={THEME_COLORS.action.active}
-                    />
-                  </View>
-                </Pressable>
-              </View>
-              <Divider style={styles.divider} />
-            </View>
+            <CollapsibleContent
+              key={key}
+              layerKey={key}
+              data={item}
+              handleShowOnMap={handleShowOnMap}
+              handleShowDetails={handleShowDetails}
+            />
           );
-        }}
-        ListEmptyComponent={
-          <View style={[layout.center, layout.container]}>
-            <Title style={layout.textCenter}>No associations</Title>
+        })}
+      </ScrollView>
+    </View>
+  );
+};
+
+const CollapsibleContent = ({
+  layerKey,
+  data,
+  handleShowOnMap,
+  handleShowDetails,
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = useCallback(() => {
+    setIsExpanded(val => !val);
+  }, [setIsExpanded]);
+
+  // get icon
+  const getViewOptions = get(LayerKeyMappings, [layerKey, 'getViewOptions']);
+  const Icon = getViewOptions ? getViewOptions({}).icon : Fragment;
+
+  return (
+    <View>
+      <Pressable style={styles.itemWrapper} onPress={toggleExpand}>
+        <View style={styles.itemContentWrapper}>
+          <View style={styles.iconBox}>
+            <Icon size={20} />
           </View>
-        }
-      />
+          <View style={styles.itemContent}>
+            <Subheading>
+              {get(data, '0.layer_info.name', '')} {`(${size(data)})`}
+            </Subheading>
+          </View>
+        </View>
+        <View style={styles.expandIcon}>
+          <MaterialIcons
+            size={30}
+            name={isExpanded ? 'expand-less' : 'expand-more'}
+            color={colors.primaryFontColor}
+          />
+        </View>
+      </Pressable>
+
+      <Divider />
+      {isExpanded ? (
+        <View style={styles.elementListWrapper}>
+          {data.map(item => (
+            <ElementItem
+              key={get(item, 'element.network_id', '')}
+              item={item}
+              handleShowOnMap={handleShowOnMap}
+              handleShowDetails={handleShowDetails}
+            />
+          ))}
+        </View>
+      ) : null}
+    </View>
+  );
+};
+
+const ElementItem = ({item, handleShowOnMap, handleShowDetails}) => {
+  const {element, layer_info} = item;
+  const {layer_key} = layer_info;
+  const Icon = LayerKeyMappings[layer_key]['getViewOptions'](element).icon;
+  const networkId = get(element, 'network_id', '');
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.wrapper}>
+        <View style={styles.iconWrapper}>
+          <View style={styles.iconBlock}>
+            <Icon size={30} />
+          </View>
+        </View>
+        <Pressable
+          style={styles.textWrapper}
+          onPress={handleShowDetails(element.id, layer_key)}>
+          <Subheading numberOfLines={3} ellipsizeMode="tail">
+            {get(element, 'name', '')}
+          </Subheading>
+          <Caption numberOfLines={3} ellipsizeMode="tail">
+            #{networkId}
+          </Caption>
+        </Pressable>
+        <View style={styles.actionDivider} />
+        <Pressable
+          style={styles.actionWrapper}
+          onPress={handleShowOnMap(element, layer_key)}>
+          <View style={styles.squreButton}>
+            <MaterialIcons
+              size={28}
+              name="language"
+              color={THEME_COLORS.action.active}
+            />
+          </View>
+        </Pressable>
+      </View>
+      <Divider style={styles.divider} />
     </View>
   );
 };
@@ -170,6 +243,38 @@ const styles = StyleSheet.create({
   divider: {
     marginVertical: 8,
     backgroundColor: colors.dividerColor,
+  },
+
+  itemWrapper: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    paddingHorizontal: 12,
+  },
+  itemContentWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  itemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flex: 1,
+    paddingVertical: 10,
+    paddingLeft: 10,
+    minHeight: 58,
+  },
+  expandIcon: {
+    justifyContent: 'center',
+    width: 40,
+  },
+  iconBox: {
+    width: 52,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  elementListWrapper: {
+    paddingTop: 6,
   },
 });
 export default ShowAssociatedElements;

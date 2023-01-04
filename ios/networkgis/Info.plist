@@ -37,6 +37,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>googleMapsApiKey</key>
+	<string>$(GM_IOS_API_KEY)</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Permission required to focus map using user current location and better user experiance</string>
 	<key>NSLocationAlwaysUsageDescription</key>

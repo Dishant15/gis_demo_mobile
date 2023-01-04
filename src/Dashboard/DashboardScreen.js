@@ -6,12 +6,13 @@ import {
   ScrollView,
   RefreshControl,
 } from 'react-native';
-import {Subheading, Card, Headline, Button} from 'react-native-paper';
+import {Subheading, Card, Headline, Title, Button} from 'react-native-paper';
 import {useQuery} from 'react-query';
 
 import {get, size} from 'lodash';
 
 import Loader from '~Common/Loader';
+import RegionWiseTicketSummery from './RegionWiseTicketSummery';
 
 import {fetchDashboardData} from './data/services';
 import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
@@ -56,6 +57,7 @@ const DashboardScreen = ({navigation}) => {
             onRefresh={refetchDashboardData}
           />
         }>
+        <Title style={styles.title1}>Ticket statistics</Title>
         <View style={styles.squreCardContainer}>
           <Card
             elevation={2}
@@ -108,6 +110,7 @@ const DashboardScreen = ({navigation}) => {
             </Card.Actions>
           </Card>
         </View>
+        <RegionWiseTicketSummery />
       </ScrollView>
       {loadingDashboard ? <Loader /> : null}
     </View>
@@ -137,6 +140,9 @@ const styles = StyleSheet.create({
   headline: {
     fontSize: 42,
     lineHeight: 56,
+  },
+  title1: {
+    paddingBottom: 8,
   },
 });
 

@@ -46,9 +46,21 @@ export const ELEMENT_FORM_TEMPLATE = {
       ],
     },
   ],
+  // this shows where dependant template data comes from
+  metaData: {
+    getElementAddressData: (address, submitData) => {
+      submitData.address = address.address;
+    },
+  },
 };
 
 export const ELEMENT_TABLE_FIELDS = [
   ...ELEMENT_TABLE_ABSTRACT_FIELDS,
   {label: 'Address', field: 'address', type: 'simple'},
+];
+
+export const ELEMENT_TABLE_EXTRA_CONTROLS = [
+  {
+    control: 'connections',
+  },
 ];

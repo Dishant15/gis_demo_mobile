@@ -7,6 +7,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import SplashScreen from 'react-native-splash-screen';
 
 import DrawerStack from '~navigation/drawer.navigation';
+import {PlanningStack} from './planningStack.navigation';
 
 import LoginScreen from '~Authentication/screens/LoginScreen';
 import SurveyMap from '~GeoServey/screens/SurveyMap';
@@ -16,15 +17,13 @@ import UnitForm from '~GeoServey/screens/UnitForm';
 import ReviewScreen from '~GeoServey/screens/ReviewScreen';
 import SurveyForm from '~GeoServey/screens/SurveyForm';
 import WorkorderScreen from '~ticket/screens/WorkorderScreen';
-import PlanningTicket from '~planningTicket/screen/PlanningTicketListScreen';
 import TicketWorkorder from '~planningTicket/screen/TicketWorkorderScreen';
-import PlanningScreen from '~planning/screens/PlanningScreen';
-import GisEventScreen from '~planning/screens/GisEventScreen';
+import LocationProvider from '~Common/LocationProvider';
+import ChangePasswordScreen from '~Authentication/screens/ChangePasswordScreen';
 
 import {getIsUserLoggedIn} from '~Authentication/data/auth.selectors';
-import LocationProvider from '~Common/LocationProvider';
 import {screens} from '~constants/constants';
-import ChangePasswordScreen from '~Authentication/screens/ChangePasswordScreen';
+import VersionUpdateProvider from '~Common/VersionUpdateProvider';
 
 const Stack = createStackNavigator();
 
@@ -68,73 +67,66 @@ const RootNavigation = () => {
       <StatusBar barStyle="light-content" />
       {isUserLoggedIn ? (
         <LocationProvider>
-          <Stack.Navigator>
-            <Stack.Screen
-              name={screens.drawerStack}
-              component={DrawerStack}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.workorderScreen}
-              component={WorkorderScreen}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.surveyMap}
-              component={SurveyMap}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.surveyForm}
-              component={SurveyForm}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.unitList}
-              component={UnitList}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.unitMap}
-              component={UnitMap}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.unitForm}
-              component={UnitForm}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.reviewScreen}
-              component={ReviewScreen}
-              options={options}
-            />
-            {/* <Stack.Screen
-              name={screens.planningTicketList}
-              component={PlanningTicket}
-              options={options}
-            /> */}
-            <Stack.Screen
-              name={screens.planningTicketWorkorder}
-              component={TicketWorkorder}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.planningTicketMap}
-              component={PlanningScreen}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.gisEventScreen}
-              component={GisEventScreen}
-              options={options}
-            />
-            <Stack.Screen
-              name={screens.changePasswordScreen}
-              component={ChangePasswordScreen}
-              options={options}
-            />
-          </Stack.Navigator>
+          <VersionUpdateProvider>
+            <Stack.Navigator>
+              <Stack.Screen
+                name={screens.drawerStack}
+                component={DrawerStack}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.workorderScreen}
+                component={WorkorderScreen}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.surveyMap}
+                component={SurveyMap}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.surveyForm}
+                component={SurveyForm}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.unitList}
+                component={UnitList}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.unitMap}
+                component={UnitMap}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.unitForm}
+                component={UnitForm}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.reviewScreen}
+                component={ReviewScreen}
+                options={options}
+              />
+              {/* planning */}
+              <Stack.Screen
+                name={screens.planningTicketWorkorder}
+                component={TicketWorkorder}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.planningStack}
+                component={PlanningStack}
+                options={options}
+              />
+              <Stack.Screen
+                name={screens.changePasswordScreen}
+                component={ChangePasswordScreen}
+                options={options}
+              />
+            </Stack.Navigator>
+          </VersionUpdateProvider>
         </LocationProvider>
       ) : (
         <Stack.Navigator>

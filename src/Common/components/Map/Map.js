@@ -25,7 +25,7 @@ const Map = forwardRef((props, ref) => {
   const onLocationPress = useCallback(() => {
     if (ref.current) {
       ref.current.animateCamera(
-        {center: currentLocation, zoom: 14},
+        {center: currentLocation, zoom: 16},
         {duration: 100},
       );
     }
@@ -46,7 +46,7 @@ const Map = forwardRef((props, ref) => {
         loadingBackgroundColor={colors.blackWithOp}
         showsIndoorLevelPicker
         showsPointsOfInterest={false}
-        showsUserLocation={showsUserLocation}
+        // showsUserLocation={showsUserLocation}
         {...rest}>
         {children}
       </MapView>

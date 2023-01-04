@@ -30,11 +30,10 @@ import {setFilteredSurveyList} from '~GeoServey/data/geoSurvey.reducer';
 const SurveyTicketList = props => {
   const dispatch = useDispatch();
   const {navigation} = props;
-  const {isLoading, data, refetch} = useQuery('ticketList', fetchTicketList, {
-    select: queryData => {
-      return filter(queryData, ['ticket_type', 'S']);
-    },
-  });
+  const {isLoading, data, refetch} = useQuery(
+    ['ticketList', 'S'],
+    fetchTicketList,
+  );
 
   useRefreshOnFocus(refetch);
 

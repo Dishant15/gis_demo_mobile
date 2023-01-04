@@ -4,6 +4,7 @@ import {useDispatch} from 'react-redux';
 import get from 'lodash/get';
 
 import {validateElementGeometry} from '~planning/data/layer.services';
+import {updateMapStateDataErrPolygons} from '~planning/data/planningGis.reducer';
 
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {coordsToLatLongMap} from '~utils/map.utils';
@@ -12,7 +13,9 @@ import {coordsToLatLongMap} from '~utils/map.utils';
  * validate region intersects
  * on error set errPolyCoords into redux
  */
-const useValidateGeometry = ({setErrPolygonAction}) => {
+const useValidateGeometry = ({
+  setErrPolygonAction = updateMapStateDataErrPolygons,
+}) => {
   const dispatch = useDispatch();
 
   const {mutate: validateElement, isLoading: isValidationLoading} = useMutation(

@@ -3,19 +3,29 @@ import {View, StyleSheet, ScrollView} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Button, Title} from 'react-native-paper';
+
+import size from 'lodash/size';
 
 import {CustomBottomPopup} from '~Common/CustomPopup';
 import Checkbox from '~Common/components/Checkbox';
 import Header from '~planning/ActionBar/components/Header';
 
 import {
+  getMapHighlighted,
   getPlanningMapFilters,
   getPlanningMapStateEvent,
+  getTicketMapHighlighted,
 } from '~planning/data/planningGis.selectors';
-import {resetFilters, setFilter} from '~planning/data/planningGis.reducer';
+import {
+  resetFilters,
+  resetMapHighlight,
+  resetTicketMapHighlight,
+  setFilter,
+} from '~planning/data/planningGis.reducer';
 import {selectElementsOnMapClick} from '~planning/data/event.actions';
 import {LAYER_STATUS_OPTIONS} from '../layers/common/configuration';
 import {colors} from '~constants/constants';
@@ -31,6 +41,8 @@ const ACTION_BUTTON_SIZE = 84;
 const MapActionBar = () => {
   const dispatch = useDispatch();
   const mapStateEvent = useSelector(getPlanningMapStateEvent);
+  const mapHighlight = useSelector(getMapHighlighted);
+  const ticketMapHighlight = useSelector(getTicketMapHighlighted);
 
   const [showFilter, setShowFilter] = useState(false);
   const {bottom} = useSafeAreaInsets();
@@ -38,6 +50,14 @@ const MapActionBar = () => {
 
   const handleShowFilter = useCallback(() => setShowFilter(true), []);
   const handleHideFilter = useCallback(() => setShowFilter(false), []);
+
+  const handleResetHighlight = useCallback(() => {
+    dispatch(resetMapHighlight());
+  }, []);
+
+  const handleResetTicketHighlight = useCallback(() => {
+    dispatch(resetTicketMapHighlight());
+  }, []);
 
   return (
     <>
@@ -64,6 +84,28 @@ const MapActionBar = () => {
             }
           />
         </TouchableOpacity>
+        {!!size(mapHighlight) ? (
+          <TouchableOpacity
+            style={[styles.action]}
+            onPress={handleResetHighlight}>
+            <MaterialCommunityIcons
+              size={30}
+              name="stop-circle"
+              color={colors.secondaryMain}
+            />
+          </TouchableOpacity>
+        ) : null}
+        {!!size(ticketMapHighlight) ? (
+          <TouchableOpacity
+            style={[styles.action]}
+            onPress={handleResetTicketHighlight}>
+            <MaterialCommunityIcons
+              size={30}
+              name="stop-circle"
+              color={colors.secondaryMain}
+            />
+          </TouchableOpacity>
+        ) : null}
         <TouchableOpacity style={[styles.action]} onPress={handleShowFilter}>
           <MaterialIcons
             size={30}

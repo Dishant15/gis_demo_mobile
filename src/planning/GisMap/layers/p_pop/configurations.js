@@ -43,11 +43,17 @@ export const ELEMENT_FORM_TEMPLATE = {
           field_key: 'contact_name',
           label: 'Contact Name',
           field_type: FIELD_TYPES.Input,
+          validationProps: {
+            required: 'Contact Name is required',
+          },
         },
         {
           field_key: 'contact_no',
           label: 'Contact No',
           field_type: FIELD_TYPES.Input,
+          validationProps: {
+            required: 'Contact No is required',
+          },
         },
         {
           field_key: 'is_rented',
@@ -67,6 +73,12 @@ export const ELEMENT_FORM_TEMPLATE = {
       ],
     },
   ],
+  // this shows where dependant template data comes from
+  metaData: {
+    getElementAddressData: (address, submitData) => {
+      submitData.address = address.address;
+    },
+  },
 };
 
 export const ELEMENT_TABLE_FIELDS = [
