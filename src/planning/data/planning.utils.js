@@ -16,13 +16,18 @@ export const filterGisDataByPolygon = ({
   gisData,
   whiteList = [],
   blackList = [],
+  groupByLayerKey = false,
 }) => {
   const elementResultList = [];
+  // user this if groupByLayerKey true, will return same data as input gisData but filtered
+  const elementGroupResult = {};
   // loop over layerData
   const layerKeyList = Object.keys(gisData);
   // check intersects
   for (let lkInd = 0; lkInd < layerKeyList.length; lkInd++) {
     const currLayerKey = layerKeyList[lkInd];
+    elementGroupResult[currLayerKey] = [];
+
     // don't filter if not in whitelist
     if (size(whiteList) && indexOf(whiteList, currLayerKey) === -1) continue;
     // don't filter if in blackList
@@ -48,13 +53,22 @@ export const filterGisDataByPolygon = ({
       const isIntersecting = booleanIntersects(filterPolygon, turfGeom);
       // add to list if intersect true
       if (isIntersecting) {
-        elementResultList.push({
-          ...element,
-          layerKey: currLayerKey,
-        });
+        // generate {layerKey: [...filteredElements], ...} shape of data
+        if (groupByLayerKey) {
+          elementGroupResult[currLayerKey].push({
+            ...element,
+            layerKey: currLayerKey,
+          });
+        } else {
+          // simple list of elements : [...filteredElements]
+          elementResultList.push({
+            ...element,
+            layerKey: currLayerKey,
+          });
+        }
       }
     }
   }
 
-  return elementResultList;
+  return groupByLayerKey ? elementGroupResult : elementResultList;
 };

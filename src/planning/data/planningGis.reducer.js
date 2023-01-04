@@ -11,6 +11,7 @@ import isNumber from 'lodash/isNumber';
 
 import {fetchLayerDataThunk} from './actionBar.services';
 import {handleLayerSelect, removeLayerSelect} from './planningState.reducer';
+import {filterGisDataByPolygon} from './planning.utils';
 import {convertLayerServerData} from '../GisMap/utils';
 import {fetchTicketWorkorderDataThunk} from './ticket.services';
 import {coordsToLatLongMap, getMapBoundsFromRegion} from '~utils/map.utils';
@@ -20,9 +21,17 @@ import {
   DEFAULT_MAP_ZOOM,
 } from '~Common/components/Map/map.constants';
 
+// if layer data elements go above this size data will be stored in cache first
+const MAX_ALLOWED_DATA_COUNT = 200;
+// shape : { layer-key: [ {...Gis data, ...}, ...] }
+// same as masterGisData | layerData
+const LAYER_GIS_CACHE = {};
+
 const defaultLayerNetworkState = {
   isLoading: false,
   isFetched: false,
+  // when layer size is too big put it into cache rather than reducer
+  isCached: false,
   isError: false,
   isSelected: false,
   count: 0,
@@ -193,6 +202,17 @@ const planningGisSlice = createSlice({
       const {region, zoom} = payload;
       const mapBounds = getMapBoundsFromRegion(region);
       state.mapBounds = mapBounds;
+      const filterPolygon = null;
+      // loop over LAYER_GIS_CACHE and update masterGisData with filterPolygon
+      const filteredData = filterGisDataByPolygon({
+        filterPolygon,
+        gisData: LAYER_GIS_CACHE,
+        // whitelist only selected layers
+        // whiteList: [],
+        groupByLayerKey: true,
+      });
+      state.masterGisData[layerKey] = filteredData;
+      // apply filters if available and set layerData
     },
     setMapHighlight: (state, {payload}) => {
       // check previously any element is highlighted or not
@@ -300,6 +320,7 @@ const planningGisSlice = createSlice({
           ...defaultLayerNetworkState,
           isLoading: true,
           isSelected: true,
+          isCached: false,
         };
         state.masterGisData[layerKey] = [];
         state.layerData[layerKey] = [];
@@ -310,13 +331,31 @@ const planningGisSlice = createSlice({
       const layerKey = get(action, 'meta.arg.layerKey', '');
       state.layerNetworkState[layerKey].isLoading = false;
       state.layerNetworkState[layerKey].isFetched = true;
-      state.layerNetworkState[layerKey].count = size(action.payload);
+      const layerElemCount = size(action.payload);
+      state.layerNetworkState[layerKey].count = layerElemCount;
+      // put layer into cache if element count is too big
+      const shouldCacheData = layerElemCount > MAX_ALLOWED_DATA_COUNT;
+      state.layerNetworkState[layerKey].isCached = shouldCacheData;
       // convert payload coordinates into google coordinates data
       const convertedLayerGisData = cloneDeep(
         convertLayerServerData(layerKey, action.payload),
       );
-      state.masterGisData[layerKey] = convertedLayerGisData;
-      state.layerData[layerKey] = convertedLayerGisData;
+      if (shouldCacheData) {
+        // filter data by user viewport
+        LAYER_GIS_CACHE[layerKey] = convertedLayerGisData;
+        const filterPolygon = null;
+        const filteredData = filterGisDataByPolygon({
+          filterPolygon,
+          gisData: LAYER_GIS_CACHE,
+          whiteList: [layerKey],
+          groupByLayerKey: true,
+        });
+        state.masterGisData[layerKey] = filteredData;
+        state.layerData[layerKey] = filteredData;
+      } else {
+        state.masterGisData[layerKey] = convertedLayerGisData;
+        state.layerData[layerKey] = convertedLayerGisData;
+      }
     },
     // handle error
     [fetchLayerDataThunk.rejected]: (state, action) => {

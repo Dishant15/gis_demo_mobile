@@ -52,9 +52,11 @@ const GisMap = props => {
   const {bottom} = useSafeAreaInsets();
   const mapRef = useRef();
 
+  // @TODO: move to Map component
   const {geometry, layerKey, event} = useSelector(getPlanningMapState);
   const mapType = useSelector(getMapType);
   const locationPermType = useSelector(getLocationPermissionType);
+
   const mapPosition = useSelector(getPlanningMapPosition);
 
   const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
@@ -65,6 +67,7 @@ const GisMap = props => {
     });
   }, []);
 
+  // @TODO: move to Map component
   const handleMapClick = e => {
     if (!e.nativeEvent.coordinate) return;
     let coords = e.nativeEvent.coordinate;
@@ -113,13 +116,10 @@ const GisMap = props => {
     }
   };
 
-  const handleRegionChangeComplete = useCallback(
-    async region => {
-      const camera = await mapRef.current.getCamera();
-      dispatch(setMapBounds({region, zoom: camera.zoom}));
-    },
-    [mapRef.current],
-  );
+  const handleRegionChangeComplete = useCallback(async region => {
+    const camera = await mapRef.current.getCamera();
+    dispatch(setMapBounds({region, zoom: camera.zoom}));
+  }, []);
 
   return (
     <View style={[layout.container, layout.relative]}>
