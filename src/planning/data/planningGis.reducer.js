@@ -220,16 +220,26 @@ const planningGisSlice = createSlice({
         groupByLayerKey: true,
       });
 
-      state.masterGisData = filteredData;
-      // // apply filters if available and set layerData
+      for (const key in filteredData) {
+        if (Object.hasOwnProperty.call(filteredData, key)) {
+          state.masterGisData[key] = filteredData[key];
+        }
+      }
+
+      // apply filters if available and set layerData
       if (state.filters.status) {
+        // masterGisData is already filtered by polygon
         state.layerData = filterLayerDataByLayerKeys(
           'status',
           state.filters.status,
-          filteredData,
+          state.masterGisData,
         );
       } else {
-        state.layerData = filteredData;
+        for (const key in filteredData) {
+          if (Object.hasOwnProperty.call(filteredData, key)) {
+            state.layerData[key] = filteredData[key];
+          }
+        }
       }
     },
     setMapHighlight: (state, {payload}) => {
@@ -374,6 +384,14 @@ const planningGisSlice = createSlice({
       } else {
         state.masterGisData[layerKey] = convertedLayerGisData;
         state.layerData[layerKey] = convertedLayerGisData;
+      }
+      if (state.filters.status) {
+        // filter layerData based on existing filter value and update states
+        state.layerData = filterLayerDataByLayerKeys(
+          'status',
+          state.filters.status,
+          state.masterGisData,
+        );
       }
     },
     // handle error
