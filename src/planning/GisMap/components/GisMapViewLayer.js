@@ -17,7 +17,7 @@ const COMMON_POLYGON_OPTIONS = {
 };
 
 const COMMON_POLYLINE_OPTIONS = {
-  strokeWeight: 2,
+  strokeWidth: 3,
 };
 
 const HIGHLIGHT_COLOR = '#446eca';

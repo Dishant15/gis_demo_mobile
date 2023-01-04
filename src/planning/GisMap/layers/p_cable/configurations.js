@@ -1,6 +1,5 @@
 import {
   ELEMENT_FORM_ABSTRACT_TEMPLATE,
-  ELEMENT_FORM_CONFIG_ABSTRACT_SECTION,
   ELEMENT_TABLE_ABSTRACT_FIELDS,
   FEATURE_TYPES,
 } from '../common/configuration';
@@ -11,12 +10,24 @@ export const LAYER_KEY = 'p_cable';
 export const PRE_UID = 'CBL';
 export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POLYLINE;
 
-export const getViewOptions = ({color_on_map}) => {
-  return {
+export const getViewOptions = ({color_on_map, cable_type}) => {
+  let options = {
     strokeColor: color_on_map,
     icon: CableIcon,
     pin: CableIcon,
+    geodesic: true,
   };
+  if (cable_type === 'U') {
+    // dot line
+    options.lineDashPattern = [5, 10];
+    options.lineCap = 'round';
+    options.strokeWidth = 5;
+  } else if (cable_type === 'W') {
+    // dash line
+    options.lineDashPattern = [0, 15, 30];
+    options.lineCap = 'square';
+  }
+  return options;
 };
 
 export const INITIAL_ELEMENT_DATA = {
