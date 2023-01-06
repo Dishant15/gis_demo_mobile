@@ -199,7 +199,6 @@ const planningGisSlice = createSlice({
       state.mapPosition = {...payload};
     },
     setMapBounds: (state, {payload}) => {
-      console.log('setMapBounds ', payload);
       const {region, zoom} = payload;
       const mapBounds = getMapBoundsFromRegion(region);
       state.mapBounds = mapBounds;

@@ -79,6 +79,7 @@ const ShowAssociatedElements = () => {
               key={key}
               layerKey={key}
               data={item}
+              dataCount={size(item)}
               handleShowOnMap={handleShowOnMap}
               handleShowDetails={handleShowDetails}
             />
@@ -92,10 +93,11 @@ const ShowAssociatedElements = () => {
 const CollapsibleContent = ({
   layerKey,
   data,
+  dataCount,
   handleShowOnMap,
   handleShowDetails,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(dataCount < 5);
 
   const toggleExpand = useCallback(() => {
     setIsExpanded(val => !val);
@@ -113,8 +115,8 @@ const CollapsibleContent = ({
             <Icon size={20} />
           </View>
           <View style={styles.itemContent}>
-            <Subheading>
-              {get(data, '0.layer_info.name', '')} {`(${size(data)})`}
+            <Subheading style={styles.itemContentText}>
+              {get(data, '0.layer_info.name', '')} {`(${dataCount})`}
             </Subheading>
           </View>
         </View>
@@ -127,7 +129,7 @@ const CollapsibleContent = ({
         </View>
       </Pressable>
 
-      <Divider />
+      <Divider style={{backgroundColor: THEME_COLORS.secondary.main}} />
       {isExpanded ? (
         <View style={styles.elementListWrapper}>
           {data.map(item => (
@@ -263,6 +265,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingLeft: 10,
     minHeight: 58,
+  },
+  itemContentText: {
+    color: THEME_COLORS.secondary.main,
   },
   expandIcon: {
     justifyContent: 'center',
