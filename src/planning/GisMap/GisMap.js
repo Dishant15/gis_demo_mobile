@@ -32,7 +32,7 @@ import {
   getMapType,
 } from '~Common/data/appstate.selector';
 import {getElementCoordinates, LayerKeyMappings, PLANNING_EVENT} from './utils';
-import {INIT_MAP_LOCATION, layout} from '~constants/constants';
+import {layout} from '~constants/constants';
 import {getEdgePadding} from '~utils/app.utils';
 import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
 import {MY_LOCATION_BUTTON_POSITION} from '~Common/components/Map/map.constants';
@@ -137,7 +137,13 @@ const GisMap = props => {
             onMarkerPress={handleMapClick}
             onRegionChangeComplete={handleRegionChangeComplete}
             showsUserLocation={locationPermType === PERMISSIONS_TYPE.ALLOW}
-            myLocationButtonPosition={MY_LOCATION_BUTTON_POSITION.BOTTOM_RIGHT}>
+            myLocationButtonPosition={MY_LOCATION_BUTTON_POSITION.BOTTOM_RIGHT}
+            mapPadding={{
+              top: 150,
+              right: 10,
+              bottom: bottom ? bottom + 40 : 40,
+              left: 10,
+            }}>
             {showMapRender ? (
               <>
                 <GisMapViewLayer />
@@ -171,18 +177,6 @@ const MapController = forwardRef((props, ref) => {
       }
     }
   }, [ref, mapPosition]);
-
-  // useEffect(() => {
-  //   if (mapState.event === PLANNING_EVENT.editElementGeometry) {
-  //     // geometry can be Array or object
-  //     if (!Array.isArray(mapState.geometry)) {
-  //       ref.current.animateToRegion(
-  //         {...INIT_MAP_LOCATION, ...mapState.geometry},
-  //         100,
-  //       );
-  //     }
-  //   }
-  // }, [mapState.event]);
 
   return null;
 });

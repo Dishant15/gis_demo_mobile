@@ -12,11 +12,8 @@ import {polygon} from '@turf/turf';
 
 import {fetchLayerDataThunk} from './actionBar.services';
 import {handleLayerSelect, removeLayerSelect} from './planningState.reducer';
-import {
-  filterGisDataByPolygon,
-  filterLayerDataByLayerKeys,
-} from './planning.utils';
-import {convertLayerServerData} from '../GisMap/utils';
+import {filterGisDataByPolygon, filterLayerData} from './planning.utils';
+import {convertLayerServerData, LayerKeyNameMapping} from '../GisMap/utils';
 import {fetchTicketWorkorderDataThunk} from './ticket.services';
 import {
   coordsToLatLongMap,
@@ -28,7 +25,7 @@ import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_ZOOM,
 } from '~Common/components/Map/map.constants';
-import {map} from 'lodash';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
 // if layer data elements go above this size data will be stored in cache first
 const MAX_ALLOWED_DATA_COUNT = 200;
@@ -98,13 +95,19 @@ const planningGisSlice = createSlice({
     // payload : { filterKey, filterValue }
     setFilter: (state, {payload}) => {
       const {filterKey, filterValue} = payload;
-      // filter layerData based on filter value and update states
-      state.layerData = filterLayerDataByLayerKeys(
-        filterKey,
-        filterValue,
-        state.masterGisData,
-      );
+
       state.filters[filterKey] = filterValue;
+      // get keys of layerData
+      const layerKeyList = Object.keys(state.masterGisData);
+      // loop over layerKeys
+      for (let lkInd = 0; lkInd < layerKeyList.length; lkInd++) {
+        const currLayerKey = layerKeyList[lkInd];
+        state.layerData[currLayerKey] = filterLayerData(
+          filterKey,
+          filterValue,
+          state.layerData[currLayerKey],
+        );
+      }
     },
     resetFilters: state => {
       state.layerData = cloneDeep(state.masterGisData);
@@ -196,6 +199,7 @@ const planningGisSlice = createSlice({
       state.mapPosition = {...payload};
     },
     setMapBounds: (state, {payload}) => {
+      console.log('setMapBounds ', payload);
       const {region, zoom} = payload;
       const mapBounds = getMapBoundsFromRegion(region);
       state.mapBounds = mapBounds;
@@ -222,22 +226,26 @@ const planningGisSlice = createSlice({
 
       for (const key in filteredData) {
         if (Object.hasOwnProperty.call(filteredData, key)) {
-          state.masterGisData[key] = filteredData[key];
-        }
-      }
-
-      // apply filters if available and set layerData
-      if (state.filters.status) {
-        // masterGisData is already filtered by polygon
-        state.layerData = filterLayerDataByLayerKeys(
-          'status',
-          state.filters.status,
-          state.masterGisData,
-        );
-      } else {
-        for (const key in filteredData) {
-          if (Object.hasOwnProperty.call(filteredData, key)) {
-            state.layerData[key] = filteredData[key];
+          const filteredLayerCount = size(filteredData[key]);
+          if (filteredLayerCount > MAX_ALLOWED_DATA_COUNT) {
+            showToast(
+              `Zoom in on map to see ${LayerKeyNameMapping[key]} elements`,
+              TOAST_TYPE.ERROR,
+            );
+            state.masterGisData[key] = [];
+            state.layerData[key] = [];
+          } else {
+            state.masterGisData[key] = filteredData[key];
+            // apply filter if exist
+            if (state.filters.status) {
+              state.layerData[key] = filterLayerData(
+                'status',
+                state.filters.status,
+                filteredData[key],
+              );
+            } else {
+              state.layerData[key] = filteredData[key];
+            }
           }
         }
       }
@@ -379,18 +387,29 @@ const planningGisSlice = createSlice({
           groupByLayerKey: true,
         });
 
-        state.masterGisData[layerKey] = filteredData[layerKey];
-        state.layerData[layerKey] = filteredData[layerKey];
+        const filteredLayerCount = size(filteredData[layerKey]);
+        if (filteredLayerCount > MAX_ALLOWED_DATA_COUNT) {
+          showToast(
+            `Zoom in on map to see ${LayerKeyNameMapping[layerKey]} elements`,
+            TOAST_TYPE.ERROR,
+          );
+          state.masterGisData[layerKey] = [];
+          state.layerData[layerKey] = [];
+        } else {
+          state.masterGisData[layerKey] = filteredData[layerKey];
+          state.layerData[layerKey] = filteredData[layerKey];
+        }
       } else {
         state.masterGisData[layerKey] = convertedLayerGisData;
         state.layerData[layerKey] = convertedLayerGisData;
       }
+
+      // filter layerData based on existing filter value and update states
       if (state.filters.status) {
-        // filter layerData based on existing filter value and update states
-        state.layerData = filterLayerDataByLayerKeys(
+        state.layerData[layerKey] = filterLayerData(
           'status',
           state.filters.status,
-          state.masterGisData,
+          state.masterGisData[layerKey],
         );
       }
     },

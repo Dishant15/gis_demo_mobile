@@ -21,7 +21,7 @@ import {
   setActiveTab,
 } from '~planning/data/planningState.reducer';
 import {openElementDetails} from '~planning/data/planning.actions';
-import {colors, screens} from '~constants/constants';
+import {colors, screens, THEME_COLORS} from '~constants/constants';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {LayerKeyMappings} from '~planning/GisMap/utils';
 
@@ -41,6 +41,7 @@ const LayerTab = ({layerConfig, regionIdList}) => {
   const isLoading = get(layerNetState, 'isLoading', false);
   const isSelected = get(layerNetState, 'isSelected', false);
   const isFetched = get(layerNetState, 'isFetched', false);
+  const isCached = get(layerNetState, 'isCached', false);
   const count = get(layerNetState, 'count', 0);
 
   // get icon
@@ -91,7 +92,8 @@ const LayerTab = ({layerConfig, regionIdList}) => {
             <Icon size={20} />
           </View>
           <View style={styles.itemContent}>
-            <Subheading>
+            <Subheading
+              style={isCached ? {color: THEME_COLORS.error.main} : {}}>
               {name} {isFetched ? `(${count})` : ''}
             </Subheading>
             {isLoading ? (

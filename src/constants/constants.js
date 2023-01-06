@@ -132,14 +132,6 @@ export const layout = StyleSheet.create({
   },
 });
 
-// AHMEDABAD CENTER
-export const INIT_MAP_LOCATION = {
-  longitudeDelta: 0.06032254546880722,
-  latitudeDelta: 0.0005546677,
-  longitude: 72.56051184609532,
-  latitude: 23.024334044995985,
-};
-
 export const SURVEY_TAG_LIST = [
   {label: 'Residential', value: 'residential'},
   {label: 'Commercial', value: 'commercial'},
