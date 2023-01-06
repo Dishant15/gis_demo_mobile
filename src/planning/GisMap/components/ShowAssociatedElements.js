@@ -79,6 +79,7 @@ const ShowAssociatedElements = () => {
               key={key}
               layerKey={key}
               data={item}
+              dataCount={size(item)}
               handleShowOnMap={handleShowOnMap}
               handleShowDetails={handleShowDetails}
             />
@@ -92,10 +93,11 @@ const ShowAssociatedElements = () => {
 const CollapsibleContent = ({
   layerKey,
   data,
+  dataCount,
   handleShowOnMap,
   handleShowDetails,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(dataCount < 5);
 
   const toggleExpand = useCallback(() => {
     setIsExpanded(val => !val);
@@ -114,7 +116,7 @@ const CollapsibleContent = ({
           </View>
           <View style={styles.itemContent}>
             <Subheading>
-              {get(data, '0.layer_info.name', '')} {`(${size(data)})`}
+              {get(data, '0.layer_info.name', '')} {`(${dataCount})`}
             </Subheading>
           </View>
         </View>
