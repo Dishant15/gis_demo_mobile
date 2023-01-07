@@ -65,6 +65,7 @@ export const colors = {
   error: '#e24c4b',
   warning: '#ffc005',
   success: '#4bae4f',
+  info: '#0288d1',
   separator: '#CCCCCC',
 
   grey1: '#efefef',
