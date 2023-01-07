@@ -137,13 +137,7 @@ const GisMap = props => {
             onMarkerPress={handleMapClick}
             onRegionChangeComplete={handleRegionChangeComplete}
             showsUserLocation={locationPermType === PERMISSIONS_TYPE.ALLOW}
-            myLocationButtonPosition={MY_LOCATION_BUTTON_POSITION.BOTTOM_RIGHT}
-            mapPadding={{
-              top: 150,
-              right: 10,
-              bottom: bottom ? bottom + 40 : 40,
-              left: 10,
-            }}>
+            myLocationButtonPosition={MY_LOCATION_BUTTON_POSITION.BOTTOM_RIGHT}>
             {showMapRender ? (
               <>
                 <GisMapViewLayer />

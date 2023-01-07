@@ -153,21 +153,24 @@ export const uniq_colors = [
  * https://stackoverflow.com/a/36688156
  */
 export const getMapBoundsFromRegion = region => {
+  const latitudeDelta = region.latitudeDelta;
+  const longitudeDelta = region.longitudeDelta;
+  const divider = 1.9;
   const topLeft = {
-    latitude: region.latitude - region.latitudeDelta / 2,
-    longitude: region.longitude - region.longitudeDelta / 2,
+    latitude: region.latitude - latitudeDelta / divider,
+    longitude: region.longitude - longitudeDelta / divider,
   };
   const topRight = {
-    latitude: region.latitude - region.latitudeDelta / 2,
-    longitude: region.longitude + region.longitudeDelta / 2,
+    latitude: region.latitude - latitudeDelta / divider,
+    longitude: region.longitude + longitudeDelta / divider,
   };
   const bottomLeft = {
-    latitude: region.latitude + region.latitudeDelta / 2,
-    longitude: region.longitude - region.longitudeDelta / 2,
+    latitude: region.latitude + latitudeDelta / divider,
+    longitude: region.longitude - longitudeDelta / divider,
   };
   const bottomRight = {
-    latitude: region.latitude + region.latitudeDelta / 2,
-    longitude: region.longitude + region.longitudeDelta / 2,
+    latitude: region.latitude + latitudeDelta / divider,
+    longitude: region.longitude + longitudeDelta / divider,
   };
   return [topLeft, topRight, bottomRight, bottomLeft];
 };
