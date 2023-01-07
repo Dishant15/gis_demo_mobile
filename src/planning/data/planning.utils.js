@@ -75,26 +75,7 @@ export const filterGisDataByPolygon = ({
   return groupByLayerKey ? elementGroupResult : elementResultList;
 };
 
-export const filterLayerDataByLayerKeys = (
-  filterKey,
-  filterValue,
-  masterGisData,
-) => {
+export const filterLayerData = (filterKey, filterValue, elementList = []) => {
   // filter layerData based on filter value
-  let filteredGisLayerData = {};
-  // filter elements by status
-  if (filterKey === 'status') {
-    // get keys of layerData
-    const layerKeyList = Object.keys(masterGisData);
-    // loop over layerKeys
-    for (let lkInd = 0; lkInd < layerKeyList.length; lkInd++) {
-      const currLayerKey = layerKeyList[lkInd];
-      // filter list of elements of each layer key
-      filteredGisLayerData[currLayerKey] = filter(masterGisData[currLayerKey], [
-        'status',
-        filterValue,
-      ]);
-    }
-  }
-  return filteredGisLayerData;
+  return filter(elementList, [filterKey, filterValue]);
 };

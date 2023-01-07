@@ -32,7 +32,7 @@ import {
   getMapType,
 } from '~Common/data/appstate.selector';
 import {getElementCoordinates, LayerKeyMappings, PLANNING_EVENT} from './utils';
-import {INIT_MAP_LOCATION, layout} from '~constants/constants';
+import {layout} from '~constants/constants';
 import {getEdgePadding} from '~utils/app.utils';
 import {PERMISSIONS_TYPE} from '~Common/data/appstate.reducer';
 import {MY_LOCATION_BUTTON_POSITION} from '~Common/components/Map/map.constants';
@@ -171,18 +171,6 @@ const MapController = forwardRef((props, ref) => {
       }
     }
   }, [ref, mapPosition]);
-
-  // useEffect(() => {
-  //   if (mapState.event === PLANNING_EVENT.editElementGeometry) {
-  //     // geometry can be Array or object
-  //     if (!Array.isArray(mapState.geometry)) {
-  //       ref.current.animateToRegion(
-  //         {...INIT_MAP_LOCATION, ...mapState.geometry},
-  //         100,
-  //       );
-  //     }
-  //   }
-  // }, [mapState.event]);
 
   return null;
 });

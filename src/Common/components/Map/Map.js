@@ -4,10 +4,11 @@ import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {useSelector} from 'react-redux';
 
 import MapType from './MapType';
+import MyLocationButton from './MyLocationButton';
 
 import {getCurrentLocation, getMapType} from '../../data/appstate.selector';
-import {colors, INIT_MAP_LOCATION, layout} from '~constants/constants';
-import MyLocationButton from './MyLocationButton';
+import {colors, layout} from '~constants/constants';
+import {DEFAULT_MAP_CENTER} from './map.constants';
 
 const Map = forwardRef((props, ref) => {
   const {
@@ -38,7 +39,7 @@ const Map = forwardRef((props, ref) => {
       <MapView
         ref={ref}
         style={style || layout.map}
-        initialRegion={INIT_MAP_LOCATION}
+        initialRegion={DEFAULT_MAP_CENTER}
         provider={PROVIDER_GOOGLE}
         mapType={showMapType ? mapType : undefined}
         loadingEnabled

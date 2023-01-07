@@ -3,8 +3,7 @@ import {View, Platform} from 'react-native';
 import MapView, {Polygon, PROVIDER_GOOGLE, UrlTile} from 'react-native-maps';
 import SplashScreen from 'react-native-splash-screen';
 
-import {colors, INIT_MAP_LOCATION, layout} from '~constants/constants';
-import {percentToHex} from '~utils/app.utils';
+import {DEFAULT_MAP_CENTER} from './components/Map/map.constants';
 
 // lyrs types in tile url
 // https://stackoverflow.com/a/33023651
@@ -46,14 +45,14 @@ const TestPage = () => {
       <MapView
         ref={ref}
         style={{flex: 1}}
-        initialRegion={INIT_MAP_LOCATION}
+        initialRegion={DEFAULT_MAP_CENTER}
         provider={PROVIDER_GOOGLE}
         mapType={Platform.OS == 'android' ? 'none' : 'standard'}
         onMapReady={() => {
           setTimeout(() => {
             if (ref.current) {
               ref.current.animateCamera(
-                {center: INIT_MAP_LOCATION, zoom: 14},
+                {center: DEFAULT_MAP_CENTER, zoom: 16},
                 {duration: 100},
               );
             }

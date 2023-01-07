@@ -181,8 +181,24 @@ export const LayerKeyMappings = {
   },
 };
 
-// on Gis event handle with gis mapping
-export const LayerKeyGisMapping = {};
+// show layer name instead of layer key
+export const LayerKeyNameMapping = {
+  [RegionLayer.LAYER_KEY]: 'Region',
+  [DPLayer.LAYER_KEY]: 'Distribution Point',
+  [SplitterLayer.LAYER_KEY]: 'Splitter',
+  [CableLayer.LAYER_KEY]: 'Cable',
+  [BuildingLayer.LAYER_KEY]: 'Survey Building',
+  [SAreaLayer.LAYER_KEY]: 'Survey Area',
+  [PopLayer.LAYER_KEY]: 'Pop Location',
+  [SPopLayer.LAYER_KEY]: 'Sub Pop Location',
+  [FSALayer.LAYER_KEY]: 'Feeder Service Area',
+  [DSALayer.LAYER_KEY]: 'Distribution Service Area',
+  [CSALayer.LAYER_KEY]: 'Customer Service Area',
+  [PoleLayer.LAYER_KEY]: 'Pole',
+  [ManholeLayer.LAYER_KEY]: 'Manhole',
+  [JointCloserLayer.LAYER_KEY]: 'Joint Closer',
+  [OltLayer.LAYER_KEY]: 'OLT',
+};
 
 export const convertLayerServerData = (layerKey, serverData) => {
   let resultData = cloneDeep(serverData) || [];

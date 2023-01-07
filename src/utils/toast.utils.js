@@ -15,7 +15,7 @@ export const toastConfig = {
         style={[
           styles.toastStyle,
           {
-            borderLeftColor: 'green',
+            borderLeftColor: colors.success,
           },
         ]}
         text2={null}
@@ -32,7 +32,7 @@ export const toastConfig = {
         style={[
           styles.toastStyle,
           {
-            borderLeftColor: 'red',
+            borderLeftColor: colors.error,
           },
         ]}
         text2={null}
@@ -49,7 +49,24 @@ export const toastConfig = {
         style={[
           styles.toastStyle,
           {
-            borderLeftColor: 'orange',
+            borderLeftColor: colors.info,
+          },
+        ]}
+        text2={null}
+        text1NumberOfLines={null}
+        onTrailingIconPress={() => Toast.hide()}
+      />
+    );
+  },
+  warning: ({text1Style, ...restProps}) => {
+    return (
+      <BaseToast
+        {...restProps}
+        text1Style={[text1Style, styles.text1Style]}
+        style={[
+          styles.toastStyle,
+          {
+            borderLeftColor: colors.warning,
           },
         ]}
         text2={null}
@@ -64,9 +81,10 @@ export const TOAST_TYPE = {
   SUCCESS: 'success',
   ERROR: 'error',
   INFO: 'info',
+  WARNING: 'warning',
 };
 /**
- * type => 'success | error | info'
+ * type => 'success | error | info | warning'
  * @returns
  */
 export const showToast = (message, type = 'error', timeout = 3000) => {
