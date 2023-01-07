@@ -25,6 +25,15 @@ const useValidateGeometry = ({
       onMutate: () => {
         dispatch(setErrPolygonAction(null));
       },
+      onSuccess: res => {
+        const softErrors = get(res, 'data.soft_errors');
+        if (!!softErrors) {
+          for (let seInd = 0; seInd < softErrors.length; seInd++) {
+            const currError = softErrors[seInd];
+            showToast(get(currError, 'contains.0'), TOAST_TYPE.INFO);
+          }
+        }
+      },
       onError: err => {
         if (err.response.status === 400) {
           const errData = get(err, 'response.data', {});
