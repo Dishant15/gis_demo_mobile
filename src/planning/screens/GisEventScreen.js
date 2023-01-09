@@ -10,6 +10,7 @@ import ElementList from '~planning/GisMap/components/ElementList';
 import ListElementConnections from '~planning/GisMap/layers/common/ListElementConnections';
 import AddElementConnection from '~planning/GisMap/layers/common/AddElementConnection';
 import ShowPossibleAddAssociation from '~planning/GisMap/components/ShowPossibleAddAssociation';
+import ElementPortDetails from '~planning/GisMap/components/ElementPortDetails';
 
 import {getPlanningMapState} from '~planning/data/planningGis.selectors';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
@@ -53,6 +54,9 @@ const GisEventScreen = props => {
 
     case PLANNING_EVENT.addElementConnection:
       return <AddElementConnection />;
+
+    case PLANNING_EVENT.showPortDetails:
+      return <ElementPortDetails />;
 
     default:
       return null;

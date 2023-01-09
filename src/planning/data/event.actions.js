@@ -186,3 +186,15 @@ export const showPossibleAddAssociatiation =
       }),
     );
   };
+
+export const showElementPortDetails =
+  ({layerKey, elementId}) =>
+  dispatch => {
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.showPortDetails,
+        layerKey,
+        data: {elementId},
+      }),
+    );
+  };

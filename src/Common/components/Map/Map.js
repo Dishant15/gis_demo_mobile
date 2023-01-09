@@ -47,7 +47,7 @@ const Map = forwardRef((props, ref) => {
         loadingBackgroundColor={colors.blackWithOp}
         showsIndoorLevelPicker
         showsPointsOfInterest={false}
-        // showsUserLocation={showsUserLocation}
+        showsUserLocation={showsUserLocation}
         {...rest}>
         {children}
       </MapView>

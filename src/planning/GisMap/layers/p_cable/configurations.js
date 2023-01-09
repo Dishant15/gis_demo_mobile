@@ -113,3 +113,9 @@ export const ELEMENT_TABLE_FIELDS = [
   {label: 'Specification', field: 'specification', type: 'simple'},
   {label: 'Vendor', field: 'vendor', type: 'simple'},
 ];
+
+export const ELEMENT_TABLE_EXTRA_CONTROLS = [
+  {
+    control: 'ports',
+  },
+];

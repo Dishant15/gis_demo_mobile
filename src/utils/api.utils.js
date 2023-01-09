@@ -19,7 +19,6 @@ export function convertObjectToQueryParams(object) {
 }
 
 export const apiRequestConfig = {
-  timeout: 40000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -46,7 +45,11 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   function (error) {
-    console.log('🚀 ~ file: api.utils.js ~ line 44 ~ error', error?.response);
+    console.log(
+      '🚀 ~ file: api.utils.js ~ line 44 ~ error',
+      error?.response,
+      error?.message,
+    );
     // dispatch logout action if request unauthorised.
     const status = get(error, 'response.status');
     if (status === 401) {

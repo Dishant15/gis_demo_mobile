@@ -86,3 +86,6 @@ export const apiGetElementConnections = (layerKey, elementId) =>
 // same api as edit element -> cable edit
 export const apiUpdateElementConnections = cableId =>
   apiPutEditElement('p_cable', cableId);
+
+export const apiGetElementPortDetails = (layerKey, elementId) =>
+  `/api/planning/layer/${layerKey}/${elementId}/ports/`;

@@ -3,6 +3,7 @@ import {
   apiGetElementAssociations,
   apiGetElementConnections,
   apiGetElementDetails,
+  apiGetElementPortDetails,
   apiGetRegionDetails,
   apiPostAddElement,
   apiPostAddTicketWorkorder,
@@ -66,5 +67,11 @@ export const fetchElementConnections = async ({queryKey}) => {
 
 export const addElementConnection = async ({data, cableId}) => {
   const res = await Api.put(apiUpdateElementConnections(cableId), data);
+  return res.data;
+};
+
+export const fetchElementPortDetails = async ({queryKey}) => {
+  const [_key, layerKey, elementId] = queryKey;
+  const res = await Api.get(apiGetElementPortDetails(layerKey, elementId));
   return res.data;
 };

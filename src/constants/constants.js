@@ -71,6 +71,7 @@ export const colors = {
   grey1: '#efefef',
   transparent: 'transparent',
   dividerColor: 'rgba(0, 0, 0, 0.12)',
+  dividerColor2: 'rgba(0, 0, 0, 0.24)',
 };
 
 export const layout = StyleSheet.create({

@@ -30,11 +30,14 @@ export const PLANNING_EVENT = {
   // special events
   showElementConnections: 6,
   addElementConnection: 7,
-  showPossibleAddAssociatiation: 8,
+  showPortDetails: 10,
+  // association events
   showAssociatedElements: 9,
+  showPossibleAddAssociatiation: 8,
+  associateElementOnMapClick: 13,
   // map select elements on location
-  selectElementsOnMapClick: 10,
-  listElementsOnMap: 11,
+  selectElementsOnMapClick: 11,
+  listElementsOnMap: 12,
 };
 
 export const TICKET_WORKORDER_TYPE = {
@@ -75,6 +78,7 @@ export const LayerKeyMappings = {
     initialElementData: CableLayer.INITIAL_ELEMENT_DATA,
     elementTableFields: CableLayer.ELEMENT_TABLE_FIELDS,
     formConfig: CableLayer.ELEMENT_FORM_TEMPLATE,
+    elementTableExtraControls: CableLayer.ELEMENT_TABLE_EXTRA_CONTROLS,
   },
   [BuildingLayer.LAYER_KEY]: {
     preUid: BuildingLayer.PRE_UID,
@@ -198,6 +202,17 @@ export const LayerKeyNameMapping = {
   [ManholeLayer.LAYER_KEY]: 'Manhole',
   [JointCloserLayer.LAYER_KEY]: 'Joint Closer',
   [OltLayer.LAYER_KEY]: 'OLT',
+};
+
+export const getLayerKeyFromPreUid = preUid => {
+  for (const key in LayerKeyMappings) {
+    if (Object.hasOwnProperty.call(LayerKeyMappings, key)) {
+      const currMapping = LayerKeyMappings[key];
+      if (currMapping.preUid === preUid) {
+        return key;
+      }
+    }
+  }
 };
 
 export const convertLayerServerData = (layerKey, serverData) => {

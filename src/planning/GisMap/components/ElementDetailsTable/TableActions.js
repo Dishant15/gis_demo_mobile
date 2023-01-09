@@ -29,6 +29,7 @@ import {coordsToLatLongMap} from '~utils/map.utils';
 import {
   onEditElementGeometry,
   showAssociatiationList,
+  showElementPortDetails,
   showPossibleAddAssociatiation,
 } from '~planning/data/event.actions';
 import {FEATURE_TYPES} from '../../layers/common/configuration';
@@ -219,6 +220,23 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
                     )
                   }
                   IconComponent={MaterialCommunityIcons}
+                />
+              );
+            case 'ports':
+              return (
+                <IconButton
+                  key={control}
+                  iconName="settings-input-composite"
+                  label={'Show\nPort Details'}
+                  onPress={() =>
+                    dispatch(
+                      showElementPortDetails({
+                        layerKey,
+                        elementId: elemData.id,
+                      }),
+                    )
+                  }
+                  IconComponent={MaterialIcons}
                 />
               );
             default:
