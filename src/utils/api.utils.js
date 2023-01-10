@@ -45,11 +45,13 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   function (error) {
-    // console.log(
-    //   '🚀 ~ file: api.utils.js ~ line 44 ~ error',
-    //   error?.response,
-    //   error?.message,
-    // );
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(
+        '🚀 ~ file: api.utils.js ~ line 44 ~ error',
+        error?.response,
+        error?.message,
+      );
+    }
     // dispatch logout action if request unauthorised.
     const status = get(error, 'response.status');
     if (status === 401) {
