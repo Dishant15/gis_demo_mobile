@@ -526,7 +526,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = FUUBJ5PB62;
-				GM_IOS_API_KEY = "AIzaSyC48GaW4j9_9Qz2ibOow94iRr1_-xP2Gv8";
+				GM_IOS_API_KEY = "AIzaSyCEiCOCXdiUKsBAlATMiBL72xC2xb-R8uk";
 				INFOPLIST_FILE = networkgis/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Network GIS";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
