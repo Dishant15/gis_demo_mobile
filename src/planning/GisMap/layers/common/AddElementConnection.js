@@ -91,7 +91,6 @@ const AddElementConnection = () => {
       },
       onError: err => {
         showToast('Connection update failed', TOAST_TYPE.ERROR);
-        console.log(err);
       },
     },
   );
@@ -150,10 +149,6 @@ const AddElementConnection = () => {
         data={elementList}
         keyExtractor={(item, index) => String(index)}
         renderItem={({item}) => {
-          console.log(
-            '🚀 ~ file: AddElementConnection.js:76 ~ AddElementConnection ~ item',
-            item,
-          );
           const {id, name, cable_end, network_id, layerKey} = item;
           // check if same layer_key, id data in existingConnections
           const isConnected = some(existingConnections, ['element.id', id]);

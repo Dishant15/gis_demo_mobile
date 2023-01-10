@@ -114,10 +114,6 @@ const ReviewScreen = ({navigation}) => {
       showToast('Survey remark updated successfully.', TOAST_TYPE.SUCCESS);
     },
     onError: err => {
-      console.log(
-        '🚀 ~ file: ReviewScreen.js ~ line 106 ~ ReviewScreen ~ err',
-        err,
-      );
       showToast('Input Error', TOAST_TYPE.ERROR);
     },
   });

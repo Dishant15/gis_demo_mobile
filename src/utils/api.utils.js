@@ -1,5 +1,5 @@
 import {API_HOST} from '@env';
-console.log('🚀 ~ file: api.utils.js ~ line 2 ~ API_HOST', API_HOST);
+
 import axios from 'axios';
 import {isNil, map, keys, join, get} from 'lodash';
 import {handleLogoutUser} from '~Authentication/data/auth.actions';
@@ -45,11 +45,11 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   function (error) {
-    console.log(
-      '🚀 ~ file: api.utils.js ~ line 44 ~ error',
-      error?.response,
-      error?.message,
-    );
+    // console.log(
+    //   '🚀 ~ file: api.utils.js ~ line 44 ~ error',
+    //   error?.response,
+    //   error?.message,
+    // );
     // dispatch logout action if request unauthorised.
     const status = get(error, 'response.status');
     if (status === 401) {

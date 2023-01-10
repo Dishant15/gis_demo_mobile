@@ -85,7 +85,6 @@ const SurveyForm = props => {
       navigation.navigate(isReviewed ? screens.reviewScreen : screens.unitList);
     },
     onError: err => {
-      console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err.response);
       showToast('Input Error', TOAST_TYPE.ERROR);
     },
   });
@@ -146,7 +145,6 @@ const SurveyForm = props => {
         setLoading(false);
       })
       .catch(err => {
-        console.log('err', err.response);
         setLoading(false);
       });
   }, []);

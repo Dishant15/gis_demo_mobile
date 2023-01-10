@@ -116,7 +116,6 @@ const UnitForm = ({navigation}) => {
       }
     },
     onError: err => {
-      console.log('🚀 ~ file: UnitForm.js err', err.response);
       showToast('Input Error', TOAST_TYPE.ERROR);
     },
   });

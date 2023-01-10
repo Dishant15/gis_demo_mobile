@@ -179,8 +179,6 @@ const AddGisMapLayer = () => {
             longitude: latLong[1],
           }).then(
             response => {
-              console.log('🚀 ~ file: handleAddComplete ~ response', response);
-
               const formattedAddress =
                 getFormattedAddressFromGoogleAddress(response);
 

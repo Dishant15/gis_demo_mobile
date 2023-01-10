@@ -113,7 +113,6 @@ const UnitMap = ({navigation}) => {
       showToast('Marker cordinate updated successfully.', TOAST_TYPE.SUCCESS);
     },
     onError: err => {
-      console.log('🚀 ~ file: SurveyForm.js ~ line 54 ~ err', err.response);
       showToast('Input Error', TOAST_TYPE.ERROR);
     },
   });
