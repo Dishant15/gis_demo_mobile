@@ -168,23 +168,21 @@ export const useElementListHook = () => {
             submitData.network_id = network_id;
 
             if (ticketId) {
-              // create workorder if ticket
+              // edit workorder if ticket
               const workOrderData = {
                 workOrder: {
-                  work_order_type: TICKET_WORKORDER_TYPE.ADD,
+                  work_order_type: TICKET_WORKORDER_TYPE.EDIT,
                   layer_key: layerKey,
                   remark: '',
                 },
                 element: {
                   ...submitData,
                   id: elementToAssociate.id,
-                  unique_id: elementToAssociate.unique_id,
-                  name: elementToAssociate.name,
                 },
               };
               addWorkOrder(workOrderData);
             } else {
-              // create element
+              // edit element
               editElement({
                 data: submitData,
                 layerKey,
