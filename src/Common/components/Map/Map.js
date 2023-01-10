@@ -48,6 +48,7 @@ const Map = forwardRef((props, ref) => {
         showsIndoorLevelPicker
         showsPointsOfInterest={false}
         showsUserLocation={showsUserLocation}
+        showsMyLocationButton={false}
         {...rest}>
         {children}
       </MapView>
