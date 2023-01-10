@@ -79,7 +79,10 @@ const GisMap = props => {
       dispatch(updateMapStateCoordinates(coords));
     }
 
-    if (event === PLANNING_EVENT.selectElementsOnMapClick) {
+    if (
+      event === PLANNING_EVENT.selectElementsOnMapClick ||
+      event === PLANNING_EVENT.associateElementOnMapClick
+    ) {
       dispatch(onGisMapClick(coords, navigation));
     }
   };

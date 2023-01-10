@@ -22,9 +22,13 @@ const PortList = ({portList}) => {
       {portList.map(port => {
         const name = get(port, 'name').replace('.I', '').replace('.O', '');
         if (port.status === 'C') {
+          // connectedTo = SP.cV8bPv-P1.I
           const connectedTo = split(port.connected_to, '-');
+          // elementDetails = [SP, cV8bPv]
           const elementDetails = split(get(connectedTo, '0'), '.');
+          // connectedPort = [P1, I]
           const connectedPort = split(get(connectedTo, '1'), '.');
+          // SP
           const layerKey = getLayerKeyFromPreUid(get(elementDetails, '0'));
           const Icon = LayerKeyMappings[layerKey]['getViewOptions']({}).icon;
 

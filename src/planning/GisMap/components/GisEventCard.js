@@ -59,6 +59,24 @@ const GisMapCard = () => {
       />
     );
   }
+  //
+  else if (event === PLANNING_EVENT.associateElementOnMapClick) {
+    return (
+      <MapCard
+        title="Click on map to get element you want to associate with selected element"
+        actionContent={
+          <TouchableOpacity onPress={handleCancel}>
+            <Button
+              mode="text"
+              color={THEME_COLORS.error.main}
+              style={layout.mrl8}>
+              Cancel
+            </Button>
+          </TouchableOpacity>
+        }
+      />
+    );
+  }
   // user came to map from ticket show header with show / hide ticket element btn
   else if (ticketData?.id) {
     const isHidden = get(ticketData, 'isHidden');

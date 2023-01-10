@@ -13,9 +13,12 @@ import {coordsToLatLongMap} from '~utils/map.utils';
  * validate region intersects
  * on error set errPolyCoords into redux
  */
-const useValidateGeometry = ({
-  setErrPolygonAction = updateMapStateDataErrPolygons,
-}) => {
+const useValidateGeometry = (
+  props = {
+    setErrPolygonAction: updateMapStateDataErrPolygons,
+  },
+) => {
+  const {setErrPolygonAction} = props;
   const dispatch = useDispatch();
 
   const {mutate: validateElement, isLoading: isValidationLoading} = useMutation(

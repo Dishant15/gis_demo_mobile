@@ -198,3 +198,16 @@ export const showElementPortDetails =
       }),
     );
   };
+
+export const associateElementOnMapClick =
+  ({layerKey, elementData, listOfLayers, extraParent, navigation}) =>
+  dispatch => {
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.associateElementOnMapClick,
+        layerKey,
+        data: {elementData, listOfLayers, extraParent},
+      }),
+    );
+    navigation.navigate(screens.planningScreen);
+  };

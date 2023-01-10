@@ -42,6 +42,7 @@ import {FEATURE_TYPES} from '~planning/GisMap/layers/common/configuration';
 import {
   getAllLayersData,
   getLayerViewData,
+  getPlanningMapStateData,
   getPlanningMapStateEvent,
   getPlanningTicketData,
 } from './planningGis.selectors';
@@ -277,7 +278,10 @@ export const onGisMapClick =
     const layerData = getAllLayersData(storeState);
     const selectedLayerKeys = getSelectedLayerKeys(storeState);
 
-    if (mapStateEvent === PLANNING_EVENT.selectElementsOnMapClick) {
+    if (
+      mapStateEvent === PLANNING_EVENT.selectElementsOnMapClick ||
+      mapStateEvent === PLANNING_EVENT.associateElementOnMapClick
+    ) {
       // if ths is select elements event get list of elements around user click
       const clickPoint = pointLatLongMapToCoords(clickLatLong);
       // create a circle at user click location
@@ -286,29 +290,63 @@ export const onGisMapClick =
         units: 'kilometers',
       });
 
+      let whiteList,
+        blackList,
+        elementData = {},
+        extraParent = {};
+
+      if (mapStateEvent === PLANNING_EVENT.selectElementsOnMapClick) {
+        whiteList = selectedLayerKeys;
+        blackList = ['region'];
+      } else if (mapStateEvent === PLANNING_EVENT.associateElementOnMapClick) {
+        const mapStateData = getPlanningMapStateData(storeState);
+        elementData = mapStateData.elementData;
+        extraParent = mapStateData.extraParent;
+        // listOfLayers will be all the possible layers user can associate with current parent
+        whiteList = mapStateData.listOfLayers;
+        blackList = [];
+      }
+
       const elementResultList = filterGisDataByPolygon({
         filterPolygon: circPoly,
         gisData: layerData,
-        whiteList: selectedLayerKeys,
-        blackList: ['region'],
+        whiteList,
+        blackList,
       });
 
       const filterCoords = coordsToLatLongMap(circPoly.geometry.coordinates[0]);
       // fire next event : listElementsOnMap, with new list data
       dispatch(
-        listElementsOnMap({elementList: elementResultList, filterCoords}),
+        listElementsOnMap({
+          // association related fields
+          elementData,
+          extraParent,
+          // actual filtered elements
+          elementList: elementResultList,
+          // polygon coords used to filter
+          filterCoords,
+          // info for next event that current filter was for association list or not
+          isAssociationList:
+            mapStateEvent === PLANNING_EVENT.associateElementOnMapClick,
+        }),
       );
       navigation.navigate(screens.gisEventScreen);
     }
   };
 
 export const listElementsOnMap =
-  ({elementList, filterCoords}) =>
+  ({elementList, elementData, filterCoords, isAssociationList, extraParent}) =>
   dispatch => {
     dispatch(
       setMapState({
         event: PLANNING_EVENT.listElementsOnMap,
-        data: {elementList, filterCoords},
+        data: {
+          elementList,
+          elementData,
+          filterCoords,
+          isAssociationList,
+          extraParent,
+        },
       }),
     );
   };

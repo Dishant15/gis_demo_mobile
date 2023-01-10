@@ -1,45 +1,27 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import {View, FlatList, StyleSheet, Pressable} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
-
-import BackHeader from '~Common/components/Header/BackHeader';
 import {Title, Subheading, Caption, Divider} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import {
-  onElementListItemClick,
-  openElementDetails,
-} from '~planning/data/planning.actions';
+import BackHeader from '~Common/components/Header/BackHeader';
+import Loader from '~Common/Loader';
 
-import {getPlanningMapStateData} from '~planning/data/planningGis.selectors';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
-import {LayerKeyMappings} from '../utils';
+import {useElementListHook} from './useElementList';
+import {LayerKeyMappings} from '~planning/GisMap/utils';
 
 const ElementList = () => {
-  const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const {elementList} = useSelector(getPlanningMapStateData);
-
-  const handleShowOnMap = useCallback(
-    (elementId, layerKey) => () => {
-      dispatch(onElementListItemClick(elementId, layerKey, navigation));
-    },
-    [],
-  );
-
-  const handleShowDetails = useCallback(
-    (elementId, layerKey) => () => {
-      dispatch(
-        openElementDetails({
-          layerKey,
-          elementId,
-        }),
-      );
-    },
-    [],
-  );
+  const {
+    elementList,
+    isAssociationList,
+    isEditLoading,
+    handleShowOnMap,
+    handleShowDetails,
+    handleShowPopup,
+  } = useElementListHook();
 
   return (
     <View style={[layout.container, layout.relative]}>
@@ -62,7 +44,11 @@ const ElementList = () => {
                 </View>
                 <Pressable
                   style={styles.textWrapper}
-                  onPress={handleShowDetails(id, layerKey)}>
+                  onPress={
+                    isAssociationList
+                      ? handleShowPopup(item)
+                      : handleShowDetails(item)
+                  }>
                   <Subheading numberOfLines={3} ellipsizeMode="tail">
                     {name}
                   </Subheading>
@@ -95,6 +81,7 @@ const ElementList = () => {
           </View>
         }
       />
+      {isEditLoading ? <Loader /> : null}
     </View>
   );
 };

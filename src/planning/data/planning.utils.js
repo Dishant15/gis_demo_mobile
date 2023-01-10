@@ -9,6 +9,9 @@ import {
 import indexOf from 'lodash/indexOf';
 import size from 'lodash/size';
 import filter from 'lodash/filter';
+import isEmpty from 'lodash/isEmpty';
+import get from 'lodash/get';
+import last from 'lodash/last';
 
 import {FEATURE_TYPES} from '~planning/GisMap/layers/common/configuration';
 import {LayerKeyMappings} from '~planning/GisMap/utils';
@@ -78,4 +81,23 @@ export const filterGisDataByPolygon = ({
 export const filterLayerData = (filterKey, filterValue, elementList = []) => {
   // filter layerData based on filter value
   return filter(elementList, [filterKey, filterValue]);
+};
+
+/**
+ * generate network_id using parent data and region list
+ * parents : { layerKey : [{id, name, uid, netid}, ... ], ...]
+ */
+export const generateNetworkIdFromParent = (uniqueId, parents, regionList) => {
+  let networkId = '';
+  if (isEmpty(parents)) {
+    // get region uid
+    const reg_uid = !!size(regionList) ? last(regionList).unique_id : 'RGN';
+    networkId = `${reg_uid}-${uniqueId}`;
+  } else {
+    // generate network id from parent list, get first key
+    const firstLayerKey = Object.keys(parents)[0];
+    const parentNetId = get(parents, [firstLayerKey, '0', 'network_id'], 'PNI');
+    networkId = `${parentNetId}-${uniqueId}`;
+  }
+  return networkId;
 };
