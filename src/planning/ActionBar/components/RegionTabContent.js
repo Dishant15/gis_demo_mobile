@@ -4,6 +4,8 @@ import {useQuery} from 'react-query';
 import {useDispatch, useSelector} from 'react-redux';
 
 import {difference, noop, groupBy, map, xor, orderBy, size, get} from 'lodash';
+import last from 'lodash/last';
+import find from 'lodash/find';
 
 import {Button, Title, Divider, Subheading} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -20,9 +22,10 @@ import {
   setActiveTab,
 } from '~planning/data/planningState.reducer';
 
-import {getFillColor} from '~utils/map.utils';
+import {getFillColor, pointCoordsToLatLongMap} from '~utils/map.utils';
 import {colors, layout} from '~constants/constants';
 import {onRegionSelectionUpdate} from '~planning/data/planning.actions';
+import {setMapPosition} from '~planning/data/planningGis.reducer';
 
 const RegionTabContent = ({hideModal}) => {
   /**
@@ -89,6 +92,16 @@ const RegionTabContent = ({hideModal}) => {
     }
     // change tab to layers
     dispatch(setActiveTab(1));
+    // get last selected region and center
+    const selectedRegion = find(regionList, ['id', last(regionIdList)]);
+    if (selectedRegion?.center) {
+      dispatch(
+        setMapPosition({
+          center: pointCoordsToLatLongMap(selectedRegion.center),
+          zoom: 16,
+        }),
+      );
+    }
   }, [selectedRegionSet, selectedRegionIds]);
 
   const handleRegionExpandClick = useCallback(regionId => {
