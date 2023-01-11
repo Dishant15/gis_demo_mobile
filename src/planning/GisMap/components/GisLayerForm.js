@@ -39,6 +39,7 @@ import {
 } from '../utils';
 import {layout} from '~constants/constants';
 import useValidateGeometry from '../hooks/useValidateGeometry';
+import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
 
 export const GisLayerForm = ({layerKey}) => {
   const navigation = useNavigation();
@@ -79,6 +80,10 @@ export const GisLayerForm = ({layerKey}) => {
     dispatch(onElementUpdate(layerKey));
     dispatch(setTicketWorkOrderId(null));
     navigation.goBack();
+
+    if (ticketId) {
+      dispatch(fetchTicketWorkorderDataThunk(ticketId));
+    }
   };
 
   const onErrorHandler = err => {

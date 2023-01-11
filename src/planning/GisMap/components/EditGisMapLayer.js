@@ -46,6 +46,7 @@ import {
   TICKET_WORKORDER_TYPE,
 } from '../utils';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
+import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
 
 const EditGisLayer = () => {
   const dispatch = useDispatch();
@@ -77,6 +78,10 @@ const EditGisLayer = () => {
     showToast('Element location updated Successfully', TOAST_TYPE.SUCCESS);
     dispatch(onElementUpdate(layerKey));
     dispatch(setTicketWorkOrderId(null));
+
+    if (ticketId) {
+      dispatch(fetchTicketWorkorderDataThunk(ticketId));
+    }
   };
 
   const onErrorHandler = err => {
