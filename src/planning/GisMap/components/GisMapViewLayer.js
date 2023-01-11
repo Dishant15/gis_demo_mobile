@@ -49,7 +49,8 @@ const ViewLayer = ({layerKey}) => {
             key={id}
             coordinate={coordinates}
             {...viewOptions}
-            zIndex={zIndexMapping[layerKey]}>
+            zIndex={zIndexMapping[layerKey]}
+            highlighted={highlighted}>
             <viewOptions.icon />
           </MapMarker>
         );

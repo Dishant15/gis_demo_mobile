@@ -248,6 +248,19 @@ const planningGisSlice = createSlice({
           }
         }
       }
+
+      if (state.mapHighlight.layerKey) {
+        // highlight current element from layerData
+        const elemLayerDataInd = findIndex(
+          state.layerData[state.mapHighlight.layerKey],
+          ['id', state.mapHighlight.elementId],
+        );
+        if (elemLayerDataInd !== -1) {
+          state.layerData[state.mapHighlight.layerKey][
+            elemLayerDataInd
+          ].highlighted = true;
+        }
+      }
     },
     setMapHighlight: (state, {payload}) => {
       // check previously any element is highlighted or not

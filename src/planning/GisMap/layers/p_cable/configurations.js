@@ -18,12 +18,12 @@ export const getViewOptions = ({color_on_map, cable_type}) => {
     geodesic: true,
   };
   if (cable_type === 'U') {
-    // dot line
+    // underground : dot line
     options.lineDashPattern = [5, 10];
     options.lineCap = 'round';
     options.strokeWidth = 5;
   } else if (cable_type === 'W') {
-    // dash line
+    // wall clamp: dash line
     options.lineDashPattern = [0, 15, 30];
     options.lineCap = 'square';
   }

@@ -1,7 +1,7 @@
 import React, {Fragment} from 'react';
 import {useSelector} from 'react-redux';
 
-import {Polyline, Polygon, Marker} from 'react-native-maps';
+import {Polyline, Polygon} from 'react-native-maps';
 import MapMarker from '~Common/components/Map/MapMarker';
 import HighlightedPolyline from '~Common/components/Map/HighlightedPolyline';
 

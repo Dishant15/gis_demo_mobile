@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import {Polyline} from 'react-native-maps';
+import {View, Text} from 'react-native';
+import {Marker, Polyline} from 'react-native-maps';
+
+import get from 'lodash/get';
+import last from 'lodash/last';
+import size from 'lodash/size';
+
+import styles from './highlightedStyles';
 
 export default class HighlightedPolyline extends Component {
   polylineOptions = {
@@ -8,7 +15,26 @@ export default class HighlightedPolyline extends Component {
     lineCap: 'square',
     geodesic: true,
   };
+
   render = () => {
-    return <Polyline {...this.polylineOptions} {...this.props} />;
+    const startPoint = get(this.props, 'coordinates.0');
+    const endPoint = last(get(this.props, 'coordinates', []));
+    return (
+      <>
+        {size(startPoint) ? this.renderMarker('A', startPoint) : null}
+        <Polyline {...this.polylineOptions} {...this.props} />
+        {size(endPoint) ? this.renderMarker('B', endPoint) : null}
+      </>
+    );
+  };
+
+  renderMarker = (text, coord) => {
+    return (
+      <Marker coordinate={coord} anchor={{x: 0.5, y: 0.5}}>
+        <View style={styles.polylineIndicator}>
+          <Text style={styles.polylineIndicatorText}>{text}</Text>
+        </View>
+      </Marker>
+    );
   };
 }
