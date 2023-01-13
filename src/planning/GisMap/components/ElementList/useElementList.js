@@ -25,6 +25,7 @@ import {
 } from '~planning/data/layer.services';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {fetchLayerDataThunk} from '~planning/data/actionBar.services';
+import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
 
 export const useElementListHook = () => {
   const dispatch = useDispatch();
@@ -60,6 +61,10 @@ export const useElementListHook = () => {
         elementId: elementToAssociate.id,
       }),
     );
+    // refresh ticket data
+    if (ticketId) {
+      dispatch(fetchTicketWorkorderDataThunk(ticketId));
+    }
   };
 
   const onErrorHandler = err => {
