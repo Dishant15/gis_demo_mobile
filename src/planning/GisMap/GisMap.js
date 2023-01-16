@@ -5,7 +5,7 @@ import React, {
   forwardRef,
   useCallback,
 } from 'react';
-import {View, InteractionManager} from 'react-native';
+import {View, InteractionManager, Platform} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -64,6 +64,9 @@ const GisMap = props => {
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       setMapVisibility(true);
+      if (Platform.OS === 'ios') {
+        setMapRender(true);
+      }
     });
   }, []);
 
