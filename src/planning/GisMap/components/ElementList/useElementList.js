@@ -6,6 +6,9 @@ import {Alert} from 'react-native';
 
 import get from 'lodash/get';
 import merge from 'lodash/merge';
+import map from 'lodash/map';
+
+import Fuse from 'fuse.js';
 
 import useValidateGeometry from '~planning/GisMap/hooks/useValidateGeometry';
 import {
@@ -43,6 +46,10 @@ export const useElementListHook = () => {
   } = eventData;
 
   const [elementToAssociate, setElementToAssociate] = useState(null);
+  const [filteredElementList, setFilteredElementList] = useState(elementList);
+  const elementListSearch = new Fuse(elementList, {
+    keys: ['name'],
+  });
 
   const onSuccessHandler = () => {
     showToast('Element association updated Successfully', TOAST_TYPE.SUCCESS);
@@ -230,8 +237,21 @@ export const useElementListHook = () => {
 
   const handleHidePopup = useCallback(() => setElementToAssociate(null), []);
 
+  const handleElementListFilter = useCallback(
+    searchText => {
+      if (searchText) {
+        setFilteredElementList(
+          map(elementListSearch.search(searchText), 'item'),
+        );
+      } else {
+        setFilteredElementList(elementList);
+      }
+    },
+    [elementList, elementListSearch],
+  );
+
   return {
-    elementList,
+    elementList: filteredElementList,
     parentData,
     isAssociationList,
     selectedElement: elementToAssociate,
@@ -243,5 +263,6 @@ export const useElementListHook = () => {
     handleAddExistingAssociation,
     handleShowPopup,
     handleHidePopup,
+    handleElementListFilter,
   };
 };

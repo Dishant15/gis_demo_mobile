@@ -7,6 +7,7 @@ import {useDispatch} from 'react-redux';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 import Loader from '~Common/Loader';
+import SearchBox from '~Common/SearchBox';
 
 import {colors, layout, THEME_COLORS} from '~constants/constants';
 import {useElementListHook} from './useElementList';
@@ -24,6 +25,7 @@ const ElementList = () => {
     handleShowOnMap,
     handleShowDetails,
     handleShowPopup,
+    handleElementListFilter,
   } = useElementListHook();
 
   useFocusEffect(
@@ -44,9 +46,14 @@ const ElementList = () => {
     navigation.goBack();
   };
 
+  const handleSearch = useCallback(searchText => {
+    handleElementListFilter(searchText);
+  }, []);
+
   return (
     <View style={[layout.container, layout.relative]}>
       <BackHeader title="Element List" onGoBack={handleGoBack} />
+      <SearchBox onSearchPress={handleSearch} />
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
         data={elementList}
