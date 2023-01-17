@@ -1,8 +1,9 @@
-import React from 'react';
-import {View, FlatList, StyleSheet, Pressable} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import React, {useCallback} from 'react';
+import {View, FlatList, StyleSheet, Pressable, BackHandler} from 'react-native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {Title, Subheading, Caption, Divider} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {useDispatch} from 'react-redux';
 
 import BackHeader from '~Common/components/Header/BackHeader';
 import Loader from '~Common/Loader';
@@ -10,9 +11,11 @@ import Loader from '~Common/Loader';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
 import {useElementListHook} from './useElementList';
 import {LayerKeyMappings} from '~planning/GisMap/utils';
+import {setMapState} from '~planning/data/planningGis.reducer';
 
 const ElementList = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const {
     elementList,
@@ -23,9 +26,27 @@ const ElementList = () => {
     handleShowPopup,
   } = useElementListHook();
 
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', customGoBack);
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', customGoBack);
+    }, []),
+  );
+
+  const customGoBack = () => {
+    dispatch(setMapState({}));
+    return false;
+  };
+
+  const handleGoBack = () => {
+    dispatch(setMapState({}));
+    navigation.goBack();
+  };
+
   return (
     <View style={[layout.container, layout.relative]}>
-      <BackHeader title="Element List" onGoBack={navigation.goBack} />
+      <BackHeader title="Element List" onGoBack={handleGoBack} />
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
         data={elementList}
