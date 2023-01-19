@@ -122,7 +122,12 @@ const LayerTab = ({layerConfig, regionIdList}) => {
 
       {isExpanded ? (
         <View style={styles.searchWrapper}>
-          <Button mode="outlined" icon="magnify" onPress={handleSearchClick}>
+          <Button
+            mode="outlined"
+            icon="magnify"
+            color={THEME_COLORS.secondary.main}
+            style={styles.searchBtnBorder}
+            onPress={handleSearchClick}>
             search by name
           </Button>
         </View>
@@ -235,6 +240,9 @@ const styles = StyleSheet.create({
   searchWrapper: {
     paddingHorizontal: '10%',
     paddingVertical: 12,
+  },
+  searchBtnBorder: {
+    borderColor: THEME_COLORS.secondary.main,
   },
 });
 
