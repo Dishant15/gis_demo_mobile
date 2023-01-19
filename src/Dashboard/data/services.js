@@ -2,6 +2,7 @@ import Api from '~utils/api.utils';
 import {
   apiGetDashboardData,
   apiGetDashboardSurveyTicketSummery,
+  apiGetHealthCheck,
   apiGetTicketList,
   apiGetVersion,
 } from '~constants/url.constants';
@@ -28,5 +29,10 @@ export const fetchVersionData = async () => {
 
 export const fetchDashSurveySummery = async () => {
   const res = await Api.get(apiGetDashboardSurveyTicketSummery());
+  return res.data;
+};
+
+export const fetchHealthCheck = async () => {
+  const res = await Api.get(apiGetHealthCheck());
   return res.data;
 };

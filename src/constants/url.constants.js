@@ -2,6 +2,7 @@ import {Platform} from 'react-native';
 import {GM_IOS_API_KEY, GM_ANDROID_API_KEY} from '@env';
 
 export const apiGetVersion = () => `/api/version/`;
+export const apiGetHealthCheck = () => '/api/health/check/';
 
 export const apiPostLogin = () => `/api/token/`;
 export const apiPostChangePassword = () => '/api/user/change-password/';

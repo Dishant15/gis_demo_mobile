@@ -54,6 +54,10 @@ export const cableTableConfig = [
     type: 'color',
   },
   {
+    label: 'Ribbon',
+    key: 'ribbon',
+  },
+  {
     label: 'Fiber Color',
     key: 'fiber_color',
     type: 'color',
@@ -82,6 +86,10 @@ export const oltTableConfig = [
   {
     label: 'Status',
     key: 'status_display',
+  },
+  {
+    label: 'Card',
+    key: 'card',
   },
   {
     label: 'Port Type',

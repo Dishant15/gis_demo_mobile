@@ -109,6 +109,7 @@ export const ELEMENT_TABLE_FIELDS = [
   {label: 'Start Reading', field: 'start_reading', type: 'simple'},
   {label: 'End Reading', field: 'end_reading', type: 'simple'},
   {label: 'No of tubes', field: 'no_of_tube', type: 'simple'},
+  {label: 'Ribbon Count', field: 'ribbon_count', type: 'simple'},
   {label: 'Core / Tube', field: 'core_per_tube', type: 'simple'},
   {label: 'Specification', field: 'specification', type: 'simple'},
   {label: 'Vendor', field: 'vendor', type: 'simple'},

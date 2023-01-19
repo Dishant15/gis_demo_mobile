@@ -7,7 +7,7 @@ import {get} from 'lodash';
 
 import {FullScreenLoader} from './Loader';
 
-import {fetchVersionData} from '~Dashboard/data/services';
+import {fetchHealthCheck} from '~Dashboard/data/services';
 import {colors, layout} from '~constants/constants';
 
 import DownloadApp from '~assets/svg/download.svg';
@@ -15,7 +15,7 @@ import DownloadApp from '~assets/svg/download.svg';
 const VersionUpdateProvider = ({children}) => {
   const appState = useRef(AppState.currentState);
 
-  const {isLoading, data, refetch} = useQuery('versionData', fetchVersionData);
+  const {isLoading, data, refetch} = useQuery('healthCheck', fetchHealthCheck);
 
   // handle refetch on appState change
   useEffect(() => {
@@ -35,7 +35,16 @@ const VersionUpdateProvider = ({children}) => {
   }, [refetch]);
 
   const {updated, appVersion, buildVersion} = useMemo(() => {
-    const {appVersion, buildVersion} = get(data, Platform.OS, {});
+    const {appVersion, buildVersion} = get(
+      data,
+      ['version_info', Platform.OS],
+      {},
+    );
+    console.log(
+      '🚀 ~ file: appVersion, buildVersion',
+      appVersion,
+      buildVersion,
+    );
     const updated =
       VersionInfo.appVersion === appVersion &&
       VersionInfo.buildVersion === buildVersion;
