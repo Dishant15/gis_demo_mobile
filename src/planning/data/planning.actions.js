@@ -27,6 +27,7 @@ import {
 } from './planningState.reducer';
 import {fetchLayerDataThunk} from './actionBar.services';
 import {
+  LAYER_GIS_CACHE,
   resetTicketMapHighlight,
   resetUnselectedLayerGisData,
   setMapHighlight,
@@ -45,6 +46,8 @@ import {
   getPlanningMapStateData,
   getPlanningMapStateEvent,
   getPlanningTicketData,
+  getLayerNetworkState,
+  getMasterViewData,
 } from './planningGis.selectors';
 import {
   coordsToLatLongMap,
@@ -140,6 +143,7 @@ export const onPolygonShowOnMap =
 export const onAssociatedElementShowOnMapClick =
   (element, layerKey, navigation) => dispatch => {
     const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
+
     switch (featureType) {
       case FEATURE_TYPES.POINT:
         dispatch(
@@ -155,12 +159,63 @@ export const onAssociatedElementShowOnMapClick =
       case FEATURE_TYPES.POLYLINE:
       case FEATURE_TYPES.MULTI_POLYGON:
         dispatch(
-          onPolygonShowOnMap(element.center, element.id, layerKey, navigation),
+          onPolygonShowOnMap(
+            element.coordinates,
+            element.id,
+            layerKey,
+            navigation,
+          ),
         );
         break;
       default:
         break;
     }
+    dispatch(setActiveTab(null));
+  };
+
+export const onLayerElementShowOnMapClick =
+  (element, layerKey, navigation) => dispatch => {
+    const featureType = get(LayerKeyMappings, [layerKey, 'featureType']);
+    dispatch(setMapState({}));
+    switch (featureType) {
+      case FEATURE_TYPES.POINT: {
+        dispatch(
+          setMapPosition({
+            center: element.coordinates,
+            zoom: 16,
+          }),
+        );
+        dispatch(
+          setMapHighlight({
+            layerKey,
+            elementId: element.id,
+          }),
+        );
+        break;
+      }
+      case FEATURE_TYPES.POLYGON:
+      case FEATURE_TYPES.POLYLINE:
+      case FEATURE_TYPES.MULTI_POLYGON: {
+        dispatch(
+          setMapPosition({
+            coordinates: element.coordinates,
+          }),
+        );
+        dispatch(
+          setMapHighlight({
+            layerKey,
+            elementId: element.id,
+          }),
+        );
+        break;
+      }
+      default:
+        break;
+    }
+
+    dispatch(resetTicketMapHighlight());
+    navigation.navigate(screens.planningScreen);
+    dispatch(setActiveTab(null));
   };
 
 // add geometry with optinal associations
@@ -332,6 +387,30 @@ export const onGisMapClick =
       );
       navigation.navigate(screens.gisEventScreen);
     }
+  };
+
+export const onLayerTabElementList =
+  (layerKey, navigation) => (dispatch, getState) => {
+    const storeState = getState();
+    const layerNetworkState = getLayerNetworkState(layerKey)(storeState);
+    // element list based on cached or master data list
+    let elementResultList;
+    if (layerNetworkState.isCached) {
+      elementResultList = LAYER_GIS_CACHE[layerKey];
+    } else {
+      elementResultList = getMasterViewData(layerKey)(storeState);
+    }
+    // fire next event : listElementsOnMap, with new list data
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.layerElementsOnMap,
+        data: {
+          elementList: elementResultList,
+          elementLayerKey: layerKey,
+        },
+      }),
+    );
+    navigation.navigate(screens.gisEventScreen);
   };
 
 export const listElementsOnMap =

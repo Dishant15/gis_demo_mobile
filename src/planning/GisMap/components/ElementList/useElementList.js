@@ -2,7 +2,7 @@ import React, {useCallback, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useMutation} from 'react-query';
 import {useNavigation} from '@react-navigation/native';
-import {Alert} from 'react-native';
+import {Alert, Keyboard} from 'react-native';
 
 import get from 'lodash/get';
 import merge from 'lodash/merge';
@@ -43,6 +43,7 @@ export const useElementListHook = () => {
     elementData: parentData,
     extraParent,
     isAssociationList,
+    elementLayerKey,
   } = eventData;
 
   const [elementToAssociate, setElementToAssociate] = useState(null);
@@ -246,11 +247,13 @@ export const useElementListHook = () => {
       } else {
         setFilteredElementList(elementList);
       }
+      Keyboard.dismiss();
     },
     [elementList, elementListSearch],
   );
 
   return {
+    elementLayerKey,
     elementList: filteredElementList,
     parentData,
     isAssociationList,

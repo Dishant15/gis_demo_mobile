@@ -1,32 +1,30 @@
 import React, {useCallback} from 'react';
-import {View, FlatList, StyleSheet, Pressable, BackHandler} from 'react-native';
+import {View, FlatList, Pressable, BackHandler} from 'react-native';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useDispatch} from 'react-redux';
 import {Title, Subheading, Caption, Divider} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {useDispatch} from 'react-redux';
 
 import BackHeader from '~Common/components/Header/BackHeader';
-import Loader from '~Common/Loader';
 import SearchBox from '~Common/SearchBox';
 
-import {colors, layout, THEME_COLORS} from '~constants/constants';
-import {useElementListHook} from './useElementList';
+import {layout, THEME_COLORS} from '~constants/constants';
 import {LayerKeyMappings} from '~planning/GisMap/utils';
 import {setMapState} from '~planning/data/planningGis.reducer';
+import {styles} from '../ElementList/ElementList';
+import {useLayerElementList} from './useLayerElementList';
 
-const ElementList = () => {
+const LayerElementList = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const {
+    elementLayerKey,
     elementList,
-    isAssociationList,
-    isEditLoading,
     handleShowOnMap,
     handleShowDetails,
-    handleShowPopup,
     handleElementListFilter,
-  } = useElementListHook();
+  } = useLayerElementList();
 
   useFocusEffect(
     useCallback(() => {
@@ -59,8 +57,9 @@ const ElementList = () => {
         data={elementList}
         keyExtractor={item => String(item.id)}
         renderItem={({item}) => {
-          const {layerKey, name, network_id, id} = item;
-          const Icon = LayerKeyMappings[layerKey]['getViewOptions'](item).icon;
+          const {name, network_id, id} = item;
+          const Icon =
+            LayerKeyMappings[elementLayerKey]['getViewOptions'](item).icon;
 
           return (
             <View style={styles.container}>
@@ -72,11 +71,7 @@ const ElementList = () => {
                 </View>
                 <Pressable
                   style={styles.textWrapper}
-                  onPress={
-                    isAssociationList
-                      ? handleShowPopup(item)
-                      : handleShowDetails(item)
-                  }>
+                  onPress={handleShowDetails(id, elementLayerKey)}>
                   <Subheading numberOfLines={3} ellipsizeMode="tail">
                     {name}
                   </Subheading>
@@ -87,7 +82,7 @@ const ElementList = () => {
                 <View style={styles.actionDivider} />
                 <Pressable
                   style={styles.actionWrapper}
-                  onPress={handleShowOnMap(id, layerKey)}>
+                  onPress={handleShowOnMap(item, elementLayerKey)}>
                   <View style={styles.squreButton}>
                     <MaterialIcons
                       size={28}
@@ -103,76 +98,12 @@ const ElementList = () => {
         }}
         ListEmptyComponent={
           <View style={[layout.center, layout.container]}>
-            <Title style={layout.textCenter}>
-              No element available arround selected area
-            </Title>
+            <Title style={layout.textCenter}>No element available</Title>
           </View>
         }
       />
-      {isEditLoading ? <Loader /> : null}
     </View>
   );
 };
 
-export const styles = StyleSheet.create({
-  contentContainerStyle: {
-    paddingTop: 4,
-    paddingBottom: 60,
-    flexGrow: 1,
-  },
-  container: {
-    paddingHorizontal: 8,
-  },
-  wrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    // borderWidth: 1,
-  },
-  iconWrapper: {
-    padding: 5,
-  },
-  iconBlock: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
-    backgroundColor: colors.white,
-    height: 50,
-    width: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textWrapper: {
-    flex: 1,
-    paddingHorizontal: 6,
-    // borderWidth: 1,
-  },
-  actionDivider: {
-    backgroundColor: colors.dividerColor,
-    width: StyleSheet.hairlineWidth,
-  },
-  actionWrapper: {
-    height: 60,
-    minWidth: 60,
-    // borderWidth: 1,
-    padding: 5,
-    alignItems: 'center',
-  },
-  squreButton: {
-    height: 50,
-    width: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 4,
-  },
-  divider: {
-    marginVertical: 8,
-    backgroundColor: colors.dividerColor,
-  },
-});
-
-export default ElementList;
+export default LayerElementList;

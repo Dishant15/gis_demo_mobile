@@ -75,6 +75,7 @@ const TicketMapViewLayer = () => {
                         coordinates={element.coordinates}
                         zIndex={zIndexMapping.highlighted}
                         strokeColor={HIGHLIGHT_COLOR}
+                        showStartEndPoints={false}
                       />
                     ) : null}
                   </Fragment>

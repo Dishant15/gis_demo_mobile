@@ -31,7 +31,7 @@ import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 const MAX_ALLOWED_DATA_COUNT = 200;
 // shape : { layer-key: [ {...Gis data, ...}, ...] }
 // same as masterGisData | layerData
-const LAYER_GIS_CACHE = {};
+export const LAYER_GIS_CACHE = {};
 
 const defaultLayerNetworkState = {
   isLoading: false,

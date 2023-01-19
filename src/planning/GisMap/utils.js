@@ -38,6 +38,7 @@ export const PLANNING_EVENT = {
   // map select elements on location
   selectElementsOnMapClick: 11,
   listElementsOnMap: 12,
+  layerElementsOnMap: 14,
 };
 
 export const TICKET_WORKORDER_TYPE = {

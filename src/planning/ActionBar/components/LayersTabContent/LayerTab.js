@@ -20,7 +20,10 @@ import {
   removeLayerSelect,
   setActiveTab,
 } from '~planning/data/planningState.reducer';
-import {openElementDetails} from '~planning/data/planning.actions';
+import {
+  onLayerTabElementList,
+  openElementDetails,
+} from '~planning/data/planning.actions';
 import {colors, screens, THEME_COLORS} from '~constants/constants';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {LayerKeyMappings} from '~planning/GisMap/utils';
@@ -35,6 +38,7 @@ const LayerTab = ({layerConfig, regionIdList}) => {
   const {layer_key, name} = layerConfig;
 
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [isExpanded, setExpanded] = useState(false);
   const layerNetState = useSelector(getLayerNetworkState(layer_key));
 
@@ -75,6 +79,10 @@ const LayerTab = ({layerConfig, regionIdList}) => {
     }
   };
 
+  const handleSearchClick = useCallback(() => {
+    dispatch(onLayerTabElementList(layer_key, navigation));
+  }, [layer_key]);
+
   return (
     <View>
       <View style={styles.itemWrapper}>
@@ -112,7 +120,14 @@ const LayerTab = ({layerConfig, regionIdList}) => {
 
       <Divider />
 
-      {isExpanded ? <ElementList layerKey={layer_key} /> : null}
+      {isExpanded ? (
+        <View style={styles.searchWrapper}>
+          <Button mode="outlined" icon="magnify" onPress={handleSearchClick}>
+            search by name
+          </Button>
+        </View>
+      ) : null}
+      {/* {isExpanded ? <ElementList layerKey={layer_key} /> : null} */}
     </View>
   );
 };
@@ -216,6 +231,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 10,
     paddingLeft: 34,
+  },
+  searchWrapper: {
+    paddingHorizontal: '10%',
+    paddingVertical: 12,
   },
 });
 

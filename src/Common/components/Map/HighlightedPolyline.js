@@ -17,15 +17,20 @@ export default class HighlightedPolyline extends Component {
   };
 
   render = () => {
-    const startPoint = get(this.props, 'coordinates.0');
-    const endPoint = last(get(this.props, 'coordinates', []));
-    return (
-      <>
-        {size(startPoint) ? this.renderMarker('A', startPoint) : null}
-        <Polyline {...this.polylineOptions} {...this.props} />
-        {size(endPoint) ? this.renderMarker('B', endPoint) : null}
-      </>
-    );
+    const {showStartEndPoints = true} = this.props;
+    if (showStartEndPoints) {
+      const startPoint = get(this.props, 'coordinates.0');
+      const endPoint = last(get(this.props, 'coordinates', []));
+      return (
+        <>
+          {size(startPoint) ? this.renderMarker('A', startPoint) : null}
+          <Polyline {...this.polylineOptions} {...this.props} />
+          {size(endPoint) ? this.renderMarker('B', endPoint) : null}
+        </>
+      );
+    } else {
+      return <Polyline {...this.polylineOptions} {...this.props} />;
+    }
   };
 
   renderMarker = (text, coord) => {

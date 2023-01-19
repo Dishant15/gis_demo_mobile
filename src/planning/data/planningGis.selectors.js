@@ -4,6 +4,7 @@ import get from 'lodash/get';
 export const getAllLayersNetworkStatus = store =>
   store.planningGis.layerNetworkState;
 export const getAllLayersData = store => store.planningGis.layerData;
+export const getAllMasterData = store => store.planningGis.masterGisData;
 
 export const getLayerNetworkState = layerKey =>
   createSelector(getAllLayersNetworkStatus, layerNetworkState =>
@@ -12,6 +13,11 @@ export const getLayerNetworkState = layerKey =>
 
 export const getLayerViewData = layerKey =>
   createSelector(getAllLayersData, layerData => get(layerData, layerKey, []));
+
+export const getMasterViewData = layerKey =>
+  createSelector(getAllMasterData, masterGisData =>
+    get(masterGisData, layerKey, []),
+  );
 
 // Gis Map Event selectors
 export const getPlanningMapState = store => store.planningGis.mapState;

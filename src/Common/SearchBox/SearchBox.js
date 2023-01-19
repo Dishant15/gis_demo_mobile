@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from 'react';
 
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Keyboard} from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
 import {percentToHex} from '~utils/app.utils';
@@ -15,6 +15,7 @@ const SearchBox = ({onSearchPress}) => {
   const handleClearSearch = useCallback(() => {
     onSearchPress('');
     setSearchText('');
+    Keyboard.dismiss();
   }, [searchText]);
 
   return (
