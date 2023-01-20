@@ -47,9 +47,11 @@ export const useElementListHook = () => {
   } = eventData;
 
   const [elementToAssociate, setElementToAssociate] = useState(null);
-  const [filteredElementList, setFilteredElementList] = useState(elementList);
+  const [searchedKey, setSearchedKey] = useState('');
   const elementListSearch = new Fuse(elementList, {
     keys: ['name'],
+    ignoreFieldNorm: true,
+    fieldNormWeight: 0,
   });
 
   const onSuccessHandler = () => {
@@ -238,23 +240,16 @@ export const useElementListHook = () => {
 
   const handleHidePopup = useCallback(() => setElementToAssociate(null), []);
 
-  const handleElementListFilter = useCallback(
-    searchText => {
-      if (searchText) {
-        setFilteredElementList(
-          map(elementListSearch.search(searchText), 'item'),
-        );
-      } else {
-        setFilteredElementList(elementList);
-      }
-      Keyboard.dismiss();
-    },
-    [elementList, elementListSearch],
-  );
+  const handleElementListFilter = useCallback(searchText => {
+    setSearchedKey(searchText);
+  }, []);
 
   return {
     elementLayerKey,
-    elementList: filteredElementList,
+    elementList: searchedKey
+      ? elementListSearch.search(searchedKey)
+      : elementList,
+    searchedKey,
     parentData,
     isAssociationList,
     selectedElement: elementToAssociate,

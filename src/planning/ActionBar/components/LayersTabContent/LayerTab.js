@@ -128,7 +128,7 @@ const LayerTab = ({layerConfig, regionIdList}) => {
             color={THEME_COLORS.secondary.main}
             style={styles.searchBtnBorder}
             onPress={handleSearchClick}>
-            search by name
+            search
           </Button>
         </View>
       ) : null}

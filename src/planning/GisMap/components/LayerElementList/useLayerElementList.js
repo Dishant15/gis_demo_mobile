@@ -1,9 +1,6 @@
 import React, {useCallback, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
-import {Keyboard} from 'react-native';
-
-import map from 'lodash/map';
 
 import Fuse from 'fuse.js';
 
@@ -20,9 +17,11 @@ export const useLayerElementList = () => {
   const {data: eventData} = useSelector(getPlanningMapState);
   const {elementList, elementLayerKey} = eventData;
 
-  const [filteredElementList, setFilteredElementList] = useState(elementList);
+  const [searchedKey, setSearchedKey] = useState('');
   const elementListSearch = new Fuse(elementList, {
     keys: ['name'],
+    ignoreFieldNorm: true,
+    fieldNormWeight: 0,
   });
 
   const handleShowOnMap = useCallback(
@@ -44,23 +43,16 @@ export const useLayerElementList = () => {
     [],
   );
 
-  const handleElementListFilter = useCallback(
-    searchText => {
-      if (searchText) {
-        setFilteredElementList(
-          map(elementListSearch.search(searchText), 'item'),
-        );
-      } else {
-        setFilteredElementList(elementList);
-      }
-      Keyboard.dismiss();
-    },
-    [elementList, elementListSearch],
-  );
+  const handleElementListFilter = useCallback(searchText => {
+    setSearchedKey(searchText);
+  }, []);
 
   return {
     elementLayerKey,
-    elementList: filteredElementList,
+    elementList: searchedKey
+      ? elementListSearch.search(searchedKey)
+      : elementList,
+    searchedKey,
     handleShowOnMap,
     handleShowDetails,
     handleElementListFilter,

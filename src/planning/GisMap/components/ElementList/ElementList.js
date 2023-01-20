@@ -22,6 +22,7 @@ const ElementList = () => {
     elementList,
     isAssociationList,
     isEditLoading,
+    searchedKey,
     handleShowOnMap,
     handleShowDetails,
     handleShowPopup,
@@ -57,10 +58,13 @@ const ElementList = () => {
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
         data={elementList}
-        keyExtractor={item => String(item.id)}
+        keyExtractor={item => String(searchedKey ? item.item.id : item.id)}
         renderItem={({item}) => {
-          const {layerKey, name, network_id, id} = item;
-          const Icon = LayerKeyMappings[layerKey]['getViewOptions'](item).icon;
+          const element = searchedKey ? item.item : item;
+
+          const {layerKey, name, network_id, id} = element;
+          const Icon =
+            LayerKeyMappings[layerKey]['getViewOptions'](element).icon;
 
           return (
             <View style={styles.container}>
@@ -74,8 +78,8 @@ const ElementList = () => {
                   style={styles.textWrapper}
                   onPress={
                     isAssociationList
-                      ? handleShowPopup(item)
-                      : handleShowDetails(item)
+                      ? handleShowPopup(element)
+                      : handleShowDetails(element)
                   }>
                   <Subheading numberOfLines={3} ellipsizeMode="tail">
                     {name}

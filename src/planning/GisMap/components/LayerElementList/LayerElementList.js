@@ -21,6 +21,7 @@ const LayerElementList = () => {
   const {
     elementLayerKey,
     elementList,
+    searchedKey,
     handleShowOnMap,
     handleShowDetails,
     handleElementListFilter,
@@ -55,11 +56,13 @@ const LayerElementList = () => {
       <FlatList
         contentContainerStyle={styles.contentContainerStyle}
         data={elementList}
-        keyExtractor={item => String(item.id)}
+        keyExtractor={item => String(searchedKey ? item.item.id : item.id)}
         renderItem={({item}) => {
-          const {name, network_id, id} = item;
+          const element = searchedKey ? item.item : item;
+
+          const {name, network_id, id} = element;
           const Icon =
-            LayerKeyMappings[elementLayerKey]['getViewOptions'](item).icon;
+            LayerKeyMappings[elementLayerKey]['getViewOptions'](element).icon;
 
           return (
             <View style={styles.container}>
@@ -82,7 +85,7 @@ const LayerElementList = () => {
                 <View style={styles.actionDivider} />
                 <Pressable
                   style={styles.actionWrapper}
-                  onPress={handleShowOnMap(item, elementLayerKey)}>
+                  onPress={handleShowOnMap(element, elementLayerKey)}>
                   <View style={styles.squreButton}>
                     <MaterialIcons
                       size={28}

@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from 'react';
 
 import {View, StyleSheet, Keyboard} from 'react-native';
-import {TextInput, Button} from 'react-native-paper';
+import {TextInput, IconButton} from 'react-native-paper';
 import {colors, layout, THEME_COLORS} from '~constants/constants';
 import {percentToHex} from '~utils/app.utils';
 
@@ -39,15 +39,13 @@ const SearchBox = ({onSearchPress}) => {
           ) : null
         }
       />
-      <Button
-        style={styles.btn}
+      <IconButton
+        icon="magnify"
+        onPress={handleSearch}
         color={THEME_COLORS.secondary.main}
-        contentStyle={layout.button}
-        uppercase
-        // icon="magnify"
-        onPress={handleSearch}>
-        Go
-      </Button>
+        style={styles.btn}
+        size={30}
+      />
     </View>
   );
 };
@@ -60,10 +58,12 @@ const styles = StyleSheet.create({
   },
   text: {
     flex: 1,
+    marginTop: 6,
   },
   btn: {
     backgroundColor: THEME_COLORS.secondary.main + percentToHex(16),
-    marginLeft: 8,
+    marginLeft: 12,
+    borderRadius: 0,
   },
 });
 
