@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {View, Platform, AppState, Linking, StyleSheet} from 'react-native';
+import {useDispatch} from 'react-redux';
 import {useQuery} from 'react-query';
 import VersionInfo from 'react-native-version-info';
 import {Headline, Subheading, Button} from 'react-native-paper';
@@ -8,12 +9,14 @@ import {get} from 'lodash';
 import {FullScreenLoader} from './Loader';
 
 import {fetchHealthCheck} from '~Dashboard/data/services';
-import {colors, layout} from '~constants/constants';
+import {colors, layout, THEME_COLORS} from '~constants/constants';
 
 import DownloadApp from '~assets/svg/download.svg';
+import {handleLogoutUser} from '~Authentication/data/auth.actions';
 
 const VersionUpdateProvider = ({children}) => {
   const appState = useRef(AppState.currentState);
+  const dispatch = useDispatch();
 
   const {isLoading, data, refetch} = useQuery('healthCheck', fetchHealthCheck);
 
@@ -47,7 +50,7 @@ const VersionUpdateProvider = ({children}) => {
     );
     const updated =
       VersionInfo.appVersion === appVersion &&
-      VersionInfo.buildVersion === buildVersion;
+      Number(VersionInfo.buildVersion) === buildVersion;
     return {updated, appVersion, buildVersion};
   }, [data]);
 
@@ -59,6 +62,10 @@ const VersionUpdateProvider = ({children}) => {
         `https://play.google.com/store/apps/details?id=${VersionInfo.bundleIdentifier}`,
       );
     }
+  }, []);
+
+  const handleLogout = useCallback(() => {
+    dispatch(handleLogoutUser);
   }, []);
 
   if (isLoading) {
@@ -85,6 +92,15 @@ const VersionUpdateProvider = ({children}) => {
             onPress={handleClick}>
             Update
           </Button>
+          <Button
+            style={[styles.button, styles.secondBtn]}
+            contentStyle={layout.button}
+            color={THEME_COLORS.secondary.main}
+            uppercase
+            mode="outlined"
+            onPress={handleLogout}>
+            Logout
+          </Button>
         </View>
       );
     }
@@ -110,6 +126,10 @@ const styles = StyleSheet.create({
   },
   deniedBtn: {
     marginVertical: 10,
+  },
+  secondBtn: {
+    borderColor: THEME_COLORS.secondary.main,
+    marginTop: 18,
   },
 });
 
