@@ -5,6 +5,7 @@ import {Divider, IconButton, Subheading, Text} from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import get from 'lodash/get';
+import {format} from 'date-fns';
 
 import Loader from '~Common/Loader';
 
@@ -66,6 +67,20 @@ const TableContent = ({elemData, isLoading, layerKey}) => {
                     size={20}
                   />
                 </View>
+              );
+              break;
+
+            case 'date':
+              const dateVal = get(elemData, field);
+
+              let formattedDate = '--';
+              if (dateVal) {
+                formattedDate = format(new Date(dateVal), 'dd/MM/YYY');
+              }
+              ValueCell = (
+                <Subheading style={styles.tableValue}>
+                  {formattedDate}
+                </Subheading>
               );
               break;
 

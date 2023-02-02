@@ -64,15 +64,22 @@ export const ELEMENT_FORM_TEMPLATE = {
         //   field_key: "agreement_start_date",
         //   label: "Agreement start date",
         //   field_type: FIELD_TYPES.DateTime,
+        //   isHidden: (props) => {
+        //     return !props.is_rented;
+        //   },
         // },
         // {
         //   field_key: "agreement_end_date",
         //   label: "Agreement end date",
         //   field_type: FIELD_TYPES.DateTime,
+        //   isHidden: (props) => {
+        //     return !props.is_rented;
+        //   },
         // },
       ],
     },
   ],
+  dependencyFields: ['is_rented'],
   // this shows where dependant template data comes from
   metaData: {
     getElementAddressData: (address, submitData) => {
@@ -86,13 +93,14 @@ export const ELEMENT_TABLE_FIELDS = [
   {label: 'Address', field: 'address', type: 'simple'},
   {label: 'Contact Name', field: 'contact_name', type: 'simple'},
   {label: 'Contact No', field: 'contact_no', type: 'simple'},
-  {label: 'Rented', field: 'is_rented', type: 'simple'},
-  // {
-  //   label: "Agreement start date",
-  //   field: "agreement_start_date",
-  //   type: "date",
-  // },
-  // { label: "Agreement end date", field: "agreement_end_date", type: "date" },
+  {label: 'Rented', field: 'is_rented', type: 'boolean'},
+  {label: 'Rent Amount', field: 'rent_amount', type: 'simple'},
+  {
+    label: 'Agreement start date',
+    field: 'agreement_start_date',
+    type: 'date',
+  },
+  {label: 'Agreement end date', field: 'agreement_end_date', type: 'date'},
 ];
 
 export const ELEMENT_TABLE_EXTRA_CONTROLS = [

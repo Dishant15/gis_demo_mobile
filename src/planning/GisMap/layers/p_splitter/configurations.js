@@ -36,10 +36,10 @@ export const INITIAL_ELEMENT_DATA = {
 
 export const ELEMENT_FORM_TEMPLATE = {
   sections: [
-    // {
-    //   ...ELEMENT_FORM_CONFIG_ABSTRACT_SECTION,
-    //   title: 'Spliter Configuration',
-    // },
+    {
+      ...ELEMENT_FORM_CONFIG_ABSTRACT_SECTION,
+      title: 'Spliter Configuration',
+    },
     {
       title: 'Splitter Form',
       fieldConfigs: [
@@ -50,14 +50,48 @@ export const ELEMENT_FORM_TEMPLATE = {
           field_type: FIELD_TYPES.TextArea,
         },
         {
-          field_key: 'remark',
-          label: 'Remark',
-          field_type: FIELD_TYPES.TextArea,
-          required: false,
+          field_key: 'contact_name',
+          label: 'Contact Name',
+          field_type: FIELD_TYPES.Input,
         },
+        {
+          field_key: 'contact_no',
+          label: 'Contact No',
+          field_type: FIELD_TYPES.Input,
+        },
+        {
+          field_key: 'is_rented',
+          label: 'Rented',
+          field_type: FIELD_TYPES.CheckBox,
+        },
+        {
+          field_key: 'rent_amount',
+          label: 'Amount',
+          field_type: FIELD_TYPES.Input,
+          isHidden: props => {
+            return !props.is_rented;
+          },
+        },
+        // {
+        //   field_key: "agreement_start_date",
+        //   label: "Agreement start date",
+        //   field_type: FIELD_TYPES.DateTime,
+        //   isHidden: (props) => {
+        //     return !props.is_rented;
+        //   },
+        // },
+        // {
+        //   field_key: "agreement_end_date",
+        //   label: "Agreement end date",
+        //   field_type: FIELD_TYPES.DateTime,
+        //   isHidden: (props) => {
+        //     return !props.is_rented;
+        //   },
+        // },
       ],
     },
   ],
+  dependencyFields: ['is_rented'],
   // this shows where dependant template data comes from
   metaData: {
     getElementAddressData: (address, submitData) => {
@@ -70,7 +104,18 @@ export const ELEMENT_TABLE_FIELDS = [
   ...ELEMENT_TABLE_ABSTRACT_FIELDS,
   {label: 'Splitter Type', field: 'splitter_type_display', type: 'simple'},
   {label: 'Address', field: 'address', type: 'simple'},
-  {label: 'Ratio', field: 'ratio', type: 'simple'},
+  {label: 'Contact Name', field: 'contact_name', type: 'simple'},
+  {label: 'Contact No', field: 'contact_no', type: 'simple'},
+  {label: 'Rented', field: 'is_rented', type: 'boolean'},
+  {label: 'Rent Amount', field: 'rent_amount', type: 'simple'},
+  {
+    label: 'Agreement start date',
+    field: 'agreement_start_date',
+    type: 'date',
+  },
+  {label: 'Agreement end date', field: 'agreement_end_date', type: 'date'},
+  {label: 'Input Ports', field: 'input_ports', type: 'simple'},
+  {label: 'Output Ports', field: 'output_ports', type: 'simple'},
   {label: 'Specification', field: 'specification', type: 'simple'},
   {label: 'Vendor', field: 'vendor', type: 'simple'},
 ];

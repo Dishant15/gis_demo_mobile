@@ -43,17 +43,11 @@ export const ELEMENT_FORM_TEMPLATE = {
           field_key: 'contact_name',
           label: 'Contact Name',
           field_type: FIELD_TYPES.Input,
-          validationProps: {
-            required: 'Contact Name is required',
-          },
         },
         {
           field_key: 'contact_no',
           label: 'Contact No',
           field_type: FIELD_TYPES.Input,
-          validationProps: {
-            required: 'Contact No is required',
-          },
         },
         {
           field_key: 'is_rented',
@@ -86,13 +80,14 @@ export const ELEMENT_TABLE_FIELDS = [
   {label: 'Address', field: 'address', type: 'simple'},
   {label: 'Contact Name', field: 'contact_name', type: 'simple'},
   {label: 'Contact No', field: 'contact_no', type: 'simple'},
-  {label: 'Rented', field: 'is_rented', type: 'simple'},
-  // {
-  //   label: "Agreement start date",
-  //   field: "agreement_start_date",
-  //   type: "date",
-  // },
-  // { label: "Agreement end date", field: "agreement_end_date", type: "date" },
+  {label: 'Rented', field: 'is_rented', type: 'boolean'},
+  {label: 'Rent Amount', field: 'rent_amount', type: 'simple'},
+  {
+    label: 'Agreement start date',
+    field: 'agreement_start_date',
+    type: 'date',
+  },
+  {label: 'Agreement end date', field: 'agreement_end_date', type: 'date'},
 ];
 
 export const ELEMENT_TABLE_EXTRA_CONTROLS = [

@@ -15,8 +15,8 @@ export const zIndexMapping = {
   p_manhole: 15,
   p_jointcloser: 16,
   p_olt: 17,
-  p_splitter: 18,
-  p_dp: 19,
+  p_dp: 18,
+  p_splitter: 19,
   p_cable: 20,
 
   edit: 50,

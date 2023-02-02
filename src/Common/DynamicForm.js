@@ -1,4 +1,9 @@
-import React, {forwardRef, useCallback, useImperativeHandle} from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+} from 'react';
 import {View, StyleSheet, Pressable} from 'react-native';
 
 import {useForm, Controller} from 'react-hook-form';
@@ -40,366 +45,378 @@ export const FIELD_TYPES = {
  * Parent:
  *    GisLayerForm
  */
-const DynamicForm = forwardRef(
-  (
-    {formConfigs, data, onSubmit, onCancel, isLoading, skipTitleIndex = null},
-    ref,
-  ) => {
-    const {sections} = formConfigs;
-    const {bottom} = useSafeAreaInsets();
+const DynamicForm = forwardRef((props, ref) => {
+  const {
+    formConfigs,
+    data,
+    onSubmit,
+    onCancel,
+    isEdit = false,
+    isLoading,
+    configurationOptions = [],
+    skipTitleIndex = null,
+  } = props;
+  const {sections, dependencyFields = []} = formConfigs;
+  const {bottom} = useSafeAreaInsets();
 
-    const {
-      formState: {errors},
-      register,
-      control,
-      setError,
-      clearErrors,
-      handleSubmit,
-    } = useForm({
-      defaultValues: data,
-    });
+  const {
+    formState: {errors},
+    control,
+    watch,
+    setError,
+    clearErrors,
+    handleSubmit,
+  } = useForm({
+    defaultValues: data,
+  });
 
-    useImperativeHandle(ref, () => ({
-      onError: (fieldKey, errorMsg) => {
-        setError(fieldKey, {type: 'custom', message: errorMsg});
-      },
-    }));
+  useImperativeHandle(ref, () => ({
+    onError: (fieldKey, errorMsg) => {
+      setError(fieldKey, {type: 'custom', message: errorMsg});
+    },
+  }));
 
-    const onFormSubmit = useCallback(data => {
-      onSubmit(data, setError, clearErrors);
-    }, []);
+  const onFormSubmit = useCallback(data => {
+    onSubmit(data, setError, clearErrors);
+  }, []);
 
-    return (
-      <KeyboardAwareScrollView
-        keyboardShouldPersistTaps="always"
-        style={[styles.container, {paddingBottom: Math.max(bottom, 12)}]}>
-        {sections.map((section, s_id) => {
-          const {title, fieldConfigs, showCloseIcon} = section;
-          return (
-            <View key={title}>
-              {skipTitleIndex === s_id ? null : <Title>{title}</Title>}
-              {!!fieldConfigs ? (
-                <View>
-                  {fieldConfigs.map(config => {
-                    const {
-                      field_key,
-                      label,
-                      field_type,
-                      type,
-                      validationProps,
-                      disabled,
-                    } = config;
-                    switch (field_type) {
-                      case FIELD_TYPES.Input:
-                        return (
-                          <Controller
-                            key={field_key}
-                            control={control}
-                            name={field_key}
-                            rules={validationProps}
-                            render={({
-                              field: {ref, onChange, onBlur, value},
-                            }) => (
-                              <Input
-                                ref={ref}
-                                label={label}
-                                onChangeText={onChange}
-                                onBlur={onBlur}
-                                value={!!value ? String(value) : ''}
-                                error={get(errors, [field_key, 'message'])}
-                                disabled={disabled}
-                                underlineColorAndroid="transparent"
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                returnKeyType="next"
-                                blurOnSubmit={false}
-                                keyboardType={
-                                  type === 'number' ? 'number-pad' : 'default'
-                                }
-                              />
-                            )}
-                          />
-                        );
-                      case FIELD_TYPES.TextArea:
-                        return (
-                          <Controller
-                            key={field_key}
-                            control={control}
-                            name={field_key}
-                            rules={validationProps}
-                            render={({
-                              field: {ref, onChange, onBlur, value},
-                            }) => (
-                              <Input
-                                ref={ref}
-                                label={label}
-                                onChangeText={onChange}
-                                onBlur={onBlur}
-                                value={!!value ? String(value) : ''}
-                                error={get(errors, [field_key, 'message'])}
-                                disabled={disabled}
-                                underlineColorAndroid="transparent"
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                returnKeyType="next" // next will not show new line in keyboard
-                                blurOnSubmit={true}
-                                multiline={true}
-                                // onSubmitEditing={handleFocus('address')}
-                                inputStyle={{
-                                  height: 100,
-                                }}
-                                keyboardType={
-                                  type === 'number' ? 'number-pad' : 'default'
-                                }
-                              />
-                            )}
-                          />
-                        );
-                      case FIELD_TYPES.CheckBox:
-                        return (
-                          <Controller
-                            key={field_key}
-                            control={control}
-                            name={field_key}
-                            rules={validationProps}
-                            render={({field: {onChange, value}}) => {
-                              const errMessage = get(errors, [
-                                field_key,
-                                'message',
-                              ]);
-                              return (
-                                <>
-                                  <Pressable
-                                    style={styles.checkboxWrapper}
-                                    onPress={() => onChange(!value)}>
-                                    <MaterialCommunityIcons
-                                      size={26}
-                                      name={
-                                        value
-                                          ? 'checkbox-marked'
-                                          : 'checkbox-blank-outline'
-                                      }
-                                      color={
-                                        value
-                                          ? colors.primaryMain
-                                          : colors.primaryFontColor
-                                      }
-                                      style={{textAlign: 'center'}}
-                                    />
-                                    <Text style={styles.checkboxText}>
-                                      {label}
-                                    </Text>
-                                  </Pressable>
-                                  {!!errMessage ? (
-                                    <HelperText
-                                      type="error"
-                                      visible={!!errMessage}>
-                                      {errMessage}
-                                    </HelperText>
-                                  ) : null}
-                                </>
-                              );
-                            }}
-                          />
-                        );
-                      case FIELD_TYPES.ChipSelect:
-                        return (
-                          <Controller
-                            key={field_key}
-                            control={control}
-                            name={field_key}
-                            rules={validationProps}
-                            render={({
-                              field: {ref, onChange, onBlur, value},
-                            }) => {
-                              const errMessage = get(errors, [
-                                field_key,
-                                'message',
-                              ]);
-                              return (
-                                <>
-                                  <View style={styles.categoryWrapper}>
-                                    <Caption>{label}</Caption>
-                                    <View style={styles.chipWrapper}>
-                                      {get(config, 'options', []).map(opt => {
-                                        const selected = opt.value === value;
-                                        return (
-                                          <Chip
-                                            key={opt.value}
-                                            style={[
-                                              styles.chip,
-                                              selected && styles.chipActive,
-                                            ]}
-                                            selected={selected}
-                                            selectedColor={
-                                              selected ? colors.white : null
-                                            }
-                                            onPress={() => onChange(opt.value)}>
-                                            {opt.label}
-                                          </Chip>
-                                        );
-                                      })}
-                                    </View>
+  // watchValues : [0: true, 1: "abc"] => return value list according to dependencyFields
+  const watchValues = watch(dependencyFields);
+  // convert value list to {key, value}
+  const watchValuesKeyValues = useMemo(() => {
+    let result = {};
+    dependencyFields.forEach((field, i) => (result[field] = watchValues[i]));
+    return result;
+  }, [watchValues, dependencyFields]);
+
+  return (
+    <KeyboardAwareScrollView
+      keyboardShouldPersistTaps="always"
+      style={[styles.container, {paddingBottom: Math.max(bottom, 12)}]}>
+      {sections.map((section, s_id) => {
+        const {title, fieldConfigs, showCloseIcon} = section;
+        return (
+          <View key={title}>
+            {skipTitleIndex === s_id ? null : <Title>{title}</Title>}
+            {!!fieldConfigs ? (
+              <View>
+                {fieldConfigs.map(config => {
+                  const {
+                    field_key,
+                    label,
+                    field_type,
+                    type,
+                    validationProps,
+                    disabled,
+                    disable_on_edit,
+                  } = config;
+
+                  const isDisabled = disabled || (disable_on_edit && isEdit);
+
+                  const isHidden = config.isHidden
+                    ? config.isHidden(watchValuesKeyValues)
+                    : false;
+
+                  if (isHidden) return null;
+
+                  switch (field_type) {
+                    case FIELD_TYPES.Input:
+                      return (
+                        <Controller
+                          key={field_key}
+                          control={control}
+                          name={field_key}
+                          rules={validationProps}
+                          render={({field: {ref, onChange, onBlur, value}}) => (
+                            <Input
+                              ref={ref}
+                              label={label}
+                              onChangeText={onChange}
+                              onBlur={onBlur}
+                              value={!!value ? String(value) : ''}
+                              error={get(errors, [field_key, 'message'])}
+                              disabled={isDisabled}
+                              underlineColorAndroid="transparent"
+                              autoCapitalize="none"
+                              autoCorrect={false}
+                              returnKeyType="next"
+                              blurOnSubmit={false}
+                              keyboardType={
+                                type === 'number' ? 'number-pad' : 'default'
+                              }
+                            />
+                          )}
+                        />
+                      );
+                    case FIELD_TYPES.TextArea:
+                      return (
+                        <Controller
+                          key={field_key}
+                          control={control}
+                          name={field_key}
+                          rules={validationProps}
+                          render={({field: {ref, onChange, onBlur, value}}) => (
+                            <Input
+                              ref={ref}
+                              label={label}
+                              onChangeText={onChange}
+                              onBlur={onBlur}
+                              value={!!value ? String(value) : ''}
+                              error={get(errors, [field_key, 'message'])}
+                              disabled={isDisabled}
+                              underlineColorAndroid="transparent"
+                              autoCapitalize="none"
+                              autoCorrect={false}
+                              returnKeyType="next" // next will not show new line in keyboard
+                              blurOnSubmit={true}
+                              multiline={true}
+                              // onSubmitEditing={handleFocus('address')}
+                              inputStyle={{
+                                height: 100,
+                              }}
+                              keyboardType={
+                                type === 'number' ? 'number-pad' : 'default'
+                              }
+                            />
+                          )}
+                        />
+                      );
+                    case FIELD_TYPES.CheckBox:
+                      return (
+                        <Controller
+                          key={field_key}
+                          control={control}
+                          name={field_key}
+                          rules={validationProps}
+                          render={({field: {onChange, value}}) => {
+                            const errMessage = get(errors, [
+                              field_key,
+                              'message',
+                            ]);
+                            return (
+                              <>
+                                <Pressable
+                                  style={styles.checkboxWrapper}
+                                  onPress={() => onChange(!value)}>
+                                  <MaterialCommunityIcons
+                                    size={26}
+                                    name={
+                                      value
+                                        ? 'checkbox-marked'
+                                        : 'checkbox-blank-outline'
+                                    }
+                                    color={
+                                      value
+                                        ? colors.primaryMain
+                                        : colors.primaryFontColor
+                                    }
+                                    style={{textAlign: 'center'}}
+                                  />
+                                  <Text style={styles.checkboxText}>
+                                    {label}
+                                  </Text>
+                                </Pressable>
+                                {!!errMessage ? (
+                                  <HelperText
+                                    type="error"
+                                    visible={!!errMessage}>
+                                    {errMessage}
+                                  </HelperText>
+                                ) : null}
+                              </>
+                            );
+                          }}
+                        />
+                      );
+                    case FIELD_TYPES.ChipSelect:
+                      return (
+                        <Controller
+                          key={field_key}
+                          control={control}
+                          name={field_key}
+                          rules={validationProps}
+                          render={({field: {ref, onChange, onBlur, value}}) => {
+                            const errMessage = get(errors, [
+                              field_key,
+                              'message',
+                            ]);
+                            return (
+                              <>
+                                <View style={styles.categoryWrapper}>
+                                  <Caption>{label}</Caption>
+                                  <View style={styles.chipWrapper}>
+                                    {get(config, 'options', []).map(opt => {
+                                      const selected = opt.value === value;
+                                      return (
+                                        <Chip
+                                          key={opt.value}
+                                          style={[
+                                            styles.chip,
+                                            selected && styles.chipActive,
+                                          ]}
+                                          selected={selected}
+                                          selectedColor={
+                                            selected ? colors.white : null
+                                          }
+                                          onPress={() => onChange(opt.value)}>
+                                          {opt.label}
+                                        </Chip>
+                                      );
+                                    })}
                                   </View>
-                                  {!!errMessage ? (
-                                    <HelperText
-                                      type="error"
-                                      visible={!!errMessage}>
-                                      {errMessage}
-                                    </HelperText>
-                                  ) : null}
-                                </>
-                              );
-                            }}
-                          />
-                        );
-                      case FIELD_TYPES.Select:
-                        return (
-                          <Controller
-                            key={field_key}
-                            control={control}
-                            name={field_key}
-                            rules={validationProps}
-                            render={({
-                              field: {ref, onChange, onBlur, value},
-                            }) => {
-                              const errMessage = get(errors, [
-                                field_key,
-                                'message',
-                              ]);
-                              return (
-                                <>
-                                  <FormSelect
-                                    inputLabel={label}
-                                    tagList={config.options || []}
-                                    onSubmit={onChange}
-                                    selectedTags={value}
-                                    simpleValue
-                                  />
-                                  {!!errMessage ? (
-                                    <HelperText
-                                      type="error"
-                                      visible={!!errMessage}>
-                                      {errMessage}
-                                    </HelperText>
-                                  ) : null}
-                                </>
-                              );
-                            }}
-                          />
-                        );
-                      case FIELD_TYPES.SelectMulti:
-                        return (
-                          <Controller
-                            key={field_key}
-                            control={control}
-                            name={field_key}
-                            rules={validationProps}
-                            render={({
-                              field: {ref, onChange, onBlur, value},
-                            }) => {
-                              const errMessage = get(errors, [
-                                field_key,
-                                'message',
-                              ]);
-                              return (
-                                <>
-                                  <FormSelect
-                                    inputLabel={label}
-                                    tagList={config.options || []}
-                                    onSubmit={onChange}
-                                    selectedTags={value}
-                                    isMulti
-                                    simpleValue
-                                  />
-                                  {!!errMessage ? (
-                                    <HelperText
-                                      type="error"
-                                      visible={!!errMessage}>
-                                      {errMessage}
-                                    </HelperText>
-                                  ) : null}
-                                </>
-                              );
-                            }}
-                          />
-                        );
+                                </View>
+                                {!!errMessage ? (
+                                  <HelperText
+                                    type="error"
+                                    visible={!!errMessage}>
+                                    {errMessage}
+                                  </HelperText>
+                                ) : null}
+                              </>
+                            );
+                          }}
+                        />
+                      );
+                    case FIELD_TYPES.Select:
+                      return (
+                        <Controller
+                          key={field_key}
+                          control={control}
+                          name={field_key}
+                          rules={validationProps}
+                          render={({field: {ref, onChange, onBlur, value}}) => {
+                            const errMessage = get(errors, [
+                              field_key,
+                              'message',
+                            ]);
+                            return (
+                              <>
+                                <FormSelect
+                                  inputLabel={label}
+                                  tagList={config.options || []}
+                                  onSubmit={onChange}
+                                  selectedTags={value}
+                                  simpleValue
+                                />
+                                {!!errMessage ? (
+                                  <HelperText
+                                    type="error"
+                                    visible={!!errMessage}>
+                                    {errMessage}
+                                  </HelperText>
+                                ) : null}
+                              </>
+                            );
+                          }}
+                        />
+                      );
+                    case FIELD_TYPES.SelectMulti:
+                      return (
+                        <Controller
+                          key={field_key}
+                          control={control}
+                          name={field_key}
+                          rules={validationProps}
+                          render={({field: {ref, onChange, onBlur, value}}) => {
+                            const errMessage = get(errors, [
+                              field_key,
+                              'message',
+                            ]);
+                            return (
+                              <>
+                                <FormSelect
+                                  inputLabel={label}
+                                  tagList={config.options || []}
+                                  onSubmit={onChange}
+                                  selectedTags={value}
+                                  isMulti
+                                  simpleValue
+                                />
+                                {!!errMessage ? (
+                                  <HelperText
+                                    type="error"
+                                    visible={!!errMessage}>
+                                    {errMessage}
+                                  </HelperText>
+                                ) : null}
+                              </>
+                            );
+                          }}
+                        />
+                      );
 
-                      case FIELD_TYPES.SelectCreatable:
-                        return (
-                          <Controller
-                            key={field_key}
-                            control={control}
-                            name={field_key}
-                            rules={validationProps}
-                            render={({
-                              field: {ref, onChange, onBlur, value},
-                            }) => {
-                              const errMessage = get(errors, [
-                                field_key,
-                                'message',
-                              ]);
-                              return (
-                                <>
-                                  <FormSelect
-                                    inputLabel={label}
-                                    tagList={config.options || []}
-                                    onSubmit={onChange}
-                                    selectedTags={value}
-                                    simpleValue
-                                    isMulti
-                                    creatable
-                                  />
-                                  {!!errMessage ? (
-                                    <HelperText
-                                      type="error"
-                                      visible={!!errMessage}>
-                                      {errMessage}
-                                    </HelperText>
-                                  ) : null}
-                                </>
-                              );
-                            }}
-                          />
-                        );
-                      default:
-                        return <Caption key={field_key}>{label}</Caption>;
-                    }
-                  })}
-                </View>
-              ) : null}
-            </View>
-          );
-        })}
+                    case FIELD_TYPES.SelectCreatable:
+                      return (
+                        <Controller
+                          key={field_key}
+                          control={control}
+                          name={field_key}
+                          rules={validationProps}
+                          render={({field: {ref, onChange, onBlur, value}}) => {
+                            const errMessage = get(errors, [
+                              field_key,
+                              'message',
+                            ]);
+                            return (
+                              <>
+                                <FormSelect
+                                  inputLabel={label}
+                                  tagList={config.options || []}
+                                  onSubmit={onChange}
+                                  selectedTags={value}
+                                  simpleValue
+                                  isMulti
+                                  creatable
+                                />
+                                {!!errMessage ? (
+                                  <HelperText
+                                    type="error"
+                                    visible={!!errMessage}>
+                                    {errMessage}
+                                  </HelperText>
+                                ) : null}
+                              </>
+                            );
+                          }}
+                        />
+                      );
+                    default:
+                      return <Caption key={field_key}>{label}</Caption>;
+                  }
+                })}
+              </View>
+            ) : null}
+          </View>
+        );
+      })}
 
-        <View style={styles.btnWrapper}>
-          <Button
-            style={styles.btn1}
-            contentStyle={layout.button}
-            color={colors.black}
-            uppercase
-            mode="outlined"
-            onPress={onCancel}>
-            Cancel
-          </Button>
-          <Button
-            style={styles.btn2}
-            loading={isLoading}
-            contentStyle={layout.button}
-            labelStyle={{
-              color: THEME_COLORS.secondary.contrastText,
-            }}
-            color={THEME_COLORS.secondary.main}
-            uppercase
-            mode="contained"
-            onPress={handleSubmit(onFormSubmit)}>
-            Submit
-          </Button>
-        </View>
-      </KeyboardAwareScrollView>
-    );
-  },
-);
+      <View style={styles.btnWrapper}>
+        <Button
+          style={styles.btn1}
+          contentStyle={layout.button}
+          color={colors.black}
+          uppercase
+          mode="outlined"
+          onPress={onCancel}>
+          Cancel
+        </Button>
+        <Button
+          style={styles.btn2}
+          loading={isLoading}
+          contentStyle={layout.button}
+          labelStyle={{
+            color: THEME_COLORS.secondary.contrastText,
+          }}
+          color={THEME_COLORS.secondary.main}
+          uppercase
+          mode="contained"
+          onPress={handleSubmit(onFormSubmit)}>
+          Submit
+        </Button>
+      </View>
+    </KeyboardAwareScrollView>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
