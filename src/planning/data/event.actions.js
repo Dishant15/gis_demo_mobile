@@ -22,6 +22,7 @@ import {fetchTicketWorkorderDataThunk} from './ticket.services';
 import {FEATURE_TYPES} from '~planning/GisMap/layers/common/configuration';
 import {screens} from '~constants/constants';
 import {coordsToLatLongMap, pointCoordsToLatLongMap} from '~utils/map.utils';
+import {DEFAULT_MAP_ZOOM} from '~Common/components/Map/map.constants';
 
 export const navigateTicketWorkorderToDetails =
   (item, navigation) => dispatch => {
@@ -43,7 +44,7 @@ export const onEditElementGeometry =
       dispatch(
         setMapPosition({
           center: data.geometry,
-          zoom: 16,
+          zoom: DEFAULT_MAP_ZOOM,
         }),
       );
     } else {
@@ -113,7 +114,7 @@ export const onShowMarkerOnMapPress = (center, navigation) => dispatch => {
   dispatch(
     setMapPosition({
       center: pointCoordsToLatLongMap(center),
-      zoom: 16,
+      zoom: DEFAULT_MAP_ZOOM,
     }),
   );
   navigation.navigate(screens.planningScreen);

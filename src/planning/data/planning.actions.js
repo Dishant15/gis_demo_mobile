@@ -57,6 +57,7 @@ import {
 import {screens} from '~constants/constants';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import {filterGisDataByPolygon} from './planning.utils';
+import {DEFAULT_MAP_ZOOM} from '~Common/components/Map/map.constants';
 
 export const onRegionSelectionUpdate =
   updatedRegionIdList => (dispatch, getState) => {
@@ -108,7 +109,7 @@ export const onPointShowOnMap =
     dispatch(
       setMapPosition({
         center: pointCoordsToLatLongMap(center),
-        zoom: 16,
+        zoom: DEFAULT_MAP_ZOOM,
       }),
     );
     dispatch(
@@ -182,7 +183,7 @@ export const onLayerElementShowOnMapClick =
         dispatch(
           setMapPosition({
             center: element.coordinates,
-            zoom: 16,
+            zoom: DEFAULT_MAP_ZOOM,
           }),
         );
         dispatch(

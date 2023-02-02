@@ -26,6 +26,7 @@ import {getFillColor, pointCoordsToLatLongMap} from '~utils/map.utils';
 import {colors, layout} from '~constants/constants';
 import {onRegionSelectionUpdate} from '~planning/data/planning.actions';
 import {setMapPosition} from '~planning/data/planningGis.reducer';
+import {DEFAULT_MAP_ZOOM} from '~Common/components/Map/map.constants';
 
 const RegionTabContent = ({hideModal}) => {
   /**
@@ -98,7 +99,7 @@ const RegionTabContent = ({hideModal}) => {
       dispatch(
         setMapPosition({
           center: pointCoordsToLatLongMap(selectedRegion.center),
-          zoom: 16,
+          zoom: DEFAULT_MAP_ZOOM,
         }),
       );
     }

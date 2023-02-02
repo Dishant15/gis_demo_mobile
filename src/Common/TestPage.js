@@ -3,7 +3,10 @@ import {View, Platform} from 'react-native';
 import MapView, {Polygon, PROVIDER_GOOGLE, UrlTile} from 'react-native-maps';
 import SplashScreen from 'react-native-splash-screen';
 
-import {DEFAULT_MAP_CENTER} from './components/Map/map.constants';
+import {
+  DEFAULT_MAP_CENTER,
+  DEFAULT_MAP_ZOOM,
+} from './components/Map/map.constants';
 
 // lyrs types in tile url
 // https://stackoverflow.com/a/33023651
@@ -52,7 +55,7 @@ const TestPage = () => {
           setTimeout(() => {
             if (ref.current) {
               ref.current.animateCamera(
-                {center: DEFAULT_MAP_CENTER, zoom: 16},
+                {center: DEFAULT_MAP_CENTER, zoom: DEFAULT_MAP_ZOOM},
                 {duration: 100},
               );
             }

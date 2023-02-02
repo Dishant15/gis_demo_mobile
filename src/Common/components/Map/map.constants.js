@@ -13,5 +13,5 @@ export const DEFAULT_MAP_CENTER = {
   latitude: 23.024334044995985,
 };
 
-// supported zoom levels 0 to 18
-export const DEFAULT_MAP_ZOOM = 16;
+// supported zoom levels 0 to 20
+export const DEFAULT_MAP_ZOOM = 20;

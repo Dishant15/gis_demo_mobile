@@ -8,7 +8,7 @@ import MyLocationButton from './MyLocationButton';
 
 import {getCurrentLocation, getMapType} from '../../data/appstate.selector';
 import {colors, layout} from '~constants/constants';
-import {DEFAULT_MAP_CENTER} from './map.constants';
+import {DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM} from './map.constants';
 
 const Map = forwardRef((props, ref) => {
   const {
@@ -26,7 +26,7 @@ const Map = forwardRef((props, ref) => {
   const onLocationPress = useCallback(() => {
     if (ref.current) {
       ref.current.animateCamera(
-        {center: currentLocation, zoom: 16},
+        {center: currentLocation, zoom: DEFAULT_MAP_ZOOM},
         {duration: 100},
       );
     }
