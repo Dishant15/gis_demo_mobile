@@ -65,43 +65,9 @@ const DashboardScreen = ({navigation}) => {
             style={styles.squreCard}>
             <Card.Content style={styles.content}>
               <View style={styles.squreCardWrapper}>
-                <Subheading>Survey Tickets</Subheading>
+                <Subheading>Active Tickets</Subheading>
                 <Headline style={styles.headline}>
-                  {get(dashboardData, 'survey_ticket_count', 0)}
-                </Headline>
-              </View>
-            </Card.Content>
-            <Card.Actions>
-              <Button>View All</Button>
-            </Card.Actions>
-          </Card>
-          <Card
-            elevation={2}
-            onPress={navigateNetworkList}
-            style={styles.squreCard}>
-            <Card.Content style={styles.content}>
-              <View style={styles.squreCardWrapper}>
-                <Subheading>Network Tickets</Subheading>
-                <Headline style={styles.headline}>
-                  {get(dashboardData, 'network_ticket_count', 0)}
-                </Headline>
-              </View>
-            </Card.Content>
-            <Card.Actions>
-              <Button>View All</Button>
-            </Card.Actions>
-          </Card>
-        </View>
-        <View style={styles.squreCardContainer}>
-          <Card
-            elevation={2}
-            onPress={navigateClientList}
-            style={styles.squreCard}>
-            <Card.Content style={styles.content}>
-              <View style={styles.squreCardWrapper}>
-                <Subheading>Client Tickets</Subheading>
-                <Headline style={styles.headline}>
-                  {get(dashboardData, 'client_ticket_count', 0)}
+                  {get(dashboardData, 'ticket_count', 0)}
                 </Headline>
               </View>
             </Card.Content>

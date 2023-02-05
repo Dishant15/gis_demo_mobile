@@ -88,31 +88,14 @@ const DrawerContent = props => {
               props.navigation.navigate(screens.dashboardScreen);
             }}
           />
-          <List.Accordion
+          <List.Item
             title="Ticket"
-            left={props => <List.Icon {...props} icon="earth" />}>
-            <List.Item
-              title="Survey"
-              onPress={() => {
-                props.navigation.closeDrawer();
-                props.navigation.navigate(screens.surveyTicketList);
-              }}
-            />
-            <List.Item
-              title="Network"
-              onPress={() => {
-                props.navigation.closeDrawer();
-                props.navigation.navigate(screens.planningTicketList);
-              }}
-            />
-            {/* <List.Item
-            title="Client"
+            left={() => <List.Icon icon="earth" />}
             onPress={() => {
               props.navigation.closeDrawer();
-              props.navigation.navigate(screens.clientScreen);
+              props.navigation.navigate(screens.surveyTicketList);
             }}
-          /> */}
-          </List.Accordion>
+          />
           {canPlanningView ? (
             <List.Item
               title="Planning"

@@ -32,7 +32,7 @@ import {colors} from '~constants/constants';
 import {PLANNING_EVENT} from '../utils';
 
 // increament as per how many btns added below this ActionBar
-const ACTION_BUTTON_SIZE = 84;
+const ACTION_BUTTON_SIZE = 62;
 
 /**
  * Parent:

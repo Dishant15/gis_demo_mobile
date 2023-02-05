@@ -75,13 +75,13 @@ const ActionBar = () => {
             color={colors.primaryFontColor}
           />
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.action]} onPress={handleTabChange(2)}>
+        {/* <TouchableOpacity style={[styles.action]} onPress={handleTabChange(2)}>
           <MaterialIcons
             size={30}
             name={'add-location'}
             color={colors.primaryFontColor}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       {!isNull(activeTab) ? (
         <CustomBottomPopup justifyContent="flex-end" handleClose={hideModal}>

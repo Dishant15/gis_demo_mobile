@@ -5,11 +5,11 @@ import {
 } from '../common/configuration';
 import {FIELD_TYPES} from '~Common/DynamicForm';
 
-import {default as Icon} from '~assets/markers/pop_box.svg';
-import {default as EditIcon} from '~assets/markers/pop_pin.svg';
+import {default as Icon} from '~assets/markers/building_view.svg';
+import {default as EditIcon} from '~assets/markers/building_pin.svg';
 
-export const LAYER_KEY = 'p_pop';
-export const PRE_UID = 'POP';
+export const LAYER_KEY = 'p_gp';
+export const PRE_UID = 'GP';
 export const LAYER_FEATURE_TYPE = FEATURE_TYPES.POINT;
 
 export const getViewOptions = () => ({
@@ -22,7 +22,7 @@ export const INITIAL_ELEMENT_DATA = {
   address: '',
   unique_id: '',
   network_id: '',
-  ref_code: '',
+  fid: '',
   status: 'RFS',
   coordinates: {},
 };
@@ -31,7 +31,7 @@ export const INITIAL_ELEMENT_DATA = {
 export const ELEMENT_FORM_TEMPLATE = {
   sections: [
     {
-      title: 'Pop Location Form',
+      title: 'Gram Panchayat Form',
       fieldConfigs: [
         ...ELEMENT_FORM_ABSTRACT_TEMPLATE,
         {
@@ -40,18 +40,23 @@ export const ELEMENT_FORM_TEMPLATE = {
           field_type: FIELD_TYPES.TextArea,
         },
         {
-          field_key: 'snippet',
-          label: 'Snippet',
+          field_key: 'block_name',
+          label: 'Block Name',
           field_type: FIELD_TYPES.Input,
         },
         {
-          field_key: 'block_code',
-          label: 'Block Code',
+          field_key: 'lgd_code',
+          label: 'LDG Code',
           field_type: FIELD_TYPES.Input,
         },
         {
-          field_key: 'district',
-          label: 'District',
+          field_key: 'ring_id',
+          label: 'Ring ID',
+          field_type: FIELD_TYPES.Input,
+        },
+        {
+          field_key: 'connectivity',
+          label: 'Connectivity',
           field_type: FIELD_TYPES.Input,
         },
       ],
@@ -68,9 +73,10 @@ export const ELEMENT_FORM_TEMPLATE = {
 export const ELEMENT_TABLE_FIELDS = [
   ...ELEMENT_TABLE_ABSTRACT_FIELDS,
   {label: 'Address', field: 'address', type: 'simple'},
-  {label: 'Snippet', field: 'snippet', type: 'simple'},
-  {label: 'Block Code', field: 'block_code', type: 'simple'},
-  {label: 'District', field: 'district', type: 'simple'},
+  {label: 'Block Name', field: 'block_name', type: 'simple'},
+  {label: 'LDG Code', field: 'lgd_code', type: 'simple'},
+  {label: 'Ring ID', field: 'ring_id', type: 'simple'},
+  {label: 'Connectivity', field: 'connectivity', type: 'simple'},
 ];
 
 export const ELEMENT_TABLE_EXTRA_CONTROLS = [];

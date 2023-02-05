@@ -10,7 +10,7 @@ import * as SplitterLayer from './layers/p_splitter';
 import * as CableLayer from './layers/p_cable';
 import * as BuildingLayer from './layers/p_survey_building';
 import * as SAreaLayer from './layers/p_survey_area';
-import * as PopLayer from './layers/p_pop';
+// import * as PopLayer from './layers/p_pop';
 import * as SPopLayer from './layers/p_spop';
 import * as FSALayer from './layers/p_fsa';
 import * as DSALayer from './layers/p_dsa';
@@ -19,6 +19,8 @@ import * as PoleLayer from './layers/p_pole';
 import * as ManholeLayer from './layers/p_manhole';
 import * as JointCloserLayer from './layers/p_jointcloser';
 import * as OltLayer from './layers/p_olt';
+import * as PopLayer from './layers/p_pop';
+import * as GpLayer from './layers/p_gp';
 
 // possible events that can happen on map
 export const PLANNING_EVENT = {
@@ -109,6 +111,15 @@ export const LayerKeyMappings = {
     formConfig: PopLayer.ELEMENT_FORM_TEMPLATE,
     elementTableExtraControls: PopLayer.ELEMENT_TABLE_EXTRA_CONTROLS,
   },
+  [GpLayer.LAYER_KEY]: {
+    preUid: GpLayer.PRE_UID,
+    featureType: GpLayer.LAYER_FEATURE_TYPE,
+    getViewOptions: GpLayer.getViewOptions,
+    initialElementData: GpLayer.INITIAL_ELEMENT_DATA,
+    elementTableFields: GpLayer.ELEMENT_TABLE_FIELDS,
+    formConfig: GpLayer.ELEMENT_FORM_TEMPLATE,
+    elementTableExtraControls: GpLayer.ELEMENT_TABLE_EXTRA_CONTROLS,
+  },
   [SPopLayer.LAYER_KEY]: {
     preUid: SPopLayer.PRE_UID,
     featureType: SPopLayer.LAYER_FEATURE_TYPE,
@@ -195,6 +206,7 @@ export const LayerKeyNameMapping = {
   [BuildingLayer.LAYER_KEY]: 'Survey Building',
   [SAreaLayer.LAYER_KEY]: 'Survey Area',
   [PopLayer.LAYER_KEY]: 'Pop Location',
+  [GpLayer.LAYER_KEY]: 'Gram Panchayat',
   [SPopLayer.LAYER_KEY]: 'Sub Pop Location',
   [FSALayer.LAYER_KEY]: 'Feeder Service Area',
   [DSALayer.LAYER_KEY]: 'Distribution Service Area',
