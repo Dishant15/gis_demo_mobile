@@ -1,4 +1,4 @@
-package in.gpstek.netgis;
+package com.gis.demo;
 import android.os.Bundle; // here
 import com.facebook.react.ReactActivity;
 import org.devio.rn.splashscreen.SplashScreen; // here

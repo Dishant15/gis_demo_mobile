@@ -102,7 +102,7 @@ const LoginScreen = () => {
         contentContainerStyle={styles.scrollWrapper}>
         <View style={styles.formWrapper}>
           <Text style={styles.formLabel} maxFontSizeMultiplier={1}>
-            NETWORK GIS
+            GIS DEMO
           </Text>
 
           <Controller

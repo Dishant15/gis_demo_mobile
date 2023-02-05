@@ -234,11 +234,11 @@ export const THEME_COLORS = {
 
 export const HOST_CONFIG = {
   NETGIS: {
-    label: 'Netgis',
+    label: 'Gis Demo',
     value: 'http://64.227.132.147',
   },
   GPSTECH: {
-    label: 'Gtpl',
-    value: 'https://gis.gtpl.net',
+    label: 'Gis Demo 2',
+    value: 'http://64.227.132.147',
   },
 };

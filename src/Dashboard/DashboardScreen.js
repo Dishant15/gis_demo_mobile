@@ -110,7 +110,7 @@ const DashboardScreen = ({navigation}) => {
             </Card.Actions>
           </Card>
         </View>
-        <RegionWiseTicketSummery />
+        {/* <RegionWiseTicketSummery /> */}
       </ScrollView>
       {loadingDashboard ? <Loader /> : null}
     </View>
