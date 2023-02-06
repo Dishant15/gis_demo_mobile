@@ -79,4 +79,11 @@ export const ELEMENT_TABLE_FIELDS = [
   {label: 'Connectivity', field: 'connectivity', type: 'simple'},
 ];
 
-export const ELEMENT_TABLE_EXTRA_CONTROLS = [];
+export const ELEMENT_TABLE_EXTRA_CONTROLS = [
+  {
+    control: 'add-survey',
+  },
+  {
+    control: 'add-survey-images',
+  },
+];

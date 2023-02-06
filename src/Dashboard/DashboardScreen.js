@@ -35,7 +35,9 @@ const DashboardScreen = ({navigation}) => {
   useRefreshOnFocus(refetchDashboardData);
 
   const navigateSurveyTicketList = () => {
-    navigation.navigate(screens.surveyTicketList);
+    navigation.navigate(screens.planningTicketList);
+
+    // navigation.navigate(screens.surveyTicketList);
   };
 
   const navigateNetworkList = () => {

@@ -15,6 +15,7 @@ import LayerElementList from '~planning/GisMap/components/LayerElementList';
 
 import {getPlanningMapState} from '~planning/data/planningGis.selectors';
 import {LayerKeyMappings, PLANNING_EVENT} from '~planning/GisMap/utils';
+import SurveyForm from '~planning/GisMap/components/SurveyForm';
 
 const GisEventScreen = props => {
   const {layerKey, event} = useSelector(getPlanningMapState);
@@ -61,6 +62,9 @@ const GisEventScreen = props => {
 
     case PLANNING_EVENT.showPortDetails:
       return <ElementPortDetails />;
+
+    case PLANNING_EVENT.showSurveyForm:
+      return <SurveyForm />;
 
     default:
       return null;

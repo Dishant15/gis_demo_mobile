@@ -21,6 +21,7 @@ import {
 import {
   onPointShowOnMap,
   onPolygonShowOnMap,
+  openSurveyForm,
 } from '~planning/data/planning.actions';
 
 import {THEME_COLORS} from '~constants/constants';
@@ -231,6 +232,40 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
                   onPress={() =>
                     dispatch(
                       showElementPortDetails({
+                        layerKey,
+                        elementId: elemData.id,
+                      }),
+                    )
+                  }
+                  IconComponent={MaterialIcons}
+                />
+              );
+            case 'add-survey':
+              return (
+                <IconButton
+                  key={control}
+                  iconName="notebook-plus-outline"
+                  label={'Add\nSurvey'}
+                  onPress={() =>
+                    dispatch(
+                      openSurveyForm({
+                        layerKey,
+                        elementId: elemData.id,
+                      }),
+                    )
+                  }
+                  IconComponent={MaterialCommunityIcons}
+                />
+              );
+            case 'add-survey-images':
+              return (
+                <IconButton
+                  key={control}
+                  iconName="add-photo-alternate"
+                  label={'Survey\nimages'}
+                  onPress={() =>
+                    dispatch(
+                      openSurveyForm({
                         layerKey,
                         elementId: elemData.id,
                       }),

@@ -102,6 +102,18 @@ export const openElementDetails =
     );
   };
 
+export const openSurveyForm =
+  ({layerKey, elementId}) =>
+  dispatch => {
+    dispatch(
+      setMapState({
+        event: PLANNING_EVENT.showSurveyForm,
+        layerKey,
+        data: {elementId, step: 1},
+      }),
+    );
+  };
+
 export const onPointShowOnMap =
   (center, elementId, layerKey, navigation) => dispatch => {
     // close form

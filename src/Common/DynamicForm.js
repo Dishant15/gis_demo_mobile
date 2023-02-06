@@ -55,6 +55,9 @@ const DynamicForm = forwardRef((props, ref) => {
     isLoading,
     configurationOptions = [],
     skipTitleIndex = null,
+    submitButtonText = 'Submit',
+    cancelButtonText = 'Cancel',
+    actionElement = null,
   } = props;
   const {sections, dependencyFields = []} = formConfigs;
   const {bottom} = useSafeAreaInsets();
@@ -390,30 +393,34 @@ const DynamicForm = forwardRef((props, ref) => {
         );
       })}
 
-      <View style={styles.btnWrapper}>
-        <Button
-          style={styles.btn1}
-          contentStyle={layout.button}
-          color={colors.black}
-          uppercase
-          mode="outlined"
-          onPress={onCancel}>
-          Cancel
-        </Button>
-        <Button
-          style={styles.btn2}
-          loading={isLoading}
-          contentStyle={layout.button}
-          labelStyle={{
-            color: THEME_COLORS.secondary.contrastText,
-          }}
-          color={THEME_COLORS.secondary.main}
-          uppercase
-          mode="contained"
-          onPress={handleSubmit(onFormSubmit)}>
-          Submit
-        </Button>
-      </View>
+      {actionElement ? (
+        actionElement(handleSubmit)
+      ) : (
+        <View style={styles.btnWrapper}>
+          <Button
+            style={styles.btn1}
+            contentStyle={layout.button}
+            color={colors.black}
+            uppercase
+            mode="outlined"
+            onPress={onCancel}>
+            {cancelButtonText}
+          </Button>
+          <Button
+            style={styles.btn2}
+            loading={isLoading}
+            contentStyle={layout.button}
+            labelStyle={{
+              color: THEME_COLORS.secondary.contrastText,
+            }}
+            color={THEME_COLORS.secondary.main}
+            uppercase
+            mode="contained"
+            onPress={handleSubmit(onFormSubmit)}>
+            {submitButtonText}
+          </Button>
+        </View>
+      )}
     </KeyboardAwareScrollView>
   );
 });

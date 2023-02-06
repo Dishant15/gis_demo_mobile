@@ -18,6 +18,7 @@ import geoSurveyReducer from '~GeoServey/data/geoSurvey.reducer';
 import planningTicketReducer from '~planningTicket/data/planningTicket.reducer';
 import planningStateReducer from '~planning/data/planningState.reducer';
 import planningGisReducer from '~planning/data/planningGis.reducer';
+import surveyFormReducer from '~planning/data/surveyForm.reducer';
 
 const rootReducer = combineReducers({
   appState: appStateReducer,
@@ -27,6 +28,8 @@ const rootReducer = combineReducers({
   planningTicket: planningTicketReducer,
   planningState: planningStateReducer,
   planningGis: planningGisReducer,
+
+  surveyForm: surveyFormReducer,
 });
 
 const persistConfig = {

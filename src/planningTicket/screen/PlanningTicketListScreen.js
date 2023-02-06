@@ -29,7 +29,8 @@ const PlanningTicketListScreen = props => {
   const {navigation} = props;
 
   const {isLoading, data, refetch} = useQuery(
-    ['ticketList', 'P'],
+    // ['ticketList', 'P'],
+    ['ticketList', 'S'],
     fetchTicketList,
   );
 
