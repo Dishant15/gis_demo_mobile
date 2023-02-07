@@ -22,8 +22,14 @@ import {useRefreshOnFocus} from '~utils/useRefreshOnFocus';
 
 import {layout, colors, THEME_COLORS, screens} from '~constants/constants';
 
-import {fetchTicketWorkorderDataThunk} from '~planning/data/ticket.services';
-import {getPlanningTicketData} from '~planning/data/planningGis.selectors';
+import {
+  fetchSurveyTicketWorkorderDataThunk,
+  fetchTicketDetailsThunk,
+} from '~planning/data/ticket.services';
+import {
+  getSurveyTicketWo,
+  getTicketDetails,
+} from '~planning/data/planningGis.selectors';
 import {onViewMapClick} from '~planning/data/event.actions';
 import {LayerKeyMappings} from '~planning/GisMap/utils';
 import {
@@ -44,19 +50,20 @@ const TicketWorkorderScreen = props => {
 
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
-  const ticketData = useSelector(getPlanningTicketData);
-  const {isLoading, work_orders, countByStatus} = ticketData;
-
   const [statusFilter, setStatusFilter] = useState(null);
 
-  // fetch ticket details
+  const surveyTicketData = useSelector(getTicketDetails);
+  const surveyTicketWorkorder = useSelector(getSurveyTicketWo);
+
   useEffect(() => {
-    dispatch(fetchTicketWorkorderDataThunk(ticketId));
+    dispatch(fetchSurveyTicketWorkorderDataThunk(ticketId));
+    dispatch(fetchTicketDetailsThunk(ticketId));
   }, [ticketId]);
 
   const refetch = useCallback(() => {
-    dispatch(fetchTicketWorkorderDataThunk(ticketId));
-  }, []);
+    dispatch(fetchSurveyTicketWorkorderDataThunk(ticketId));
+    dispatch(fetchTicketDetailsThunk(ticketId));
+  }, [ticketId]);
 
   useRefreshOnFocus(refetch);
 
@@ -96,20 +103,24 @@ const TicketWorkorderScreen = props => {
 
   const filteredList = useMemo(() => {
     if (statusFilter) {
-      return filter(work_orders, ['status', statusFilter]);
+      return filter(surveyTicketWorkorder.list, ['status', statusFilter]);
     } else {
-      return work_orders;
+      return surveyTicketWorkorder.list;
     }
-  }, [work_orders, statusFilter]);
+  }, [surveyTicketWorkorder.list, statusFilter]);
 
   const isSubmitted = statusFilter === 'S';
   const isVerified = statusFilter === 'V';
   const isRejected = statusFilter === 'R';
+  const countByStatus = {};
+
+  const isLoading =
+    surveyTicketData.isLoading || surveyTicketWorkorder.isLoading;
 
   return (
     <View style={[layout.container, layout.relative]}>
       <BackHeader
-        title={get(ticketData, 'name', '')}
+        title={get(surveyTicketData, 'name', '')}
         onGoBack={navigation.goBack}
       />
       <View style={styles.filterWrapper}>

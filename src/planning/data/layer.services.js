@@ -5,6 +5,7 @@ import {
   apiGetElementDetails,
   apiGetElementPortDetails,
   apiGetRegionDetails,
+  apiGetSurveyWoDetails,
   apiPostAddElement,
   apiPostAddTicketWorkorder,
   apiPostValidateElementGeometry,
@@ -73,5 +74,11 @@ export const addElementConnection = async ({data, cableId}) => {
 export const fetchElementPortDetails = async ({queryKey}) => {
   const [_key, layerKey, elementId] = queryKey;
   const res = await Api.get(apiGetElementPortDetails(layerKey, elementId));
+  return res.data;
+};
+
+export const fetchSurveyWODetails = async ({queryKey}) => {
+  const [_key, layerKey, elementId] = queryKey;
+  const res = await Api.get(apiGetSurveyWoDetails(layerKey, elementId));
   return res.data;
 };

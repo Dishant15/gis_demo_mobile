@@ -14,7 +14,11 @@ import {fetchLayerDataThunk} from './actionBar.services';
 import {handleLayerSelect, removeLayerSelect} from './planningState.reducer';
 import {filterGisDataByPolygon, filterLayerData} from './planning.utils';
 import {convertLayerServerData, LayerKeyNameMapping} from '../GisMap/utils';
-import {fetchTicketWorkorderDataThunk} from './ticket.services';
+import {
+  fetchSurveyTicketWorkorderDataThunk,
+  fetchTicketDetailsThunk,
+  fetchTicketWorkorderDataThunk,
+} from './ticket.services';
 import {
   coordsToLatLongMap,
   getMapBoundsFromRegion,
@@ -86,6 +90,17 @@ const initialState = {
   },
   // set workorder id if user select ticket workorder
   workOrderId: null,
+  // survey ticket details
+  surveyTicketData: {
+    isLoading: false,
+    isFetched: false,
+    isError: false,
+  },
+  surveyTicketWorkorder: {
+    isLoading: false,
+    isFetched: false,
+    isError: false,
+  },
 };
 
 const planningGisSlice = createSlice({
@@ -471,6 +486,33 @@ const planningGisSlice = createSlice({
         ticketGisData.work_orders,
         'status',
       );
+    },
+    [fetchSurveyTicketWorkorderDataThunk.pending]: (state, action) => {
+      state.surveyTicketWorkorder.isLoading = true;
+      state.surveyTicketWorkorder.isError = false;
+    },
+    [fetchSurveyTicketWorkorderDataThunk.rejected]: (state, action) => {
+      console.log(action.payload);
+      state.surveyTicketWorkorder.isLoading = false;
+      state.surveyTicketWorkorder.isError = true;
+    },
+    [fetchSurveyTicketWorkorderDataThunk.fulfilled]: (state, action) => {
+      state.surveyTicketWorkorder.list = action.payload;
+      state.surveyTicketWorkorder.isLoading = false;
+      state.surveyTicketWorkorder.isError = false;
+    },
+    [fetchTicketDetailsThunk.pending]: (state, action) => {
+      state.surveyTicketData.isLoading = true;
+      state.surveyTicketData.isError = false;
+    },
+    [fetchTicketDetailsThunk.rejected]: (state, action) => {
+      state.surveyTicketData.isLoading = false;
+      state.surveyTicketData.isError = true;
+    },
+    [fetchTicketDetailsThunk.fulfilled]: (state, action) => {
+      state.surveyTicketData = action.payload;
+      state.surveyTicketData.isLoading = false;
+      state.surveyTicketData.isError = false;
     },
     [logout]: () => {
       return initialState;

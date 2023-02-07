@@ -90,3 +90,12 @@ export const apiUpdateElementConnections = cableId =>
 
 export const apiGetElementPortDetails = (layerKey, elementId) =>
   `/api/planning/layer/${layerKey}/${elementId}/ports/`;
+
+export const getApiSurveyTicketWoList = ticketId =>
+  `/api/survey/ticket/${ticketId}/list/`;
+
+export const apiGetSurveyWoDetails = (layerKey, elementId) =>
+  `/api/survey/${layerKey}/${elementId}/details/`;
+
+export const apiGetTicketDetails = ticketId =>
+  `/api/ticket/${ticketId}/details/`;
