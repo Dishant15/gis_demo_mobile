@@ -510,7 +510,14 @@ const planningGisSlice = createSlice({
       state.surveyTicketData.isError = true;
     },
     [fetchTicketDetailsThunk.fulfilled]: (state, action) => {
-      state.surveyTicketData = action.payload;
+      let ticketDetails = cloneDeep(action.payload);
+      ticketDetails.area_pocket.coordinates = coordsToLatLongMap(
+        ticketDetails.area_pocket.coordinates,
+      );
+      ticketDetails.area_pocket.center = coordsToLatLongMap([
+        ticketDetails.area_pocket.center,
+      ])[0];
+      state.surveyTicketData = ticketDetails;
       state.surveyTicketData.isLoading = false;
       state.surveyTicketData.isError = false;
     },

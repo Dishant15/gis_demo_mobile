@@ -5,7 +5,10 @@ import {Polyline, Polygon} from 'react-native-maps';
 import MapMarker from '~Common/components/Map/MapMarker';
 import HighlightedPolyline from '~Common/components/Map/HighlightedPolyline';
 
-import {getPlanningTicketData} from '~planning/data/planningGis.selectors';
+import {
+  getPlanningTicketData,
+  getTicketDetails,
+} from '~planning/data/planningGis.selectors';
 
 import {LayerKeyMappings} from '../utils';
 import {FEATURE_TYPES, zIndexMapping} from '../layers/common/configuration';
@@ -15,10 +18,10 @@ const HIGHLIGHT_COLOR = '#446eca';
 const TicketMapViewLayer = () => {
   const {
     id: ticketId,
-    work_orders = [],
+    // work_orders = [],
     area_pocket,
     isHidden,
-  } = useSelector(getPlanningTicketData);
+  } = useSelector(getTicketDetails);
 
   if (ticketId && !isHidden) {
     return (
@@ -31,7 +34,7 @@ const TicketMapViewLayer = () => {
             fillColor="#88B14B4D"
           />
         ) : null}
-        {work_orders.map(workOrder => {
+        {/* {work_orders.map(workOrder => {
           const {id, layer_key, element, hidden, highlighted} = workOrder;
           if (hidden) return null;
           if (element.id) {
@@ -106,7 +109,7 @@ const TicketMapViewLayer = () => {
                 return null;
             }
           }
-        })}
+        })} */}
       </>
     );
   }
