@@ -16,6 +16,7 @@ import {filterGisDataByPolygon, filterLayerData} from './planning.utils';
 import {convertLayerServerData, LayerKeyNameMapping} from '../GisMap/utils';
 import {
   fetchSurveyTicketWorkorderDataThunk,
+  fetchSurveyWoDetailsThunk,
   fetchTicketDetailsThunk,
   fetchTicketWorkorderDataThunk,
 } from './ticket.services';
@@ -100,6 +101,14 @@ const initialState = {
     isLoading: false,
     isFetched: false,
     isError: false,
+    list: [],
+  },
+  surveyWorkorder: {
+    isLoading: false,
+    isFetched: false,
+    isError: false,
+    // 1: add form, 2: edit form, 3: review, 4: error
+    screenType: null,
   },
 };
 
@@ -492,7 +501,6 @@ const planningGisSlice = createSlice({
       state.surveyTicketWorkorder.isError = false;
     },
     [fetchSurveyTicketWorkorderDataThunk.rejected]: (state, action) => {
-      console.log(action.payload);
       state.surveyTicketWorkorder.isLoading = false;
       state.surveyTicketWorkorder.isError = true;
     },
@@ -520,6 +528,29 @@ const planningGisSlice = createSlice({
       state.surveyTicketData = ticketDetails;
       state.surveyTicketData.isLoading = false;
       state.surveyTicketData.isError = false;
+    },
+    [fetchSurveyWoDetailsThunk.pending]: (state, action) => {
+      state.surveyWorkorder.isLoading = true;
+      state.surveyWorkorder.isError = false;
+    },
+    [fetchSurveyWoDetailsThunk.rejected]: (state, action) => {
+      state.surveyWorkorder.isLoading = false;
+      state.surveyWorkorder.isError = true;
+      if (action.payload === 404) {
+        // show add form
+        state.surveyWorkorder.screenType = 1;
+        state.mapState.data.currentStep = 1;
+      } else {
+        // error screen
+        state.surveyWorkorder.screenType = 4;
+      }
+    },
+    [fetchSurveyWoDetailsThunk.fulfilled]: (state, action) => {
+      state.surveyWorkorder = action.payload;
+      state.surveyWorkorder.isLoading = false;
+      state.surveyWorkorder.isError = false;
+      // review screen
+      state.surveyWorkorder.screenType = 3;
     },
     [logout]: () => {
       return initialState;

@@ -102,14 +102,14 @@ export const openElementDetails =
     );
   };
 
-export const openSurveyForm =
-  ({layerKey, elementId}) =>
+export const openSurveyFormFromElementDetails =
+  ({layerKey, elementId, geometry, address}) =>
   dispatch => {
     dispatch(
       setMapState({
-        event: PLANNING_EVENT.showSurveyForm,
+        event: PLANNING_EVENT.showSurveyDetails,
         layerKey,
-        data: {elementId, step: 1},
+        data: {elementId, geometry: pointCoordsToLatLongMap(geometry), address},
       }),
     );
   };

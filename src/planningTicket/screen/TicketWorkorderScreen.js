@@ -31,7 +31,7 @@ import {
   getTicketDetails,
 } from '~planning/data/planningGis.selectors';
 import {onViewMapClick} from '~planning/data/event.actions';
-import {LayerKeyMappings} from '~planning/GisMap/utils';
+import {LayerKeyMappings, LayerKeyNameMapping} from '~planning/GisMap/utils';
 import {
   onWorkOrderListItemClick,
   openElementDetails,
@@ -158,14 +158,13 @@ const TicketWorkorderScreen = props => {
         renderItem={({item, index}) => {
           const {
             id: workOrderId,
-            element,
+            element_id: elementId,
             layer_key,
             status,
             work_order_type,
           } = item;
-          const {name, network_id, id: elementId} = element;
           const Icon = LayerKeyMappings[layer_key]['getViewOptions'](item).icon;
-
+          const name = LayerKeyNameMapping[layer_key];
           return (
             <View style={styles.container}>
               <View style={styles.wrapper}>
@@ -202,7 +201,7 @@ const TicketWorkorderScreen = props => {
                     {name}
                   </Subheading>
                   <Caption numberOfLines={3} ellipsizeMode="tail">
-                    #{network_id}
+                    #{'network_id'}
                   </Caption>
                 </Pressable>
                 <View style={styles.actionDivider} />

@@ -1,11 +1,13 @@
 import Api from '~utils/api.utils';
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {
+  apiGetSurveyWoDetails,
   apiGetTicketDetails,
   apiGetTicketWorkorderElements,
   apiPutTicketWorkorderEdit,
   getApiSurveyTicketWoList,
 } from '~constants/url.constants';
+import {get} from 'lodash';
 
 export const fetchTicketWorkorderData = async ticketId => {
   const res = await Api.get(apiGetTicketWorkorderElements(ticketId));
@@ -42,4 +44,21 @@ const fetchTicketDetails = async ticketId => {
 export const fetchTicketDetailsThunk = createAsyncThunk(
   'planningGis/fetchTicketDetails',
   fetchTicketDetails,
+);
+
+const fetchSurveyWoDetails = async (
+  {layerKey, elementId},
+  {rejectWithValue},
+) => {
+  try {
+    const res = await Api.get(apiGetSurveyWoDetails(layerKey, elementId));
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(get(error, 'response.status'));
+  }
+};
+
+export const fetchSurveyWoDetailsThunk = createAsyncThunk(
+  'planningGis/fetchSurveyWoDetails',
+  fetchSurveyWoDetails,
 );

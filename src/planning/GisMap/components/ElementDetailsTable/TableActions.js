@@ -22,6 +22,7 @@ import {
   onPointShowOnMap,
   onPolygonShowOnMap,
   openSurveyForm,
+  openSurveyFormFromElementDetails,
 } from '~planning/data/planning.actions';
 
 import {THEME_COLORS} from '~constants/constants';
@@ -37,6 +38,10 @@ import {FEATURE_TYPES} from '../../layers/common/configuration';
 import {checkUserPermission} from '~Authentication/data/auth.selectors';
 
 const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
+  console.log(
+    '🚀 ~ file: TableActions.js:40 ~ TableActions ~ elemData',
+    elemData,
+  );
   const navigation = useNavigation();
   const {bottom} = useSafeAreaInsets();
   const dispatch = useDispatch();
@@ -248,9 +253,11 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
                   label={'Add\nSurvey'}
                   onPress={() =>
                     dispatch(
-                      openSurveyForm({
+                      openSurveyFormFromElementDetails({
                         layerKey,
                         elementId: elemData.id,
+                        geometry: elemData.geometry,
+                        address: elemData.address,
                       }),
                     )
                   }
@@ -265,7 +272,7 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
                   label={'Survey\nimages'}
                   onPress={() =>
                     dispatch(
-                      openSurveyForm({
+                      openSurveyFormFromElementDetails({
                         layerKey,
                         elementId: elemData.id,
                       }),

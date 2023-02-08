@@ -46,3 +46,6 @@ export const getTicketDetails = store => store.planningGis.surveyTicketData;
 
 export const getSurveyTicketWo = store =>
   store.planningGis.surveyTicketWorkorder;
+
+export const getSurveyWorkorderDetails = store =>
+  store.planningGis.surveyWorkorder;

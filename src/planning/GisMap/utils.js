@@ -43,7 +43,7 @@ export const PLANNING_EVENT = {
   layerElementsOnMap: 15,
 
   // survey form
-  showSurveyForm: 16,
+  showSurveyDetails: 16,
 };
 
 export const TICKET_WORKORDER_TYPE = {

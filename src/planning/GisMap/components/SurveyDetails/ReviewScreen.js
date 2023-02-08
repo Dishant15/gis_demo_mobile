@@ -1,14 +1,15 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, StyleSheet, Pressable} from 'react-native';
-import {colors, layout, THEME_COLORS} from '~constants/constants';
-import {Button, Title} from 'react-native-paper';
+import {Button, Title, Text} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {steps} from './SurveyForm';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
+import {colors, layout, THEME_COLORS} from '~constants/constants';
+import {STEPS_CONFIG} from './configuration';
 
 const ReviewScreen = () => {
   const insets = useSafeAreaInsets();
-
+  const [showDetails, setShowDetails] = useState(null);
   const navigateToReview = () => {};
 
   return (
@@ -16,21 +17,24 @@ const ReviewScreen = () => {
       style={{
         flexGrow: 1,
       }}>
-      {steps.map(step => {
+      {STEPS_CONFIG.map(config => {
+        const stepTitle = config.sections[0].title;
+        const isExpanded = showDetails === stepTitle;
         return (
-          <View key={step.step} style={styles.cardWrapper}>
-            <Pressable
-              style={styles.iconWrapper}
-              // onPress={hasChildren ? handleRegionExpandClick(id) : noop}
-            >
-              <MaterialIcons
-                size={30}
-                // name={isExpanded ? 'expand-less' : 'expand-more'}
-                name={'expand-more'}
-                color={colors.primaryFontColor}
-              />
-            </Pressable>
-            <Title style={styles.ticketCount}>{step.stepName}</Title>
+          <View key={stepTitle}>
+            <View style={styles.cardWrapper}>
+              <Pressable
+                style={styles.iconWrapper}
+                onPress={() => setShowDetails(isExpanded ? null : stepTitle)}>
+                <MaterialIcons
+                  size={30}
+                  name={isExpanded ? 'expand-less' : 'expand-more'}
+                  color={colors.primaryFontColor}
+                />
+              </Pressable>
+              <Title style={styles.ticketCount}>{stepTitle}</Title>
+            </View>
+            {isExpanded ? <Text>Here</Text> : null}
           </View>
         );
       })}
