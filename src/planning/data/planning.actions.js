@@ -33,6 +33,7 @@ import {
   setMapHighlight,
   setMapPosition,
   setMapState,
+  setSurveyWoScreenType,
 } from './planningGis.reducer';
 import {
   generateElementUid,
@@ -48,6 +49,7 @@ import {
   getPlanningTicketData,
   getLayerNetworkState,
   getMasterViewData,
+  getPlanningMapState,
 } from './planningGis.selectors';
 import {
   coordsToLatLongMap,
@@ -119,6 +121,19 @@ export const openSurveyFormFromElementDetails =
       }),
     );
   };
+
+export const openSurveyEditForm = index => (dispatch, getState) => {
+  const storeState = getState();
+  const mapState = getPlanningMapState(storeState);
+
+  dispatch(setSurveyWoScreenType(2));
+  dispatch(
+    setMapState({
+      ...mapState,
+      currentStep: index + 1,
+    }),
+  );
+};
 
 export const onPointShowOnMap =
   (center, elementId, layerKey, navigation) => dispatch => {

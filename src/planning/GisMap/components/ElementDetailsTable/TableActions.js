@@ -258,23 +258,6 @@ const TableActions = ({layerKey, elemData, onEditDataConverter}) => {
                   IconComponent={MaterialCommunityIcons}
                 />
               );
-            case 'add-survey-images':
-              return (
-                <IconButton
-                  key={control}
-                  iconName="add-photo-alternate"
-                  label={'Survey\nimages'}
-                  onPress={() =>
-                    dispatch(
-                      openSurveyFormFromElementDetails({
-                        layerKey,
-                        elementId: elemData.id,
-                      }),
-                    )
-                  }
-                  IconComponent={MaterialIcons}
-                />
-              );
             default:
               return null;
           }

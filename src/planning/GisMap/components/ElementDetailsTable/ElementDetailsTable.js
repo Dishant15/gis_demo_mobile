@@ -13,6 +13,8 @@ import {fetchElementDetails} from '~planning/data/layer.services';
 import {getPlanningMapStateData} from '~planning/data/planningGis.selectors';
 
 import {layout} from '~constants/constants';
+import {LayerKeyMappings} from '~planning/GisMap/utils';
+import {get} from 'lodash';
 
 const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
   const navigation = useNavigation();
@@ -27,14 +29,14 @@ const ElementDetailsTable = ({layerKey, onEditDataConverter}) => {
       select: data => ({...data, geometry: data.coordinates}),
     },
   );
-
+  const rowDefs = get(LayerKeyMappings, [layerKey, 'elementTableFields'], []);
   return (
     <View style={[layout.container, layout.relative]}>
       <BackHeader title="Element Details" onGoBack={navigation.goBack} />
       <TableContent
         elemData={elemData}
         isLoading={isLoading}
-        layerKey={layerKey}
+        rowDefs={rowDefs}
       />
       <TableActions
         elemData={elemData}

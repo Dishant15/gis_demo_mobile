@@ -71,7 +71,6 @@ export const upsertSurveyWoDetails = async ({
   elementId,
   data,
 }) => {
-  console.log({isEdit, layerKey, elementId, data});
   if (isEdit) {
     const res = await Api.put(apiPutSurveyWo(layerKey, elementId), data);
     return res.data;

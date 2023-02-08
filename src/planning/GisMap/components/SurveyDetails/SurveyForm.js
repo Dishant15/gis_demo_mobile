@@ -1,5 +1,5 @@
-import React, {useMemo, useRef} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, {useCallback, useMemo, useRef} from 'react';
+import {View, StyleSheet, BackHandler} from 'react-native';
 import {layout, THEME_COLORS} from '~constants/constants';
 import {Button} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
@@ -18,6 +18,8 @@ import {STEPS_CONFIG, STEPS_TRACK} from './configuration';
 import {pick} from 'lodash';
 import {upsertSurveyWoDetails} from '~planning/data/ticket.services';
 import {useMutation} from 'react-query';
+import {useFocusEffect} from '@react-navigation/native';
+import {openElementDetails} from '~planning/data/planning.actions';
 
 const SurveyForm = () => {
   const formRef = useRef();
@@ -30,9 +32,34 @@ const SurveyForm = () => {
   const {data: mapStateData, currentStep, layerKey} = mapState;
   const isEdit = surveyWorkorder.screenType === 2;
 
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', navigateToReview);
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', navigateToReview);
+    }, [isEdit]),
+  );
+
+  const navigateToReview = () => {
+    if (isEdit) {
+      dispatch(setSurveyWoScreenType(3));
+    } else {
+      dispatch(
+        openElementDetails({layerKey, elementId: mapStateData.elementId}),
+      );
+    }
+    return true; // required for backHandler
+  };
+
   const onSuccessHandler = res => {
     if (isEdit) {
       dispatch(setSurveyWoScreenType(3));
+      dispatch(
+        setMapState({
+          ...mapState,
+          data: {...mapState.data, ...res},
+        }),
+      );
     } else {
       if (currentStep === 4) {
         dispatch(setSurveyWoScreenType(3));
@@ -134,7 +161,9 @@ const SurveyForm = () => {
     });
   };
 
-  const handleCancel = () => {};
+  const handleCancel = () => {
+    navigateToReview();
+  };
 
   if (!stepContent) return null;
 

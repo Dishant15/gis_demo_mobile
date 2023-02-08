@@ -10,10 +10,8 @@ import {format} from 'date-fns';
 import Loader from '~Common/Loader';
 
 import {colors, THEME_COLORS} from '~constants/constants';
-import {LayerKeyMappings} from '~planning/GisMap/utils';
 
-const TableContent = ({elemData, isLoading, layerKey}) => {
-  const rowDefs = get(LayerKeyMappings, [layerKey, 'elementTableFields'], []);
+const TableContent = ({elemData, isLoading, rowDefs}) => {
   return (
     <>
       {isLoading ? <Loader /> : null}

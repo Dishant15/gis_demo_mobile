@@ -554,6 +554,10 @@ const planningGisSlice = createSlice({
       state.surveyWorkorder.isError = false;
       // review screen
       state.surveyWorkorder.screenType = 3;
+      state.mapState.data = {
+        ...state.mapState.data,
+        ...action.payload,
+      };
     },
     [logout]: () => {
       return initialState;

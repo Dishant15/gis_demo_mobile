@@ -56,6 +56,7 @@ export const STEPS_CONFIG = [
         ],
       },
     ],
+    elementTableFields: [{label: 'Address', field: 'address', type: 'simple'}],
   },
   {
     sections: [
@@ -100,6 +101,14 @@ export const STEPS_CONFIG = [
           },
         ],
       },
+    ],
+    elementTableFields: [
+      {label: 'Package (A/B/C/D)', field: 'package', type: 'simple'},
+      {label: 'MSI/SI Name', field: 'msi_name', type: 'simple'},
+      {label: 'District Name', field: 'district_name', type: 'simple'},
+      {label: 'Block Name', field: 'block_name', type: 'simple'},
+      {label: 'Block Code', field: 'block_code', type: 'simple'},
+      {label: 'POP Code', field: 'pop_code', type: 'simple'},
     ],
   },
 
@@ -146,6 +155,34 @@ export const STEPS_CONFIG = [
         ],
       },
     ],
+    elementTableFields: [
+      {
+        label: 'Building Condition',
+        field: 'building_condition',
+        type: 'simple',
+      },
+      {
+        label: 'Rooftop/ceiling Condition',
+        field: 'ceil_condition',
+        type: 'simple',
+      },
+      {
+        label: 'Pop location reachability',
+        field: 'pop_location_reachability',
+        type: 'simple',
+      },
+      {
+        label: 'Space availibility',
+        field: 'space_availibility',
+        type: 'simple',
+      },
+      {label: 'Seepage', field: 'seepage', type: 'simple'},
+      {
+        label: 'Availibility of SWAN connectivity',
+        field: 'avail_swan_connectivity',
+        type: 'simple',
+      },
+    ],
   },
 
   {
@@ -175,6 +212,16 @@ export const STEPS_CONFIG = [
           },
         ],
       },
+    ],
+    elementTableFields: [
+      {
+        label: 'Contact person name',
+        field: 'contact_person_name',
+        type: 'simple',
+      },
+      {label: 'Designation', field: 'designation', type: 'simple'},
+      {label: 'Mobile No', field: 'mobile_no', type: 'simple'},
+      {label: 'Email Id', field: 'email_id', type: 'simple'},
     ],
   },
 ];
