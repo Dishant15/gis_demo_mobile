@@ -124,7 +124,7 @@ export const STEPS_CONFIG = [
             field_key: 'pop_location_reachability',
             label: 'Pop location reachability',
             field_type: FIELD_TYPES.ChipSelect,
-            options: YES_NO_OPTS,
+            options: GOOD_BAD_OPTS,
           },
           {
             field_key: 'space_availibility',

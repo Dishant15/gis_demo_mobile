@@ -4,6 +4,8 @@ import {
   apiGetSurveyWoDetails,
   apiGetTicketDetails,
   apiGetTicketWorkorderElements,
+  apiPostSurveyWo,
+  apiPutSurveyWo,
   apiPutTicketWorkorderEdit,
   getApiSurveyTicketWoList,
 } from '~constants/url.constants';
@@ -62,3 +64,19 @@ export const fetchSurveyWoDetailsThunk = createAsyncThunk(
   'planningGis/fetchSurveyWoDetails',
   fetchSurveyWoDetails,
 );
+
+export const upsertSurveyWoDetails = async ({
+  isEdit,
+  layerKey,
+  elementId,
+  data,
+}) => {
+  console.log({isEdit, layerKey, elementId, data});
+  if (isEdit) {
+    const res = await Api.put(apiPutSurveyWo(layerKey, elementId), data);
+    return res.data;
+  } else {
+    const res = await Api.post(apiPostSurveyWo(layerKey, elementId), data);
+    return res.data;
+  }
+};

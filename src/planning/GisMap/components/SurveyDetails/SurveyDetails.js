@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {View, Text} from 'react-native';
 import {useNavigation} from '@react-navigation/core';
 import {useDispatch, useSelector} from 'react-redux';
@@ -13,6 +13,7 @@ import {
 import Loader from '~Common/Loader';
 import ReviewScreen from './ReviewScreen';
 import SurveyForm from './SurveyForm';
+import {STEPS_CONFIG} from './configuration';
 
 const SurveyDetails = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,8 @@ const SurveyDetails = () => {
 
   const layerKey = mapState.layerKey;
   const elementId = mapState.data.elementId;
+  const currentStep = mapState.currentStep;
+
   const {isLoading, screenType} = surveyWorkorder;
 
   useEffect(() => {
@@ -30,6 +33,23 @@ const SurveyDetails = () => {
   }, [layerKey, elementId]);
 
   let content = null;
+  let title = '';
+
+  const getSurveyTitle = () => {
+    switch (currentStep) {
+      case 1:
+        return STEPS_CONFIG[0].sections[0].title;
+      case 2:
+        return STEPS_CONFIG[1].sections[0].title;
+      case 3:
+        return STEPS_CONFIG[2].sections[0].title;
+      case 4:
+        return STEPS_CONFIG[3].sections[0].title;
+      default:
+        return 'Survey Details';
+    }
+  };
+
   if (isLoading) {
     content = <Loader />;
   }
@@ -38,12 +58,15 @@ const SurveyDetails = () => {
     switch (screenType) {
       case 1:
         content = <SurveyForm />;
+        title = getSurveyTitle();
         break;
       case 2:
         content = <SurveyForm />;
+        title = getSurveyTitle();
         break;
       case 3:
         content = <ReviewScreen />;
+        title = 'Survey Details';
         break;
       case 4:
         content = (
@@ -51,15 +74,17 @@ const SurveyDetails = () => {
             <Text>Could not fetch data. try again.</Text>
           </View>
         );
+        title = 'Survey Details';
         break;
       default:
+        title = 'Survey Details';
         break;
     }
   }
 
   return (
     <View style={layout.container}>
-      <BackHeader title={'Survey Form'} onGoBack={navigation.goBack} />
+      <BackHeader title={title} onGoBack={navigation.goBack} />
       {content}
     </View>
   );

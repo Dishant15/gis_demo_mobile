@@ -367,6 +367,9 @@ const planningGisSlice = createSlice({
       };
       state.workOrderId = null;
     },
+    setSurveyWoScreenType: (state, {payload}) => {
+      state.surveyWorkorder.screenType = payload;
+    },
   },
   extraReducers: {
     // payload : layerKey
@@ -539,7 +542,7 @@ const planningGisSlice = createSlice({
       if (action.payload === 404) {
         // show add form
         state.surveyWorkorder.screenType = 1;
-        state.mapState.data.currentStep = 1;
+        state.mapState.currentStep = 1;
       } else {
         // error screen
         state.surveyWorkorder.screenType = 4;
@@ -577,5 +580,6 @@ export const {
   setTicketMapHighlight,
   resetTicketMapHighlight,
   setMapBounds,
+  setSurveyWoScreenType,
 } = planningGisSlice.actions;
 export default planningGisSlice.reducer;

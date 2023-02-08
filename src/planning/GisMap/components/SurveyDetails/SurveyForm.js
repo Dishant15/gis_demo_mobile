@@ -1,60 +1,120 @@
-import React, {useMemo, useRef, useCallback} from 'react';
+import React, {useMemo, useRef} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {layout, THEME_COLORS} from '~constants/constants';
-import {Button, Card} from 'react-native-paper';
+import {Button} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
-import DynamicForm, {FIELD_TYPES} from '~Common/DynamicForm';
+import DynamicForm from '~Common/DynamicForm';
 import TrackReturnOrder from '~Common/TrackReturnOrder';
-import {getPlanningMapState} from '~planning/data/planningGis.selectors';
-import {setMapState} from '~planning/data/planningGis.reducer';
+import {
+  getPlanningMapState,
+  getPlanningTicketId,
+  getSurveyWorkorderDetails,
+} from '~planning/data/planningGis.selectors';
+import {
+  setMapState,
+  setSurveyWoScreenType,
+} from '~planning/data/planningGis.reducer';
 import {STEPS_CONFIG, STEPS_TRACK} from './configuration';
+import {pick} from 'lodash';
+import {upsertSurveyWoDetails} from '~planning/data/ticket.services';
+import {useMutation} from 'react-query';
 
 const SurveyForm = () => {
   const formRef = useRef();
   const dispatch = useDispatch();
 
+  const surveyWorkorder = useSelector(getSurveyWorkorderDetails);
   const mapState = useSelector(getPlanningMapState);
-  console.log(
-    '🚀 ~ file: SurveyForm.js:234 ~ FormAddContainer ~ mapState',
-    mapState,
-  );
-  const currStep = mapState.data.currentStep;
+  const ticketId = useSelector(getPlanningTicketId);
 
-  const isEdit = false;
+  const {data: mapStateData, currentStep, layerKey} = mapState;
+  const isEdit = surveyWorkorder.screenType === 2;
+
+  const onSuccessHandler = res => {
+    if (isEdit) {
+      dispatch(setSurveyWoScreenType(3));
+    } else {
+      if (currentStep === 4) {
+        dispatch(setSurveyWoScreenType(3));
+      } else if (currentStep < 4) {
+        dispatch(
+          setMapState({
+            ...mapState,
+            data: {...mapState.data, ...res},
+            currentStep: currentStep + 1,
+          }),
+        );
+      }
+    }
+  };
+
+  const onErrorHandler = err => {};
+
+  const {mutate, isLoading} = useMutation(
+    mutationData => upsertSurveyWoDetails(mutationData),
+    {
+      onSuccess: onSuccessHandler,
+      onError: onErrorHandler,
+    },
+  );
+
   const stepContent = useMemo(() => {
-    switch (currStep) {
+    switch (currentStep) {
       case 1: {
         return {
-          formConfigs: STEPS_CONFIG[0].formConfig,
+          formConfigs: STEPS_CONFIG[0],
           submitButtonText: 'Next',
           cancelButtonText: 'Cancel',
           trackIndex: 0,
+          data: pick(mapStateData, ['address', 'lat', 'long']),
         };
       }
 
       case 2: {
         return {
-          formConfigs: STEPS_CONFIG[1].formConfig,
+          formConfigs: STEPS_CONFIG[1],
           submitButtonText: 'Next',
           cancelButtonText: 'Back',
           trackIndex: 2,
+          data: pick(mapStateData, [
+            'package',
+            'msi_name',
+            'district_name',
+            'block_name',
+            'block_code',
+            'pop_code',
+          ]),
         };
       }
       case 3: {
         return {
-          formConfigs: STEPS_CONFIG[2].formConfig,
+          formConfigs: STEPS_CONFIG[2],
           submitButtonText: 'Next',
           cancelButtonText: 'Back',
           trackIndex: 4,
+          data: pick(mapStateData, [
+            'building_condition',
+            'ceil_condition',
+            'pop_location_reachability',
+            'space_availibility',
+            'seepage',
+            'avail_swan_connectivity',
+          ]),
         };
       }
       case 4: {
         {
           return {
-            formConfigs: STEPS_CONFIG[3].formConfig,
+            formConfigs: STEPS_CONFIG[3],
             submitButtonText: 'Submit',
             cancelButtonText: 'Back',
             trackIndex: 6,
+            data: pick(mapStateData, [
+              'contact_person_name',
+              'designation',
+              'mobile_no',
+              'email_id',
+            ]),
           };
         }
       }
@@ -62,89 +122,22 @@ const SurveyForm = () => {
         return null;
       }
     }
-  }, [currStep]);
+  }, [currentStep, isEdit, mapStateData]);
 
-  const handleFormSubmit = () => {
-    switch (currStep) {
-      case 1:
-        dispatch(
-          setMapState({
-            ...mapState,
-            data: {...mapState.data, step: 2},
-          }),
-        );
-        break;
-      case 2:
-        dispatch(
-          setMapState({
-            ...mapState,
-            data: {...mapState.data, step: 3},
-          }),
-        );
-        break;
-      case 3:
-        dispatch(
-          setMapState({
-            ...mapState,
-            data: {...mapState.data, step: 4},
-          }),
-        );
-        break;
-      case 4:
-        // dispatch(
-        //   setMapState({
-        //     ...mapState,
-        //     data: {...mapState.data, step: 2},
-        //   }),
-        // );
-        break;
-
-      default:
-        break;
-    }
+  const handleFormSubmit = data => {
+    const isEditApiCall = isEdit || currentStep !== 1;
+    mutate({
+      isEdit: isEditApiCall,
+      layerKey,
+      elementId: mapStateData.elementId,
+      data: {...data, ticketId},
+    });
   };
 
-  const handleCancel = () => {
-    switch (currStep) {
-      case 1:
-        // dispatch(
-        //   setMapState({
-        //     ...mapState,
-        //     data: {...mapState.data, step: 2},
-        //   }),
-        // );
-        break;
-      case 2:
-        dispatch(
-          setMapState({
-            ...mapState,
-            data: {...mapState.data, step: 1},
-          }),
-        );
-        break;
-      case 3:
-        dispatch(
-          setMapState({
-            ...mapState,
-            data: {...mapState.data, step: 2},
-          }),
-        );
-        break;
-      case 4:
-        dispatch(
-          setMapState({
-            ...mapState,
-            data: {...mapState.data, step: 3},
-          }),
-        );
-        break;
-
-      default:
-        break;
-    }
-  };
+  const handleCancel = () => {};
 
   if (!stepContent) return null;
+
   return (
     <View>
       <TrackReturnOrder
@@ -154,8 +147,10 @@ const SurveyForm = () => {
       <DynamicForm
         ref={formRef}
         formConfigs={stepContent.formConfigs}
-        data={{}}
+        data={stepContent.data}
         isEdit={isEdit}
+        isLoading={isLoading}
+        skipTitleIndex={0}
         actionElement={handleSubmit => (
           <View style={styles.btnWrapper}>
             <Button
@@ -165,7 +160,7 @@ const SurveyForm = () => {
               uppercase
               mode="outlined"
               onPress={handleCancel}>
-              {isEdit ? 'Cancel' : stepContent.cancelButtonText}
+              Cancel
             </Button>
             <Button
               style={[styles.btn2, {borderColor: THEME_COLORS.secondary.main}]}
@@ -190,6 +185,7 @@ const styles = StyleSheet.create({
   btnWrapper: {
     flexDirection: 'row',
     paddingVertical: 24,
+    marginBottom: 200,
   },
   btn1: {
     flex: 1,

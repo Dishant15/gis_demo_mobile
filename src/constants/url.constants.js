@@ -99,3 +99,9 @@ export const apiGetSurveyWoDetails = (layerKey, elementId) =>
 
 export const apiGetTicketDetails = ticketId =>
   `/api/ticket/${ticketId}/details/`;
+
+export const apiPostSurveyWo = (layerKey, elementId) =>
+  `/api/survey/${layerKey}/${elementId}/add/`;
+
+export const apiPutSurveyWo = (layerKey, elementId) =>
+  `/api/survey/${layerKey}/${elementId}/edit/`;

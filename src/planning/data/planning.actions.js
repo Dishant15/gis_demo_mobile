@@ -103,13 +103,19 @@ export const openElementDetails =
   };
 
 export const openSurveyFormFromElementDetails =
-  ({layerKey, elementId, geometry, address}) =>
+  ({layerKey, elemData}) =>
   dispatch => {
+    const latLong = pointCoordsToLatLongMap(elemData.geometry);
     dispatch(
       setMapState({
         event: PLANNING_EVENT.showSurveyDetails,
         layerKey,
-        data: {elementId, geometry: pointCoordsToLatLongMap(geometry), address},
+        data: {
+          ...elemData,
+          elementId: elemData.id,
+          lat: latLong.latitude,
+          long: latLong.longitude,
+        },
       }),
     );
   };
