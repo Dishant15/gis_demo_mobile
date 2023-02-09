@@ -51,18 +51,18 @@ const ReviewScreen = () => {
         const isExpanded = showDetails === stepTitle;
         return (
           <View key={stepTitle}>
-            <View style={styles.cardWrapper}>
-              <Pressable
-                style={styles.iconWrapper}
-                onPress={() => setShowDetails(isExpanded ? null : stepTitle)}>
+            <Pressable
+              style={styles.cardWrapper}
+              onPress={() => setShowDetails(isExpanded ? null : stepTitle)}>
+              <View style={styles.iconWrapper}>
                 <MaterialIcons
                   size={30}
                   name={isExpanded ? 'expand-less' : 'expand-more'}
                   color={colors.primaryFontColor}
                 />
-              </Pressable>
+              </View>
               <Title style={styles.ticketCount}>{stepTitle}</Title>
-            </View>
+            </Pressable>
             {isExpanded ? (
               <ReviewDetails index={ind} surveyWorkorder={mapStateData} />
             ) : null}

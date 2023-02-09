@@ -37,6 +37,7 @@ import {
   openElementDetails,
 } from '~planning/data/planning.actions';
 import {setTicketWorkOrderId} from '~planning/data/planningGis.reducer';
+import {countBy} from 'lodash';
 
 /**
  * Parent:
@@ -112,7 +113,7 @@ const TicketWorkorderScreen = props => {
   const isSubmitted = statusFilter === 'S';
   const isVerified = statusFilter === 'V';
   const isRejected = statusFilter === 'R';
-  const countByStatus = {};
+  const countByStatus = countBy(surveyTicketWorkorder.list, 'status');
 
   const isLoading =
     surveyTicketData.isLoading || surveyTicketWorkorder.isLoading;

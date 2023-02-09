@@ -22,12 +22,14 @@ import {useFocusEffect} from '@react-navigation/native';
 import {openElementDetails} from '~planning/data/planning.actions';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 import SurverImageUpload from './SurverImageUpload';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const LAST_STEP = 5;
 
 const SurveyForm = () => {
   const formRef = useRef();
   const dispatch = useDispatch();
+  const {bottom} = useSafeAreaInsets();
 
   const surveyWorkorder = useSelector(getSurveyWorkorderDetails);
   const mapState = useSelector(getPlanningMapState);
@@ -238,6 +240,26 @@ const SurveyForm = () => {
           onSuccess={onSuccessHandler}
           onError={onErrorHandler}
         />
+        <Button
+          style={[
+            {
+              borderColor: THEME_COLORS.secondary.main,
+              marginBottom: bottom + 16,
+              marginHorizontal: 16,
+            },
+          ]}
+          loading={isLoading}
+          contentStyle={[layout.button]}
+          color={THEME_COLORS.secondary.main}
+          uppercase
+          mode="contained"
+          labelStyle={{
+            color: THEME_COLORS.secondary.contrastText,
+          }}
+          icon="check"
+          onPress={handleCancel}>
+          Complete
+        </Button>
       </View>
     );
   }

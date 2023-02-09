@@ -293,17 +293,17 @@ export const STEPS_CONFIG = [
     elementTableFields: [
       {
         label: 'Building Condition',
-        field: 'building_condition',
+        field: 'building_condition_display',
         type: 'simple',
       },
       {
         label: 'Rooftop/ceiling Condition',
-        field: 'ceil_condition',
+        field: 'ceil_condition_display',
         type: 'simple',
       },
       {
         label: 'Pop location reachability',
-        field: 'pop_location_reachability',
+        field: 'pop_location_reachability_display',
         type: 'simple',
       },
       {
@@ -356,7 +356,7 @@ export const STEPS_CONFIG = [
         field: 'space_availibility',
         type: 'simple',
       },
-      {label: 'Seepage', field: 'seepage', type: 'simple'},
+      {label: 'Seepage', field: 'seepage_display', type: 'simple'},
       {
         label: 'Power backup (availibility of DG)',
         field: 'power_backup_display',

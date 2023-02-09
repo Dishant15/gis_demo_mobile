@@ -30,8 +30,8 @@ const TicketMapViewLayer = () => {
           <Polygon
             coordinates={area_pocket.coordinates}
             strokeWidth={2}
-            strokeColor="#88B14BCC"
-            fillColor="#88B14B4D"
+            strokeColor="#e55e5d"
+            fillColor="#e55e5d4D"
           />
         ) : null}
         {/* {work_orders.map(workOrder => {
