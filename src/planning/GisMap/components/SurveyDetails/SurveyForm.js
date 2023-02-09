@@ -15,11 +15,12 @@ import {
   setSurveyWoScreenType,
 } from '~planning/data/planningGis.reducer';
 import {STEPS_CONFIG, STEPS_TRACK} from './configuration';
-import {pick} from 'lodash';
+import {get, pick} from 'lodash';
 import {upsertSurveyWoDetails} from '~planning/data/ticket.services';
 import {useMutation} from 'react-query';
 import {useFocusEffect} from '@react-navigation/native';
 import {openElementDetails} from '~planning/data/planning.actions';
+import {showToast, TOAST_TYPE} from '~utils/toast.utils';
 
 const SurveyForm = () => {
   const formRef = useRef();
@@ -60,9 +61,17 @@ const SurveyForm = () => {
           data: {...mapState.data, ...res},
         }),
       );
+      showToast('Survey updated successfully.', TOAST_TYPE.SUCCESS);
     } else {
       if (currentStep === 4) {
         dispatch(setSurveyWoScreenType(3));
+        dispatch(
+          setMapState({
+            ...mapState,
+            data: {...mapState.data, ...res},
+          }),
+        );
+        showToast('Survey created successfully.', TOAST_TYPE.SUCCESS);
       } else if (currentStep < 4) {
         dispatch(
           setMapState({
@@ -75,7 +84,25 @@ const SurveyForm = () => {
     }
   };
 
-  const onErrorHandler = err => {};
+  const onErrorHandler = err => {
+    const errStatus = get(err, 'response.status');
+    let notiText;
+    if (errStatus === 400) {
+      let errData = get(err, 'response.data');
+      for (const fieldKey in errData) {
+        if (Object.hasOwnProperty.call(errData, fieldKey)) {
+          const errList = errData[fieldKey];
+          if (fieldKey === 'geometry') continue;
+          formRef.current.onError(fieldKey, get(errList, '0', ''));
+        }
+      }
+      notiText = 'Please correct input errors and submit again';
+    } else {
+      notiText =
+        'Something went wrong at our side. Please try again after refreshing the page.';
+    }
+    showToast(notiText, TOAST_TYPE.ERROR);
+  };
 
   const {mutate, isLoading} = useMutation(
     mutationData => upsertSurveyWoDetails(mutationData),
@@ -169,17 +196,20 @@ const SurveyForm = () => {
 
   return (
     <View>
-      <TrackReturnOrder
-        selectedIndex={stepContent.trackIndex}
-        stepDetail={STEPS_TRACK}
-      />
       <DynamicForm
+        key={currentStep}
         ref={formRef}
         formConfigs={stepContent.formConfigs}
         data={stepContent.data}
         isEdit={isEdit}
         isLoading={isLoading}
         skipTitleIndex={0}
+        headerElement={
+          <TrackReturnOrder
+            selectedIndex={stepContent.trackIndex}
+            stepDetail={STEPS_TRACK}
+          />
+        }
         actionElement={handleSubmit => (
           <View style={styles.btnWrapper}>
             <Button
@@ -193,7 +223,7 @@ const SurveyForm = () => {
             </Button>
             <Button
               style={[styles.btn2, {borderColor: THEME_COLORS.secondary.main}]}
-              loading={false}
+              loading={isLoading}
               contentStyle={[layout.button]}
               color={THEME_COLORS.secondary.main}
               uppercase

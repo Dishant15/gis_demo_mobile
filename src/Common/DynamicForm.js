@@ -58,6 +58,7 @@ const DynamicForm = forwardRef((props, ref) => {
     submitButtonText = 'Submit',
     cancelButtonText = 'Cancel',
     actionElement = null,
+    headerElement = null,
   } = props;
   const {sections, dependencyFields = []} = formConfigs;
   const {bottom} = useSafeAreaInsets();
@@ -96,6 +97,7 @@ const DynamicForm = forwardRef((props, ref) => {
     <KeyboardAwareScrollView
       keyboardShouldPersistTaps="always"
       style={[styles.container, {paddingBottom: Math.max(bottom, 12)}]}>
+      {headerElement}
       {sections.map((section, s_id) => {
         const {title, fieldConfigs, showCloseIcon} = section;
         return (

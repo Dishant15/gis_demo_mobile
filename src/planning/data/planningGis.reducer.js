@@ -31,6 +31,7 @@ import {
   DEFAULT_MAP_ZOOM,
 } from '~Common/components/Map/map.constants';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import {INIT_FORM_DATA} from '~planning/GisMap/components/SurveyDetails/configuration';
 
 // if layer data elements go above this size data will be stored in cache first
 const MAX_ALLOWED_DATA_COUNT = 200;
@@ -543,6 +544,10 @@ const planningGisSlice = createSlice({
         // show add form
         state.surveyWorkorder.screenType = 1;
         state.mapState.currentStep = 1;
+        state.mapState.data = {
+          ...state.mapState.data,
+          ...INIT_FORM_DATA,
+        };
       } else {
         // error screen
         state.surveyWorkorder.screenType = 4;
