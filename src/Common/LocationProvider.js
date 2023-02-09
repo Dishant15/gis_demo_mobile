@@ -39,8 +39,59 @@ const LocationProvider = ({children}) => {
   const locationPermissionType = useSelector(getLocationPermissionType);
 
   useEffect(() => {
-    getLocationPermission();
+    // getLocationPermission();
+    getCameraPermission();
   }, []);
+
+  const getCameraPermission = () => {
+    check(
+      Platform.OS === 'ios'
+        ? PERMISSIONS.IOS.CAMERA
+        : PERMISSIONS.ANDROID.CAMERA,
+    )
+      .then(response => {
+        if (response === RESULTS.BLOCKED) {
+          onCameraPermissonDenied();
+          Alert.alert(
+            'Permission Required !!!',
+            'Please enable camera permissions from settings > Permissions > Location',
+            [
+              {
+                text: 'Cancel',
+                onPress: () => {},
+              },
+              {
+                text: 'Open Settings',
+                onPress: () =>
+                  openSettings().catch(() =>
+                    console.log('cannot open settings'),
+                  ),
+              },
+            ],
+            {cancelable: false},
+          );
+        } else if (response === RESULTS.GRANTED) {
+          getLocationPermission();
+        } else {
+          // ask permission again
+          onCameraPermissonDenied();
+          request(
+            Platform.OS === 'ios'
+              ? PERMISSIONS.IOS.CAMERA
+              : PERMISSIONS.ANDROID.CAMERA,
+          ).then(sec_response => {
+            if (sec_response === RESULTS.GRANTED) {
+              getLocationPermission();
+            } else {
+              onCameraPermissonDenied();
+            }
+          });
+        }
+      })
+      .catch(err => {
+        onCameraPermissonDenied();
+      });
+  };
 
   const getLocationPermission = () => {
     check(
@@ -105,6 +156,14 @@ const LocationProvider = ({children}) => {
     );
   };
 
+  const onCameraPermissonDenied = () => {
+    dispatch(setLocationPermission(null));
+    showToast(
+      'Enable Camera permissions for better experiance',
+      TOAST_TYPE.INFO,
+    );
+  };
+
   const onPermissonSkip = () => {
     dispatch(setLocationPermission(PERMISSIONS_TYPE.SKIP));
     showToast(
@@ -148,9 +207,9 @@ const LocationProvider = ({children}) => {
             resizeMode="contain"
           />
         </View>
-        <Headline>Allow Your Location</Headline>
+        <Headline>Allow Your Location and CAMERA</Headline>
         <Subheading style={styles.subheadingText}>
-          {`We will need your location to give you \n better experiance`}
+          {`We will need your location and camera permission\nto give you better experiance`}
         </Subheading>
         <Button
           style={styles.button}

@@ -35,6 +35,11 @@ export const STEPS_TRACK = [
     id: 7,
     title: 'Contact details',
   },
+  {id: 8, separator: true},
+  {
+    id: 9,
+    title: 'Upload Images',
+  },
 ];
 
 export const STEPS_CONFIG = [
@@ -185,7 +190,6 @@ export const STEPS_CONFIG = [
       },
     ],
   },
-
   {
     sections: [
       {
@@ -370,7 +374,6 @@ export const STEPS_CONFIG = [
       },
     ],
   },
-
   {
     sections: [
       {
@@ -441,6 +444,16 @@ export const STEPS_CONFIG = [
       {label: 'Mobile No', field: 'alternate_mobile_no', type: 'simple'},
       {label: 'Email Id', field: 'alternate_email_id', type: 'simple'},
     ],
+  },
+  {
+    uploadImage: true,
+    sections: [
+      {
+        title: 'Upload Images',
+        fieldConfigs: [],
+      },
+    ],
+    elementTableFields: [],
   },
 ];
 

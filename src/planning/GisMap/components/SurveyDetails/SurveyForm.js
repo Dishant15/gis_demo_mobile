@@ -21,6 +21,9 @@ import {useMutation} from 'react-query';
 import {useFocusEffect} from '@react-navigation/native';
 import {openElementDetails} from '~planning/data/planning.actions';
 import {showToast, TOAST_TYPE} from '~utils/toast.utils';
+import SurverImageUpload from './SurverImageUpload';
+
+const LAST_STEP = 5;
 
 const SurveyForm = () => {
   const formRef = useRef();
@@ -63,7 +66,7 @@ const SurveyForm = () => {
       );
       showToast('Survey updated successfully.', TOAST_TYPE.SUCCESS);
     } else {
-      if (currentStep === 4) {
+      if (currentStep === LAST_STEP) {
         dispatch(setSurveyWoScreenType(3));
         dispatch(
           setMapState({
@@ -72,7 +75,7 @@ const SurveyForm = () => {
           }),
         );
         showToast('Survey created successfully.', TOAST_TYPE.SUCCESS);
-      } else if (currentStep < 4) {
+      } else if (currentStep < LAST_STEP) {
         dispatch(
           setMapState({
             ...mapState,
@@ -148,6 +151,7 @@ const SurveyForm = () => {
           ]),
         };
       }
+
       case 3: {
         return {
           formConfigs: STEPS_CONFIG[2],
@@ -176,24 +180,30 @@ const SurveyForm = () => {
         };
       }
       case 4: {
-        {
-          return {
-            formConfigs: STEPS_CONFIG[3],
-            submitButtonText: 'Submit',
-            cancelButtonText: 'Back',
-            trackIndex: 6,
-            data: pick(mapStateData, [
-              'contact_person_name',
-              'designation',
-              'mobile_no',
-              'email_id',
-              'alternate_name',
-              'alternate_designation',
-              'alternate_mobile_no',
-              'alternate_email_id',
-            ]),
-          };
-        }
+        return {
+          formConfigs: STEPS_CONFIG[3],
+          submitButtonText: 'Next',
+          cancelButtonText: 'Back',
+          trackIndex: 6,
+          data: pick(mapStateData, [
+            'contact_person_name',
+            'designation',
+            'mobile_no',
+            'email_id',
+            'alternate_name',
+            'alternate_designation',
+            'alternate_mobile_no',
+            'alternate_email_id',
+          ]),
+        };
+      }
+      case 5: {
+        return {
+          uploadImage: true,
+          submitButtonText: 'Submit',
+          cancelButtonText: 'Back',
+          trackIndex: 8,
+        };
       }
       default: {
         return null;
@@ -217,6 +227,20 @@ const SurveyForm = () => {
 
   if (!stepContent) return null;
 
+  if (stepContent.uploadImage) {
+    return (
+      <View style={layout.box}>
+        <TrackReturnOrder
+          selectedIndex={stepContent.trackIndex}
+          stepDetail={STEPS_TRACK}
+        />
+        <SurverImageUpload
+          onSuccess={onSuccessHandler}
+          onError={onErrorHandler}
+        />
+      </View>
+    );
+  }
   return (
     <View>
       <DynamicForm

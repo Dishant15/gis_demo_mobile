@@ -47,6 +47,9 @@ allprojects {
                 excludeGroup "com.facebook.react"
             }
         }
+        // ADD THIS for crop picker
+        maven { url 'https://maven.google.com' }
+
         google()
         maven { url 'https://www.jitpack.io' }
     }
