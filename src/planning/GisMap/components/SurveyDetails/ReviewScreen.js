@@ -1,6 +1,12 @@
-import {useFocusEffect} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {View, StyleSheet, Pressable, BackHandler} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
+import {
+  View,
+  StyleSheet,
+  Pressable,
+  BackHandler,
+  ScrollView,
+} from 'react-native';
 import {Button, Title, Text} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -36,7 +42,7 @@ const ReviewScreen = () => {
   };
 
   return (
-    <View
+    <ScrollView
       style={{
         flexGrow: 1,
       }}>
@@ -77,7 +83,7 @@ const ReviewScreen = () => {
         onPress={navigateToReview}>
         Complete
       </Button>
-    </View>
+    </ScrollView>
   );
 };
 

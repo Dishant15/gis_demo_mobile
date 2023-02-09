@@ -235,10 +235,10 @@ export const THEME_COLORS = {
 export const HOST_CONFIG = {
   NETGIS: {
     label: 'Gis Demo',
-    value: 'http://64.227.132.147',
+    value: 'http://64.227.132.147:8888',
   },
   GPSTECH: {
     label: 'Gis Demo 2',
-    value: 'http://64.227.132.147',
+    value: 'http://64.227.132.147:8888',
   },
 };
